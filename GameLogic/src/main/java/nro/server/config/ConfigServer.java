@@ -1,0 +1,34 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package nro.server.config;
+
+/**
+ * @author Arriety
+ */
+public final class ConfigServer {
+
+    public static String IP = "127.0.0.1";
+    public static String LINK_IP_PORT = "Arriety:localhost:14445";
+    public static int PORT = 14445;
+
+    public static int MAX_SESSIONS = 1000;
+    public static int MAX_SESSIONS_PER_IP = 10;
+
+    public static byte VERSION_DATA = 1;
+    public static byte VERSION_MAP = 1;
+    public static byte VERSION_SKILL = 1;
+    public static byte VERSION_ITEM = 1;
+
+    public static String VERSION_CLIENT = "2.4.3";
+
+    /**
+     * nếu client gửi quá số lượng msg quy định thì sẽ kick session
+     */
+    public static int MAX_MESSAGES_PER_5_SECONDS = 120;
+
+    public static final String BACKUP_FOLDER_PATH = "\\backup";
+    public static final String MYSQL_DUMP_PATH = "";
+
+}

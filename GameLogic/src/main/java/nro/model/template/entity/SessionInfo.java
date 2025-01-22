@@ -1,0 +1,22 @@
+package nro.model.template.entity;
+
+import lombok.Data;
+
+@Data
+public class SessionInfo {
+
+    private int id;
+    private String ip;
+    private boolean connected;
+    private final byte[] keys = {0};
+    private boolean isUpdateItem;
+
+    public byte curR, curW;
+    public int recvByteCount, sendByteCount;
+    public String strRecvByteCount;
+
+    public boolean getConnect() {
+        return this.connected;
+    }
+
+}
