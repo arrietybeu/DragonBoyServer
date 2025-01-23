@@ -47,7 +47,6 @@ public class DataItem {
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sending skill template: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -91,7 +90,6 @@ public class DataItem {
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sending item arr head 2 fr: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -109,7 +107,6 @@ public class DataItem {
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sending item arr head fly move: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

@@ -26,12 +26,10 @@ public class PlayerService {
     }
 
     public void finishUpdateHandler(Session session) {
-        System.out.println("finishUpdateHandler");
         Player player = PlayerLoader.getInstance().loadPlayer(session);
         if (player == null) {
             Service.initSelectChar(session);
         } else {
-            System.out.println("create player success for player name: " + player.getName());
             session.setPlayer(player);
             this.onPlayerLoginSuccess();
         }
@@ -68,7 +66,6 @@ public class PlayerService {
                     }
                 }
 
-                System.out.println("account id: " + session.getUserInfo().getId());
                 boolean isCreated = PlayerCreator.getInstance().createPlayer(
                         connection,
                         session.getUserInfo().getId(),
@@ -114,7 +111,6 @@ public class PlayerService {
         if (!pattern.matcher(name).matches()) {
             return "Tên nhân vật không được chứa ký tự đặc biệt, chỉ cho phép a-z, A-Z, 0-9, và _";
         }
-
         return null;
     }
 

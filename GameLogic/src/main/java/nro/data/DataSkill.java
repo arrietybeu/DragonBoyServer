@@ -92,7 +92,6 @@ public class DataSkill {
                     message.writer().writeUTF(skill.getDamInfo());
                     message.writer().writeUTF(skill.getDescription());
                     message.writer().writeByte(skill.getSkillInfo().size());
-                    System.out.println("id skill: " + skill.getSkillId() + " size() = " + skill.getSkillInfo().size());
                     for (SkillInfo skillInfo : skill.getSkillInfo()) {
                         message.writer().writeShort(skillInfo.skillId);
                         message.writer().writeByte(skillInfo.point);
