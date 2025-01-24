@@ -89,7 +89,6 @@ public class SkillManager implements IManager {
                     skillTemplate.setDamInfo(resultSet.getString("dam_info"));
                     skillTemplate.setDescription(resultSet.getString("description"));
                     skillTemplates.add(skillTemplate);
-                    System.out.println("SkillTemplate ID: " + skillTemplate.getId() + ", Name: " + skillTemplate.getName());
                     this.loadSKillInfo(connection, skillTemplate);
 
                 }

@@ -48,7 +48,6 @@ public class DataSkill {
                         message.writer().writeShort(skill.getDamage());
                         message.writer().writeShort(skill.getPrice());
                         message.writer().writeUTF(skill.getMoreInfo());
-                        System.out.println("SendDataSkill: " + skill.getSkillId());
                     }
                 }
             }
