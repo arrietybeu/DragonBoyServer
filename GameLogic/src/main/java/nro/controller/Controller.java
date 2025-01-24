@@ -37,7 +37,7 @@ public class Controller {
 
     private void checkTimeDelay(Session session, byte cmd, long time) {
         long executionTime = System.currentTimeMillis() - time;
-        LogServer.DebugLogic("session " + session.getSessionInfo().getId() + " get message [" + cmd + "] - " + executionTime + " ms");
+//        LogServer.DebugLogic("session " + session.getSessionInfo().getId() + " get message [" + cmd + "] - " + executionTime + " ms");
         if (executionTime > 5000) {
             LogServer.LogException("Session IP: " + session.getSessionInfo().getIp() + " time delay: [" + cmd + "] - " + executionTime + " ms");
         }

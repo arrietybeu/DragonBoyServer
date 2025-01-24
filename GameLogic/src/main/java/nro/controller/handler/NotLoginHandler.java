@@ -136,7 +136,7 @@ public class NotLoginHandler implements IMessageProcessor {
         var isTouch = message.reader().readBoolean();
         String platform = message.reader().readUTF();
         // TODO write data info
-        LogServer.DebugLogic(platform);
+//        LogServer.DebugLogic(platform);
         clientInfo.setPlatform(platform);
         clientInfo.setSetClientType(true);
     }

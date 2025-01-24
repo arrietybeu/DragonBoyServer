@@ -1,6 +1,5 @@
 package nro.data;
 
-import nro.model.template.entity.SkillInfo;
 import nro.network.Message;
 import nro.network.Session;
 import nro.server.config.ConfigServer;
@@ -10,109 +9,52 @@ import nro.server.LogServer;
 
 public class DataSkill {
 
-    public static void SendDataSkill() {
-        SkillManager skillManager = SkillManager.getInstance();
-
-        var version = skillManager.getSize();
-
-        try (Message message = new Message(-28)) {
-            message.writer().writeByte(ConstMsgNotMap.UPDATE_SKILL);
-
-            message.writer().writeByte(ConfigServer.VERSION_SKILL);
-
-            message.writer().writeByte(0);// send skill options
-
-            message.writer().writeByte(version);// 23
-
-            for (var nClass : skillManager.getNClasses().values()) {
-
-                message.writer().writeUTF(nClass.getName());
-                message.writer().writeByte(nClass.getSkillTemplates().size());
-
-                for (var skill : nClass.getSkillTemplates()) {
-                    message.writer().writeByte(skill.getSkillId());
-                    message.writer().writeUTF(skill.getName());
-                    message.writer().writeByte(skill.getMaxPoint());
-                    message.writer().writeByte(skill.getManaUseType());
-                    message.writer().writeByte(skill.getType());
-                    message.writer().writeShort(skill.getIconId());
-                    message.writer().writeUTF(skill.getDamInfo());
-                    message.writer().writeUTF(skill.getDescription());
-                    message.writer().writeByte(skill.getSkillInfo().size());
-                    for (var skillInfo : skill.getSkillInfo()) {
-                        message.writer().writeShort(skillInfo.skillId);
-                        message.writer().writeByte(skillInfo.point);
-                        message.writer().writeLong(skillInfo.powRequire);
-                        message.writer().writeShort(skillInfo.manaUse);
-                        message.writer().writeInt(skillInfo.coolDown);
-                        message.writer().writeShort(skillInfo.dx);
-                        message.writer().writeShort(skillInfo.dy);
-                        message.writer().writeByte(skillInfo.maxFight);
-                        message.writer().writeShort(skillInfo.damage);
-                        message.writer().writeShort(skillInfo.price);
-                        message.writer().writeUTF(skillInfo.moreInfo);
-
-                        System.out.println("Skill class: " + skill.getSkillId() + " skill info id: " + skillInfo.skillId + " skill name: " + skill.getName());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LogServer.LogException("Error sendDataSkill: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-
     public static void SendDataSkill(Session session) {
+        System.out.println("SendDataSkill");
         SkillManager skillManager = SkillManager.getInstance();
-
-        var version = skillManager.getSize();
+        var nClasses = skillManager.getNClasses();
+        var skillOptions = skillManager.getSkillOptions();
 
         try (Message message = new Message(-28)) {
             message.writer().writeByte(ConstMsgNotMap.UPDATE_SKILL);
-
             message.writer().writeByte(ConfigServer.VERSION_SKILL);
-
-            message.writer().writeByte(0);// send skill options
-
-            message.writer().writeByte(version);// 23
-
-            for (var nClass : skillManager.getNClasses().values()) {
-
-                message.writer().writeUTF(nClass.getName());
-                message.writer().writeByte(nClass.getSkillTemplates().size());
-
-                for (var skill : nClass.getSkillTemplates()) {
-                    message.writer().writeByte(skill.getSkillId());
-                    message.writer().writeUTF(skill.getName());
-                    message.writer().writeByte(skill.getMaxPoint());
-                    message.writer().writeByte(skill.getManaUseType());
-                    message.writer().writeByte(skill.getType());
-                    message.writer().writeShort(skill.getIconId());
-                    message.writer().writeUTF(skill.getDamInfo());
-                    message.writer().writeUTF(skill.getDescription());
-                    message.writer().writeByte(skill.getSkillInfo().size());
-                    for (SkillInfo skillInfo : skill.getSkillInfo()) {
-                        message.writer().writeShort(skillInfo.skillId);
-                        message.writer().writeByte(skillInfo.point);
-                        message.writer().writeLong(skillInfo.powRequire);
-                        message.writer().writeShort(skillInfo.manaUse);
-                        message.writer().writeInt(skillInfo.coolDown);
-                        message.writer().writeShort(skillInfo.dx);
-                        message.writer().writeShort(skillInfo.dy);
-                        message.writer().writeByte(skillInfo.maxFight);
-                        message.writer().writeShort(skillInfo.damage);
-                        message.writer().writeShort(skillInfo.price);
-                        message.writer().writeUTF(skillInfo.moreInfo);
+            message.writer().writeByte(skillOptions.size());// send skill options
+            for (var option : skillOptions) {
+                message.writer().writeUTF(option.getName());
+            }
+            message.writer().writeByte(nClasses.size());// 23
+            for (var classSkill : nClasses) {
+                message.writer().writeUTF(classSkill.getName());
+                message.writer().writeByte(classSkill.getSkillTemplates().size());
+                for (var skillTemplate : classSkill.getSkillTemplates()) {
+                    message.writer().writeByte(skillTemplate.getId());
+                    message.writer().writeUTF(skillTemplate.getName());
+                    message.writer().writeByte(skillTemplate.getMaxPoint());
+                    message.writer().writeByte(skillTemplate.getManaUseType());
+                    message.writer().writeByte(skillTemplate.getType());
+                    message.writer().writeShort(skillTemplate.getIconId());
+                    message.writer().writeUTF(skillTemplate.getDamInfo());
+                    message.writer().writeUTF(skillTemplate.getDescription());
+                    message.writer().writeByte(skillTemplate.getSkills().size());
+                    for (var skill : skillTemplate.getSkills()) {
+                        message.writer().writeShort(skill.getSkillId());
+                        message.writer().writeByte(skill.getPoint());
+                        message.writer().writeLong(skill.getPowRequire());
+                        message.writer().writeShort(skill.getManaUse());
+                        message.writer().writeInt(skill.getCoolDown());
+                        message.writer().writeShort(skill.getDx());
+                        message.writer().writeShort(skill.getDy());
+                        message.writer().writeByte(skill.getMaxFight());
+                        message.writer().writeShort(skill.getDamage());
+                        message.writer().writeShort(skill.getPrice());
+                        message.writer().writeUTF(skill.getMoreInfo());
+                        System.out.println("SendDataSkill: " + skill.getSkillId());
                     }
                 }
             }
             session.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendDataSkill: " + e.getMessage());
-            e.printStackTrace();
         }
     }
-
-
 }

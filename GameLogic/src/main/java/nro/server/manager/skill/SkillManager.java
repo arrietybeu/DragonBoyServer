@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import lombok.Getter;
+import nro.model.skill.SkillOption;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.SkillInfo;
@@ -18,20 +18,19 @@ import nro.server.LogServer;
 
 public class SkillManager implements IManager {
 
-    private static SkillManager instance;
+    @Getter
+    private static SkillManager instance = new SkillManager();
 
-    private final Map<Integer, NClass> skills = new HashMap<>();
+    @Getter
+    private final List<NClass> nClasses = new ArrayList<>();
 
-    public static SkillManager getInstance() {
-        if (instance == null) {
-            instance = new SkillManager();
-        }
-        return instance;
-    }
+    @Getter
+    private final List<SkillOption> skillOptions = new ArrayList<>();
 
     @Override
     public void init() {
         this.loadSkill();
+        this.loadSkillOption();
     }
 
     @Override
@@ -50,24 +49,25 @@ public class SkillManager implements IManager {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    NClass nClass = new NClass();
-
                     var nClassId = resultSet.getInt("class_id");
                     var name = resultSet.getString("name");
 
+                    NClass nClass = new NClass();
                     nClass.setClassId(nClassId);
                     nClass.setName(name);
 
-                    nClass.setSkillTemplates(this.loadSkillTemplate(connection, nClassId));
+                    var skillTemplates = this.loadSkillTemplate(connection, nClassId);
 
-                    this.skills.put(nClass.getClassId(), nClass);
+                    nClass.setSkillTemplates(skillTemplates);
+                    this.nClasses.add(nClass);
                 }
-                LogServer.LogInit("SkillManager initialized size: " + this.getSize());
+                LogServer.LogInit("Skill Class initialized size: " + this.nClasses.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadSkill: " + e.getMessage());
         }
     }
+
 
     private List<SkillTemplate> loadSkillTemplate(Connection connection, int classId) {
         List<SkillTemplate> skillTemplates = new ArrayList<>();
@@ -80,7 +80,7 @@ public class SkillManager implements IManager {
                 while (resultSet.next()) {
                     SkillTemplate skillTemplate = new SkillTemplate();
                     skillTemplate.setClassId(classId);
-                    skillTemplate.setSkillId(resultSet.getByte("id"));
+                    skillTemplate.setId(resultSet.getByte("id"));
                     skillTemplate.setName(resultSet.getString("name"));
                     skillTemplate.setMaxPoint(resultSet.getInt("max_point"));
                     skillTemplate.setManaUseType(resultSet.getInt("mana_use_type"));
@@ -88,9 +88,10 @@ public class SkillManager implements IManager {
                     skillTemplate.setIconId(resultSet.getInt("icon_id"));
                     skillTemplate.setDamInfo(resultSet.getString("dam_info"));
                     skillTemplate.setDescription(resultSet.getString("description"));
-                    skillTemplate.setSkillInfo(this.loadSKillInfo(connection, skillTemplate));
-
                     skillTemplates.add(skillTemplate);
+                    System.out.println("SkillTemplate ID: " + skillTemplate.getId() + ", Name: " + skillTemplate.getName());
+                    this.loadSKillInfo(connection, skillTemplate);
+
                 }
             }
         } catch (Exception e) {
@@ -99,19 +100,18 @@ public class SkillManager implements IManager {
         return skillTemplates;
     }
 
-    private List<SkillInfo> loadSKillInfo(Connection connection, SkillTemplate skillTemplate) {
-        List<SkillInfo> skillInfos = new ArrayList<>();
-
-        String query = "SELECT * FROM skill_info WHERE skill_id = ?";
-
+    private void loadSKillInfo(Connection connection, SkillTemplate skillTemplate) {
+        skillTemplate.getSkills().clear();
+        int idSkill = skillTemplate.getId();
+        String query = "SELECT * FROM skill_info WHERE skill_id = ? AND class_id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, skillTemplate.getSkillId());
-
+            preparedStatement.setInt(1, idSkill);
+            preparedStatement.setInt(2, skillTemplate.getClassId());
             try (ResultSet rs = preparedStatement.executeQuery()) {
                 while (rs.next()) {
                     SkillInfo skill = new SkillInfo();
-                    skill.template = skillTemplate;
-                    skill.skillId = skillTemplate.getSkillId();
+                    skill.setTemplate(skillTemplate);
+                    skill.skillId = rs.getShort("id");
                     skill.point = rs.getByte("point");
                     skill.powRequire = rs.getLong("power_require");
                     skill.manaUse = rs.getInt("mana_use");
@@ -122,55 +122,61 @@ public class SkillManager implements IManager {
                     skill.damage = rs.getShort("damage");
                     skill.price = rs.getShort("price");
                     skill.moreInfo = rs.getString("more_info");
-                    skillInfos.add(skill);
+                    skillTemplate.addSkill(skill);
                 }
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadSKillInfo: " + e.getMessage());
         }
-        return skillInfos;
     }
 
-    public int getSize() {
-        return this.skills.size();
+    private void loadSkillOption() {
+        String query = "SELECT * FROM skill_option";
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            assert connection != null : "Connection is null";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    SkillOption skillOption = new SkillOption();
+                    skillOption.setId(resultSet.getInt("id"));
+                    skillOption.setName(resultSet.getString("name"));
+                    this.skillOptions.add(skillOption);
+                }
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error loadSkillOption: " + e.getMessage());
+        } finally {
+            LogServer.LogInit("SkillOption initialized size: " + this.skillOptions.size());
+        }
     }
 
-    public NClass getNClass(int classId) {
-        return this.skills.get(classId);
-    }
-
-    public Map<Integer, NClass> getNClasses() {
-        return this.skills;
-    }
 
     public void logAllSkills() {
-        for (var entry : skills.entrySet()) {
-            int classId = entry.getKey();
-            NClass nClass = entry.getValue();
-            LogServer.DebugLogic("Class ID: " + classId + ", Name: " + nClass.getName());
-
-            List<SkillTemplate> skillTemplates = nClass.getSkillTemplates();
-            if (skillTemplates != null) {
-                for (SkillTemplate skillTemplate : skillTemplates) {
-                    LogServer.DebugLogic("  SkillTemplate ID: " + skillTemplate.getSkillId() + ", Name: " + skillTemplate.getName());
-
-                    List<SkillInfo> skillInfos = skillTemplate.getSkillInfo();
-                    if (skillInfos != null) {
-                        for (SkillInfo skill : skillInfos) {
-                            LogServer.DebugLogic("    SkillInfo ID: " + skill.skillId
-                                    + ", Point: " + skill.point
-                                    + ", PowerRequire: " + skill.powRequire
-                                    + ", ManaUse: " + skill.manaUse
-                                    + ", CoolDown: " + skill.coolDown
-                                    + ", Damage: " + skill.damage);
-                        }
-                    } else {
-                        LogServer.DebugLogic("    No SkillInfo available.");
-                    }
-                }
-            } else {
-                LogServer.DebugLogic("  No SkillTemplate available.");
-            }
-        }
+//        for (var nClass : this.nClasses) {
+//            LogServer.DebugLogic("Class ID: " + nClass.getClassId() + ", Name: " + nClass.getName());
+//
+//            List<SkillTemplate> skillTemplates = nClass.getSkillTemplates();
+//            if (skillTemplates != null) {
+//                for (SkillTemplate skillTemplate : skillTemplates) {
+//                    LogServer.DebugLogic("  SkillTemplate ID: " + skillTemplate.getSkillId() + ", Name: " + skillTemplate.getName());
+//
+//                    List<SkillInfo> skillInfos = skillTemplate.getSkillInfo();
+//                    if (skillInfos != null) {
+//                        for (SkillInfo skill : skillInfos) {
+//                            LogServer.DebugLogic("    SkillInfo ID: " + skill.skillId
+//                                    + ", Point: " + skill.point
+//                                    + ", PowerRequire: " + skill.powRequire
+//                                    + ", ManaUse: " + skill.manaUse
+//                                    + ", CoolDown: " + skill.coolDown
+//                                    + ", Damage: " + skill.damage);
+//                        }
+//                    } else {
+//                        LogServer.DebugLogic("    No SkillInfo available.");
+//                    }
+//                }
+//            } else {
+//                LogServer.DebugLogic("  No SkillTemplate available.");
+//            }
+//        }
     }
 }

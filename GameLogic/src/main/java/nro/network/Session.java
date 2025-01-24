@@ -1,6 +1,7 @@
 package nro.network;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -71,7 +72,7 @@ public final class Session {
     }
 
     private void initCommunication() throws IOException {
-        this.messageSender = new MessageSender(this, this.socket.getOutputStream());
+        this.messageSender = new MessageSender(this, new DataOutputStream(this.socket.getOutputStream()));
         this.messageReceiver = new MessageReceiver(this, new DataInputStream(this.socket.getInputStream()));
         this.messageReceiver.startReadMessage();
     }

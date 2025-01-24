@@ -94,7 +94,7 @@ public class CommandService {
                         }
                         break;
                     case "data_skill":
-                        DataSkill.SendDataSkill();
+//                        DataSkill.SendDataSkill();
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

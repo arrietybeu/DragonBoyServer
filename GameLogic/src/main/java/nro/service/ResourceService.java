@@ -60,8 +60,8 @@ public class ResourceService {
                 dataGame.getEffect(),
                 dataGame.getImage(),
                 partManager.getData(),
-//                dataGame.getSkill()};
-                skillPaintManager.getSkillPaintsData()};
+                dataGame.getSkill()};
+//                skillPaintManager.getSkillPaintsData()};
     }
 
     private void writeData(Message message, byte[] data) throws IOException {
