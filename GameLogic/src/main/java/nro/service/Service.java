@@ -55,7 +55,6 @@ public class Service {
     }
 
     public static void initSelectChar(Session session) {
-        System.out.println("initSelectChar");
         try (Message msg = new Message(2)) {
             session.sendMessage(msg);
         } catch (Exception e) {
@@ -66,7 +65,6 @@ public class Service {
     public void createUserAo(Session session) {
         try (Message message = new Message(-101)) {
             // TODO load database id user
-
 
         } catch (Exception e) {
             LogServer.LogException("Error create User Ao: " + e.getMessage());
@@ -79,7 +77,6 @@ public class Service {
             session.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error switchToRegisterScr: " + e.getMessage());
-
         }
     }
 }

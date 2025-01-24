@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import nro.model.skill.SkillOption;
+import nro.model.template.skill.SkillOptionTemplate;
+import nro.model.template.skill.SpeacialSkillTemplate;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.SkillInfo;
@@ -25,12 +26,16 @@ public class SkillManager implements IManager {
     private final List<NClass> nClasses = new ArrayList<>();
 
     @Getter
-    private final List<SkillOption> skillOptions = new ArrayList<>();
+    private final List<SkillOptionTemplate> skillOptions = new ArrayList<>();
+
+    @Getter
+    private final List<SpeacialSkillTemplate> specialSkills = new ArrayList<>();
 
     @Override
     public void init() {
         this.loadSkill();
         this.loadSkillOption();
+        this.loadSpecialSkill();
     }
 
     @Override
@@ -136,9 +141,9 @@ public class SkillManager implements IManager {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    SkillOption skillOption = new SkillOption();
-                    skillOption.setId(resultSet.getInt("id"));
-                    skillOption.setName(resultSet.getString("name"));
+                    var id = resultSet.getInt("id");
+                    var name = resultSet.getString("name");
+                    SkillOptionTemplate skillOption = new SkillOptionTemplate(id, name);
                     this.skillOptions.add(skillOption);
                 }
             }
@@ -149,33 +154,24 @@ public class SkillManager implements IManager {
         }
     }
 
-
-    public void logAllSkills() {
-//        for (var nClass : this.nClasses) {
-//            LogServer.DebugLogic("Class ID: " + nClass.getClassId() + ", Name: " + nClass.getName());
-//
-//            List<SkillTemplate> skillTemplates = nClass.getSkillTemplates();
-//            if (skillTemplates != null) {
-//                for (SkillTemplate skillTemplate : skillTemplates) {
-//                    LogServer.DebugLogic("  SkillTemplate ID: " + skillTemplate.getSkillId() + ", Name: " + skillTemplate.getName());
-//
-//                    List<SkillInfo> skillInfos = skillTemplate.getSkillInfo();
-//                    if (skillInfos != null) {
-//                        for (SkillInfo skill : skillInfos) {
-//                            LogServer.DebugLogic("    SkillInfo ID: " + skill.skillId
-//                                    + ", Point: " + skill.point
-//                                    + ", PowerRequire: " + skill.powRequire
-//                                    + ", ManaUse: " + skill.manaUse
-//                                    + ", CoolDown: " + skill.coolDown
-//                                    + ", Damage: " + skill.damage);
-//                        }
-//                    } else {
-//                        LogServer.DebugLogic("    No SkillInfo available.");
-//                    }
-//                }
-//            } else {
-//                LogServer.DebugLogic("  No SkillTemplate available.");
-//            }
-//        }
+    private void loadSpecialSkill() {
+        String query = "SELECT * FROM special_skill";
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            assert connection != null : "Connection is null";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    SpeacialSkillTemplate specialSkill = new SpeacialSkillTemplate();
+                    specialSkill.setId(resultSet.getInt("id"));
+                    specialSkill.setName(resultSet.getString("name"));
+                    this.specialSkills.add(specialSkill);
+                }
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error loadSpecialSkill: " + e.getMessage());
+        } finally {
+            LogServer.LogInit("SpecialSkill initialized size: " + this.specialSkills.size());
+        }
     }
+
 }

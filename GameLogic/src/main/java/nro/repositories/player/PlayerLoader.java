@@ -26,7 +26,7 @@ public class PlayerLoader {
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
-                        return this.mapResultSetToPlayer(resultSet);
+                        return this.mapResultSetToPlayer(session, resultSet);
                     }
                 }
 
@@ -38,8 +38,8 @@ public class PlayerLoader {
     }
 
     // Utility method to map ResultSet data to a Player object
-    private Player mapResultSetToPlayer(ResultSet resultSet) throws SQLException {
-        Player player = new Player();
+    private Player mapResultSetToPlayer(Session session, ResultSet resultSet) throws SQLException {
+        Player player = new Player(session);
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         return player;

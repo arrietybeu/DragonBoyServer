@@ -1,7 +1,7 @@
 package nro.model.template.entity;
 
 import lombok.Data;
-import nro.model.skill.SkillOption;
+import nro.model.template.skill.SkillOptionTemplate;
 import nro.model.template.skill.SkillTemplate;
 
 @Data
@@ -25,7 +25,7 @@ public class SkillInfo {
     public int dy;
     public int maxFight;
     public int manaUse;
-    public SkillOption[] options;
+    public SkillOptionTemplate[] options;
     public boolean paintCanNotUseSkill;
     public short damage;
     public String moreInfo;

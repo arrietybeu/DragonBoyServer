@@ -7,12 +7,9 @@ import java.util.List;
 public class SkillPaint {
 
     public int id;
-
     public int effectHappenOnMob;
-
     public int numEff;
 
     public List<SkillPaintInfo> skillStand;
-
     public List<SkillPaintInfo> skillfly;
 }
