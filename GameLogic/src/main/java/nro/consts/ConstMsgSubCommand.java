@@ -42,7 +42,7 @@ public class ConstMsgSubCommand {
 
     public static final byte UPDATE_SKILL_SHORTCUT = 61;
 
-    public static final byte UPDATE_MY_SKILLS = 62;
+    public static final byte UPDATE_MY_SKILLS = 62;// done
 
     public static final byte PLAYER_MENU_LIST = 63;
 }
