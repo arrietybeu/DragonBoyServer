@@ -69,7 +69,7 @@ public class MainServer {
     }
 
     private void startServerSocket() {
-        threadPool.execute(() -> {
+//        threadPool.execute(() -> {
             if (this.getSocket() != null && !this.getSocket().isClosed()) {
                 LogServer.DebugLogic("Server is already running.");
                 return;
@@ -106,7 +106,7 @@ public class MainServer {
                     LogServer.LogException("Error closing server: " + e.getMessage());
                 }
             }
-        });
+//        });
     }
 
     private void startGame() {
@@ -114,7 +114,6 @@ public class MainServer {
             SessionManager.gI().startSessionChecker();
         } catch (Exception e) {
             LogServer.LogException("Error startGame: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

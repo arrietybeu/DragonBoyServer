@@ -44,7 +44,6 @@ public class MapService {
      *      }
      * </pre>
      */
-
     public static void clearMap(Player player) {
         try (Message message = new Message(-22)) {
             player.sendMessage(message);

@@ -37,7 +37,6 @@ public class Login2Handler implements IMessageProcessor {
 //            Service.getInstance().createUserAo(session);
         } catch (Exception e) {
             LogServer.LogException("Error Login2Handler: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

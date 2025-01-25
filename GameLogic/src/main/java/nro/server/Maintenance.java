@@ -38,7 +38,6 @@ public class Maintenance {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                     LogServer.LogException("Error Maintenance 2: " + e.getMessage());
                 }
             }

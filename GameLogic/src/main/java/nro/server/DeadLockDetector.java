@@ -1,7 +1,5 @@
 package nro.server;
 
-import nro.server.LogServer;
-
 import java.lang.management.LockInfo;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;

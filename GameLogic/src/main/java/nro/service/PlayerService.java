@@ -1,6 +1,7 @@
 package nro.service;
 
 import nro.model.player.Player;
+import nro.model.player.PlayerStats;
 import nro.network.Message;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
@@ -36,24 +37,74 @@ public class PlayerService {
         }
     }
 
+    /**
+     * <pre>
+     *     {@link #onPlayerLoginSuccess}
+     *     {@code
+     *     Server gửi: [112] => SPEACIAL_SKILL
+     *     Server gửi: [-42] => ME_LOAD_POINT
+     *     Server gửi: [40] => ITEM_SPLIT, TASK_GET
+     *     Server gửi: [-22] => MAP_CLEAR
+     *     Server gửi: [-42] => ME_LOAD_POINT
+     *     Server gửi: [-30] => SUB_COMMAND
+     *     }
+     * </pre>
+     */
     public void onPlayerLoginSuccess(Player player) {
-        /**
-         * Server gửi: [112] => SPEACIAL_SKILL
-         * Server gửi: [-42] => ME_LOAD_POINT
-         * Server gửi: [40] => ITEM_SPLIT, TASK_GET
-         * Server gửi: [-22] => MAP_CLEAR
-         * Server gửi: [-42] => ME_LOAD_POINT
-         * Server gửi: [-30] => SUB_COMMAND
-         */
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
         TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
     }
 
+    /**
+     * <pre>
+     *     {@link #sendPointForMe}
+     *     {@code
+     *   Char.myCharz().cHPGoc = msg.readInt3Byte();
+     *   Char.myCharz().cMPGoc = msg.readInt3Byte();
+     *   Char.myCharz().cDamGoc = msg.reader().readInt();
+     *   Char.myCharz().cHPFull = msg.reader().readLong();
+     *   Char.myCharz().cMPFull = msg.reader().readLong();
+     *   Char.myCharz().cHP = msg.reader().readLong();
+     *   Char.myCharz().cMP = msg.reader().readLong();
+     *   Char.myCharz().cspeed = msg.reader().readByte();
+     *   Char.myCharz().hpFrom1000TiemNang = msg.reader().readByte();
+     *   Char.myCharz().mpFrom1000TiemNang = msg.reader().readByte();
+     *   Char.myCharz().damFrom1000TiemNang = msg.reader().readByte();
+     *   Char.myCharz().cDamFull = msg.reader().readLong();
+     *   Char.myCharz().cDefull = msg.reader().readLong();
+     *   Char.myCharz().cCriticalFull = msg.reader().readByte();
+     *   Char.myCharz().cTiemNang = msg.reader().readLong();
+     *   Char.myCharz().expForOneAdd = msg.reader().readShort();
+     *   Char.myCharz().cDefGoc = msg.reader().readInt();
+     *   Char.myCharz().cCriticalGoc = msg.reader().readByte();
+     *   InfoDlg.hide();
+     *     }
+     * </pre>
+     *
+     */
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
-
+            PlayerStats stats = player.getStats();
+            msg.writer().writeInt(stats.getCHPGoc());
+            msg.writer().writeInt(stats.getCMPGoc());
+            msg.writer().writeInt(stats.getCDamGoc());
+            msg.writer().writeLong(stats.getCHPFull());
+            msg.writer().writeLong(stats.getCMPFull());
+            msg.writer().writeLong(stats.getCHP());
+            msg.writer().writeLong(stats.getCMP());
+            msg.writer().writeByte(stats.getCspeed());
+            msg.writer().writeByte(stats.getHpFrom1000TiemNang());
+            msg.writer().writeByte(stats.getMpFrom1000TiemNang());
+            msg.writer().writeByte(stats.getDamFrom1000TiemNang());
+            msg.writer().writeLong(stats.getCDamFull());
+            msg.writer().writeLong(stats.getCDefull());
+            msg.writer().writeByte(stats.getCCriticalFull());
+            msg.writer().writeLong(stats.getCTiemNang());
+            msg.writer().writeShort(stats.getExpForOneAdd());
+            msg.writer().writeInt(stats.getCDefGoc());
+            msg.writer().writeByte(stats.getCCriticalGoc());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendPointForMe: " + e.getMessage());
@@ -61,8 +112,9 @@ public class PlayerService {
     }
 
     private void sendInfoPlayer(Player player) {
-        try (Message msg = new Message(-30)) {
-            player.sendMessage(msg);
+        try (Message message = new Message(-30)) {
+
+            player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
         }
@@ -143,6 +195,5 @@ public class PlayerService {
         }
         return null;
     }
-
 
 }
