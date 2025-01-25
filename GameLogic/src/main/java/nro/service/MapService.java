@@ -3,6 +3,7 @@ package nro.service;
 import nro.model.player.Player;
 import nro.network.Message;
 import nro.network.Session;
+import nro.server.LogServer;
 
 public class MapService {
 
@@ -48,7 +49,7 @@ public class MapService {
         try (Message message = new Message(-22)) {
             player.sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
+            LogServer.LogException("Error clearMap: " + e.getMessage());
         }
     }
 
