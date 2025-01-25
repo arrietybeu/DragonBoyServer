@@ -1,13 +1,13 @@
 package nro.model.player;
 
-import lombok.Getter;
+import lombok.Data;
 import nro.model.LiveObject;
 import nro.network.Message;
 import nro.network.Session;
 
+@Data
 public class Player extends LiveObject {
 
-    @Getter
     private final Currencies currencies;
     private final PlayerStats stats;
 

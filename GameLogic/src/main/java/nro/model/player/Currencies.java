@@ -64,13 +64,4 @@ public class Currencies {
         return player;
     }
 
-    @Override
-    public String toString() {
-        return "Inventory{" +
-                "player=" + player +
-                ", gold=" + gold +
-                ", gem=" + gem +
-                ", ruby=" + ruby +
-                '}';
-    }
 }

@@ -1,7 +1,6 @@
 package nro.service;
 
 import nro.model.player.Player;
-import nro.model.player.SpeacialSkill;
 import nro.network.Message;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
@@ -48,14 +47,24 @@ public class PlayerService {
          */
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
-
+        TaskService.getInstance().sendTaskMain(player);// 40
+        MapService.clearMap(player);// -22
     }
 
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
+
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendPointForMe: " + e.getMessage());
+        }
+    }
+
+    private void sendInfoPlayer(Player player) {
+        try (Message msg = new Message(-30)) {
+            player.sendMessage(msg);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
         }
     }
 

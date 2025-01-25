@@ -1,5 +1,6 @@
 package nro.service;
 
+import nro.model.player.Player;
 import nro.network.Message;
 import nro.network.Session;
 import nro.server.LogServer;
@@ -14,11 +15,12 @@ public class TaskService {
         return InstanceHolder.instance;
     }
 
-    public void sendTaskMain(Session session) {
+    public void sendTaskMain(Player player) {
         try (Message msg = new Message(40)) {
 
+            player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.DebugLogic("");
+            LogServer.LogException("Error sendTaskMain: " + e.getMessage());
         }
     }
 }
