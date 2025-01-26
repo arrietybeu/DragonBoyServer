@@ -160,7 +160,6 @@ public final class Session {
         } catch (Exception e) {
             LogServer.LogException("Error sendMessage: " + e.getMessage());
             LogServer.DebugLogic("Socket State: isClosed=" + this.socket.isClosed() + ", isConnected=" + this.socket.isConnected());
-            e.printStackTrace();
         }
     }
 

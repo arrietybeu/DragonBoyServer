@@ -20,7 +20,7 @@ public class DataSkill {
             message.writer().writeByte(ConfigServer.VERSION_SKILL);
             message.writer().writeByte(skillOptions.size());// send skill options
             for (var option : skillOptions) {
-                message.writer().writeUTF(option.getName());
+                message.writer().writeUTF(option.name());
             }
             message.writer().writeByte(nClasses.size());// 23
             for (var classSkill : nClasses) {
