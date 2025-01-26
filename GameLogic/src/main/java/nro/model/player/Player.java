@@ -1,10 +1,12 @@
 package nro.model.player;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import nro.model.LiveObject;
 import nro.network.Message;
 import nro.network.Session;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class Player extends LiveObject {
 
@@ -15,7 +17,7 @@ public class Player extends LiveObject {
     private final PlayerTask playerTask;
     private final PlayerFashion playerFashion;
     private final PlayerSkill playerSkill;
-    private final PlayerEquipment playerEquipment;
+    private final PlayerInventory playerInventory;
 
     public Player(Session session) {
         this.session = session;
@@ -24,7 +26,7 @@ public class Player extends LiveObject {
         this.playerTask = new PlayerTask(this);
         this.playerFashion = new PlayerFashion(this);
         this.playerSkill = new PlayerSkill(this);
-        this.playerEquipment = new PlayerEquipment(this);
+        this.playerInventory = new PlayerInventory(this);
     }
 
     public void sendMessage(Message message) {

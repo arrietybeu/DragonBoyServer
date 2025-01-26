@@ -10,7 +10,6 @@ import nro.server.LogServer;
 public class DataSkill {
 
     public static void SendDataSkill(Session session) {
-        System.out.println("SendDataSkill");
         SkillManager skillManager = SkillManager.getInstance();
         var nClasses = skillManager.getNClasses();
         var skillOptions = skillManager.getSkillOptions();

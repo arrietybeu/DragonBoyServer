@@ -52,11 +52,9 @@ public class DataMap {
                 message.writer().writeByte(monster.speed());
                 message.writer().writeByte(monster.dartType());
             }
-            //16
             session.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error updateMapData: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

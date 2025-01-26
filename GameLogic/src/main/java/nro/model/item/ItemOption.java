@@ -1,5 +1,8 @@
 package nro.model.item;
 
+import lombok.Data;
+
+@Data
 public class ItemOption {
 
     public ItemOptionTemplate optionTemplate;

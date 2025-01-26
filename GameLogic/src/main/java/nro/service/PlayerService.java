@@ -1,6 +1,8 @@
 package nro.service;
 
 import nro.consts.ConstMsgSubCommand;
+import nro.model.item.Item;
+import nro.model.item.ItemOption;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.template.entity.SkillInfo;
@@ -12,6 +14,7 @@ import nro.repositories.player.PlayerLoader;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -86,7 +89,6 @@ public class PlayerService {
      *   InfoDlg.hide();
      *     }
      * </pre>
-     *
      */
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
@@ -356,12 +358,46 @@ public class PlayerService {
             message.writer().writeInt(player.getPlayerCurrencies().getGem());
 
             // ============ Send Equipment To Body ============
-            message.writer().writeByte(player.getEquipment().size());
+            List<Item> itemsBody = player.getPlayerInventory().getItemsBody();
+            sendInventoryForPlayer(message, itemsBody);
 
+            // ============ Send Equipment To Bag ============
+
+            List<Item> itemsBag = player.getPlayerInventory().getItemsBag();
+            sendInventoryForPlayer(message, itemsBag);
+
+            // ============ Send Equipment To Box ============
+
+            List<Item> itemsBox = player.getPlayerInventory().getItemsBox();
+            sendInventoryForPlayer(message, itemsBox);
 
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
+        }
+    }
+
+    private void sendInventoryForPlayer(Message message, List<Item> items) throws IOException {
+        message.writer().writeByte(items.size());
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
+            if (item == null) {
+                message.writer().writeShort(-1);
+                continue;
+            }
+            message.writer().writeShort(item.getTemplate().getId());
+            message.writer().writeInt(item.getQuantity());
+            message.writer().writeUTF(item.getInfo());
+            message.writer().writeUTF(item.getContent());
+            message.writer().writeByte(item.getItemOptions().size());
+            for (int j = 0; j < item.getItemOptions().size(); j++) {
+                ItemOption itemOption = item.getItemOptions().get(j);
+                if (itemOption == null) {
+                    continue;
+                }
+                message.writer().writeByte(itemOption.getOptionTemplate().id());
+                message.writer().writeShort(itemOption.getParam());
+            }
         }
     }
 

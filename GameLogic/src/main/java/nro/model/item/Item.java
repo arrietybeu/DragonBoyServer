@@ -1,12 +1,17 @@
 package nro.model.item;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class Item {
 
-    public int quantity;
-    public long createTime;
-    public ItemTemplate template;
-    public List<ItemOption> itemOptions;
+    private int quantity;
+    private long createTime;
+    private ItemTemplate template;
+    private List<ItemOption> itemOptions;
+    private String info;
+    private String content;
 
 }
