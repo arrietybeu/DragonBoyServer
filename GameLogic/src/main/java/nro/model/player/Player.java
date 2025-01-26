@@ -11,7 +11,6 @@ import nro.network.Session;
 public class Player extends LiveObject {
 
     private final Session session;
-
     private final PlayerCurrencies playerCurrencies;
     private final PlayerStats stats;
     private final PlayerTask playerTask;
