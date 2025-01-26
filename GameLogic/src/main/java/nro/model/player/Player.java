@@ -8,15 +8,23 @@ import nro.network.Session;
 @Data
 public class Player extends LiveObject {
 
-    private final Currencies currencies;
-    private final PlayerStats stats;
-
     private final Session session;
+
+    private final PlayerCurrencies playerCurrencies;
+    private final PlayerStats stats;
+    private final PlayerTask playerTask;
+    private final PlayerFashion playerFashion;
+    private final PlayerSkill playerSkill;
+    private final PlayerEquipment playerEquipment;
 
     public Player(Session session) {
         this.session = session;
-        this.currencies = new Currencies(this);
+        this.playerCurrencies = new PlayerCurrencies(this);
         this.stats = new PlayerStats(this);
+        this.playerTask = new PlayerTask(this);
+        this.playerFashion = new PlayerFashion(this);
+        this.playerSkill = new PlayerSkill(this);
+        this.playerEquipment = new PlayerEquipment(this);
     }
 
     public void sendMessage(Message message) {

@@ -1,7 +1,6 @@
 package nro.model.player;
 
 import nro.model.template.skill.SpeacialSkillTemplate;
-import nro.service.SpeacialSkillService;
 
 public class SpeacialSkill {
 

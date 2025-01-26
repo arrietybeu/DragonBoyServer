@@ -1,17 +1,17 @@
 package nro.model.player;
 
-import lombok.Getter;
+import lombok.Data;
 
-public class Currencies {
+@Data
+public class PlayerCurrencies {
 
     private final Player player;
 
-    @Getter
     private long gold;
     private int gem;
     private int ruby;
 
-    public Currencies(Player player) {
+    public PlayerCurrencies(Player player) {
         this.player = player;
     }
 

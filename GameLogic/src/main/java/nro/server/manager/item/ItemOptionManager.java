@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.manager.IManager;
-import nro.model.template.item.ItemOptionTemplate;
+import nro.model.item.ItemOptionTemplate;
 import nro.server.LogServer;
 
 import java.sql.Connection;

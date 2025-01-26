@@ -26,6 +26,8 @@ public class PlayerStats {
     private int cDefGoc;
     private byte cCriticalGoc;
 
+    private long power;
+
     public PlayerStats(Player player) {
         this.player = player;
     }

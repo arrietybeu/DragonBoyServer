@@ -29,7 +29,6 @@ public class PlayerLoader {
                         return this.mapResultSetToPlayer(session, resultSet);
                     }
                 }
-
             }
         } catch (SQLException e) {
             LogServer.LogException("Error loading player for account_id: " + session.getUserInfo().getId() + ", Error: " + e.getMessage());
