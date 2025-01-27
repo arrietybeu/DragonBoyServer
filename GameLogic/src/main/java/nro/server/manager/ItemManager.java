@@ -13,7 +13,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 public class ItemManager implements IManager {
@@ -26,7 +28,7 @@ public class ItemManager implements IManager {
     private static final byte ITEM_ARR_HEAD_2FR = 100;
     private static final byte ITEM_ARR_HEAD_FLYMOVE = 101;
 
-    private final List<ItemTemplate> itemTemplates = new ArrayList<>();
+    private final Map<Short, ItemTemplate> itemTemplates = new HashMap<>();
     private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
     private final List<ItemOptionTemplate> itemOptionTemplates = new ArrayList<>();
 
@@ -68,7 +70,7 @@ public class ItemManager implements IManager {
                     var isUpToUp = resultSet.getBoolean("is_up_top");
 
                     var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, isUpToUp, powerRequire);
-                    this.itemTemplates.add(itemTemplate);
+                    this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
                 LogServer.LogInit("ItemManager initialized size: " + itemTemplates.size());
@@ -127,7 +129,7 @@ public class ItemManager implements IManager {
             message.writer().writeByte(ConfigServer.VERSION_ITEM);
             message.writer().writeByte(ITEM_NORMAL);
             message.writer().writeShort(this.itemTemplates.size());
-            for (ItemTemplate itemTemplate : this.itemTemplates) {
+            for (ItemTemplate itemTemplate : this.itemTemplates.values()) {
                 message.writer().writeByte(itemTemplate.getType());
                 message.writer().writeByte(itemTemplate.getGender());
                 message.writer().writeUTF(itemTemplate.getName());
@@ -179,7 +181,7 @@ public class ItemManager implements IManager {
         if (itemTemplates.isEmpty()) {
             throw new RuntimeException("ItemTemplates is empty");
         }
-        for (ItemTemplate itemTemplate : this.itemTemplates) {
+        for (ItemTemplate itemTemplate : this.itemTemplates.values()) {
             LogServer.DebugLogic(itemTemplate.toString());
         }
     }

@@ -1,13 +1,18 @@
 package nro.repositories.player;
 
 import lombok.Getter;
+import nro.model.item.Item;
 import nro.server.LogServer;
+import nro.service.ItemService;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+@SuppressWarnings("ALL")
 public class PlayerCreator {
 
     @Getter
@@ -15,15 +20,19 @@ public class PlayerCreator {
 
     private static final String INSERT_PLAYER_LOCATION =
             "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) VALUES (?, ?, ?, ?)";
+
     private static final String INSERT_PLAYER_CURRENCIES =
             "INSERT INTO player_currencies (player_id, gold, gem, ruby) VALUES (?, ?, ?, ?)";
+
     private static final String INSERT_PLAYER_POINT =
             "INSERT INTO player_point (player_id, hp, hp_default, mp, mp_default, dame_default, stamina, max_stamina, crit_default, def_default, tiem_nang, power, limit_power, nang_dong) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
     private static final String INSERT_PLAYER_MAGIC_TREE =
             "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
+
     private static final String INSERT_PLAYER_ITEM_BODY =
-            "INSERT INTO player_item_body () VALUES ()";
+            "INSERT INTO player_items_body (player_id, temp_id, quantity, create_time, options) VALUES (?, ?, ?, ?, ?)";
 
     /**
      * Tạo một player mới với các thông tin cơ bản
@@ -80,7 +89,6 @@ public class PlayerCreator {
             stmt.setInt(4, head);
             stmt.registerOutParameter(5, java.sql.Types.INTEGER);
             stmt.execute();
-
             playerId = stmt.getInt(5);
         }
         if (playerId == 0) {
@@ -107,9 +115,9 @@ public class PlayerCreator {
     private void createCurrenciesPlayer(Connection connection, int playerId) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_CURRENCIES)) {
             statement.setInt(1, playerId);
-            statement.setInt(2, 0); // gold
+            statement.setInt(2, 2000); // gold
             statement.setInt(3, 0); // gem
-            statement.setInt(4, 0); // ruby
+            statement.setInt(4, 50); // ruby
             if (statement.executeUpdate() == 0) {
                 LogServer.LogException("No rows were inserted into player_currencies for playerId: " + playerId);
                 throw new SQLException("Failed to insert player currencies.");
@@ -157,10 +165,44 @@ public class PlayerCreator {
 
     private void createItemBodyPlayer(Connection connection, int playerId, byte gender) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_ITEM_BODY)) {
+            List<Item> items = this.initializePlayerItems(gender);
+//            this.savePlayerItems(connection, playerId, items);
             int rows = statement.executeUpdate();
             if (rows == 0) {
                 throw new SQLException("Failed to create item body player.");
             }
         }
     }
+
+    private ArrayList<Item> initializePlayerItems(byte clazz) {
+        ArrayList<Item> items = new ArrayList<>();
+
+        // class[0] = trai dat,
+        // class[1] = sat thu,
+        // class[2] = phap su,
+        // class[3] = xa thu
+
+        short[][] itemIdsByClass = {
+                {0, 80, 120},     // Class 0
+                {5, 105, 145},    // Class 1
+                {10, 90, 130},    // Class 2
+                {15, 95, 135}     // Default
+        };
+
+        short[] itemIds = (clazz >= 0 && clazz <= 2) ? itemIdsByClass[clazz] : itemIdsByClass[3];
+
+        for (short itemId : itemIds) {
+            Item item = this.createAndInitItem(itemId);
+            items.add(item);
+        }
+
+        return items;
+    }
+
+    private Item createAndInitItem(short itemId) {
+        Item item = ItemService.getInstance().createItem(itemId, 1);
+//        ItemService.getInstance().initBaseOptions(item);
+        return item;
+    }
+
 }

@@ -40,7 +40,6 @@ public class DataMap {
                 message.writer().writeShort(npc.body());
                 message.writer().writeShort(npc.leg());
                 message.writer().writeByte(0);
-//                message.writer().writeUTF(npc.menu());
             }
 
             message.writer().writeShort(sizeMonster);
