@@ -59,7 +59,7 @@ public class ResourceService {
                 dataGame.getArrow(),
                 dataGame.getEffect(),
                 dataGame.getImage(),
-                partManager.getData(),
+                partManager.getDataPart(),
                 dataGame.getSkill()};
 //                skillPaintManager.getSkillPaintsData()};
     }
