@@ -1,7 +1,9 @@
 package nro.model.template.entity;
 
+import lombok.Data;
 import nro.model.template.PartImageTemplate;
 
+@Data
 public class PartInfo {
 
     private short id;
@@ -12,35 +14,6 @@ public class PartInfo {
 
     public short getIcon(int index) {
         return pi[index].icon();
-    }
-
-    public short getId() {
-        return id;
-    }
-
-    public byte getType() {
-        return type;
-    }
-
-    public PartImageTemplate[] getPi() {
-        return pi;
-    }
-
-    public void setId(short id) {
-        this.id = id;
-    }
-
-    public void setType(byte type) {
-        this.type = type;
-    }
-
-    public void setPi(PartImageTemplate[] pi) {
-        this.pi = pi;
-    }
-
-    @Override
-    public String toString() {
-        return "PartInfo{id=" + id + ", type=" + type + ", pi=" + pi.length + "}";
     }
 
 }

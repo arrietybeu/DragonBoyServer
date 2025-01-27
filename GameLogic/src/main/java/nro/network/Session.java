@@ -66,7 +66,6 @@ public final class Session {
         } catch (Exception e) {
             this.handleInitializationError();
             LogServer.LogException("Error Session: " + e.getMessage());
-            e.printStackTrace();
         }
 //        LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" + Thread.activeCount());
     }

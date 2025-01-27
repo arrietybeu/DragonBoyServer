@@ -1,21 +1,16 @@
 package nro.service;
 
-import nro.data.DataSkill;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
-import nro.repositories.player.PlayerCreator;
-import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.SessionManager;
 import nro.server.manager.UserManager;
-import nro.server.manager.item.ItemManager;
+import nro.server.manager.ItemManager;
 import nro.server.manager.resources.PartManager;
-import nro.server.manager.skill.SkillManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
 
-import java.sql.Connection;
 import java.util.Scanner;
 
 public class CommandService {
@@ -69,7 +64,7 @@ public class CommandService {
                         PartManager.getInstance().reload();
                         break;
                     case "skill_template":
-                        SkillManager.getInstance().logAllSkills();
+//                        SkillManager.getInstance().logAllSkills();
                         break;
                     case "item_template":
                         ItemManager.getInstance().logItemTemplate();
@@ -83,10 +78,10 @@ public class CommandService {
                         }
                         break;
                     case "create":
-                        Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC);
-                        for (int i = 0; i < 1000; i++) {
-                            PlayerCreator.getInstance().createPlayer(con, 1, "tuanbeo", (byte) 2, 1);
-                        }
+//                        Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC);
+//                        for (int i = 0; i < 1000; i++) {
+//                            PlayerCreator.getInstance().createPlayer(con, 1, "tuanbeo", (byte) 2, 1);
+//                        }
                         break;
                     case "tile_set":
                         for (TileSetTemplate tileSetTemplate : MapManager.getInstance().getTileSetTemplates()) {

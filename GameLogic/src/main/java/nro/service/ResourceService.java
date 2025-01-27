@@ -118,6 +118,20 @@ public class ResourceService {
         }
     }
 
+    public void sendImageRes(Session session, int id) {
+        try (Message message = new Message(-67)) {
+            byte[] data = FileNio.loadDataFile("resources/x" + session.getClientInfo().getZoomLevel() + "/icon/" + id + ".png");
+            message.writer().writeByte(1);
+            message.writer().writeInt(id);
+            assert data != null : "Data Image is null: " + id;
+            message.writer().writeInt(data.length);
+            message.writer().write(data);
+            session.doSendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendImageRes: " + e.getMessage());
+        }
+    }
+
     private void sendNumberOfFiles(Session session, short size) {
         try (Message msg = new Message(-74)) {
             msg.writer().writeByte(1);

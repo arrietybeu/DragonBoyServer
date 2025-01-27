@@ -29,25 +29,18 @@ public class FileNio {
             byte[] ab = CACHE.get(url);
             if (ab == null) {
                 try (FileChannel fileChannel = FileChannel.open(Paths.get(url))) {
-
                     // create a byte buffer with the size of the file
                     ByteBuffer buffer = ByteBuffer.allocate((int) fileChannel.size());
-
                     // doc du lieu tu file channel vao buffer
                     fileChannel.read(buffer);
-
                     //change type byte buffer chuyen sang read mode
                     buffer.flip();
-
                     // tao mang byte de chua du lieu tu buffer
                     ab = new byte[buffer.remaining()];
-
                     // copy du lieu tu buffer vao mang byte
                     buffer.get(ab);
-
                     // luu tru du lieu vao cache de lan sau khong can doc lai tu file
                     CACHE.put(url, ab);
-
                 }
             }
             return ab;

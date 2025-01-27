@@ -1,7 +1,5 @@
 package nro.server.manager;
 
-import nro.server.manager.item.ItemManager;
-import nro.server.manager.item.ItemOptionManager;
 import nro.server.manager.resources.PartManager;
 import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SkillManager;
@@ -23,7 +21,6 @@ public class ManagerRegistry {
         MANAGERS.add(MapManager.getInstance());
         MANAGERS.add(SkillManager.getInstance());
         MANAGERS.add(SkillPaintManager.gI());
-        MANAGERS.add(ItemOptionManager.getInstance());
         MANAGERS.add(ItemManager.getInstance());
         MANAGERS.add(CaptionManager.getInstance());
     }
@@ -34,7 +31,6 @@ public class ManagerRegistry {
                 manager.init();
             } catch (Exception e) {
                 LogServer.LogException("Error initializing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
@@ -45,7 +41,6 @@ public class ManagerRegistry {
                 manager.reload();
             } catch (Exception e) {
                 LogServer.LogException("Error reloading manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
@@ -56,7 +51,6 @@ public class ManagerRegistry {
                 manager.clear();
             } catch (Exception e) {
                 LogServer.LogException("Error clearing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }

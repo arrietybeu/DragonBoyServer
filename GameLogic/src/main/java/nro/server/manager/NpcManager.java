@@ -16,7 +16,6 @@ public class NpcManager implements IManager {
 
     @Getter
     private static final NpcManager instance = new NpcManager();
-
     private final List<NpcTemplate> NPC_TEMPLATE = new ArrayList<>();
 
     @Override
@@ -37,22 +36,24 @@ public class NpcManager implements IManager {
 
     private void loadNpcTemplates() {
         String query = "SELECT * FROM npc_template";
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = conn.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
+        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            assert conn != null : "Connection is null";
+            try (PreparedStatement ps = conn.prepareStatement(query);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
 
-                var id = rs.getInt("id");
-                var name = rs.getString("name");
-                var head = rs.getShort("head");
-                var body = rs.getShort("body");
-                var leg = rs.getShort("leg");
-                var menu = rs.getString("menu");
+                    var id = rs.getInt("id");
+                    var name = rs.getString("name");
+                    var head = rs.getShort("head");
+                    var body = rs.getShort("body");
+                    var leg = rs.getShort("leg");
+                    var menu = rs.getString("menu");
 
-                NpcTemplate template = new NpcTemplate(id, name, head, body, leg, menu);
-                this.NPC_TEMPLATE.add(template);
+                    NpcTemplate template = new NpcTemplate(id, name, head, body, leg, menu);
+                    this.NPC_TEMPLATE.add(template);
+                }
+                LogServer.LogInit("NpcManager initialized size: " + NPC_TEMPLATE.size());
             }
-            LogServer.LogInit("NpcManager initialized size: " + NPC_TEMPLATE.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadNpcTemplates: " + e.getMessage());
         }

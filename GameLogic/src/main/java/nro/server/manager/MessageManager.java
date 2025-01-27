@@ -8,23 +8,23 @@ public class MessageManager {
 
     private static final ConcurrentHashMap<Integer, Message> cache = new ConcurrentHashMap<>();
 
-    public Message get(Integer key) {
+    public static Message get(Integer key) {
         return cache.get(key);
     }
 
-    public void put(Integer key, Message value) {
+    public static void put(Integer key, Message value) {
         cache.put(key, value);
     }
 
-    public boolean contains(Integer key) {
+    public static boolean contains(Integer key) {
         return cache.containsKey(key);
     }
 
-    public void remove(Integer key) {
+    public static void remove(Integer key) {
         cache.remove(key);
     }
 
-    public void clear() {
+    public static void clear() {
         cache.clear();
     }
 }

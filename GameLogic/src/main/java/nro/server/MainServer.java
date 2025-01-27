@@ -54,7 +54,7 @@ public class MainServer {
             ActiveDeadLockDetector();
             MainServer.gI().run();
         } catch (Exception e) {
-            e.printStackTrace();
+            LogServer.LogException("Error main: " + e.getMessage());
         }
     }
 
@@ -64,7 +64,7 @@ public class MainServer {
             this.startGame();
             this.startServerSocket();// tao 1 luong quan ly ket noi, 1 session = 2 luong
         } catch (Exception e) {
-            e.printStackTrace();
+            LogServer.LogException("Error run: " + e.getMessage());
         }
     }
 
@@ -90,7 +90,6 @@ public class MainServer {
                         break;
                     } catch (Exception e) {
                         LogServer.LogException("Error in client connection: " + e.getMessage());
-                        e.printStackTrace();
                     }
                 }
             } catch (IOException e) {

@@ -35,6 +35,7 @@ public class Manager {
             ManagerRegistry.initAll();
         } catch (Exception e) {
             LogServer.LogException("Error loadDataBase: " + e.getMessage());
+            System.exit(0);
             MainServer.gI().close();
         } finally {
             System.gc();
