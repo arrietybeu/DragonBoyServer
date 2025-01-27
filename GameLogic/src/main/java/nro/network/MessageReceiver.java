@@ -22,6 +22,7 @@ public final class MessageReceiver {
     private long lastMessageTimestamp;
     private int messageCount = 0;
 
+
     public MessageReceiver(Session session, DataInputStream dis) {
         this.session = session;
         this.dis = dis;
