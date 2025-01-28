@@ -9,7 +9,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
@@ -32,7 +31,7 @@ public class PlayerCreator {
             "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
 
     private static final String INSERT_PLAYER_ITEM_BODY =
-            "INSERT INTO player_items_body (player_id, temp_id, quantity, create_time, options) VALUES (?, ?, ?, ?, ?)";
+            "INSERT INTO player_items_body (player_id, temp_id, quantity, options) VALUES (?, ?, ?, ?)";
 
     /**
      * Tạo một player mới với các thông tin cơ bản
@@ -50,9 +49,7 @@ public class PlayerCreator {
         var ms = System.currentTimeMillis();
         try {
             connection.setAutoCommit(false);
-
             int playerId = this.createPlayerBase(connection, accountId, name, gender, hair);
-
             if (playerId > 0) {
                 this.createCurrenciesPlayer(connection, playerId);
 
@@ -62,8 +59,11 @@ public class PlayerCreator {
 
                 this.createMagicTreePlayer(connection, playerId);
 
+                this.createItemBodyPlayer(connection, playerId, gender);
+
                 connection.commit();
-                LogServer.DebugLogic("Time create player: " + (System.currentTimeMillis() - ms) + " ms");
+                LogServer.DebugLogic("Time create player name: " + name + " times: "
+                        + (System.currentTimeMillis() - ms) + " ms");
                 return true;
             } else {
                 connection.rollback();
@@ -81,6 +81,7 @@ public class PlayerCreator {
     }
 
     private int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head) throws SQLException {
+        var ms = System.currentTimeMillis();
         int playerId;
         try (CallableStatement stmt = connection.prepareCall("{CALL `CreatePlayerBase`(?, ?, ?, ?, ?)}")) {
             stmt.setInt(1, accountId);
@@ -94,6 +95,7 @@ public class PlayerCreator {
         if (playerId == 0) {
             throw new SQLException("Failed to create player.");
         }
+        LogServer.DebugLogic("Time create player base: " + (System.currentTimeMillis() - ms) + " ms");
 
         return playerId;
     }
@@ -164,14 +166,17 @@ public class PlayerCreator {
     }
 
     private void createItemBodyPlayer(Connection connection, int playerId, byte gender) throws SQLException {
+        List<Item> items = ItemService.initializePlayerItems(gender);
+        if (items.isEmpty()) {
+            throw new SQLException("Failed to initialize player items id: " + playerId);
+        }
         try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_ITEM_BODY)) {
-            List<Item> items = this.initializePlayerItems(gender);
             for (Item item : items) {
-//                statement.setInt(1, playerId);
-//                statement.setInt(2, item.getTempId());
-//                statement.setInt(3, item.getQuantity());
-//                statement.setLong(4, System.currentTimeMillis());
-//                statement.setString(5, item.getOptions());
+                statement.setInt(1, playerId);
+                statement.setInt(2, item.getTemplate().id());
+                statement.setInt(3, item.getQuantity());
+                statement.setString(4, item.getJsonOptions());
+                statement.addBatch();
             }
             int rows = statement.executeUpdate();
             if (rows == 0) {
@@ -179,41 +184,4 @@ public class PlayerCreator {
             }
         }
     }
-
-    public static ArrayList<Item> initializePlayerItems(byte clazz) throws RuntimeException {
-        ArrayList<Item> items = new ArrayList<>();
-
-        // class[0] = trai dat,
-        // class[1] = namec,
-        // class[2] = xayda,
-
-        short[][] itemIdsByClass = {
-                {0, 6},
-                {1, 7},
-                {2, 8}
-        };
-
-        if (clazz < 0 || clazz > itemIdsByClass.length) {
-            return items;
-        }
-
-        short[] itemIds = itemIdsByClass[clazz];
-
-        for (short itemId : itemIds) {
-            Item item = createAndInitItem(itemId);
-            if (item != null) {
-                items.add(item);
-            } else {
-                throw new RuntimeException("Failed to create item id: " + itemId);
-            }
-        }
-        return items;
-    }
-
-    private static Item createAndInitItem(short itemId) {
-        Item item = ItemService.getInstance().createItem(itemId, 1);
-        ItemService.getInstance().initBaseOptions(item);
-        return item;
-    }
-
 }

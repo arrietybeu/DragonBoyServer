@@ -2,6 +2,7 @@ package nro.model.item;
 
 import lombok.Data;
 import nro.server.manager.ItemManager;
+import org.json.simple.JSONArray;
 
 @Data
 public class ItemOption {
@@ -23,16 +24,6 @@ public class ItemOption {
         this.param = param;
     }
 
-    public static ItemOption getItemOptionBase(short idItem) {
-        ItemTemplate base = itemManager.getItemTemplates().get(idItem);
-        for (ItemOption option : base.options()) {
-            System.out.println(option.toString() + " " + getNameOption(option.id));
-            return option;
-        }
-        return null;
-    }
+    // get option string
 
-    public static String getNameOption(int id) {
-        return itemManager.getItemOptionTemplates().get((short) id).name();
-    }
 }

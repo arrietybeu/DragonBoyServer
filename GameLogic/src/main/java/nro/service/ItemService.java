@@ -6,6 +6,8 @@ import nro.model.item.ItemOption;
 import nro.model.item.ItemTemplate;
 import nro.server.manager.ItemManager;
 
+import java.util.ArrayList;
+
 public class ItemService {
 
     @Getter
@@ -29,8 +31,44 @@ public class ItemService {
 
     public void initBaseOptions(Item item) throws RuntimeException {
         item.getItemOptions().clear();
-        for (int i = 0; i < item.getTemplate().options().size(); i++) {
-            item.getItemOptions().add(ItemOption.getItemOptionBase(item.getTemplate().id()));
+        for (ItemOption option : item.getTemplate().options()) {
+            item.getItemOptions().add(option);
         }
+    }
+
+    public static ArrayList<Item> initializePlayerItems(byte clazz) throws RuntimeException {
+        ArrayList<Item> items = new ArrayList<>();
+
+        // class[0] = trai dat,
+        // class[1] = namec,
+        // class[2] = xayda,
+
+        short[][] itemIdsByClass = {
+                {0, 6},
+                {1, 7},
+                {2, 8}
+        };
+
+        if (clazz < 0 || clazz > itemIdsByClass.length) {
+            return items;
+        }
+
+        short[] itemIds = itemIdsByClass[clazz];
+
+        for (short itemId : itemIds) {
+            Item item = createAndInitItem(itemId);
+            if (item != null) {
+                items.add(item);
+            } else {
+                throw new RuntimeException("Failed to create item id: " + itemId);
+            }
+        }
+        return items;
+    }
+
+    private static Item createAndInitItem(short itemId) {
+        Item item = ItemService.getInstance().createItem(itemId, 1);
+        ItemService.getInstance().initBaseOptions(item);
+        return item;
     }
 }

@@ -1,10 +1,12 @@
 package nro.service;
 
+import nro.data.DataSkill;
 import nro.model.item.Item;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
 import nro.repositories.player.PlayerCreator;
+import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.SessionManager;
 import nro.server.manager.UserManager;
@@ -13,6 +15,7 @@ import nro.server.manager.resources.PartManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -81,10 +84,10 @@ public class CommandService {
                         }
                         break;
                     case "create":
-//                        Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC);
-//                        for (int i = 0; i < 1000; i++) {
-//                            PlayerCreator.getInstance().createPlayer(con, 1, "tuanbeo", (byte) 2, 1);
-//                        }
+                        Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC);
+                        for (int i = 0; i < 1000; i++) {
+                            PlayerCreator.getInstance().createPlayer(con, 1, "tuanbeo", (byte) 2, 1);
+                        }
                         break;
                     case "tile_set":
                         for (TileSetTemplate tileSetTemplate : MapManager.getInstance().getTileSetTemplates()) {
@@ -95,9 +98,9 @@ public class CommandService {
 //                        DataSkill.SendDataSkill();
                         break;
                     case "create_item":
-                        List<Item> items = PlayerCreator.initializePlayerItems((byte) 0);
+                        List<Item> items = ItemService.initializePlayerItems((byte) 0);
                         for(var item : items) {
-                            System.out.println("id item:" + item.getTemplate().id() + "- name item: " + item.getTemplate().name() + " options: " + item.getItemOptions().toString());
+                            System.out.println(item.getJsonOptions());
                         }
                         break;
                     default:
