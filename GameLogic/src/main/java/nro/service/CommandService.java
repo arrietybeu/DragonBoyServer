@@ -1,8 +1,10 @@
 package nro.service;
 
+import nro.model.item.Item;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
+import nro.repositories.player.PlayerCreator;
 import nro.server.manager.MapManager;
 import nro.server.manager.SessionManager;
 import nro.server.manager.UserManager;
@@ -11,6 +13,7 @@ import nro.server.manager.resources.PartManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class CommandService {
@@ -90,6 +93,12 @@ public class CommandService {
                         break;
                     case "data_skill":
 //                        DataSkill.SendDataSkill();
+                        break;
+                    case "create_item":
+                        List<Item> items = PlayerCreator.initializePlayerItems((byte) 0);
+                        for(var item : items) {
+                            System.out.println("id item:" + item.getTemplate().id() + "- name item: " + item.getTemplate().name() + " options: " + item.getItemOptions().toString());
+                        }
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

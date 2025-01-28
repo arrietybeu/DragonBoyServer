@@ -124,7 +124,7 @@ public class SkillPaintManager implements IManager {
         try (Message ms = new Message()) {
             try (DataOutputStream dataOutputStream = ms.writer()) {
                 dataOutputStream.writeShort(skillPaintList.size());
-                System.out.println("skillPaintList.size(): " + skillPaintList.size());
+//                System.out.println("skillPaintList.size(): " + skillPaintList.size());
                 for (SkillPaint skillPaint : skillPaintList) {
                     dataOutputStream.writeShort(skillPaint.id);
                     dataOutputStream.writeShort(skillPaint.effectHappenOnMob);

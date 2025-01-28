@@ -166,7 +166,13 @@ public class PlayerCreator {
     private void createItemBodyPlayer(Connection connection, int playerId, byte gender) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_ITEM_BODY)) {
             List<Item> items = this.initializePlayerItems(gender);
-//            this.savePlayerItems(connection, playerId, items);
+            for (Item item : items) {
+//                statement.setInt(1, playerId);
+//                statement.setInt(2, item.getTempId());
+//                statement.setInt(3, item.getQuantity());
+//                statement.setLong(4, System.currentTimeMillis());
+//                statement.setString(5, item.getOptions());
+            }
             int rows = statement.executeUpdate();
             if (rows == 0) {
                 throw new SQLException("Failed to create item body player.");
@@ -174,34 +180,39 @@ public class PlayerCreator {
         }
     }
 
-    private ArrayList<Item> initializePlayerItems(byte clazz) {
+    public static ArrayList<Item> initializePlayerItems(byte clazz) throws RuntimeException {
         ArrayList<Item> items = new ArrayList<>();
 
         // class[0] = trai dat,
-        // class[1] = sat thu,
-        // class[2] = phap su,
-        // class[3] = xa thu
+        // class[1] = namec,
+        // class[2] = xayda,
 
         short[][] itemIdsByClass = {
-                {0, 80, 120},     // Class 0
-                {5, 105, 145},    // Class 1
-                {10, 90, 130},    // Class 2
-                {15, 95, 135}     // Default
+                {0, 6},
+                {1, 7},
+                {2, 8}
         };
 
-        short[] itemIds = (clazz >= 0 && clazz <= 2) ? itemIdsByClass[clazz] : itemIdsByClass[3];
-
-        for (short itemId : itemIds) {
-            Item item = this.createAndInitItem(itemId);
-            items.add(item);
+        if (clazz < 0 || clazz > itemIdsByClass.length) {
+            return items;
         }
 
+        short[] itemIds = itemIdsByClass[clazz];
+
+        for (short itemId : itemIds) {
+            Item item = createAndInitItem(itemId);
+            if (item != null) {
+                items.add(item);
+            } else {
+                throw new RuntimeException("Failed to create item id: " + itemId);
+            }
+        }
         return items;
     }
 
-    private Item createAndInitItem(short itemId) {
+    private static Item createAndInitItem(short itemId) {
         Item item = ItemService.getInstance().createItem(itemId, 1);
-//        ItemService.getInstance().initBaseOptions(item);
+        ItemService.getInstance().initBaseOptions(item);
         return item;
     }
 

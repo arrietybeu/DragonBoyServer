@@ -174,7 +174,7 @@ public class PlayerService {
                 message.writer().writeShort(-1);
                 continue;
             }
-            message.writer().writeShort(item.getTemplate().getId());
+            message.writer().writeShort(item.getTemplate().id());
             message.writer().writeInt(item.getQuantity());
             message.writer().writeUTF(item.getInfo());
             message.writer().writeUTF(item.getContent());

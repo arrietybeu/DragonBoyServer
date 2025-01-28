@@ -5,8 +5,10 @@
 package nro.server;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -154,7 +156,7 @@ public class MainServer {
     }
 
     public static void Config() {
-//        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
 
         ((Logger) LoggerFactory.getLogger("org.reflections")).setLevel(Level.ERROR);
         ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari")).setLevel(Level.ERROR);

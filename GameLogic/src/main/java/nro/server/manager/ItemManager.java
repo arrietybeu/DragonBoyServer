@@ -1,6 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
+import nro.model.item.ItemOption;
 import nro.model.item.ItemOptionTemplate;
 import nro.network.Message;
 import nro.server.config.ConfigDB;
@@ -8,6 +9,8 @@ import nro.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
 import nro.model.item.ItemTemplate;
 import nro.server.LogServer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,7 +33,7 @@ public class ItemManager implements IManager {
 
     private final Map<Short, ItemTemplate> itemTemplates = new HashMap<>();
     private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
-    private final List<ItemOptionTemplate> itemOptionTemplates = new ArrayList<>();
+    private final Map<Short, ItemOptionTemplate> itemOptionTemplates = new HashMap<>();
 
     private byte[] dataItemTemplate;
     private byte[] dataItemOption;
@@ -68,8 +71,33 @@ public class ItemManager implements IManager {
                     var iconID = resultSet.getShort("icon_id");
                     var part = resultSet.getShort("part");
                     var isUpToUp = resultSet.getBoolean("is_up_top");
+                    var options = resultSet.getString("options");
 
-                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, isUpToUp, powerRequire);
+                    List<ItemOption> itemOptions = new ArrayList<>();
+                    JSONArray dataArray = (JSONArray) JSONValue.parse(options);
+                    if (dataArray == null) {
+                        throw new RuntimeException("Error load options item id: " + id);
+                    }
+                    for (Object o : dataArray) {
+                        JSONArray opt = (JSONArray) o;
+                        var idOption = Integer.parseInt(String.valueOf(opt.get(0)));
+                        var param = Integer.parseInt(String.valueOf(opt.get(1)));
+                        itemOptions.add(new ItemOption(idOption, param));
+                    }
+
+                    var itemTemplate = new ItemTemplate(
+                            id,
+                            type,
+                            gender,
+                            name,
+                            description,
+                            level,
+                            iconID,
+                            part,
+                            isUpToUp,
+                            powerRequire,
+                            itemOptions
+                    );
                     this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
@@ -77,6 +105,7 @@ public class ItemManager implements IManager {
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadItem: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -89,7 +118,7 @@ public class ItemManager implements IManager {
                 var name = rs.getString("name");
                 var type = rs.getInt("type");
                 ItemOptionTemplate itemOptionManager = new ItemOptionTemplate(id, name, type);
-                this.itemOptionTemplates.add(itemOptionManager);
+                this.itemOptionTemplates.put((short) id, itemOptionManager);
             }
             this.setItemOption();
             LogServer.LogInit("ItemOptionManager initialized size: " + this.itemOptionTemplates.size());
@@ -130,14 +159,14 @@ public class ItemManager implements IManager {
             message.writer().writeByte(ITEM_NORMAL);
             message.writer().writeShort(this.itemTemplates.size());
             for (ItemTemplate itemTemplate : this.itemTemplates.values()) {
-                message.writer().writeByte(itemTemplate.getType());
-                message.writer().writeByte(itemTemplate.getGender());
-                message.writer().writeUTF(itemTemplate.getName());
-                message.writer().writeUTF(itemTemplate.getDescription());
-                message.writer().writeByte(itemTemplate.getLevel());
-                message.writer().writeInt(itemTemplate.getStrRequire());
-                message.writer().writeShort(itemTemplate.getIconID());
-                message.writer().writeShort(itemTemplate.getPart());
+                message.writer().writeByte(itemTemplate.type());
+                message.writer().writeByte(itemTemplate.gender());
+                message.writer().writeUTF(itemTemplate.name());
+                message.writer().writeUTF(itemTemplate.description());
+                message.writer().writeByte(itemTemplate.level());
+                message.writer().writeInt(itemTemplate.strRequire());
+                message.writer().writeShort(itemTemplate.iconID());
+                message.writer().writeShort(itemTemplate.part());
                 message.writer().writeBoolean(itemTemplate.isUpToUp());
             }
             this.dataItemTemplate = message.getData();
@@ -151,7 +180,7 @@ public class ItemManager implements IManager {
             message.writer().writeByte(ITEM_OPTION);
             message.writer().writeByte(0); //update option
             message.writer().writeShort(itemOptionTemplates.size());// dis true
-            for (ItemOptionTemplate itemOptionTemplate : itemOptionTemplates) {
+            for (ItemOptionTemplate itemOptionTemplate : itemOptionTemplates.values()) {
                 message.writer().writeUTF(itemOptionTemplate.name());
                 message.writer().writeByte(itemOptionTemplate.type());
             }

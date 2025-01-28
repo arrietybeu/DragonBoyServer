@@ -2,6 +2,7 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.item.Item;
+import nro.model.item.ItemOption;
 import nro.model.item.ItemTemplate;
 import nro.server.manager.ItemManager;
 
@@ -9,6 +10,8 @@ public class ItemService {
 
     @Getter
     private final static ItemService instance = new ItemService();
+
+    private final static ItemManager itemManager = ItemManager.getInstance();
 
     public Item createItem(short tempId, int quantity) {
         Item item = new Item();
@@ -21,7 +24,13 @@ public class ItemService {
     }
 
     public ItemTemplate getTemplate(short id) {
-        return ItemManager.getInstance().getItemTemplates().get(id);
+        return itemManager.getItemTemplates().get(id);
     }
 
+    public void initBaseOptions(Item item) throws RuntimeException {
+        item.getItemOptions().clear();
+        for (int i = 0; i < item.getTemplate().options().size(); i++) {
+            item.getItemOptions().add(ItemOption.getItemOptionBase(item.getTemplate().id()));
+        }
+    }
 }
