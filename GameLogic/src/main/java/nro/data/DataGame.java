@@ -9,8 +9,6 @@ public class DataGame {
 
     private static DataGame instance;
 
-    public static final byte VERSION_DATA = 1;
-
     private static final Map<String, byte[]> DATA = new ConcurrentHashMap<>();
 
     private static final String BASE_PATH = "resources/data/update_data/";

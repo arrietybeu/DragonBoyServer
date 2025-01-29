@@ -13,7 +13,6 @@ public class DataItem {
     @Getter
     private static final DataItem instance = new DataItem();
 
-
     public void sendDataItem(Session session) {
         this.sendItemOptions(session);
         this.sendItemTemplate(session);

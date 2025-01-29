@@ -229,7 +229,6 @@ public class PlayerService {
                     Service.dialogMessage(session, "Tạo nhân vật thất bại.");
                 }
                 return isCreated;
-
             }
         } catch (SQLException e) {
             LogServer.LogException(String.format(

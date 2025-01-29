@@ -10,6 +10,5 @@ public class GetEffectDataHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
-
     }
 }

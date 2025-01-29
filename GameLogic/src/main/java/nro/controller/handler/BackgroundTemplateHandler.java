@@ -17,7 +17,6 @@ public class BackgroundTemplateHandler implements IMessageProcessor {
             ResourceService.getInstance().sendDataBackgroundMap(session, id);
         } catch (Exception e) {
             LogServer.LogException("Error in BackgroundTemplateHandler: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }
