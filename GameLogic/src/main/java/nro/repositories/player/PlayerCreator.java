@@ -17,22 +17,6 @@ public class PlayerCreator {
     @Getter
     private static final PlayerCreator instance = new PlayerCreator();
 
-    private static final String INSERT_PLAYER_LOCATION =
-            "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) VALUES (?, ?, ?, ?)";
-
-    private static final String INSERT_PLAYER_CURRENCIES =
-            "INSERT INTO player_currencies (player_id, gold, gem, ruby) VALUES (?, ?, ?, ?)";
-
-    private static final String INSERT_PLAYER_POINT =
-            "INSERT INTO player_point (player_id, hp, hp_default, mp, mp_default, dame_default, stamina, max_stamina, crit_default, def_default, tiem_nang, power, limit_power, nang_dong) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    private static final String INSERT_PLAYER_MAGIC_TREE =
-            "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
-
-    private static final String INSERT_PLAYER_ITEM_BODY =
-            "INSERT INTO player_items_body (player_id, temp_id, quantity, options) VALUES (?, ?, ?, ?)";
-
     /**
      * Tạo một player mới với các thông tin cơ bản
      *
@@ -101,7 +85,8 @@ public class PlayerCreator {
     }
 
     private void createLocationPlayer(Connection connection, int playerId, byte gender) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_LOCATION)) {
+        String query = "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
             statement.setInt(2, 100); // pos_x
             statement.setInt(3, 384); // pos_y
@@ -115,7 +100,8 @@ public class PlayerCreator {
     }
 
     private void createCurrenciesPlayer(Connection connection, int playerId) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_CURRENCIES)) {
+        String query = "INSERT INTO player_currencies (player_id, gold, gem, ruby) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
             statement.setInt(2, 2000); // gold
             statement.setInt(3, 0); // gem
@@ -128,7 +114,9 @@ public class PlayerCreator {
     }
 
     private void createPlayerPoint(Connection connection, int playerId, byte gender) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_POINT)) {
+        String query = "INSERT INTO player_point (player_id, hp, hp_default, mp, mp_default, dame_default, stamina, max_stamina, crit_default, def_default, tiem_nang, power, limit_power, nang_dong) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
             statement.setInt(2, gender == 1 ? 200 : 100); // hp
             statement.setInt(3, gender == 1 ? 200 : 100); // hp_default
@@ -151,7 +139,8 @@ public class PlayerCreator {
     }
 
     private void createMagicTreePlayer(Connection connection, int playerId) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_MAGIC_TREE)) {
+        String query =  "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
             statement.setInt(2, 0); // is_upgrade
             statement.setLong(3, System.currentTimeMillis()); // time_upgrade
@@ -170,7 +159,8 @@ public class PlayerCreator {
         if (items.isEmpty()) {
             throw new SQLException("Failed to initialize player items id: " + playerId);
         }
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PLAYER_ITEM_BODY)) {
+        String query = "INSERT INTO player_items_body (player_id, temp_id, quantity, options) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (Item item : items) {
                 statement.setInt(1, playerId);
                 statement.setInt(2, item.getTemplate().id());
@@ -181,6 +171,23 @@ public class PlayerCreator {
             int rows = statement.executeUpdate();
             if (rows == 0) {
                 throw new SQLException("Failed to create item body player.");
+            }
+        }
+    }
+
+    private void createPlayerTask(Connection connection, int playerId) throws SQLException {
+        String query = "INSERT INTO player_task (player_id, task_id, task_type, task_level, task_status, task_time, task_count) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, playerId);
+            statement.setInt(2, 1); // task_id
+            statement.setInt(3, 1); // task_type
+            statement.setInt(4, 1); // task_level
+            statement.setInt(5, 0); // task_status
+            statement.setLong(6, System.currentTimeMillis()); // task_time
+            statement.setInt(7, 0); // task_count
+            if (statement.executeUpdate() == 0) {
+                LogServer.LogException("No rows were inserted into player_task for playerId: " + playerId);
+                throw new SQLException("Failed to insert player task.");
             }
         }
     }

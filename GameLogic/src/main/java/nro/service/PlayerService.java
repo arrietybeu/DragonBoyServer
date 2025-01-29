@@ -168,8 +168,7 @@ public class PlayerService {
 
     private void sendInventoryForPlayer(Message message, List<Item> items) throws IOException {
         message.writer().writeByte(items.size());
-        for (int i = 0; i < items.size(); i++) {
-            Item item = items.get(i);
+        for (Item item : items) {
             if (item == null) {
                 message.writer().writeShort(-1);
                 continue;
