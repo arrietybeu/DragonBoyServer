@@ -8,10 +8,7 @@ import nro.service.Service;
 import nro.server.manager.SessionManager;
 import nro.server.LogServer;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 
 @SuppressWarnings("ALL")
 public class AccountRepository {
@@ -45,17 +42,22 @@ public class AccountRepository {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         Service.dialogMessage(userInfo.getSession(), "Thông tin đăng nhập không chính xác");
-
                         return false;
                     } else {
-                        UserInfo plOnline = UserManager.getInstance().get(userInfo.getId());
-                        if (plOnline != null) {
-                            Service.dialogMessage(plOnline.getSession(), "Bạn hiện tại không thể vào Account\nkhi có người đang trong Account của bạn");
-                            Service.dialogMessage(userInfo.getSession(), "Bạn hiện tại không thể vào Account\nkhi có người đang trong Account của bạn");
-                            SessionManager.gI().kickSession(plOnline.getSession());
-                            return false;
-                        }
                         userInfo.setId(rs.getInt("id"));
+
+//                        UserInfo plOnline = UserManager.getInstance().get(userInfo.getId());
+//                        System.out.println("plOnline: " + plOnline);
+//                        if (plOnline != null) {
+//                            Service.dialogMessage(plOnline.getSession(), "Bạn hiện tại không thể vào Account\nkhi có người đang trong Account của bạn");
+//                            Service.dialogMessage(userInfo.getSession(), "Bạn hiện tại không thể vào Account\nkhi có người đang trong Account của bạn");
+//                            try {
+//                                Thread.sleep(1000);
+//                            } catch (Exception ignored) {
+//                            }
+//                            return false;
+//                        }
+
                         userInfo.setAdmin(rs.getBoolean("is_admin"));
                         userInfo.setActive(rs.getBoolean("active"));
                         userInfo.setLastTimeLogin(rs.getTimestamp("last_time_login").getTime());
@@ -66,9 +68,9 @@ public class AccountRepository {
                             Service.dialogMessage(userInfo.getSession(), "Tài khoản đã bị khóa vì có hành vi xấu ảnh hưởng server");
                             return false;
                         }
-
                     }
                 }
+                updateAccount(conn, userInfo);
             } catch (Exception e) {
                 LogServer.LogException("Error checkAccount: " + e.getMessage());
                 e.printStackTrace();
@@ -77,27 +79,22 @@ public class AccountRepository {
             LogServer.LogException("Error checkAccount: " + e.getMessage());
             e.printStackTrace();
         }
+
         return true;
     }
 
-    public void updateAccount(UserInfo userInfo) {
+    public void updateAccount(Connection con, UserInfo userInfo) throws SQLException {
         String query = "UPDATE account SET ip_address = ?, last_time_login = ? WHERE id = ?;";
 
-        try (Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "saveIP")) {
-            if (con == null) {
-                LogServer.LogException("Connection is null in updateAccount");
-                return;
-            }
+        if (con == null) {
+            throw new SQLException("Connection is null in updateAccount");
+        }
 
-            try (PreparedStatement ps = con.prepareStatement(query)) {
-                ps.setString(1, userInfo.getSession().getSessionInfo().getIp());
-                ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
-                ps.setInt(3, userInfo.getId());
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            LogServer.LogException("Error updating account: " + e.getMessage());
-            e.printStackTrace();
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, userInfo.getSession().getSessionInfo().getIp());
+            ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            ps.setInt(3, userInfo.getId());
+            ps.executeUpdate();
         }
     }
 

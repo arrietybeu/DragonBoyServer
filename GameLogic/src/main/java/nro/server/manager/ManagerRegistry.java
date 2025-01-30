@@ -5,6 +5,7 @@ import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SkillManager;
 import nro.server.manager.skill.SkillPaintManager;
 import nro.server.LogServer;
+import nro.server.manager.skill.SpeacialSkillManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ManagerRegistry {
         MANAGERS.add(SkillPaintManager.gI());
         MANAGERS.add(ItemManager.getInstance());
         MANAGERS.add(CaptionManager.getInstance());
+        MANAGERS.add(SpeacialSkillManager.getInstance());
     }
 
     public static void initAll() {

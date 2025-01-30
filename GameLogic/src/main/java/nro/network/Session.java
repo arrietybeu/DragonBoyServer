@@ -23,9 +23,15 @@ import nro.server.LogServer;
  * @author {@code Arriety}
  */
 //@SuppressWarnings("ALL")
+@Getter
+@Setter
 public final class Session {
 
     private static int baseId = 0;// trường dữ liệu duy nhất của session
+
+    private final Controller controller;
+    private final ClientInfo clientInfo;
+    private final SessionInfo sessionInfo;
 
     public ConcurrentLinkedQueue<Message> list_msg;// new Message(tat)
     public ExecutorService executorService;
@@ -33,20 +39,7 @@ public final class Session {
     private MessageSender messageSender;
     private MessageReceiver messageReceiver;
 
-    @Getter
-    private final Controller controller;
-
-    @Getter
-    private final ClientInfo clientInfo;
-
-    @Getter
-    private final SessionInfo sessionInfo;
-
-    @Getter
-    @Setter
     private UserInfo userInfo;
-    @Getter
-    @Setter
     private Player player;
 
     public Session(Socket socket, Controller controller) {
@@ -231,7 +224,7 @@ public final class Session {
                 list_msg.clear();
             }
 
-            if (userInfo != null) {
+            if (this.userInfo != null) {
                 UserManager.getInstance().remove(userInfo);
             }
 //            LogServer.DebugLogic("Session disconnect: " + sessionInfo.getId() + "-" + Thread.activeCount());

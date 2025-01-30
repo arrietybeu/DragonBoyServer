@@ -136,7 +136,7 @@ public class PlayerCreator {
     }
 
     private void createMagicTreePlayer(Connection connection, int playerId) throws SQLException {
-        String query =  "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
             statement.setInt(2, 0); // is_upgrade
@@ -172,7 +172,7 @@ public class PlayerCreator {
         }
     }
 
-    private void createPlayerTask(Connection connection, int playerId) throws SQLException {
+    private void createPlayerDataTask(Connection connection, int playerId) throws SQLException {
         String query = "INSERT INTO player_task (player_id, task_id, task_type, task_level, task_status, task_time, task_count) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
@@ -188,4 +188,6 @@ public class PlayerCreator {
             }
         }
     }
+
+
 }

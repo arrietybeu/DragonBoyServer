@@ -20,6 +20,10 @@ public class UserManager {
         if (user == null) throw new NullPointerException("User is null");
         this.lock.writeLock().lock();
         try {
+            if (this.userMap.containsKey(user.getId())) {
+//                LogServer.LogException("UserManager.add: " + user.getId() + " is already exist");
+                return;
+            }
             this.userMap.put(user.getId(), user);
         } finally {
             this.lock.writeLock().unlock();
@@ -30,8 +34,10 @@ public class UserManager {
         if (user == null) throw new NullPointerException("User is null");
         this.lock.writeLock().lock();
         try {
+            if (!this.userMap.containsKey(user.getId())) {
+                return;
+            }
             this.userMap.remove(user.getId());
-
         } finally {
             lock.writeLock().unlock();
         }

@@ -2,6 +2,7 @@ package nro.service;
 
 import nro.data.DataSkill;
 import nro.model.item.Item;
+import nro.model.player.SpeacialSkill;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
@@ -14,6 +15,8 @@ import nro.server.manager.ItemManager;
 import nro.server.manager.resources.PartManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
+import nro.server.manager.skill.SkillManager;
+import nro.server.manager.skill.SpeacialSkillManager;
 
 import java.sql.Connection;
 import java.util.List;
@@ -36,6 +39,12 @@ public class CommandService {
             while (true) {
                 String line = sc.nextLine();
                 switch (line) {
+                    case "noi_tai":
+                        SpeacialSkillManager skillManager = SpeacialSkillManager.getInstance();
+                        for (var option : skillManager.getNamec()) {
+                            System.out.println(option.getName());
+                        }
+                        break;
                     case "baotri":
                         Maintenance.getInstance().active(5);
                         break;
@@ -99,7 +108,7 @@ public class CommandService {
                         break;
                     case "create_item":
                         List<Item> items = ItemService.initializePlayerItems((byte) 0);
-                        for(var item : items) {
+                        for (var item : items) {
                             System.out.println(item.getJsonOptions());
                         }
                         break;

@@ -51,6 +51,7 @@ public class NotLoginHandler implements IMessageProcessor {
         try {
             var username = message.reader().readUTF().toLowerCase();
             var password = message.reader().readUTF().toLowerCase();
+            System.out.println("username: " + username + " password: " + password);
             var version = message.reader().readUTF();
             var type = message.reader().readByte();// type login
 
@@ -60,6 +61,7 @@ public class NotLoginHandler implements IMessageProcessor {
 
             if (!accountRepository.checkAccount(userInfo)) {
                 Service.sendLoginFail(userInfo.getSession());
+                SessionManager.gI().kickSession(userInfo.getSession());
                 // checkAccount return false => account not exist
                 return;
             }
@@ -72,6 +74,7 @@ public class NotLoginHandler implements IMessageProcessor {
             DataMap.updateMapData(session);
             resourcesService.sendVersionDataGame(session);
 
+            System.out.println("Login success");
             UserManager.getInstance().add(userInfo);
         } catch (Exception e) {
             LogServer.DebugLogic("Error login: " + e.getMessage());

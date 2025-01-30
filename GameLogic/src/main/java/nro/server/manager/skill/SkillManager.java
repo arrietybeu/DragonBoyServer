@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import nro.consts.ConstPlayer;
 import nro.model.template.skill.SkillOptionTemplate;
 import nro.model.template.skill.SpeacialSkillTemplate;
 import nro.server.config.ConfigDB;
@@ -17,25 +18,18 @@ import nro.model.skill.NClass;
 import nro.model.template.skill.SkillTemplate;
 import nro.server.LogServer;
 
+@Getter
 public class SkillManager implements IManager {
 
     @Getter
     private static SkillManager instance = new SkillManager();
-
-    @Getter
     private final List<NClass> nClasses = new ArrayList<>();
-
-    @Getter
     private final List<SkillOptionTemplate> skillOptions = new ArrayList<>();
-
-    @Getter
-    private final List<SpeacialSkillTemplate> specialSkills = new ArrayList<>();
 
     @Override
     public void init() {
         this.loadSkill();
         this.loadSkillOption();
-        this.loadSpecialSkill();
     }
 
     @Override
@@ -154,24 +148,6 @@ public class SkillManager implements IManager {
         }
     }
 
-    private void loadSpecialSkill() {
-        String query = "SELECT * FROM special_skill";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-            assert connection != null : "Connection is null";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    SpeacialSkillTemplate specialSkill = new SpeacialSkillTemplate();
-                    specialSkill.setId(resultSet.getInt("id"));
-                    specialSkill.setName(resultSet.getString("name"));
-                    this.specialSkills.add(specialSkill);
-                }
-            }
-        } catch (Exception e) {
-            LogServer.LogException("Error loadSpecialSkill: " + e.getMessage());
-        } finally {
-            LogServer.LogInit("SpecialSkill initialized size: " + this.specialSkills.size());
-        }
-    }
+
 
 }
