@@ -14,6 +14,7 @@ import nro.repositories.player.PlayerLoader;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,77 +91,84 @@ public class PlayerService {
      *     }
      * </pre>
      */
+
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
             PlayerStats stats = player.getStats();
-            msg.writer().writeInt(stats.getCHPGoc());
-            msg.writer().writeInt(stats.getCMPGoc());
-            msg.writer().writeInt(stats.getCDamGoc());
-            msg.writer().writeLong(stats.getCHPFull());
-            msg.writer().writeLong(stats.getCMPFull());
-            msg.writer().writeLong(stats.getCHP());
-            msg.writer().writeLong(stats.getCMP());
-            msg.writer().writeByte(stats.getCspeed());
-            msg.writer().writeByte(stats.getHpFrom1000TiemNang());
-            msg.writer().writeByte(stats.getMpFrom1000TiemNang());
-            msg.writer().writeByte(stats.getDamFrom1000TiemNang());
-            msg.writer().writeLong(stats.getCDamFull());
-            msg.writer().writeLong(stats.getCDefull());
-            msg.writer().writeByte(stats.getCCriticalFull());
-            msg.writer().writeLong(stats.getCTiemNang());
-            msg.writer().writeShort(stats.getExpForOneAdd());
-            msg.writer().writeInt(stats.getCDefGoc());
-            msg.writer().writeByte(stats.getCCriticalGoc());
+            DataOutputStream out = msg.writer();
+
+            out.writeInt(stats.getCHPGoc());
+            out.writeInt(stats.getCMPGoc());
+            out.writeInt(stats.getCDamGoc());
+            out.writeLong(stats.getCHPFull());
+            out.writeLong(stats.getCMPFull());
+            out.writeLong(stats.getCHP());
+            out.writeLong(stats.getCMP());
+            out.writeByte(stats.getCspeed());
+            out.writeByte(stats.getHpFrom1000TiemNang());
+            out.writeByte(stats.getMpFrom1000TiemNang());
+            out.writeByte(stats.getDamFrom1000TiemNang());
+            out.writeLong(stats.getCDamFull());
+            out.writeLong(stats.getCDefull());
+            out.writeByte(stats.getCCriticalFull());
+            out.writeLong(stats.getCTiemNang());
+            out.writeShort(stats.getExpForOneAdd());
+            out.writeInt(stats.getCDefGoc());
+            out.writeByte(stats.getCCriticalGoc());
+
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendPointForMe: " + e.getMessage());
         }
     }
 
+
     private void sendInfoPlayer(Player player) {
-        try (Message message = new Message(-30)) {
-            message.writer().writeByte(ConstMsgSubCommand.INIT_MY_CHARACTER);
-            message.writer().writeInt(player.getId());
-            message.writer().writeByte(player.getPlayerTask().getTaskMain().getId());
-            message.writer().writeByte(player.getGender());
-            message.writer().writeShort(player.getPlayerFashion().getHead());
-            message.writer().writeUTF(player.getName());
-            message.writer().writeByte(0);
-            message.writer().writeByte(player.getTypePk());
-            message.writer().writeLong(player.getStats().getPower());
-            message.writer().writeShort(0);// eff5BuffHp
-            message.writer().writeShort(0);// eff5BuffMp
-            message.writer().writeByte(player.getGender());// nClass
+        try (Message msg = new Message(-30)) {
+            DataOutputStream out = msg.writer();
+
+            out.writeByte(ConstMsgSubCommand.INIT_MY_CHARACTER);
+            out.writeInt(player.getId());
+            out.writeByte(player.getPlayerTask().getTaskMain().getId());
+            out.writeByte(player.getGender());
+            out.writeShort(player.getPlayerFashion().getHead());
+            out.writeUTF(player.getName());
+            out.writeByte(0);
+            out.writeByte(player.getTypePk());
+            out.writeLong(player.getStats().getPower());
+            out.writeShort(0);// eff5BuffHp
+            out.writeShort(0);// eff5BuffMp
+            out.writeByte(player.getGender());// nClass
 
             // ============ Send Skill ============
 
             List<SkillInfo> skills = player.getPlayerSkill().getSkills();
-            message.writer().writeByte(skills.size());
+            out.writeByte(skills.size());
 
             for (SkillInfo skill : skills) {
-                message.writer().writeShort(skill.getSkillId());
+                out.writeShort(skill.getSkillId());
             }
 
             // ============ Send Currencies ============
-            message.writer().writeLong(player.getPlayerCurrencies().getGold());
-            message.writer().writeInt(player.getPlayerCurrencies().getRuby());
-            message.writer().writeInt(player.getPlayerCurrencies().getGem());
+            out.writeLong(player.getPlayerCurrencies().getGold());
+            out.writeInt(player.getPlayerCurrencies().getRuby());
+            out.writeInt(player.getPlayerCurrencies().getGem());
 
             // ============ Send Equipment To Body ============
             List<Item> itemsBody = player.getPlayerInventory().getItemsBody();
-            sendInventoryForPlayer(message, itemsBody);
+            sendInventoryForPlayer(msg, itemsBody);
 
             // ============ Send Equipment To Bag ============
 
             List<Item> itemsBag = player.getPlayerInventory().getItemsBag();
-            sendInventoryForPlayer(message, itemsBag);
+            sendInventoryForPlayer(msg, itemsBag);
 
             // ============ Send Equipment To Box ============
 
             List<Item> itemsBox = player.getPlayerInventory().getItemsBox();
-            sendInventoryForPlayer(message, itemsBox);
+            sendInventoryForPlayer(msg, itemsBox);
 
-            player.sendMessage(message);
+            player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
         }
