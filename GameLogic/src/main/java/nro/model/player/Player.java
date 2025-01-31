@@ -18,6 +18,7 @@ public class Player extends LiveObject {
     private final PlayerFashion playerFashion;
     private final PlayerSkill playerSkill;
     private final PlayerInventory playerInventory;
+
     private Area area;
 
     public Player(Session session) {
