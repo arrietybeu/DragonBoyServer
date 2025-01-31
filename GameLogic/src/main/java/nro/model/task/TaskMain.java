@@ -6,4 +6,5 @@ import lombok.Data;
 public class TaskMain {
 
     private int id;
+    private int index;
 }

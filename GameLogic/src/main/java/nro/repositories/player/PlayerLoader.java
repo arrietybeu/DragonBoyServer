@@ -3,6 +3,7 @@ package nro.repositories.player;
 import lombok.Getter;
 import nro.model.map.GameMap;
 import nro.model.player.Player;
+import nro.model.task.TaskMain;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
@@ -56,6 +57,9 @@ public class PlayerLoader {
 
         // Load player magic tree
         this.loadPlayerMagicTree(player, connection);
+
+        // Load player data task
+        this.loadPLayerDataTask(player, connection);
         return player;
     }
 
@@ -126,12 +130,12 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-//                    var taskMain = new TaskMain();
-//                    taskMain.id = resultSet.getInt("id");
-//                    taskMain.index = resultSet.getInt("index");
-//                    taskMain.name = resultSet.getString("name");
-//                    taskMain.detail = resultSet.getString("detail");
-//                    player.getTasks().add(taskMain);
+                    var taskMain = new TaskMain();
+                    taskMain.setId(resultSet.getInt("id"));
+                    taskMain.index = resultSet.getInt("index");
+                    taskMain.name = resultSet.getString("name");
+                    taskMain.detail = resultSet.getString("detail");
+                    player.getTasks().add(taskMain);
                 }
             }
         }

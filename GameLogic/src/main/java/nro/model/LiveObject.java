@@ -17,4 +17,5 @@ public abstract class LiveObject {
     private short x;
     private short y;
 
+
 }
