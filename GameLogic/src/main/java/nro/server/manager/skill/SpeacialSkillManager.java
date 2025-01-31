@@ -62,7 +62,7 @@ public class SpeacialSkillManager implements IManager {
                     specialSkill.setParamTo2(resultSet.getInt("param_to_2"));
 
                     switch (specialSkill.getGender()) {
-                        case ConstPlayer.TRAI_DAT ->  this.traiDat.add(specialSkill);
+                        case ConstPlayer.TRAI_DAT -> this.traiDat.add(specialSkill);
                         case ConstPlayer.NAMEC -> this.namec.add(specialSkill);
                         case ConstPlayer.XAYDA -> this.xayda.add(specialSkill);
                         default -> {
@@ -74,10 +74,10 @@ public class SpeacialSkillManager implements IManager {
                     this.specialSkills.add(specialSkill);
                 }
             }
+            LogServer.LogInit("SpecialSkill initialized size: " + this.specialSkills.size());
+
         } catch (Exception e) {
             LogServer.LogException("Error loadSpecialSkill: " + e.getMessage());
-        } finally {
-            LogServer.LogInit("SpecialSkill initialized size: " + this.specialSkills.size());
         }
     }
 }

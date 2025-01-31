@@ -3,6 +3,7 @@ package nro.model.player;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import nro.model.LiveObject;
+import nro.model.map.areas.Area;
 import nro.network.Message;
 import nro.network.Session;
 
@@ -17,6 +18,7 @@ public class Player extends LiveObject {
     private final PlayerFashion playerFashion;
     private final PlayerSkill playerSkill;
     private final PlayerInventory playerInventory;
+    private Area area;
 
     public Player(Session session) {
         this.session = session;

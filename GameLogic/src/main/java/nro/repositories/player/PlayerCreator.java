@@ -6,6 +6,7 @@ import nro.server.LogServer;
 import nro.service.ItemService;
 
 import java.sql.*;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("ALL")
@@ -41,6 +42,8 @@ public class PlayerCreator {
                 this.createMagicTreePlayer(connection, playerId);
 
                 this.createItemBodyPlayer(connection, playerId, gender);
+
+                this.createPlayerDataTask(connection, playerId);
 
                 connection.commit();
                 LogServer.DebugLogic("Time create player name: " + name + " times: "
@@ -165,29 +168,24 @@ public class PlayerCreator {
                 statement.setString(4, item.getJsonOptions());
                 statement.addBatch();
             }
-            int rows = statement.executeUpdate();
-            if (rows == 0) {
+            int[] rowsAffected = statement.executeBatch();
+            if (Arrays.stream(rowsAffected).sum() == 0) {
                 throw new SQLException("Failed to create item body player.");
             }
         }
     }
 
     private void createPlayerDataTask(Connection connection, int playerId) throws SQLException {
-        String query = "INSERT INTO player_task (player_id, task_id, task_type, task_level, task_status, task_time, task_count) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO player_task (player_id, task_id, task_index, task_count) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
             statement.setInt(2, 1); // task_id
-            statement.setInt(3, 1); // task_type
-            statement.setInt(4, 1); // task_level
-            statement.setInt(5, 0); // task_status
-            statement.setLong(6, System.currentTimeMillis()); // task_time
-            statement.setInt(7, 0); // task_count
+            statement.setInt(3, 0); // task_index
+            statement.setInt(4, 0); // task_count
             if (statement.executeUpdate() == 0) {
                 LogServer.LogException("No rows were inserted into player_task for playerId: " + playerId);
                 throw new SQLException("Failed to insert player task.");
             }
         }
     }
-
-
 }

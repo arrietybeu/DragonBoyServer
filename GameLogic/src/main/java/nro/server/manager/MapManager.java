@@ -6,7 +6,7 @@ import nro.network.Message;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.map.BackgroundMapTemplate;
-import nro.model.template.map.MapTemplate;
+import nro.model.map.GameMap;
 import nro.server.LogServer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -24,7 +24,7 @@ public class MapManager implements IManager {
 
     private static MapManager instance;
 
-    private final List<MapTemplate> mapTemplates = new ArrayList<>();
+    private final List<GameMap> gameMaps = new ArrayList<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class MapManager implements IManager {
 
     @Override
     public void clear() {
-        this.mapTemplates.clear();
+        this.gameMaps.clear();
     }
 
     private void loadMapTemplate() {
@@ -61,13 +61,13 @@ public class MapManager implements IManager {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
 
-                var mapTemplate = new MapTemplate(id, name);
+                var mapTemplate = new GameMap(id, name);
 
-                this.mapTemplates.add(mapTemplate);
+                this.gameMaps.add(mapTemplate);
             }
 
             this.setDataBackgroundMap();
-            LogServer.LogInit("MapManager init size: " + this.mapTemplates.size());
+            LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadMap: " + e.getMessage());
         }
@@ -168,12 +168,11 @@ public class MapManager implements IManager {
         }
     }
 
-    public MapTemplate findMapById(int id) {
-        return this.mapTemplates.get(id);
+    public GameMap findMapById(int id) {
+        return this.gameMaps.get(id);
     }
 
     public int sizeMap() {
-        return this.mapTemplates.size();
+        return this.gameMaps.size();
     }
-
 }

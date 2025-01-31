@@ -7,7 +7,7 @@ import nro.consts.ConstMsgNotMap;
 import nro.server.manager.MapManager;
 import nro.server.manager.MonsterManager;
 import nro.server.manager.NpcManager;
-import nro.model.template.map.MapTemplate;
+import nro.model.map.GameMap;
 import nro.model.template.NpcTemplate;
 import nro.server.LogServer;
 
@@ -29,8 +29,8 @@ public class DataMap {
 
             message.writer().writeShort(sizeMap);// TODO version < 2.4.3 write byte
 
-            for (MapTemplate mapTemplate : mapManager.getMapTemplates()) {
-                message.writer().writeUTF(mapTemplate.getName());
+            for (GameMap gameMap : mapManager.getGameMaps()) {
+                message.writer().writeUTF(gameMap.getName());
             }
 
             message.writer().writeByte(sizeNpc);

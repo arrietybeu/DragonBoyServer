@@ -1,11 +1,11 @@
-package nro.model.template.map;
+package nro.model.map;
 
-public class MapTemplate {
+public class GameMap {
 
     private int id;
     private String name;
 
-    public MapTemplate(int id, String name) {
+    public GameMap(int id, String name) {
         this.id = id;
         this.name = name;
     }

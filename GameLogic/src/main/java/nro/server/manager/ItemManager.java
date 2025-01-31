@@ -48,10 +48,18 @@ public class ItemManager implements IManager {
 
     @Override
     public void reload() {
+        this.clear();
+        this.init();
     }
 
     @Override
     public void clear() {
+        this.itemTemplates.clear();
+        this.arrHead2Frames.clear();
+        this.itemOptionTemplates.clear();
+        this.dataItemTemplate = null;
+        this.dataItemOption = null;
+        this.dataArrHead2Fr = null;
     }
 
     private void loadItemTemplate() {
