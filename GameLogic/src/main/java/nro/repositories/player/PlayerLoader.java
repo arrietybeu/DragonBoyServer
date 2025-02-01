@@ -130,12 +130,12 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    var taskMain = new TaskMain();
-                    taskMain.setId(resultSet.getInt("id"));
-                    taskMain.index = resultSet.getInt("index");
-                    taskMain.name = resultSet.getString("name");
-                    taskMain.detail = resultSet.getString("detail");
-                    player.getTasks().add(taskMain);
+//                    var taskMain = new TaskMain();
+//                    taskMain.setId(resultSet.getInt("id"));
+//                    taskMain.index = resultSet.getInt("index");
+//                    taskMain.name = resultSet.getString("name");
+//                    taskMain.detail = resultSet.getString("detail");
+//                    player.getTasks().add(taskMain);
                 }
             }
         }
