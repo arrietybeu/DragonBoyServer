@@ -32,6 +32,7 @@ public class Player extends LiveObject {
 
     private int role;
     private int activePoint;
+    private int rank;
 
     public Player(Session session, Instant createdAt) {
         this.session = session;

@@ -4,7 +4,6 @@ import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstPlayer;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
-import nro.model.pet.Disciple;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.template.entity.SkillInfo;
@@ -63,6 +62,7 @@ public class PlayerService {
         this.sendMaxStamina(player);
         this.sendUpdateActivePoint(player);
         this.sendHaveDisciple(player);
+        this.sendPlayerRank(player);
     }
 
     private void sendHaveDisciple(Player player) {
@@ -72,6 +72,16 @@ public class PlayerService {
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendDisciple: " + e.getMessage());
+        }
+    }
+
+    private void sendPlayerRank(Player player){
+        try (Message message = new Message(-119)) {
+            DataOutputStream out = message.writer();
+            out.writeInt(player.getRank());
+            player.sendMessage(message);
+        }catch (Exception e){
+            LogServer.LogException("Error sendRank: " + e.getMessage());
         }
     }
 
