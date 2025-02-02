@@ -1,5 +1,8 @@
 package nro.model.map;
 
+import lombok.Data;
+
+@Data
 public class GameMap {
 
     private int id;
@@ -9,13 +12,4 @@ public class GameMap {
         this.id = id;
         this.name = name;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
 }

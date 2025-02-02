@@ -50,7 +50,7 @@ public final class MessageReceiver {
                                 break;
                         }
                     } catch (Exception e) {
-                        SessionManager.gI().kickSession(session);
+                        SessionManager.getInstance().kickSession(session);
                         return;
                     }
                     try {
@@ -58,7 +58,7 @@ public final class MessageReceiver {
                     } catch (InterruptedException ex) {
                     }
                 }
-                SessionManager.gI().kickSession(session);
+                SessionManager.getInstance().kickSession(session);
             });
         } catch (Exception e) {
             LogServer.LogException("Error startReadMessage: " + e.getMessage());
@@ -127,7 +127,7 @@ public final class MessageReceiver {
         this.messageCount++;
         if (this.messageCount > ConfigServer.MAX_MESSAGES_PER_5_SECONDS) {
             LogServer.LogException("Session id: " + session.getSessionInfo().getId() + " | Message count: " + this.messageCount + " | Command: " + msg);
-            SessionManager.gI().kickSession(session);
+            SessionManager.getInstance().kickSession(session);
             return false;
         }
         return true;

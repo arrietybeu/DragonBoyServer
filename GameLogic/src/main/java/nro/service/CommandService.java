@@ -1,8 +1,6 @@
 package nro.service;
 
-import nro.data.DataSkill;
 import nro.model.item.Item;
-import nro.model.player.SpeacialSkill;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
@@ -15,7 +13,6 @@ import nro.server.manager.ItemManager;
 import nro.server.manager.resources.PartManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
-import nro.server.manager.skill.SkillManager;
 import nro.server.manager.skill.SpeacialSkillManager;
 
 import java.sql.Connection;
@@ -52,7 +49,7 @@ public class CommandService {
                         LogServer.DebugLogic("Thread: " + Thread.activeCount());
                         break;
                     case "session":
-                        LogServer.DebugLogic("Session: " + SessionManager.gI().getSizeSession());
+                        LogServer.DebugLogic("Session: " + SessionManager.getInstance().getSizeSession());
                         break;
                     case "database":
                         break;
@@ -60,7 +57,7 @@ public class CommandService {
 //                        CommandService.getSkill();
                         break;
                     case "kick_all":
-                        SessionManager.gI().kickAllPlayer("Thích thì kick");
+                        SessionManager.getInstance().kickAllPlayer("Thích thì kick");
                         break;
                     case "close_database":
                         DatabaseConnectionPool.closeConnections();

@@ -1,5 +1,6 @@
 package nro.service;
 
+import com.mysql.cj.log.Log;
 import nro.consts.ConstMsgSubCommand;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
@@ -35,12 +36,17 @@ public class PlayerService {
     }
 
     public void finishUpdateHandler(Session session) {
-        Player player = PlayerLoader.getInstance().loadPlayer(session);
-        if (player == null) {
-            Service.initSelectChar(session);
-        } else {
-            session.setPlayer(player);
-            this.onPlayerLoginSuccess(player);
+        try {
+            Player player = PlayerLoader.getInstance().loadPlayer(session);
+            if (player == null) {
+                Service.initSelectChar(session);
+            } else {
+                session.setPlayer(player);
+                this.onPlayerLoginSuccess(player);
+            }
+        } catch (Exception e) {
+            LogServer.LogException(e.getMessage());
+            Service.dialogMessage(session, "Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error 334]");
         }
     }
 

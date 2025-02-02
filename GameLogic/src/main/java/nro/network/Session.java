@@ -55,7 +55,7 @@ public final class Session {
             this.executorService = Executors.newFixedThreadPool(2);
 
             this.initCommunication();
-            SessionManager.gI().add(this);
+            SessionManager.getInstance().add(this);
         } catch (Exception e) {
             this.handleInitializationError();
             LogServer.LogException("Error Session: " + e.getMessage());
@@ -250,7 +250,7 @@ public final class Session {
             if (this.socket != null && !this.socket.isClosed()) {
                 this.socket.close();
             }
-            SessionManager.gI().kickSession(this);
+            SessionManager.getInstance().kickSession(this);
         } catch (IOException e) {
             LogServer.LogException("error during cleanup: " + e.getMessage());
         }

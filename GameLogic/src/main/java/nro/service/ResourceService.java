@@ -60,8 +60,8 @@ public class ResourceService {
                 dataGame.getEffect(),
                 dataGame.getImage(),
                 partManager.getDataPart(),
-                dataGame.getSkill()};
-//                skillPaintManager.getSkillPaintsData()};
+//                dataGame.getSkill()};
+                skillPaintManager.getSkillPaintsData()};
     }
 
     private void writeData(Message message, byte[] data) throws IOException {
@@ -310,38 +310,4 @@ public class ResourceService {
     public void clientOk(Session session) {
     }
 
-    //    public void createData(Session session) {
-//        DataGame dataGame = DataGame.getInstance();
-//        PartManager partManager = PartManager.getInstance();
-//        SkillPaintManager skillPaintManager = SkillPaintManager.gI();
-//        try {
-//            try (Message message = new Message(-87)) {
-//                message.writer().writeByte(ConfigServer.VERSION_DATA);
-//
-//                message.writer().writeInt(dataGame.getDart().length);
-//                message.writer().write(dataGame.getDart());
-//
-//                message.writer().writeInt(dataGame.getArrow().length);
-//                message.writer().write(dataGame.getArrow());
-//
-//                message.writer().writeInt(dataGame.getEffect().length);
-//                message.writer().write(dataGame.getEffect());
-//
-//                message.writer().writeInt(dataGame.getImage().length);
-//                message.writer().write(dataGame.getImage());
-//
-//                message.writer().writeInt(partManager.getData().length);
-//                message.writer().write(partManager.getData());
-//
-//                message.writer().writeInt(skillPaintManager.getSkillPaintsData().length);
-//                message.writer().write(skillPaintManager.getSkillPaintsData());
-//
-//                session.doSendMessage(message);
-//            } catch (Exception e) {
-//                LogServer.LogException("Error in createData (Message): " + e.getMessage());
-//            }
-//        } catch (Exception e) {
-//            LogServer.LogException("Error in createData: " + e.getMessage());
-//        }
-//    }
 }

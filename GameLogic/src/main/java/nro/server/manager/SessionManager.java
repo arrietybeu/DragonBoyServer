@@ -1,8 +1,8 @@
 package nro.server.manager;
 
+import lombok.Getter;
 import nro.network.Session;
 import nro.server.LogServer;
-import nro.utils.Util;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -12,14 +12,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class SessionManager {
 
+    @Getter
+    private static final SessionManager instance = new SessionManager();
+
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private final ConcurrentHashMap<Integer, Session> sessions = new ConcurrentHashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private static final SessionManager instance = new SessionManager();
 
-    public static SessionManager gI() {
-        return instance;
-    }
 
     public Session getSessionById(int id) {
         this.lock.readLock().lock();

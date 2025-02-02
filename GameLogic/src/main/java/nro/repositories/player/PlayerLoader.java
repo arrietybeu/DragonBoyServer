@@ -9,6 +9,9 @@ import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
+import nro.server.manager.SessionManager;
+import nro.service.Service;
+import nro.utils.Util;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +23,7 @@ public class PlayerLoader {
     @Getter
     private static final PlayerLoader instance = new PlayerLoader();
 
-    public Player loadPlayer(Session session) {
+    public Player loadPlayer(Session session) throws Exception {
         String query = "SELECT * FROM player WHERE account_id = ? LIMIT 1";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             assert connection != null : "Connection is null";
@@ -34,7 +37,7 @@ public class PlayerLoader {
                 }
             }
         } catch (SQLException e) {
-            LogServer.LogException("Error loading player for account_id: " + session.getUserInfo().getId() + ", Error: " + e.getMessage());
+            throw new Exception("Error loading p layer for account_id: " + session.getUserInfo().getId() + ", Error: " + e.getMessage());
         }
         return null;
     }
@@ -64,7 +67,7 @@ public class PlayerLoader {
     }
 
     private void loadPlayerCurrencies(Player player, Connection connection) throws SQLException {
-        String query = "SELECT gold, gem, ruby FROM player_currencies WHERE player_id = ?";
+        String query = "SELECT gold, gem, ruby FROM player_currencies WHERE player_id = ? ";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -129,13 +132,11 @@ public class PlayerLoader {
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-//                    var taskMain = new TaskMain();
-//                    taskMain.setId(resultSet.getInt("id"));
-//                    taskMain.index = resultSet.getInt("index");
-//                    taskMain.name = resultSet.getString("name");
-//                    taskMain.detail = resultSet.getString("detail");
-//                    player.getTasks().add(taskMain);
+                if (resultSet.next()) {
+                    var taskMain = new TaskMain();
+                    taskMain.setId(resultSet.getInt("task_id"));
+                    taskMain.setIndex(resultSet.getInt("task_index"));
+                    player.getPlayerTask().setTaskMain(taskMain);
                 }
             }
         }

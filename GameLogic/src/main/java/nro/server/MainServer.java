@@ -112,7 +112,7 @@ public class MainServer {
 
     private void startGame() {
         try {
-            SessionManager.gI().startSessionChecker();
+            SessionManager.getInstance().startSessionChecker();
         } catch (Exception e) {
             LogServer.LogException("Error startGame: " + e.getMessage());
         }
@@ -133,7 +133,7 @@ public class MainServer {
         try {
             this.running = false;
             this.closeServerSocket();
-            SessionManager.gI().kickAllPlayer("Bảo trì");
+            SessionManager.getInstance().kickAllPlayer("Bảo trì");
             DatabaseConnectionPool.closeConnections();
             LogServer.DebugLogic("Server closed");
             System.exit(0);

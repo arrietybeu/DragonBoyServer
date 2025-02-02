@@ -35,7 +35,7 @@ public class NotLoginHandler implements IMessageProcessor {
                     break;
                 default:
                     LogServer.LogException("Unknow command NotLoginHandler: [" + cmd + "]");
-                    SessionManager.gI().kickSession(session);
+                    SessionManager.getInstance().kickSession(session);
                     break;
             }
         } catch (Exception e) {
@@ -61,7 +61,7 @@ public class NotLoginHandler implements IMessageProcessor {
 
             if (!accountRepository.checkAccount(userInfo)) {
                 Service.sendLoginFail(userInfo.getSession());
-                SessionManager.gI().kickSession(userInfo.getSession());
+                SessionManager.getInstance().kickSession(userInfo.getSession());
                 // checkAccount return false => account not exist
                 return;
             }
@@ -74,11 +74,10 @@ public class NotLoginHandler implements IMessageProcessor {
             DataMap.updateMapData(session);
             resourcesService.sendVersionDataGame(session);
 
-            System.out.println("Login success");
             UserManager.getInstance().add(userInfo);
         } catch (Exception e) {
             LogServer.DebugLogic("Error login: " + e.getMessage());
-            SessionManager.gI().kickSession(session);
+            SessionManager.getInstance().kickSession(session);
         }
     }
 
@@ -123,7 +122,7 @@ public class NotLoginHandler implements IMessageProcessor {
         var zoomLevel = message.reader().readByte();
 
         if (zoomLevel < 0 || zoomLevel > 4) {
-            SessionManager.gI().kickSession(session);
+            SessionManager.getInstance().kickSession(session);
             throw new Exception("Error zoomLevel: " + zoomLevel);
         }
 
