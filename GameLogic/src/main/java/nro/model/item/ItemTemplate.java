@@ -7,4 +7,7 @@ public record ItemTemplate(short id, byte type, byte gender, String name, String
 
     public record ArrHead2Frames(int id, List<Integer> frames) {
     }
+
+    public record HeadAvatar(int headId, int avatarId){
+    }
 }

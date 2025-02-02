@@ -1,5 +1,6 @@
 package nro.service;
 
+import lombok.Getter;
 import nro.model.player.Player;
 import nro.model.player.PlayerTask;
 import nro.model.task.TaskMain;
@@ -11,13 +12,8 @@ import java.io.DataOutputStream;
 
 public class TaskService {
 
-    private static final class InstanceHolder {
-        private static final TaskService instance = new TaskService();
-    }
-
-    public static TaskService getInstance() {
-        return InstanceHolder.instance;
-    }
+    @Getter
+    private static final TaskService instance = new TaskService();
 
     public void sendTaskMain(Player player) {
         try (Message message = new Message(40);
@@ -48,7 +44,6 @@ public class TaskService {
 
             player.sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
             LogServer.LogException("Error sendTaskMain: " + e.getMessage());
         }
     }

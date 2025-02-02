@@ -15,6 +15,7 @@ import org.json.simple.JSONValue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,18 +33,21 @@ public class ItemManager implements IManager {
     private static final byte ITEM_ARR_HEAD_FLYMOVE = 101;
 
     private final Map<Short, ItemTemplate> itemTemplates = new HashMap<>();
-    private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
     private final Map<Short, ItemOptionTemplate> itemOptionTemplates = new HashMap<>();
+    private final List<ItemTemplate.HeadAvatar> itemHeadAvatars = new ArrayList<>();
+    private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
 
     private byte[] dataItemTemplate;
     private byte[] dataItemOption;
     private byte[] dataArrHead2Fr;
+    private byte[] dataItemhead;
 
     @Override
     public void init() {
         this.loadItemTemplate();
         this.loadItemArrHead2Fr();
         this.loadItemOptionTemplate();
+        this.loadHeadAvatar();
     }
 
     @Override
@@ -57,6 +61,7 @@ public class ItemManager implements IManager {
         this.itemTemplates.clear();
         this.arrHead2Frames.clear();
         this.itemOptionTemplates.clear();
+        this.itemHeadAvatars.clear();
         this.dataItemTemplate = null;
         this.dataItemOption = null;
         this.dataArrHead2Fr = null;
@@ -135,6 +140,27 @@ public class ItemManager implements IManager {
         }
     }
 
+    private void loadHeadAvatar() {
+        String sql = "SELECT item_head";
+        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            if (connection == null) throw new SQLException("Connect connection select item_head = null");
+            try (var preparedStatement = connection.prepareStatement(sql);
+                 var resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int headId = resultSet.getInt("head_id");
+                    int avatarId = resultSet.getInt("avatar_id");
+                    ItemTemplate.HeadAvatar headAvatar = new ItemTemplate.HeadAvatar(headId, avatarId);
+                    itemHeadAvatars.add(headAvatar);
+                }
+            }
+            this.setDataItemHead();
+        } catch (SQLException e) {
+            LogServer.LogException("Error loadHeadAvatar: " + e.getMessage());
+            e.printStackTrace();
+        }
+        LogServer.LogInit("Item loadHeadAvatar initialized size: " + itemHeadAvatars.size());
+    }
+
     private void loadItemArrHead2Fr() {
         String sql = "SELECT id, head_one, head_two FROM `item_arr_head_2frame`";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
@@ -152,8 +178,8 @@ public class ItemManager implements IManager {
 
                     this.arrHead2Frames.add(new ItemTemplate.ArrHead2Frames(id, heads));
                 }
-                this.setItemArrHead2fr();
             }
+            this.setItemArrHead2fr();
         } catch (Exception e) {
             LogServer.LogException("Error loadItemArr_Head_2Fr: " + e.getMessage());
         }
@@ -211,6 +237,19 @@ public class ItemManager implements IManager {
             this.dataArrHead2Fr = message.getData();
         } catch (Exception e) {
             LogServer.LogException("Error sending item arr head 2 fr: " + e.getMessage());
+        }
+    }
+
+    private void setDataItemHead() {
+        try (Message message = new Message()) {
+            message.writer().writeShort(itemHeadAvatars.size());
+            for(var headAvatar : itemHeadAvatars){
+                message.writer().writeShort(headAvatar.headId());
+                message.writer().writeShort(headAvatar.avatarId());
+            }
+            this.dataItemhead = message.getData();
+        } catch (Exception e) {
+            LogServer.LogException("Error sending item setDataItemHead: " + e.getMessage());
         }
     }
 

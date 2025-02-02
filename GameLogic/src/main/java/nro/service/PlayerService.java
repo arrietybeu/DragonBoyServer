@@ -2,6 +2,7 @@ package nro.service;
 
 import com.mysql.cj.log.Log;
 import nro.consts.ConstMsgSubCommand;
+import nro.consts.ConstPlayer;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
@@ -14,6 +15,7 @@ import nro.repositories.player.PlayerCreator;
 import nro.repositories.player.PlayerLoader;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
+import nro.server.manager.ItemManager;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -128,23 +130,24 @@ public class PlayerService {
         }
     }
 
-
     private void sendInfoPlayer(Player player) {
+        ItemManager itemManager = ItemManager.getInstance();
+        int gender = player.getGender();
+
         try (Message msg = new Message(-30)) {
             DataOutputStream out = msg.writer();
-
             out.writeByte(ConstMsgSubCommand.INIT_MY_CHARACTER);
             out.writeInt(player.getId());
             out.writeByte(player.getPlayerTask().getTaskMain().getId());
-            out.writeByte(player.getGender());
+            out.writeByte(gender);
             out.writeShort(player.getPlayerFashion().getHead());
             out.writeUTF(player.getName());
-            out.writeByte(0);
+            out.writeByte(0);// cpk
             out.writeByte(player.getTypePk());
             out.writeLong(player.getStats().getPower());
             out.writeShort(0);// eff5BuffHp
             out.writeShort(0);// eff5BuffMp
-            out.writeByte(player.getGender());// nClass
+            out.writeByte(gender);
 
             // ============ Send Skill ============
 
@@ -174,10 +177,39 @@ public class PlayerService {
             List<Item> itemsBox = player.getPlayerInventory().getItemsBox();
             sendInventoryForPlayer(msg, itemsBox);
 
+            out.write(itemManager.getDataItemhead());
+
+            sendPlayerBirdFrames(out, gender);
+
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
         }
+    }
+
+    private void sendPlayerBirdFrames(DataOutputStream out, int gender) throws IOException {
+        short frame1, frame2, avatar;
+
+        switch (gender) {
+            case ConstPlayer.TRAI_DAT -> {
+                frame1 = 281;
+                frame2 = 361;
+                avatar = 351;
+            }
+                case ConstPlayer.NAMEC -> {
+                frame1 = 512;
+                frame2 = 513;
+                avatar = 536;
+            }
+            default -> {
+                frame1 = 514;
+                frame2 = 515;
+                avatar = 537;
+            }
+        }
+        out.writeShort(frame1);
+        out.writeShort(frame2);
+        out.writeShort(avatar);
     }
 
     private void sendInventoryForPlayer(Message message, List<Item> items) throws IOException {
@@ -197,8 +229,8 @@ public class PlayerService {
                 if (itemOption == null) {
                     continue;
                 }
-                message.writer().writeByte(itemOption.getOptionTemplate().id());
-                message.writer().writeShort(itemOption.getParam());
+                message.writer().writeShort(itemOption.getOptionTemplate().id());
+                message.writer().writeInt(itemOption.getParam());
             }
         }
     }
