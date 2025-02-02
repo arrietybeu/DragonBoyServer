@@ -70,6 +70,9 @@ public class PlayerService {
         TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
         this.sendInfoPlayer(player);// -30
+        //Server gửi: [-53] => CLAN_INFO
+        //Server gửi: [-64] => UPDATE_BAG
+        //Server gửi: [-90] => UPDATE_BODY
     }
 
     private void sendPointForMe(Player player) {
@@ -94,7 +97,6 @@ public class PlayerService {
             out.writeShort(stats.getExpForOneAdd());
             out.writeInt(stats.getCDefGoc());
             out.writeByte(stats.getCCriticalGoc());
-
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendPointForMe: " + e.getMessage());
@@ -149,13 +151,17 @@ public class PlayerService {
             sendInventoryForPlayer(msg, itemsBox);
 
             out.write(itemManager.getDataItemhead());
-
             sendPlayerBirdFrames(out, gender);
 
             // type fusion = 0 return 0 = false
             out.writeByte(player.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
             out.writeLong(19062006);
+
             out.writeByte(player.isNewPlayer() ? 1 : 0);
+            out.writeShort(player.getAura());
+            out.writeByte(player.getIdEffSetItem());
+            out.writeShort(player.getIdHat());
+
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());

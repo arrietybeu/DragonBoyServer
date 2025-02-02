@@ -11,6 +11,10 @@ public abstract class LiveObject {
     private String name;
     private byte typeObject;
 
+    private short aura;
+    private byte idEffSetItem;
+    private short idHat;
+
     private byte gender;
     private byte typePk;
 

@@ -136,6 +136,8 @@ public class PlayerLoader {
                     var taskMain = new TaskMain();
                     taskMain.setId(resultSet.getInt("task_id"));
                     taskMain.setIndex(resultSet.getInt("task_index"));
+                    taskMain.setName("tuanbeo");
+                    taskMain.setDetail("Tuanbeo");
                     player.getPlayerTask().setTaskMain(taskMain);
                 }
             }
