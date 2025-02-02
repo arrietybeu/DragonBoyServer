@@ -13,10 +13,8 @@ import nro.server.manager.SessionManager;
 import nro.service.Service;
 import nro.utils.Util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.Instant;
 
 public class PlayerLoader {
 
@@ -44,7 +42,9 @@ public class PlayerLoader {
 
     // Utility method to map ResultSet data to a Player object
     private Player mapResultSetToPlayer(Session session, ResultSet resultSet, Connection connection) throws SQLException {
-        Player player = new Player(session);
+        Timestamp createdAtTimestamp = resultSet.getTimestamp("created_at");
+        Instant createdAt = createdAtTimestamp.toInstant();
+        Player player = new Player(session, createdAt);
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));

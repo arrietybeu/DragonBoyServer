@@ -1,6 +1,5 @@
 package nro.service;
 
-import com.mysql.cj.log.Log;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstPlayer;
 import nro.model.item.Item;
@@ -73,38 +72,10 @@ public class PlayerService {
         this.sendInfoPlayer(player);// -30
     }
 
-    /**
-     * <pre>
-     *     {@link #sendPointForMe}
-     *     {@code
-     *   Char.myCharz().cHPGoc = msg.readInt3Byte();
-     *   Char.myCharz().cMPGoc = msg.readInt3Byte();
-     *   Char.myCharz().cDamGoc = msg.reader().readInt();
-     *   Char.myCharz().cHPFull = msg.reader().readLong();
-     *   Char.myCharz().cMPFull = msg.reader().readLong();
-     *   Char.myCharz().cHP = msg.reader().readLong();
-     *   Char.myCharz().cMP = msg.reader().readLong();
-     *   Char.myCharz().cspeed = msg.reader().readByte();
-     *   Char.myCharz().hpFrom1000TiemNang = msg.reader().readByte();
-     *   Char.myCharz().mpFrom1000TiemNang = msg.reader().readByte();
-     *   Char.myCharz().damFrom1000TiemNang = msg.reader().readByte();
-     *   Char.myCharz().cDamFull = msg.reader().readLong();
-     *   Char.myCharz().cDefull = msg.reader().readLong();
-     *   Char.myCharz().cCriticalFull = msg.reader().readByte();
-     *   Char.myCharz().cTiemNang = msg.reader().readLong();
-     *   Char.myCharz().expForOneAdd = msg.reader().readShort();
-     *   Char.myCharz().cDefGoc = msg.reader().readInt();
-     *   Char.myCharz().cCriticalGoc = msg.reader().readByte();
-     *   InfoDlg.hide();
-     *     }
-     * </pre>
-     */
-
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
             PlayerStats stats = player.getStats();
             DataOutputStream out = msg.writer();
-
             out.writeInt(stats.getCHPGoc());
             out.writeInt(stats.getCMPGoc());
             out.writeInt(stats.getCDamGoc());
@@ -181,6 +152,10 @@ public class PlayerService {
 
             sendPlayerBirdFrames(out, gender);
 
+            // type fusion = 0 return 0 = false
+            out.writeByte(player.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
+            out.writeLong(19062006);
+            out.writeByte(player.isNewPlayer() ? 1 : 0);
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
@@ -196,7 +171,7 @@ public class PlayerService {
                 frame2 = 361;
                 avatar = 351;
             }
-                case ConstPlayer.NAMEC -> {
+            case ConstPlayer.NAMEC -> {
                 frame1 = 512;
                 frame2 = 513;
                 avatar = 536;
