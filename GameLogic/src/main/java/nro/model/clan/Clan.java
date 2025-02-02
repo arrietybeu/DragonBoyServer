@@ -1,18 +1,28 @@
 package nro.model.clan;
 
+import lombok.Data;
+
+import java.util.List;
+
+@Data
 public class Clan {
 
-    public int id;
-    public int imgID;
-    public String name;
-    public String slogan;
-    public int date;
-    public String powerPoint;
-    public int currMember;
-    public int maxMember = 50;
-    public int leaderID;// khong dung
-    public String leaderName;
-    public int level;
-    public int clanPoint;
+    private int id;
+    private int imgID;
+    private String name;
+    private String slogan;
+    private int date;
+    private String powerPoint;
+    private int currMember;
+    private int maxMember = 50;
+    private int leaderID;// khong dung
+    private String leaderName;
+    private int level;
+    private int clanPoint;
+
+    private final List<ClanMember> clanMembers;
+    private final List<ClanMessage> currClanMessages;
+
+
 
 }

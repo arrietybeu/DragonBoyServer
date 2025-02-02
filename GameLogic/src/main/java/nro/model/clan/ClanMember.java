@@ -1,23 +1,27 @@
 package nro.model.clan;
 
+import lombok.Data;
+
+@Data
 public class ClanMember {
 
-    public int id;
-    public String name;
+    private int id;
+    private String name;
 
-    public short headICON = -1;
+    private short headICON = -1;
 
-    public short head;
-    public short leg;
-    public short body;
+    private short head;
+    private short leg;
+    private short body;
 
-    public byte role;
-    public String powerPoint;
-    public int donate;
-    public int receive_donate;
-    public int curClanPoint;
-    public int clanPoint;
-    public int lastRequest;
-    public String joinTime;
+    private byte role;
+    private int donate;
+    private int receive_donate;
+    private int curClanPoint;
+    private int clanPoint;
+    private int lastRequest;
+
+    private String powerPoint;
+    private int joinTime;
 
 }

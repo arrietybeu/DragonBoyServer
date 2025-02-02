@@ -3,6 +3,7 @@ package nro.model.player;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import nro.model.LiveObject;
+import nro.model.clan.Clan;
 import nro.model.map.areas.Area;
 import nro.network.Message;
 import nro.network.Session;
@@ -25,6 +26,9 @@ public class Player extends LiveObject {
     private final Instant createdAt;
 
     private Area area;
+    private Clan clan;
+
+    private int role;
 
     public Player(Session session, Instant createdAt) {
         this.session = session;

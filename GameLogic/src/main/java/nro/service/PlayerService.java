@@ -70,9 +70,20 @@ public class PlayerService {
         TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
         this.sendInfoPlayer(player);// -30
+        ClanService.getInstance().sendClanInfo(player);
         //Server gửi: [-53] => CLAN_INFO
         //Server gửi: [-64] => UPDATE_BAG
         //Server gửi: [-90] => UPDATE_BODY
+    }
+
+    private void sendMaxStamina(Player player) {
+        try (Message msg = new Message(-42)) {
+            DataOutputStream out = msg.writer();
+//            out.writeLong(player.getStats().getMaxStamina());
+            player.sendMessage(msg);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendMaxStamina: " + e.getMessage());
+        }
     }
 
     private void sendPointForMe(Player player) {
