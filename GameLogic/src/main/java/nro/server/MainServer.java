@@ -95,6 +95,7 @@ public class MainServer {
                     }
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 LogServer.LogException("Error starting server: " + e.getMessage());
                 System.exit(0);
             } finally {

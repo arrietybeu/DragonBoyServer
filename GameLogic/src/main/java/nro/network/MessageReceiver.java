@@ -50,6 +50,7 @@ public final class MessageReceiver {
                                 break;
                         }
                     } catch (Exception e) {
+//                        e.printStackTrace();
                         SessionManager.getInstance().kickSession(session);
                         return;
                     }

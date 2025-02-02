@@ -65,6 +65,7 @@ public class ItemManager implements IManager {
         this.dataItemTemplate = null;
         this.dataItemOption = null;
         this.dataArrHead2Fr = null;
+        this.dataItemhead = null;
     }
 
     private void loadItemTemplate() {
@@ -141,7 +142,7 @@ public class ItemManager implements IManager {
     }
 
     private void loadHeadAvatar() {
-        String sql = "SELECT item_head";
+        String sql = "SELECT * FROM  item_head";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             if (connection == null) throw new SQLException("Connect connection select item_head = null");
             try (var preparedStatement = connection.prepareStatement(sql);

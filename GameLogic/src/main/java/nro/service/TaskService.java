@@ -2,12 +2,9 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.player.Player;
-import nro.model.player.PlayerTask;
-import nro.model.task.TaskMain;
 import nro.network.Message;
 import nro.server.LogServer;
 
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 
 public class TaskService {
@@ -44,6 +41,7 @@ public class TaskService {
 
             player.sendMessage(message);
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException("Error sendTaskMain: " + e.getMessage());
         }
     }

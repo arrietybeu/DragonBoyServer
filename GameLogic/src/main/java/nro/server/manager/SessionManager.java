@@ -3,6 +3,7 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.network.Session;
 import nro.server.LogServer;
+import nro.utils.Util;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -147,7 +148,7 @@ public class SessionManager {
     }
 
     public void kickSession(Session session) {
-//        Util.getMethodCaller();
+        Util.getMethodCaller();
         this.lock.writeLock().lock();
         try {
             this.dispose(session);// save data player
