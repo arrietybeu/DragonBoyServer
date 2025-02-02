@@ -14,7 +14,7 @@ public class TaskMain {
     private String name;
     private String detail;
 
-    private final List<SubName> subNameList;
+    private List<SubName> subNameList;
 
     public TaskMain() {
         this.subNameList = new ArrayList<>();

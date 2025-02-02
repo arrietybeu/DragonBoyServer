@@ -48,6 +48,7 @@ public class TaskService {
 
             player.sendMessage(message);
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException("Error sendTaskMain: " + e.getMessage());
         }
     }
