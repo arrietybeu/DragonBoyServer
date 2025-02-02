@@ -1,4 +1,4 @@
 package nro.model.pet;
 
-public class Pet {
+public class Disciple {
 }

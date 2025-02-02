@@ -7,25 +7,37 @@ public final class PlayerStats {
 
     private final Player player;
 
-    private int cHPGoc;
-    private int cMPGoc;
-    private int cDamGoc;
-    private long cHPFull;
-    private long cMPFull;
-    private long cHP;
-    private long cMP;
-    private byte cspeed;
-    private byte hpFrom1000TiemNang;
-    private byte mpFrom1000TiemNang;
-    private byte damFrom1000TiemNang;
-    private long cDamFull;
-    private long cDefull;
-    private byte cCriticalFull;
-    private long cTiemNang;
-    private short expForOneAdd;
-    private int cDefGoc;
-    private byte cCriticalGoc;
+    // chi so co ban
+    private int baseHP;
+    private int baseMP;
+    private int baseDamage;
+    private int baseDefense;
+    private byte baseCriticalChance;
+    private byte movementSpeed;
+    private short stamina;
 
+    // chi so hien tai
+    private long currentHP;
+    private long currentMP;
+
+    // chi so max
+    private long maxHP;
+    private long maxMP;
+    private short maxStamina;
+
+    // chi so tong hop cam lon
+    private long totalDamage;
+    private long totalDefense;
+    private byte totalCriticalChance;
+
+    // tnsm
+    private long potentialPoints;
+    private short expPerStatIncrease;
+    private byte hpPer1000Potential;
+    private byte mpPer1000Potential;
+    private byte damagePer1000Potential;
+
+    // power level
     private long power;
 
     public PlayerStats(Player player) {

@@ -4,6 +4,7 @@ import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstPlayer;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
+import nro.model.pet.Disciple;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.template.entity.SkillInfo;
@@ -51,19 +52,6 @@ public class PlayerService {
         }
     }
 
-    /**
-     * <pre>
-     *     {@link #onPlayerLoginSuccess}
-     *     {@code
-     *     Server gửi: [112] => SPEACIAL_SKILL
-     *     Server gửi: [-42] => ME_LOAD_POINT
-     *     Server gửi: [40] => ITEM_SPLIT, TASK_GET
-     *     Server gửi: [-22] => MAP_CLEAR
-     *     Server gửi: [-42] => ME_LOAD_POINT
-     *     Server gửi: [-30] => SUB_COMMAND
-     *     }
-     * </pre>
-     */
     public void onPlayerLoginSuccess(Player player) {
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
@@ -71,18 +59,49 @@ public class PlayerService {
         MapService.clearMap(player);// -22
         this.sendInfoPlayer(player);// -30
         ClanService.getInstance().sendClanInfo(player);
-        //Server gửi: [-53] => CLAN_INFO
-        //Server gửi: [-64] => UPDATE_BAG
-        //Server gửi: [-90] => UPDATE_BODY
+        this.sendStamina(player);
+        this.sendMaxStamina(player);
+        this.sendUpdateActivePoint(player);
+        this.sendHaveDisciple(player);
+    }
+
+    private void sendHaveDisciple(Player player) {
+        try (Message message = new Message(-107)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(player.getDisciple() == null ? 0 : 1);
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendDisciple: " + e.getMessage());
+        }
     }
 
     private void sendMaxStamina(Player player) {
-        try (Message msg = new Message(-42)) {
+        try (Message msg = new Message(-69)) {
             DataOutputStream out = msg.writer();
-//            out.writeLong(player.getStats().getMaxStamina());
+            out.writeShort(player.getStats().getMaxStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendMaxStamina: " + e.getMessage());
+        }
+    }
+
+    private void sendUpdateActivePoint(Player player) {
+        try (Message msg = new Message(-97)) {
+            DataOutputStream out = msg.writer();
+            out.writeInt(player.getActivePoint());
+            player.sendMessage(msg);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendUpdateActivePoint: " + e.getMessage());
+        }
+    }
+
+    private void sendStamina(Player player) {
+        try (Message msg = new Message(-68)) {
+            DataOutputStream out = msg.writer();
+            out.writeShort(player.getStats().getStamina());
+            player.sendMessage(msg);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendStamina: " + e.getMessage());
         }
     }
 
@@ -90,24 +109,24 @@ public class PlayerService {
         try (Message msg = new Message(-42)) {
             PlayerStats stats = player.getStats();
             DataOutputStream out = msg.writer();
-            out.writeInt(stats.getCHPGoc());
-            out.writeInt(stats.getCMPGoc());
-            out.writeInt(stats.getCDamGoc());
-            out.writeLong(stats.getCHPFull());
-            out.writeLong(stats.getCMPFull());
-            out.writeLong(stats.getCHP());
-            out.writeLong(stats.getCMP());
-            out.writeByte(stats.getCspeed());
-            out.writeByte(stats.getHpFrom1000TiemNang());
-            out.writeByte(stats.getMpFrom1000TiemNang());
-            out.writeByte(stats.getDamFrom1000TiemNang());
-            out.writeLong(stats.getCDamFull());
-            out.writeLong(stats.getCDefull());
-            out.writeByte(stats.getCCriticalFull());
-            out.writeLong(stats.getCTiemNang());
-            out.writeShort(stats.getExpForOneAdd());
-            out.writeInt(stats.getCDefGoc());
-            out.writeByte(stats.getCCriticalGoc());
+            out.writeInt(stats.getBaseHP());
+            out.writeInt(stats.getBaseMP());
+            out.writeInt(stats.getBaseDamage());
+            out.writeLong(stats.getMaxHP());
+            out.writeLong(stats.getMaxMP());
+            out.writeLong(stats.getCurrentHP());
+            out.writeLong(stats.getCurrentMP());
+            out.writeByte(stats.getMovementSpeed());
+            out.writeByte(stats.getHpPer1000Potential());
+            out.writeByte(stats.getMpPer1000Potential());
+            out.writeByte(stats.getDamagePer1000Potential());
+            out.writeLong(stats.getTotalDamage());
+            out.writeLong(stats.getTotalDefense());
+            out.writeByte(stats.getTotalCriticalChance());
+            out.writeLong(stats.getPotentialPoints());
+            out.writeShort(stats.getExpPerStatIncrease());
+            out.writeInt(stats.getBaseDefense());
+            out.writeByte(stats.getBaseCriticalChance());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendPointForMe: " + e.getMessage());
