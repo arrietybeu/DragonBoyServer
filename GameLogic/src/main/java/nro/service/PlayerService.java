@@ -63,25 +63,41 @@ public class PlayerService {
         this.sendUpdateActivePoint(player);
         this.sendHaveDisciple(player);
         this.sendPlayerRank(player);
+        this.sendCurrencyHpMp(player);
+        MapService.getInstance().sendMapInfo(player);
     }
 
     private void sendHaveDisciple(Player player) {
         try (Message message = new Message(-107)) {
-            DataOutputStream out = message.writer();
-            out.writeByte(player.getDisciple() == null ? 0 : 1);
+            message.writer().writeByte(player.getDisciple() == null ? 0 : 1);
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendDisciple: " + e.getMessage());
         }
     }
 
-    private void sendPlayerRank(Player player){
+    private void sendPlayerRank(Player player) {
         try (Message message = new Message(-119)) {
             DataOutputStream out = message.writer();
             out.writeInt(player.getRank());
             player.sendMessage(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             LogServer.LogException("Error sendRank: " + e.getMessage());
+        }
+    }
+
+    private void sendCurrencyHpMp(Player player) {
+        try(Message message = new Message(-30)){
+            DataOutputStream out = message.writer();
+            out.writeByte(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP);
+            out.writeLong(player.getPlayerCurrencies().getGold());
+            out.writeInt(player.getPlayerCurrencies().getGem());
+            out.writeLong(player.getStats().getCurrentHP());
+            out.writeLong(player.getStats().getCurrentMP());
+            out.writeInt(player.getPlayerCurrencies().getRuby());
+            player.sendMessage(message);
+        }catch (Exception e){
+            LogServer.LogException("Error sendCurrencyHpMp: " + e.getMessage());
         }
     }
 

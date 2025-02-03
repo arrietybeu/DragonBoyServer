@@ -1,17 +1,22 @@
 package nro.model.map;
 
+import lombok.Getter;
+
+@Getter
 public class Waypoint {
 
-    public short minX;
+    private short minX;
 
-    public short minY;
+    private short minY;
 
-    public short maxX;
+    private short maxX;
 
-    public short maxY;
+    private short maxY;
 
-    public boolean isEnter;
+    private boolean isEnter;
 
-    public boolean isOffline;
+    private boolean isOffline;
+
+    private String name;
 
 }

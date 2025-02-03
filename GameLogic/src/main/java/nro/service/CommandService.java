@@ -1,6 +1,7 @@
 package nro.service;
 
 import nro.model.item.Item;
+import nro.model.map.GameMap;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
@@ -15,6 +16,9 @@ import nro.server.Maintenance;
 import nro.server.LogServer;
 import nro.server.manager.skill.SpeacialSkillManager;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Scanner;
@@ -107,6 +111,24 @@ public class CommandService {
                         List<Item> items = ItemService.initializePlayerItems((byte) 0);
                         for (var item : items) {
                             System.out.println(item.getJsonOptions());
+                        }
+                        break;
+                    case "item_bg":
+                        for (int i = 0; i < 100; i++) {
+                            String filePath = "C:\\Users\\Win Val\\Desktop\\ProjectServer\\resources\\louisgoku\\map\\item_bg_map_data\\" + i;
+                            try (DataInputStream reader = new DataInputStream(new FileInputStream(filePath))) {
+                                short num6 = reader.readShort();
+                                GameMap map = MapManager.getInstance().findMapById(i);
+                                System.out.println("Map name: " + map.getName() + " id: " + i + " size: " + num6);
+                                for (int m = 0; m < num6; m++) {
+                                    short id = reader.readShort();
+                                    short x = reader.readShort();
+                                    short y = reader.readShort();
+                                    System.out.println("id: " + id + " x: " + x + " y: " + y);
+                                }
+                            } catch (IOException e) {
+                                System.out.println("Map deo co: " + i);
+                            }
                         }
                         break;
                     default:
