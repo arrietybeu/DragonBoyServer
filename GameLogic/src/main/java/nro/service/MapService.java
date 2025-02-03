@@ -38,7 +38,7 @@ public class MapService {
             output.writeUTF(area.getMap().getName());
             output.writeByte(area.getId());
 
-            this.loadInfoMap(player, message);
+            this.loadInfoMap(player, output);
 
             player.sendMessage(message);
         } catch (Exception e) {
@@ -46,8 +46,7 @@ public class MapService {
         }
     }
 
-    private void loadInfoMap(Player player, Message message) throws IOException {
-        DataOutputStream output = message.writer();
+    private void loadInfoMap(Player player, DataOutputStream output) throws IOException {
         output.writeShort(player.getX());
         output.writeShort(player.getY());
         List<Waypoint> wayPoints = player.getArea().getMap().getWaypoints();
@@ -121,7 +120,6 @@ public class MapService {
          *     keyValueAction(key, value);
          * }
          */
-
     }
 
 
