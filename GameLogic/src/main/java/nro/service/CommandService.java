@@ -118,7 +118,7 @@ public class CommandService {
                             String filePath = "C:\\Users\\Win Val\\Desktop\\ProjectServer\\resources\\louisgoku\\map\\item_bg_map_data\\" + i;
                             try (DataInputStream reader = new DataInputStream(new FileInputStream(filePath))) {
                                 short num6 = reader.readShort();
-                                GameMap map = MapManager.getInstance().findMapById(i);
+                                GameMap map = MapManager.getInstance().findMapById((short) i);
                                 System.out.println("Map name: " + map.getName() + " id: " + i + " size: " + num6);
                                 for (int m = 0; m < num6; m++) {
                                     short id = reader.readShort();

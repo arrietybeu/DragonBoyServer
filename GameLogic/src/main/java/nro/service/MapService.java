@@ -62,6 +62,7 @@ public class MapService {
             output.writeBoolean(waypoint.isOffline());
             output.writeUTF(waypoint.getName());
         }
+
         List<Monster> monsters = player.getArea().getMonsters();
         output.writeByte(monsters.size());
         for (Monster monster : monsters) {

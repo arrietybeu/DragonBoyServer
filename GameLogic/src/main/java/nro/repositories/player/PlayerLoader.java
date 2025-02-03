@@ -106,7 +106,7 @@ public class PlayerLoader {
                     player.setX(resultSet.getShort("pos_x"));
                     player.setY(resultSet.getShort("pos_y"));
 
-                    int mapID = resultSet.getInt("map_id");
+                    short mapID = resultSet.getShort("map_id");
                     GameMap gameMap = MapManager.getInstance().findMapById(mapID);
                 }
             }
