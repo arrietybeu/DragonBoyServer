@@ -9,20 +9,24 @@ import java.util.List;
 @Data
 public class GameMap {
 
-    private int id;
-    private String name;
-    private byte planetId;
-    private byte tileId;
-    private byte bgId;
-    private byte typeMap;
+    private final int id;
+    private final String name;
+    private final byte planetId;
+    private final byte tileId;
+    private final byte bgId;
+    private final byte typeMap;
 
     private final List<Waypoint> waypoints;
     private final List<BgItem> bgItems;
     private final List<BackgroudEffect> backgroudEffects;
 
-    public GameMap(int id, String name, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints) {
+    public GameMap(int id, String name, byte planetId, byte tileId, byte bgId, byte typeMap, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints) {
         this.id = id;
         this.name = name;
+        this.planetId = planetId;
+        this.tileId = tileId;
+        this.typeMap = typeMap;
+        this.bgId = bgId;
         this.bgItems = bgItems;
         this.backgroudEffects = backgroudEffects;
         this.waypoints = waypoints;

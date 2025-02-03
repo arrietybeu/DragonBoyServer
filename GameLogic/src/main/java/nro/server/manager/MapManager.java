@@ -68,12 +68,17 @@ public class MapManager implements IManager {
             while (rs.next()) {
                 short id = rs.getShort("id");
                 var name = rs.getString("name");
+                var type = rs.getByte("type");
+                var planetId = rs.getByte("planet_id");
+                var tileId = rs.getByte("tile_id");
+                var bgId = rs.getByte("background_id");
+                var bgType = rs.getByte("background_type");
 
                 List<BgItem> bgItems = this.loadItemBackgroundMap(connection, id);
                 List<BackgroudEffect> effects = this.loadMapEffects(id);
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
 
-                GameMap mapTemplate = new GameMap(id, name, bgItems, effects, waypoints);
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgItems, effects, waypoints);
                 this.gameMaps.put(id, mapTemplate);
             }
             LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
