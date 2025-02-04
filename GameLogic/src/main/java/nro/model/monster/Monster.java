@@ -1,6 +1,8 @@
 package nro.model.monster;
 
 import lombok.Data;
+import nro.model.template.MonsterTemplate;
+import nro.server.manager.MonsterManager;
 
 @Data
 public class Monster {
@@ -21,4 +23,9 @@ public class Monster {
     private byte status;
     private byte levelBoss;
     private boolean isBoss;
+
+    public String findNameMonsterByTemplate() {
+        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.id);
+        return template.name();
+    }
 }

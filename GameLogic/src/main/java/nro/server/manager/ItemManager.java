@@ -84,7 +84,7 @@ public class ItemManager implements IManager {
                     var powerRequire = resultSet.getInt("power_require");
                     var iconID = resultSet.getShort("icon_id");
                     var part = resultSet.getShort("part");
-                    var isUpToUp = resultSet.getBoolean("is_up_top");
+                    var isUpToUp = resultSet.getByte("is_up_top") == 1;
                     var options = resultSet.getString("options");
 
                     List<ItemOption> itemOptions = new ArrayList<>();
@@ -244,7 +244,7 @@ public class ItemManager implements IManager {
     private void setDataItemHead() {
         try (Message message = new Message()) {
             message.writer().writeShort(itemHeadAvatars.size());
-            for(var headAvatar : itemHeadAvatars){
+            for (var headAvatar : itemHeadAvatars) {
                 message.writer().writeShort(headAvatar.headId());
                 message.writer().writeShort(headAvatar.avatarId());
             }

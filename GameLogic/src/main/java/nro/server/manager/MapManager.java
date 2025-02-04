@@ -124,12 +124,12 @@ public class MapManager implements IManager {
                     monster.setY(rs.getShort("y"));
                     monster.setStatus(rs.getByte("status"));
                     monster.setLevelBoss(rs.getByte("level_boss"));
-                    monster.setBoss(rs.getBoolean("is_boss"));
-                    monster.setDisable(rs.getBoolean("is_disable"));
-                    monster.setDontMove(rs.getBoolean("is_dont_move"));
-                    monster.setFire(rs.getBoolean("is_fire"));
-                    monster.setIce(rs.getBoolean("is_ice"));
-                    monster.setWind(rs.getBoolean("is_wind"));
+                    monster.setBoss(rs.getByte("is_boss") == 1);
+                    monster.setDisable(rs.getByte("is_disable") == 1);
+                    monster.setDontMove(rs.getByte("is_dont_move") == 1);
+                    monster.setFire(rs.getByte("is_fire") == 1);
+                    monster.setIce(rs.getByte("is_ice") == 1);
+                    monster.setWind(rs.getByte("is_wind") == 1);
                     monsters.add(monster);
                 }
             }
@@ -174,8 +174,8 @@ public class MapManager implements IManager {
                     waypoint.setMinY(rs.getShort("min_y"));
                     waypoint.setMaxX(rs.getShort("max_x"));
                     waypoint.setMaxY(rs.getShort("max_y"));
-                    waypoint.setEnter(rs.getBoolean("is_enter"));
-                    waypoint.setOffline(rs.getBoolean("is_offline"));
+                    waypoint.setEnter(rs.getByte("is_enter") == 1);
+                    waypoint.setOffline(rs.getByte("is_offline") == 1);
                     waypoint.setGoMap(rs.getInt("go_map"));
                     waypoint.setGoX(rs.getShort("go_x"));
                     waypoint.setGoY(rs.getShort("go_y"));

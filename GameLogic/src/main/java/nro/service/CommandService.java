@@ -139,9 +139,13 @@ public class CommandService {
                         for (var zone : map.getAreas()) {
                             System.out.println("Zone id: " + zone.getId());
                             System.out.println("Npc size: " + zone.getNpcs().size());
-                            for (Npc npc : zone.getNpcs()) {
-                                System.out.println("Npc: " + npc.toString());
-                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
+//                            for (Npc npc : zone.getNpcs()) {
+//                                System.out.println("Npc: " + npc.toString());
+//                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
+//                            }
+                            for(var monster : zone.getMonsters()) {
+                                System.out.println("Monster: " + monster.toString());
+                                System.out.println("Monster Name: " + monster.findNameMonsterByTemplate());
                             }
                         }
                         break;
