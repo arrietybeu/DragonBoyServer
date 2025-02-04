@@ -1,13 +1,21 @@
 package nro.model.npc;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import nro.model.LiveObject;
+import nro.model.template.NpcTemplate;
+import nro.server.manager.NpcManager;
 
-@Getter
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class Npc extends LiveObject {
 
-    private int npcId;
     private int status;
     private int templateId;
     private int avatar;
+
+    public String findNameNpcByTemplate() {
+        NpcTemplate npc = NpcManager.getInstance().getNpcTemplate(this.templateId);
+        return npc.name();
+    }
 }

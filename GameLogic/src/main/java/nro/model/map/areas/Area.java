@@ -22,13 +22,13 @@ public class Area {
     private final List<Npc> npcs;
     private final List<ItemMap> items;
 
-    public Area(GameMap map, int zoneId, int maxPlayers) {
+    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters, List<Npc> npcs) {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
         this.players = new ArrayList<>();
-        this.monsters = new ArrayList<>();
-        this.npcs = new ArrayList<>();
+        this.monsters = monsters;
+        this.npcs = npcs;
         this.items = new ArrayList<>();
     }
 }

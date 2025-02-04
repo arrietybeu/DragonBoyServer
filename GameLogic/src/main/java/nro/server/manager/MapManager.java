@@ -6,6 +6,7 @@ import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
 import nro.model.monster.Monster;
+import nro.model.npc.Npc;
 import nro.model.template.map.TileSetTemplate;
 import nro.network.Message;
 import nro.server.config.ConfigDB;
@@ -64,9 +65,7 @@ public class MapManager implements IManager {
 
     private void loadMapTemplate() {
         String query = "SELECT * FROM `map_template`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = connection.prepareStatement(query);
-             var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
             while (rs.next()) {
                 short id = rs.getShort("id");
                 var name = rs.getString("name");
@@ -82,18 +81,9 @@ public class MapManager implements IManager {
                 List<BackgroudEffect> effects = this.loadMapEffects(id);
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
 
-                GameMap mapTemplate = new GameMap(
-                        id,
-                        name,
-                        planetId,
-                        tileId,
-                        type,
-                        bgId,
-                        bgItems,
-                        effects,
-                        waypoints
-                );
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgItems, effects, waypoints);
 
+                mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }
             LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
@@ -105,11 +95,15 @@ public class MapManager implements IManager {
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
         List<Area> areas = new ArrayList<>();
         for (int i = 0; i < zone; i++) {
-            Area area = new Area(map, i, maxPlayer);
-            this.loadMonsters(connection, map.getId());
+            Area area = new Area(
+                    map,
+                    i,
+                    maxPlayer,
+                    this.loadMonsters(connection, map.getId()),
+                    this.loadNpcs(connection, map.getId())
+            );
             areas.add(area);
         }
-
         return areas;
     }
 
@@ -143,6 +137,28 @@ public class MapManager implements IManager {
             LogServer.LogException("Error loadMonsters: " + e.getMessage());
         }
         return monsters;
+    }
+
+    private List<Npc> loadNpcs(Connection connection, int mapId) {
+        List<Npc> npcs = new ArrayList<>();
+        String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, mapId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Npc npc = new Npc();
+                    npc.setTemplateId(rs.getInt("npc_id"));
+                    npc.setStatus(rs.getByte("status"));
+                    npc.setX(rs.getShort("x"));
+                    npc.setY(rs.getShort("y"));
+                    npc.setAvatar(rs.getShort("avatar"));
+                    npcs.add(npc);
+                }
+            }
+        } catch (SQLException e) {
+            LogServer.LogException("Error loadNpcs: " + e.getMessage());
+        }
+        return npcs;
     }
 
     private List<Waypoint> loadWaypoints(Connection connection, int mapId) {
@@ -284,9 +300,7 @@ public class MapManager implements IManager {
 
     private void loadTileSetInfo() {
         String query = "SELECT * FROM `map_tile_set_info`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = connection.prepareStatement(query);
-             var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var tileSet = new TileSetTemplate();
                 tileSet.setId(rs.getInt("id"));

@@ -20,7 +20,8 @@ public class GameMap {
     private final List<Waypoint> waypoints;
     private final List<BgItem> bgItems;
     private final List<BackgroudEffect> backgroudEffects;
-//    private final List<Area> areas;
+
+    private List<Area> areas;
 
     public GameMap(int id, String name, byte planetId, byte tileId, byte bgId, byte typeMap, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints) {
         this.id = id;

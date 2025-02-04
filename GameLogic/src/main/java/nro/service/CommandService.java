@@ -2,6 +2,7 @@ package nro.service;
 
 import nro.model.item.Item;
 import nro.model.map.GameMap;
+import nro.model.npc.Npc;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
@@ -128,6 +129,19 @@ public class CommandService {
                                 }
                             } catch (IOException e) {
                                 System.out.println("Map deo co: " + i);
+                            }
+                        }
+                        break;
+                    case "zone":
+                        GameMap map = MapManager.getInstance().findMapById((short) 0);
+                        System.out.println("Map name: " + map.getName());
+                        System.out.println("Zone size: " + map.getAreas().size());
+                        for (var zone : map.getAreas()) {
+                            System.out.println("Zone id: " + zone.getId());
+                            System.out.println("Npc size: " + zone.getNpcs().size());
+                            for (Npc npc : zone.getNpcs()) {
+                                System.out.println("Npc: " + npc.toString());
+                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
                             }
                         }
                         break;
