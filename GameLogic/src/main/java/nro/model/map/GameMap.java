@@ -23,7 +23,11 @@ public class GameMap {
 
     private List<Area> areas;
 
-    public GameMap(int id, String name, byte planetId, byte tileId, byte bgId, byte typeMap, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints) {
+    public GameMap(int id, String name, byte planetId,
+                   byte tileId, byte bgId, byte typeMap,
+                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
+                   List<Waypoint> waypoints
+    ) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;

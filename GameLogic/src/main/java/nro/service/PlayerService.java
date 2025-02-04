@@ -1,5 +1,6 @@
 package nro.service;
 
+import nro.consts.ConstError;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstPlayer;
 import nro.model.item.Item;
@@ -47,7 +48,8 @@ public class PlayerService {
             }
         } catch (Exception e) {
             LogServer.LogException(e.getMessage());
-            Service.dialogMessage(session, "Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error 334]");
+            Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
+                    ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
         }
     }
 
