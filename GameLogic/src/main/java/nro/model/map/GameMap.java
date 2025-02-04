@@ -1,6 +1,7 @@
 package nro.model.map;
 
 import lombok.Data;
+import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
 
@@ -19,6 +20,7 @@ public class GameMap {
     private final List<Waypoint> waypoints;
     private final List<BgItem> bgItems;
     private final List<BackgroudEffect> backgroudEffects;
+//    private final List<Area> areas;
 
     public GameMap(int id, String name, byte planetId, byte tileId, byte bgId, byte typeMap, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints) {
         this.id = id;
@@ -40,4 +42,5 @@ public class GameMap {
                 || mapID == 129
                 || mapID == 130;
     }
+
 }

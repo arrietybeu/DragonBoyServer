@@ -15,15 +15,17 @@ import lombok.Getter;
 public class Area {
 
     private final int id;
+    private final int maxPlayers;
     private final GameMap map;
     private final List<Player> players;
     private final List<Monster> monsters;
     private final List<Npc> npcs;
     private final List<ItemMap> items;
 
-    public Area(GameMap map, int zoneId) {
+    public Area(GameMap map, int zoneId, int maxPlayers) {
         this.map = map;
         this.id = zoneId;
+        this.maxPlayers = maxPlayers;
         this.players = new ArrayList<>();
         this.monsters = new ArrayList<>();
         this.npcs = new ArrayList<>();

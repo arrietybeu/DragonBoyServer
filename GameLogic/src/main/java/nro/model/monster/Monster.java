@@ -1,10 +1,11 @@
 package nro.model.monster;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class Monster {
 
+    private int id;
     private boolean isDisable;
     private boolean isDontMove;
     private boolean isFire;
@@ -20,5 +21,4 @@ public class Monster {
     private byte status;
     private byte levelBoss;
     private boolean isBoss;
-
 }

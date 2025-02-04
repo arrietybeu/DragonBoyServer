@@ -29,7 +29,7 @@ public class DataMap {
 
             message.writer().writeShort(sizeMap);// TODO version < 2.4.3 write byte
 
-            for (GameMap gameMap : mapManager.getGameMaps()) {
+            for (GameMap gameMap : mapManager.getGameMaps().values()) {
                 message.writer().writeUTF(gameMap.getName());
             }
 

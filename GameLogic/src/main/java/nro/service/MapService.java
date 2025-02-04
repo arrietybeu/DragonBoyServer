@@ -111,15 +111,8 @@ public class MapService {
             output.writeShort(bgItem.getX());
             output.writeShort(bgItem.getY());
         }
-        /**
-         * short num10 = msg.reader().readShort();
-         * for (int num11 = 0; num11 < num10; num11++)
-         * {
-         *     string key = msg.reader().readUTF();
-         *     string value = msg.reader().readUTF();
-         *     keyValueAction(key, value);
-         * }
-         */
+
+        output.writeShort(0);
     }
 
 
