@@ -104,6 +104,7 @@ public class MapService {
                 output.writeShort(item.getRange());
             }
         }
+
         List<BgItem> bgItems = player.getArea().getMap().getBgItems();
         output.writeShort(bgItems.size());
         for (BgItem bgItem : bgItems) {
@@ -113,6 +114,8 @@ public class MapService {
         }
 
         output.writeShort(0);
+
+        // eff map
     }
 
 

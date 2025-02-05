@@ -2,16 +2,13 @@ package nro.repositories.player;
 
 import lombok.Getter;
 import nro.model.map.GameMap;
+import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.task.TaskMain;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
-import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
-import nro.server.manager.SessionManager;
-import nro.service.Service;
-import nro.utils.Util;
 
 import java.sql.*;
 import java.time.Instant;
@@ -107,7 +104,11 @@ public class PlayerLoader {
                     player.setY(resultSet.getShort("pos_y"));
 
                     short mapID = resultSet.getShort("map_id");
-                    GameMap gameMap = MapManager.getInstance().findMapById(mapID);
+                    Area gameMap = MapManager.getInstance().findMapById(mapID).getArea();
+                    if (gameMap == null) {
+                        throw new SQLException("Map not found for player location: " + mapID);
+                    }
+                    player.setArea(gameMap);
                 }
             }
         }

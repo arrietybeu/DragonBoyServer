@@ -21,7 +21,6 @@ public class Controller {
         long st = System.currentTimeMillis();
         byte cmd = msg.getCommand();
         try {
-            System.out.println("cmd: " + cmd);
             IMessageProcessor processor = this.factory.getProcessor(cmd);
             if (processor != null) {
                 processor.process(session, msg);

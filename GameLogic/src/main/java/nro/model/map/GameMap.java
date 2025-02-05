@@ -1,9 +1,11 @@
 package nro.model.map;
 
+import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.Data;
 import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
+import nro.utils.Util;
 
 import java.util.List;
 
@@ -37,6 +39,18 @@ public class GameMap {
         this.bgItems = bgItems;
         this.backgroudEffects = backgroudEffects;
         this.waypoints = waypoints;
+    }
+
+    public Area getArea() {
+        List<Area> areas = this.areas;
+        for (Area area : areas) {
+            int count = area.getPlayers().size();
+
+            if (count < area.getMaxPlayers()) {
+                return area;
+            }
+        }
+        return null;
     }
 
     public static boolean isVoDaiMap(int mapID) {

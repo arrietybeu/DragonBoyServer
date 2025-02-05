@@ -162,6 +162,7 @@ public class ResourceService {
     public void sendSmallVersion(Session session) {
         var res = ResourcesManager.getInstance();
         byte[][] smallVersion = res.getSmallVersion();
+        System.out.println("Zoom Level: " + session.getClientInfo().getZoomLevel());
         byte[] data = smallVersion[session.getClientInfo().getZoomLevel() - 1];
         try (Message message = new Message(-77)) {
             message.writer().writeShort(data.length);

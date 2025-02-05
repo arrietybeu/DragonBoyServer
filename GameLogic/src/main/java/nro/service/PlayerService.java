@@ -47,6 +47,7 @@ public class PlayerService {
                 this.onPlayerLoginSuccess(player);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException(e.getMessage());
             Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
                     ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
