@@ -81,7 +81,7 @@ public class MapManager implements IManager {
                 List<BackgroudEffect> effects = this.loadMapEffects(id);
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
 
-                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgItems, effects, waypoints);
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgType, bgItems, effects, waypoints);
 
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);

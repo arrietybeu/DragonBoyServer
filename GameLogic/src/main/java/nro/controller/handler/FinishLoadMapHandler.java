@@ -11,6 +11,6 @@ public class FinishLoadMapHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
-        LogServer.DebugLogic("FinishLoadMapHandler");
+
     }
 }

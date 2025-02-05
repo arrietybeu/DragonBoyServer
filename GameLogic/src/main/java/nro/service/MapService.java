@@ -1,5 +1,6 @@
 package nro.service;
 
+import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
@@ -47,11 +48,18 @@ public class MapService {
     }
 
     private void loadInfoMap(Player player, DataOutputStream output) throws IOException {
+        Area area = player.getArea();
+        GameMap map = area.getMap();
+        List<BgItem> bgItems = map.getBgItems();
+        List<Waypoint> wayPoints = map.getWaypoints();
+        List<Monster> monsters = area.getMonsters();
+        List<Npc> npcs = area.getNpcs();
+        List<ItemMap> itemMaps = area.getItems();
+
         output.writeShort(player.getX());
         output.writeShort(player.getY());
-        List<Waypoint> wayPoints = player.getArea().getMap().getWaypoints();
-        output.writeByte(wayPoints.size());
 
+        output.writeByte(wayPoints.size());
         for (Waypoint waypoint : wayPoints) {
             output.writeShort(waypoint.getMinX());
             output.writeShort(waypoint.getMinY());
@@ -62,7 +70,6 @@ public class MapService {
             output.writeUTF(waypoint.getName());
         }
 
-        List<Monster> monsters = player.getArea().getMonsters();
         output.writeByte(monsters.size());
         for (Monster monster : monsters) {
             output.writeBoolean(monster.isDisable());
@@ -81,9 +88,9 @@ public class MapService {
             output.writeByte(monster.getLevelBoss());
             output.writeBoolean(monster.isBoss());
         }
-        output.writeByte(0);
 
-        List<Npc> npcs = player.getArea().getNpcs();
+        output.writeByte(0);
+        output.writeByte(npcs.size());
         for (Npc npc : npcs) {
             output.writeByte(npc.getStatus());
             output.writeShort(npc.getX());
@@ -92,30 +99,28 @@ public class MapService {
             output.writeShort(npc.getAvatar());
         }
 
-        List<ItemMap> items = player.getArea().getItems();
-        output.writeByte(items.size());
-        for (ItemMap item : items) {
+        output.writeByte(itemMaps.size());
+        for (ItemMap item : itemMaps) {
             output.writeShort(item.getItemMapID());
             output.writeShort(item.getItemTemplate().id());
             output.writeShort(item.getX());
             output.writeShort(item.getY());
             output.writeInt(item.getPlayerId());
-            if(item.getPlayerId() == -2) {
+            if (item.getPlayerId() == -2) {
                 output.writeShort(item.getRange());
             }
         }
 
-        List<BgItem> bgItems = player.getArea().getMap().getBgItems();
         output.writeShort(bgItems.size());
         for (BgItem bgItem : bgItems) {
             output.writeShort(bgItem.getId());
             output.writeShort(bgItem.getX());
             output.writeShort(bgItem.getY());
         }
+        output.writeShort(0);//write effect
 
-        output.writeShort(0);
-
-        // eff map
+        output.writeByte(map.getBgType());
+        output.writeByte(-1); // is teleport
     }
 
 
