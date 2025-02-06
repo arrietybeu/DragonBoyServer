@@ -39,6 +39,8 @@ public class PlayerCreator {
 
                 this.createPlayerPoint(connection, playerId, gender);
 
+                this.createPlayerSkillsShortCut(connection, playerId, gender);
+
                 this.createMagicTreePlayer(connection, playerId);
 
                 this.createItemBodyPlayer(connection, playerId, gender);
@@ -188,4 +190,37 @@ public class PlayerCreator {
             }
         }
     }
+
+    private void createPlayerSkillsShortCut(Connection connection, int playerId, int gender) throws SQLException {
+        if (playerId <= 0) {
+            throw new IllegalArgumentException("playerId phải lớn hơn 0");
+        }
+
+        if (gender < 0 || gender > 2) {
+            throw new IllegalArgumentException("Gender không hợp lệ: " + gender);
+        }
+
+        String query = "INSERT INTO player_skills_shortcut (player_id, slot_1, slot_2, slot_3, slot_4, slot_5, slot_6, slot_7, slot_8, slot_9, slot_10) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            int idSkill = (gender == 0) ? 0 : (gender == 1) ? 2 : 4;
+
+            statement.setInt(1, playerId);
+            statement.setInt(2, idSkill); // skill_id
+
+            for (int i = 3; i <= 11; i++) {
+                statement.setInt(i, -1);
+            }
+
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("Failed to create player skills shortcut.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi tạo shortcut skill: " + e.getMessage());
+            throw e;
+        }
+    }
+
 }

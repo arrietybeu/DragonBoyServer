@@ -7,6 +7,7 @@ import nro.model.player.Player;
 import nro.model.task.TaskMain;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
+import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 
@@ -61,6 +62,9 @@ public class PlayerLoader {
 
         // Load player data task
         this.loadPLayerDataTask(player, connection);
+
+        // Load player skills shortcut
+        this.loadPlayerSkillsShortCut(player, connection);
         return player;
     }
 
@@ -145,4 +149,27 @@ public class PlayerLoader {
             }
         }
     }
+
+    private void loadPlayerSkillsShortCut(Player player, Connection connection) throws SQLException {
+        String query = "SELECT * FROM player_skills_shortcut WHERE player_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, player.getId());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    byte[] skillShortCut = new byte[10];
+
+                    for (int i = 0; i < 10; i++) {
+                        skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
+                    }
+
+                    player.getPlayerSkill().setSkillShortCut(skillShortCut);
+                } else {
+                    LogServer.LogException("Khong tim thay skill short cut for player id: " + player.getId());
+                }
+            }
+        }
+    }
+
 }

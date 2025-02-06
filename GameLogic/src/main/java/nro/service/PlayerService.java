@@ -70,6 +70,7 @@ public class PlayerService {
         this.sendHaveDisciple(player);// -107
         this.sendPlayerRank(player);// -119
         this.sendCurrencyHpMp(player);// -30
+        this.sendSkillShortCut(player);// -113
         MapService.getInstance().sendMapInfo(player);// -24
     }
 
@@ -79,6 +80,20 @@ public class PlayerService {
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendDisciple: " + e.getMessage());
+        }
+    }
+
+    private void sendSkillShortCut(Player player) {
+        try (Message message = new Message(-113)) {
+            DataOutputStream out = message.writer();
+            byte[] skillShortCut = player.getPlayerSkill().getSkillShortCut();
+            for (byte skill : skillShortCut) {
+                out.writeByte(skill);
+                System.out.println(skill);
+            }
+            player.sendMessage(message);
+        }catch (Exception e) {
+            LogServer.LogException("Error sendSkillShortCut: " + e.getMessage());
         }
     }
 
@@ -92,7 +107,6 @@ public class PlayerService {
         }
     }
 
-
     private void sendPlayerBody(Player player) {
         try (Message message = new Message(-90)) {
             DataOutputStream out = message.writer();
@@ -103,7 +117,7 @@ public class PlayerService {
             out.writeShort(player.getPlayerFashion().getLeg());
             out.writeByte(player.getPlayerSkill().isMonkey() ? 1 : 0);
             player.sendMessage(message);
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogServer.LogException("Error sendPlayerBody: " + e.getMessage());
         }
     }

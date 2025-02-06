@@ -239,7 +239,7 @@ public class ResourceService {
 
     public void sendDataBackgroundMap(Session session, int id) {
         try (Message message = new Message(-32)) {
-            byte[] data = FileNio.loadDataFile("resources/x" + session.getClientInfo().getZoomLevel() + "/image_background/" + id + "png");
+            byte[] data = FileNio.loadDataFile("resources/x" + session.getClientInfo().getZoomLevel() + "/image_background/" + id + ".png");
 
             message.writer().writeShort(id);
             assert data != null : "Data Background is null: " + id;

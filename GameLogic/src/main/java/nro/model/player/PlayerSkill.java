@@ -15,6 +15,7 @@ public class PlayerSkill {
     private final Player player;
 
     private boolean isMonkey;
+    private byte[] skillShortCut;
 
     public PlayerSkill(Player player) {
         this.player = player;
