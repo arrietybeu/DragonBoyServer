@@ -45,6 +45,7 @@ public class PlayerLoader {
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));
+        player.getPlayerFashion().setHead(resultSet.getShort("head"));// 31
 
         // Load player currencies
         this.loadPlayerCurrencies(player, connection);

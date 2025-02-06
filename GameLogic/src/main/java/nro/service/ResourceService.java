@@ -162,7 +162,7 @@ public class ResourceService {
     public void sendSmallVersion(Session session) {
         var res = ResourcesManager.getInstance();
         byte[][] smallVersion = res.getSmallVersion();
-        System.out.println("Zoom Level: " + session.getClientInfo().getZoomLevel());
+//        System.out.println("Zoom Level: " + session.getClientInfo().getZoomLevel());
         byte[] data = smallVersion[session.getClientInfo().getZoomLevel() - 1];
         try (Message message = new Message(-77)) {
             message.writer().writeShort(data.length);
@@ -289,13 +289,35 @@ public class ResourceService {
     public void sendTileSetInfo(Session session) {
         try (Message message = new Message(-82)) {
             MapManager mapManager = MapManager.getInstance();
-            var data = mapManager.getTileSetData();
-            message.writer().write(data);
+            var data = mapManager.getTileSetTemplates();
+            message.writer().writeByte(data.size());
+            for (var tileSet : data) {
+                message.writer().writeByte(tileSet.getTile_type());
+                for (var tile : tileSet.getTileTypes()) {
+                    message.writer().writeInt(tile.getTileSetId());
+                    message.writer().writeByte(tile.getIndex());
+
+                    for (var indexValue : tile.getIndex_value()) {
+                        message.writer().writeByte(indexValue);
+                    }
+                }
+            }
             session.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
         }
     }
+
+//    public void sendTileSetInfo(Session session) {
+//        try (Message message = new Message(-82)) {
+//            MapManager mapManager = MapManager.getInstance();
+//            var data = mapManager.getTileSetData();
+//            message.writer().write(data);
+//            session.sendMessage(message);
+//        } catch (Exception e) {
+//            LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
+//        }
+//    }
 
     public void clientOk(Session session) {
     }

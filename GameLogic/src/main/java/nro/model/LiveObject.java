@@ -12,7 +12,7 @@ public abstract class LiveObject {
     private byte typeObject;
 
     private short aura;
-    private byte idEffSetItem;
+    private byte idEffSetItem = -1;
     private short idHat;
 
     private byte gender;

@@ -7,7 +7,11 @@ public class PlayerFashion {
 
     private final Player player;
 
-    private int head;
+    private short head;
+    private short body;
+    private short leg;
+
+    private short flagBag;
 
     public PlayerFashion(Player player) {
         this.player = player;

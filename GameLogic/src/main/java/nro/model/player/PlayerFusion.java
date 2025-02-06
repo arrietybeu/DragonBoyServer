@@ -8,5 +8,4 @@ public class PlayerFusion {
     private final Player player;
     private byte typeFusion;
     private long lastTimeFusion;
-
 }

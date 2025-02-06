@@ -17,6 +17,7 @@ import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.ItemManager;
 
+import javax.xml.crypto.Data;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -60,14 +61,16 @@ public class PlayerService {
         TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
         this.sendInfoPlayer(player);// -30
-        ClanService.getInstance().sendClanInfo(player);
-        this.sendStamina(player);
-        this.sendMaxStamina(player);
-        this.sendUpdateActivePoint(player);
-        this.sendHaveDisciple(player);
-        this.sendPlayerRank(player);
-        this.sendCurrencyHpMp(player);
-        MapService.getInstance().sendMapInfo(player);
+        ClanService.getInstance().sendClanInfo(player);// -53
+        InventoryService.getInstance().sendFlagBag(player);// -64
+        this.sendPlayerBody(player);// -90
+        this.sendStamina(player);// -68
+        this.sendMaxStamina(player);// -69
+        this.sendUpdateActivePoint(player);// -97
+        this.sendHaveDisciple(player);// -107
+        this.sendPlayerRank(player);// -119
+        this.sendCurrencyHpMp(player);// -30
+        MapService.getInstance().sendMapInfo(player);// -24
     }
 
     private void sendHaveDisciple(Player player) {
@@ -89,8 +92,24 @@ public class PlayerService {
         }
     }
 
+
+    private void sendPlayerBody(Player player) {
+        try (Message message = new Message(-90)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(1);
+            out.writeInt(player.getId());
+            out.writeShort(player.getPlayerFashion().getHead());
+            out.writeShort(player.getPlayerFashion().getBody());
+            out.writeShort(player.getPlayerFashion().getLeg());
+            out.writeByte(player.getPlayerSkill().isMonkey() ? 1 : 0);
+            player.sendMessage(message);
+        }catch (Exception e) {
+            LogServer.LogException("Error sendPlayerBody: " + e.getMessage());
+        }
+    }
+
     private void sendCurrencyHpMp(Player player) {
-        try(Message message = new Message(-30)){
+        try (Message message = new Message(-30)) {
             DataOutputStream out = message.writer();
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP);
             out.writeLong(player.getPlayerCurrencies().getGold());
@@ -99,7 +118,7 @@ public class PlayerService {
             out.writeLong(player.getStats().getCurrentMP());
             out.writeInt(player.getPlayerCurrencies().getRuby());
             player.sendMessage(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             LogServer.LogException("Error sendCurrencyHpMp: " + e.getMessage());
         }
     }
@@ -214,13 +233,12 @@ public class PlayerService {
 
             // type fusion = 0 return 0 = false
             out.writeByte(player.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
-            out.writeLong(19062006);
+            out.writeInt(19062006);
 
             out.writeByte(player.isNewPlayer() ? 1 : 0);
             out.writeShort(player.getAura());
             out.writeByte(player.getIdEffSetItem());
             out.writeShort(player.getIdHat());
-
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
