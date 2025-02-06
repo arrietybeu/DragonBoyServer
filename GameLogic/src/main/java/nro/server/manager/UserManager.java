@@ -22,6 +22,7 @@ public class UserManager {
         try {
             if (this.userMap.containsKey(user.getId())) {
 //                LogServer.LogException("UserManager.add: " + user.getId() + " is already exist");
+                this.userMap.remove(user.getId());
                 return;
             }
             this.userMap.put(user.getId(), user);

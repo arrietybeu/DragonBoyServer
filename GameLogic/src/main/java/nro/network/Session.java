@@ -227,7 +227,8 @@ public final class Session {
             if (this.userInfo != null) {
                 UserManager.getInstance().remove(userInfo);
             }
-//            LogServer.DebugLogic("Session disconnect: " + sessionInfo.getId() + "-" + Thread.activeCount());
+
+            LogServer.DebugLogic("Session disconnect: " + sessionInfo.getId() + "-" + Thread.activeCount());
         } catch (Exception e) {
             LogServer.LogException("Error during disconnect: " + e.getMessage());
         }

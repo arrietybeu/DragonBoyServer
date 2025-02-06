@@ -89,7 +89,6 @@ public class PlayerService {
             byte[] skillShortCut = player.getPlayerSkill().getSkillShortCut();
             for (byte skill : skillShortCut) {
                 out.writeByte(skill);
-                System.out.println(skill);
             }
             player.sendMessage(message);
         }catch (Exception e) {
