@@ -8,10 +8,7 @@ import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
 import nro.repositories.player.PlayerCreator;
 import nro.server.config.ConfigDB;
-import nro.server.manager.MapManager;
-import nro.server.manager.SessionManager;
-import nro.server.manager.UserManager;
-import nro.server.manager.ItemManager;
+import nro.server.manager.*;
 import nro.server.manager.resources.PartManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
@@ -143,11 +140,15 @@ public class CommandService {
 //                                System.out.println("Npc: " + npc.toString());
 //                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
 //                            }
-                            for(var monster : zone.getMonsters()) {
+                            for (var monster : zone.getMonsters()) {
                                 System.out.println("Monster: " + monster.toString());
                                 System.out.println("Monster Name: " + monster.findNameMonsterByTemplate());
                             }
                         }
+                        break;
+                    case "task":
+                        TaskManager taskManager = TaskManager.getInstance();
+                        System.out.println(taskManager.getTaskMainById(1).toString());
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

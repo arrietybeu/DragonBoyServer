@@ -7,20 +7,22 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 public class TaskMain {
 
-    private int id;
+    private final int id;
+
+    private final String name;
+    private final String detail;
+    private final List<SubName> subNameList;
+
     private int index;
 
-    private String name;
-    private String detail;
-
-    private List<SubName> subNameList;
-
-    public TaskMain() {
-        this.subNameList = new ArrayList<>();
+    public TaskMain(int id, String name, String detail, List<SubName> subNameList) {
+        this.id = id;
+        this.name = name;
+        this.detail = detail;
+        this.subNameList = subNameList;
     }
 
     @Data

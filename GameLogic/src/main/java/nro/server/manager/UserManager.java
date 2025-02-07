@@ -26,7 +26,6 @@ public class UserManager {
         }
     }
 
-
     public void remove(UserInfo user) {
         if (user == null) throw new NullPointerException("User is null");
         this.lock.writeLock().lock();

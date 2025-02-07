@@ -6,14 +6,17 @@ import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import lombok.Getter;
 
 @SuppressWarnings("ALL")
 public class TaskManager implements IManager {
 
-    private static final List<TaskMain> TASKS = new ArrayList<>();
+    @Getter
+    private static final TaskManager instance = new TaskManager();
+
+    @Getter
+    private static final Map<Integer, TaskMain> TASKS = new HashMap<>();
 
     @Override
     public void init() {
@@ -44,16 +47,11 @@ public class TaskManager implements IManager {
                  ResultSet rs = ps.executeQuery()) {
 
                 while (rs.next()) {
-                    TaskMain task = new TaskMain();
-                    
-                    task.setId(rs.getInt("id"));
-                    task.setName(rs.getString("name"));
-                    task.setDetail(rs.getString("detail"));
-
-                    // Load sub tasks
-                    task.setSubNameList(loadListSubNameTask(connection, task.getId()));
-
-                    TASKS.add(task);
+                    var id = rs.getInt("id");
+                    var name = rs.getString("name");
+                    var detail = rs.getString("detail");
+                    TaskMain task = new TaskMain(id, name, detail, loadListSubNameTask(connection, id));
+                    TASKS.put(task.getId(), task);
                 }
                 LogServer.LogInit("Load task thành công (" + TASKS.size() + ")");
             }
@@ -84,5 +82,9 @@ public class TaskManager implements IManager {
             return Collections.emptyList();
         }
         return subNameList;
+    }
+
+    public TaskMain getTaskMainById(int id) {
+        return TASKS.get(id);
     }
 }

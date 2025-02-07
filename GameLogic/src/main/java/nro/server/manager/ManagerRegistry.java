@@ -25,6 +25,7 @@ public class ManagerRegistry {
         MANAGERS.add(ItemManager.getInstance());
         MANAGERS.add(CaptionManager.getInstance());
         MANAGERS.add(SpeacialSkillManager.getInstance());
+        MANAGERS.add(TaskManager.getInstance());
     }
 
     public static void initAll() {
