@@ -31,6 +31,7 @@ public class TaskMain {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", detail='" + detail + '\'' +
+                ", subNameList size: " + subNameList.size() +
                 ", index=" + index +
                 '}';
     }

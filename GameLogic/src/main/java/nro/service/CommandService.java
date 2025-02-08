@@ -148,7 +148,7 @@ public class CommandService {
                         break;
                     case "task":
                         TaskManager taskManager = TaskManager.getInstance();
-                        System.out.println(taskManager.getTaskMainById(1).toString());
+                        System.out.println(taskManager.getTaskMainById(0).getSubNameList().get(0).toString());
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

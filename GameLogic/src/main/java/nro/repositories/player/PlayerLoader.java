@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
+import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
@@ -89,18 +90,66 @@ public class PlayerLoader {
     }
 
     private void loadPlayerPoint(Player player, Connection connection) throws SQLException {
-        String query = "SELECT hp, mp, dame_default, stamina, power, limit_power FROM player_point WHERE player_id = ?";
+        String query = "SELECT hp, hp_max, hp_current, " +
+                "mp, mp_max, mp_current, " +
+                "dame_max, dame_default, " +
+                "crit, crit_default, " +
+                "defense, def_default, " +
+                "stamina, max_stamina, " +
+                "power, limit_power, " +
+                "tiem_nang, nang_dong " +
+                "FROM player_point WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    PlayerStats stats = player.getStats();
 
+                    // --- HP
+                    stats.setBaseHP((int) rs.getLong("hp"));           // cHPGoc
+                    stats.setMaxHP(rs.getLong("hp_max"));                // cHPFull
+                    stats.setCurrentHP(rs.getLong("hp_current"));        // cHP
+
+                    // --- MP
+                    stats.setBaseMP((int) rs.getLong("mp"));             // cMPGoc
+                    stats.setMaxMP(rs.getLong("mp_max"));                // cMPFull
+                    stats.setCurrentMP(rs.getLong("mp_current"));        // cMP
+
+                    // --- Damage
+                    stats.setBaseDamage((int) rs.getLong("dame_default")); // cDamGoc
+                    stats.setTotalDamage(rs.getLong("dame_max"));          // cDamFull
+
+                    // --- Critical Chance
+                    stats.setBaseCriticalChance(rs.getByte("crit"));
+                    stats.setTotalCriticalChance((byte) rs.getInt("crit_default"));
+
+                    // --- Defense
+                    stats.setBaseDefense(rs.getInt("defense"));
+                    stats.setTotalDefense(rs.getLong("def_default"));
+
+                    // --- Stamina
+                    stats.setStamina(rs.getShort("stamina"));
+                    stats.setMaxStamina(rs.getShort("max_stamina"));
+
+                    // --- Potential Points & Power
+                    stats.setPotentialPoints(rs.getLong("tiem_nang"));    // cTiemNang
+                    stats.setPower(rs.getLong("power"));
+
+                    // --- Exp per Stat Increase (expForOneAdd)
+                    stats.setExpPerStatIncrease((short) rs.getInt("limit_power"));
+
+                    // --- Các giá trị không lưu trong DB -> gán mặc định theo yêu cầu
+                    stats.setMovementSpeed((byte) 5);         // cspeed = 5
+                    stats.setHpPer1000Potential((byte) 20);     // hpFrom1000TiemNang = 20
+                    stats.setMpPer1000Potential((byte) 20);     // mpFrom1000TiemNang = 20
+                    stats.setDamagePer1000Potential((byte) 1);  // damFrom1000TiemNang = 1
                 } else {
-                    throw new SQLException("Khong tim thay point for player id: " + player.getId());
+                    throw new SQLException("Không tìm thấy point cho player id: " + player.getId());
                 }
             }
         }
     }
+
 
     private void loadPlayerLocation(Player player, Connection connection) throws SQLException {
         String query = "SELECT pos_x, pos_y, map_id FROM player_location WHERE player_id = ?";

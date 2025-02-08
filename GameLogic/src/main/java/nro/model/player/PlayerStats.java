@@ -7,7 +7,7 @@ public class PlayerStats {
 
     private final Player player;
 
-    // chi so co ban
+    // chỉ số cơ bản, chỉ số gốc
     private int baseHP;
     private int baseMP;
     private int baseDamage;
@@ -31,7 +31,7 @@ public class PlayerStats {
     private byte totalCriticalChance;
 
     // tnsm
-    private long potentialPoints;
+    private long potentialPoints;//  tiem nang
     private short expPerStatIncrease;
     private byte hpPer1000Potential;
     private byte mpPer1000Potential;

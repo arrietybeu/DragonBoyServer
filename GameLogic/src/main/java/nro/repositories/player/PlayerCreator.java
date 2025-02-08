@@ -115,30 +115,74 @@ public class PlayerCreator {
         }
     }
 
+    /**
+     *
+     * @param connection
+     * @param playerId
+     * @param gender
+     * @throws SQLException
+     */
+
     private void createPlayerPoint(Connection connection, int playerId, byte gender) throws SQLException {
-        String query = "INSERT INTO player_point (player_id, hp, hp_default, mp, mp_default, dame_default, stamina, max_stamina, crit_default, def_default, tiem_nang, power, limit_power, nang_dong) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO player_point (player_id, " +
+                "hp, hp_default, hp_max, hp_current, " +
+                "mp, mp_default, mp_max, mp_current, " +
+                "dame, dame_max, dame_default, " +
+                "stamina, max_stamina, " +
+                "crit, crit_default, " +
+                "defense, def_default, " +
+                "power, limit_power, " +
+                "tiem_nang, nang_dong) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, playerId);
-            statement.setInt(2, gender == 1 ? 200 : 100); // hp
-            statement.setInt(3, gender == 1 ? 200 : 100); // hp_default
-            statement.setInt(4, gender == 1 ? 200 : 100); // mp
-            statement.setInt(5, gender == 1 ? 200 : 100); // mp_default
-            statement.setInt(6, gender == 2 ? 15 : 10); // dame_default
-            statement.setInt(7, 1000); // stamina
-            statement.setInt(8, 1000); // max_stamina
-            statement.setInt(9, 0); // crit_default
-            statement.setInt(10, 0); // def_default
-            statement.setInt(11, 2000); // tiem_nang
-            statement.setInt(12, 2000); // power
-            statement.setInt(13, 100); // limit_power
-            statement.setInt(14, 0); // nang_dong
+            int index = 1;
+            statement.setInt(index++, playerId);
+
+            // HP: cHPGoc, hp_default, hp_max (cHPFull), hp_current (cHP)
+            statement.setLong(index++, 100L);  // hp: cHPGoc = 100
+            statement.setLong(index++, 100L);  // hp_default = 100
+            statement.setLong(index++, 120L);  // hp_max = cHPFull = 120
+            statement.setLong(index++, 120L);  // hp_current = cHP = 120
+
+            // MP: cMPGoc, mp_default, mp_max (cMPFull), mp_current (cMP)
+            statement.setLong(index++, 100L);  // mp: cMPGoc = 100
+            statement.setLong(index++, 100L);  // mp_default = 100
+            statement.setLong(index++, 100L);  // mp_max = cMPFull = 100
+            statement.setLong(index++, 100L);  // mp_current = cMP = 100
+
+            // Damage: cDamGoc, dame_max (cDamFull), dame_default
+            statement.setLong(index++, 15L);   // dame: cDamGoc = 15
+            statement.setLong(index++, 15L);   // dame_max: cDamFull = 15
+            statement.setLong(index++, 15L);   // dame_default = 15
+
+            // Stamina
+            statement.setInt(index++, 1000);   // stamina
+            statement.setInt(index++, 1000);   // max_stamina
+
+            // Critical: cCriticalGoc và cCriticalFull
+            statement.setByte(index++, (byte) 0); // crit: cCriticalGoc = 0
+            statement.setInt(index++, 0);         // crit_default: cCriticalFull = 0
+
+            // Defense: cDefGoc và cDefull
+            statement.setInt(index++, 0);    // defense: cDefGoc = 0
+            statement.setLong(index++, 0);  // def_default: cDefull = 3
+
+            // Power và Limit Power (expForOneAdd)
+            statement.setLong(index++, 2000L); // power = 2000 (giữ nguyên theo cũ)
+            statement.setInt(index++, 100);    // limit_power = expForOneAdd = 100
+
+            // Tiem nang và Nang dong
+            statement.setLong(index++, 1200L); // tiem_nang: cTiemNang = 1200
+            statement.setInt(index++, 0);      // nang_dong
+
             if (statement.executeUpdate() == 0) {
                 LogServer.LogException("No rows were inserted into player_point for playerId: " + playerId);
                 throw new SQLException("Failed to insert player point.");
             }
         }
     }
+
 
     private void createMagicTreePlayer(Connection connection, int playerId) throws SQLException {
         String query = "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";
@@ -181,7 +225,7 @@ public class PlayerCreator {
         String query = "INSERT INTO player_task (player_id, task_id, task_index, task_count) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, playerId);
-            statement.setInt(2, 1); // task_id
+            statement.setInt(2, 0); // task_id
             statement.setInt(3, 0); // task_index
             statement.setInt(4, 0); // task_count
             if (statement.executeUpdate() == 0) {
