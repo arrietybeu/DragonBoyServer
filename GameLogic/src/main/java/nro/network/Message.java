@@ -66,6 +66,16 @@ public class Message implements AutoCloseable {
         return this.os.toByteArray();
     }
 
+    public int available() {
+        try {
+            return (this.is != null) ? this.is.available() : 0;
+        } catch (Exception e) {
+            LogServer.LogException("Lỗi trong available(): " + e.getMessage());
+            return 0;
+        }
+    }
+
+
     /**
      * Cleans up all streams associated with the message.
      * Ensures that no resources are leaked by closing all streams.

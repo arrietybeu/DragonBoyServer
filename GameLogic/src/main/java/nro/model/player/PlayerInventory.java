@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public final class PlayerInventory {
+public class PlayerInventory {
 
     private final Player player;
     public final List<Item> itemsBody;

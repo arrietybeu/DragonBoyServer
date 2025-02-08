@@ -14,6 +14,7 @@ import nro.server.LogServer;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class MapService {
 
@@ -50,15 +51,19 @@ public class MapService {
     private void loadInfoMap(Player player, DataOutputStream output) throws IOException {
         Area area = player.getArea();
         GameMap map = area.getMap();
+
         List<BgItem> bgItems = map.getBgItems();
         List<Waypoint> wayPoints = map.getWaypoints();
-        List<Monster> monsters = area.getMonsters();
-        List<Npc> npcs = area.getNpcs();
-        List<ItemMap> itemMaps = area.getItems();
 
+        Map<Integer, Monster> monsters = area.getMonsters();
+        Map<Integer, Npc> npcs = area.getNpcs();
+        Map<Integer, ItemMap> itemMaps = area.getItems();
+
+        // send location
         output.writeShort(player.getX());
         output.writeShort(player.getY());
 
+        // send waypoint
         output.writeByte(wayPoints.size());
         for (Waypoint waypoint : wayPoints) {
             output.writeShort(waypoint.getMinX());
@@ -70,8 +75,9 @@ public class MapService {
             output.writeUTF(waypoint.getName());
         }
 
+        // send mob
         output.writeByte(monsters.size());
-        for (Monster monster : monsters) {
+        for (Monster monster : monsters.values()) {
             output.writeBoolean(monster.isDisable());
             output.writeBoolean(monster.isDontMove());
             output.writeBoolean(monster.isFire());
@@ -90,8 +96,10 @@ public class MapService {
         }
 
         output.writeByte(0);
+
+        // send npc
         output.writeByte(npcs.size());
-        for (Npc npc : npcs) {
+        for (Npc npc : npcs.values()) {
             output.writeByte(npc.getStatus());
             output.writeShort(npc.getX());
             output.writeShort(npc.getY());
@@ -99,8 +107,9 @@ public class MapService {
             output.writeShort(npc.getAvatar());
         }
 
+        // send item in Map
         output.writeByte(itemMaps.size());
-        for (ItemMap item : itemMaps) {
+        for (ItemMap item : itemMaps.values()) {
             output.writeShort(item.getItemMapID());
             output.writeShort(item.getItemTemplate().id());
             output.writeShort(item.getX());
@@ -111,12 +120,15 @@ public class MapService {
             }
         }
 
+        // send background in Map
         output.writeShort(bgItems.size());
         for (BgItem bgItem : bgItems) {
             output.writeShort(bgItem.getId());
             output.writeShort(bgItem.getX());
             output.writeShort(bgItem.getY());
         }
+
+        // send effect in Map
         output.writeShort(0);//write effect
 
         output.writeByte(map.getBgType());

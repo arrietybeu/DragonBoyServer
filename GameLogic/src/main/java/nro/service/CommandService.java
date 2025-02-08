@@ -140,7 +140,7 @@ public class CommandService {
 //                                System.out.println("Npc: " + npc.toString());
 //                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
 //                            }
-                            for (var monster : zone.getMonsters()) {
+                            for (var monster : zone.getMonsters().values()) {
                                 System.out.println("Monster: " + monster.toString());
                                 System.out.println("Monster Name: " + monster.findNameMonsterByTemplate());
                             }
@@ -161,3 +161,4 @@ public class CommandService {
         }
     }
 }
+

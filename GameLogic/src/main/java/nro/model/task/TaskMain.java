@@ -25,6 +25,16 @@ public class TaskMain {
         this.subNameList = subNameList;
     }
 
+    @Override
+    public String toString() {
+        return "TaskMain{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", detail='" + detail + '\'' +
+                ", index=" + index +
+                '}';
+    }
+
     @Data
     public static class SubName {
 

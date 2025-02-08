@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @SuppressWarnings("ALL")
@@ -107,8 +108,8 @@ public class MapManager implements IManager {
         return areas;
     }
 
-    private List<Monster> loadMonsters(Connection connection, int mapId) {
-        List<Monster> monsters = new ArrayList<>();
+    private Map<Integer, Monster> loadMonsters(Connection connection, int mapId) {
+        Map<Integer, Monster> monsters = new ConcurrentHashMap<>();
         String query = "SELECT * FROM `map_monsters` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -130,7 +131,7 @@ public class MapManager implements IManager {
                     monster.setFire(rs.getByte("is_fire") == 1);
                     monster.setIce(rs.getByte("is_ice") == 1);
                     monster.setWind(rs.getByte("is_wind") == 1);
-                    monsters.add(monster);
+                    monsters.put(monster.getId(), monster);
                 }
             }
         } catch (SQLException e) {
@@ -139,8 +140,8 @@ public class MapManager implements IManager {
         return monsters;
     }
 
-    private List<Npc> loadNpcs(Connection connection, int mapId) {
-        List<Npc> npcs = new ArrayList<>();
+    private Map<Integer, Npc> loadNpcs(Connection connection, int mapId) {
+        Map<Integer, Npc> npcs = new ConcurrentHashMap<>();
         String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -152,7 +153,7 @@ public class MapManager implements IManager {
                     npc.setX(rs.getShort("x"));
                     npc.setY(rs.getShort("y"));
                     npc.setAvatar(rs.getShort("avatar"));
-                    npcs.add(npc);
+                    npcs.put(npc.getTemplateId(), npc);
                 }
             }
         } catch (SQLException e) {

@@ -10,10 +10,12 @@ import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
+import nro.server.manager.TaskManager;
 
 import java.sql.*;
 import java.time.Instant;
 
+@SuppressWarnings("ALL")
 public class PlayerLoader {
 
     @Getter
@@ -22,7 +24,9 @@ public class PlayerLoader {
     public Player loadPlayer(Session session) throws Exception {
         String query = "SELECT * FROM player WHERE account_id = ? LIMIT 1";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
-            assert connection != null : "Connection is null";
+            if (connection == null) {
+                throw new Exception("Error loading player for account_id: " + session.getUserInfo().getId() + ", Error: connection null");
+            }
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setInt(1, session.getUserInfo().getId());
 
@@ -77,6 +81,8 @@ public class PlayerLoader {
                     player.getPlayerCurrencies().setGold(resultSet.getInt("gold"));
                     player.getPlayerCurrencies().setGem(resultSet.getInt("gem"));
                     player.getPlayerCurrencies().setRuby(resultSet.getInt("ruby"));
+                } else {
+                    throw new SQLException("Khong tim thay currencies for player id: " + player.getId());
                 }
             }
         }
@@ -88,12 +94,9 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-//                    player.setHp(resultSet.getInt("hp"));
-//                    player.setMp(resultSet.getInt("mp"));
-//                    player.setDamage(resultSet.getInt("dame_default"));
-//                    player.setStamina(resultSet.getInt("stamina"));
-//                    player.setPower(resultSet.getInt("power"));
-//                    player.setLimitPower(resultSet.getInt("limit_power"));
+
+                } else {
+                    throw new SQLException("Khong tim thay point for player id: " + player.getId());
                 }
             }
         }
@@ -114,6 +117,8 @@ public class PlayerLoader {
                         throw new SQLException("Map not found for player location: " + mapID);
                     }
                     player.setArea(gameMap);
+                } else {
+                    throw new SQLException("Khong tim thay location for player id: " + player.getId());
                 }
             }
         }
@@ -128,6 +133,8 @@ public class PlayerLoader {
 //                    player.setMagicTreeUpgrade(resultSet.getBoolean("is_upgrade"));
 //                    player.setMagicTreeLevel(resultSet.getInt("level"));
 //                    player.setMagicTreePea(resultSet.getInt("curr_pea"));
+                } else {
+                    throw new SQLException("Khong tim thay magic tree for player id: " + player.getId());
                 }
             }
         }
@@ -139,6 +146,15 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
+                    var taskId = resultSet.getInt("task_id");
+                    var taskIndex = resultSet.getInt("task_index");
+                    var taskCount = resultSet.getShort("task_count");
+                    TaskMain taskMain = TaskManager.getInstance().getTaskMainById(taskId);
+                    taskMain.getSubNameList().get(taskIndex).setCount(taskCount);
+                    taskMain.setIndex(taskIndex);
+                    player.getPlayerTask().setTaskMain(taskMain);
+                } else {
+                    throw new SQLException("Khong tim thay task for player id: " + player.getId());
                 }
             }
         }
@@ -160,7 +176,7 @@ public class PlayerLoader {
 
                     player.getPlayerSkill().setSkillShortCut(skillShortCut);
                 } else {
-                    LogServer.LogException("Khong tim thay skill short cut for player id: " + player.getId());
+                    throw new SQLException("Khong tim thay skill short cut for player id: " + player.getId());
                 }
             }
         }

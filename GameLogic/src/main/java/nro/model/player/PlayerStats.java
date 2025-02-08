@@ -3,7 +3,7 @@ package nro.model.player;
 import lombok.Data;
 
 @Data
-public final class PlayerStats {
+public class PlayerStats {
 
     private final Player player;
 
