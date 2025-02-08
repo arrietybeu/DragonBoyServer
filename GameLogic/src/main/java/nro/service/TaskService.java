@@ -40,8 +40,7 @@ public class TaskService {
                 output.writeUTF(sub.getContentInfo());
             }
 
-//            output.writeShort(subNames.get(index).getCount());
-            output.writeShort(0);
+            output.writeShort(subNames.get(index).getCount());
 
             for (var sub : subNames) {
                 output.writeShort(sub.getMax());

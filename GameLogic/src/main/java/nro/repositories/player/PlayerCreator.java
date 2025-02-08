@@ -33,21 +33,16 @@ public class PlayerCreator {
             connection.setAutoCommit(false);
             int playerId = this.createPlayerBase(connection, accountId, name, gender, hair);
             if (playerId > 0) {
+
                 this.createCurrenciesPlayer(connection, playerId);
-
                 this.createLocationPlayer(connection, playerId, gender);
-
                 this.createPlayerPoint(connection, playerId, gender);
-
                 this.createPlayerSkillsShortCut(connection, playerId, gender);
-
                 this.createMagicTreePlayer(connection, playerId);
-
                 this.createItemBodyPlayer(connection, playerId, gender);
-
                 this.createPlayerDataTask(connection, playerId);
-
                 connection.commit();
+
                 LogServer.DebugLogic("Time create player name: " + name + " times: "
                         + (System.currentTimeMillis() - ms) + " ms");
                 return true;
@@ -236,13 +231,6 @@ public class PlayerCreator {
     }
 
     private void createPlayerSkillsShortCut(Connection connection, int playerId, int gender) throws SQLException {
-        if (playerId <= 0) {
-            throw new IllegalArgumentException("playerId phải lớn hơn 0");
-        }
-
-        if (gender < 0 || gender > 2) {
-            throw new IllegalArgumentException("Gender không hợp lệ: " + gender);
-        }
 
         String query = "INSERT INTO player_skills_shortcut (player_id, slot_1, slot_2, slot_3, slot_4, slot_5, slot_6, slot_7, slot_8, slot_9, slot_10) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";

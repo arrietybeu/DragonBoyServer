@@ -7,6 +7,8 @@ package nro.controller;
 import nro.network.Message;
 import nro.network.Session;
 
+import java.io.IOException;
+
 /**
  *
  * @author Arriety
