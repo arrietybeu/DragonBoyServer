@@ -50,8 +50,6 @@ public final class MessageReceiver {
                                 break;
                         }
                     } catch (Exception e) {
-//                        e.printStackTrace();
-                        System.out.println("Read Message loi nen bi kick");
                         SessionManager.getInstance().kickSession(session);
                         return;
                     }

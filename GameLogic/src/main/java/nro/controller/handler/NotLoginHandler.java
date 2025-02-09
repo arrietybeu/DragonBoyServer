@@ -123,7 +123,6 @@ public class NotLoginHandler implements IMessageProcessor {
         }
 
         clientInfo.setTypeClient(typeClient);
-        System.out.println("set zoom level: " + zoomLevel);
         clientInfo.setZoomLevel(zoomLevel);
 
         var is = message.reader().readBoolean();

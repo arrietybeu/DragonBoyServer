@@ -1,4 +1,4 @@
 package nro.model.map;
 
-public class TileMap {
+public record TileMap(int tmw, int tmh, int[] tiles) {
 }

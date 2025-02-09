@@ -19,6 +19,7 @@ public class GameMap {
     private final byte bgId;
     private final byte bgType;
     private final byte typeMap;
+    private final TileMap tileMap;
 
     private final List<Waypoint> waypoints;
     private final List<BgItem> bgItems;
@@ -29,7 +30,7 @@ public class GameMap {
     public GameMap(int id, String name, byte planetId,
                    byte tileId, byte bgId, byte bgType, byte typeMap,
                    List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
-                   List<Waypoint> waypoints
+                   List<Waypoint> waypoints, TileMap tileMap
     ) {
         this.id = id;
         this.name = name;
@@ -41,6 +42,7 @@ public class GameMap {
         this.bgItems = bgItems;
         this.backgroudEffects = backgroudEffects;
         this.waypoints = waypoints;
+        this.tileMap = tileMap;
     }
 
     public Area getArea() {

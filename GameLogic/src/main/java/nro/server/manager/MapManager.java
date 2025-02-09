@@ -1,6 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
+import nro.model.map.TileMap;
 import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
@@ -16,6 +17,8 @@ import nro.model.map.GameMap;
 import nro.server.LogServer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.DataOutputStream;
 import java.sql.Connection;
@@ -67,6 +70,9 @@ public class MapManager implements IManager {
     private void loadMapTemplate() {
         String query = "SELECT * FROM `map_template`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+
+            Map<Integer, TileMap> tileMaps = loadAllMapTiles(connection);
+
             while (rs.next()) {
                 short id = rs.getShort("id");
                 var name = rs.getString("name");
@@ -82,7 +88,9 @@ public class MapManager implements IManager {
                 List<BackgroudEffect> effects = this.loadMapEffects(id);
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
 
-                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgType, bgItems, effects, waypoints);
+                TileMap tileMap = tileMaps.get(id);
+
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgType, bgItems, effects, waypoints, tileMap);
 
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
@@ -91,6 +99,32 @@ public class MapManager implements IManager {
         } catch (Exception e) {
             LogServer.LogException("Error loadMap: " + e.getMessage());
         }
+    }
+
+    private Map<Integer, TileMap> loadAllMapTiles(Connection connection) {
+        String query = "SELECT * FROM `map_tiles`";
+        Map<Integer, TileMap> tileMaps = new HashMap<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
+
+            while (rs.next()) {
+                int mapId = rs.getInt("map_id");
+                int tmw = rs.getInt("tmw");
+                int tmh = rs.getInt("tmh");
+                String mapsJson = rs.getString("tiles");
+
+                int[] maps = parseJsonToIntArray(mapsJson);
+
+                tileMaps.put(mapId, new TileMap(tmw, tmh, maps));
+            }
+
+            LogServer.LogInit("Loaded " + tileMaps.size() + " map tiles.");
+
+        } catch (SQLException e) {
+            LogServer.LogException("Error loading map tiles: " + e.getMessage());
+        }
+        return tileMaps;
     }
 
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
@@ -190,72 +224,7 @@ public class MapManager implements IManager {
     }
 
     private List<BackgroudEffect> loadMapEffects(int mapId) {
-        String queryBeff = "SELECT effect_id FROM `map_background_effect` WHERE map_id = ?";
-        String queryEffect = "SELECT * FROM `map_effect` WHERE map_id = ?";
-        String queryPosition = "SELECT * FROM `map_effect_position` WHERE effect_id = ?";
-
         List<BackgroudEffect> effects = new ArrayList<>();
-
-//        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-//
-//            try (PreparedStatement psBeff = connection.prepareStatement(queryBeff)) {
-//                psBeff.setInt(1, mapId);
-//                try (ResultSet rsBeff = psBeff.executeQuery()) {
-//                    while (rsBeff.next()) {
-//                        BackgroudEffect backgroundEffect = new BackgroudEffect();
-//                        backgroundEffect.setKey("beff");
-//                        backgroundEffect.setValue(String.valueOf(rsBeff.getInt("effect_id")));
-//                        effects.add(backgroundEffect);
-//                    }
-//                }
-//            }
-//
-//            try (PreparedStatement psEffect = connection.prepareStatement(queryEffect)) {
-//                psEffect.setInt(1, mapId);
-//                try (ResultSet rsEffect = psEffect.executeQuery()) {
-//                    while (rsEffect.next()) {
-//                        int effectId = rsEffect.getInt("id");
-//                        int effectType = rsEffect.getInt("effect_id");
-//                        int layer = rsEffect.getInt("layer");
-//                        int loop = rsEffect.getInt("loop");
-//                        int loopCount = rsEffect.getInt("loop_count");
-//                        int typeEff = rsEffect.getInt("type_eff");
-//                        int indexFrom = rsEffect.getInt("index_from");
-//                        int indexTo = rsEffect.getInt("index_to");
-//
-//                        try (PreparedStatement psPosition = connection.prepareStatement(queryPosition)) {
-//                            psPosition.setInt(1, effectId);
-//                            try (ResultSet rsPosition = psPosition.executeQuery()) {
-//                                while (rsPosition.next()) {
-//                                    int x = rsPosition.getInt("x");
-//                                    int y = rsPosition.getInt("y");
-//
-//                                    String value = effectType + "." + layer + "." + x + "." + y;
-//                                    if (loop != -1 || loopCount != 1) {
-//                                        value += "." + loop + "." + loopCount;
-//                                    }
-//                                    if (typeEff != 0) {
-//                                        value += "." + typeEff;
-//                                        if (indexFrom != 0 || indexTo != 0) {
-//                                            value += "." + indexFrom + "." + indexTo;
-//                                        }
-//                                    }
-//
-//                                    BackgroudEffect effect = new BackgroudEffect();
-//                                    effect.setKey("eff");
-//                                    effect.setValue(value);
-//                                    effects.add(effect);
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//        } catch (SQLException e) {
-//            LogServer.LogException("Error loadMapEffects: " + e.getMessage());
-//        }
-
         return effects;
     }
 
@@ -399,6 +368,24 @@ public class MapManager implements IManager {
             LogServer.LogException("Error setTileSetData: " + e.getMessage());
         }
     }
+
+    private int[] parseJsonToIntArray(String json) {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(json);
+
+            int[] maps = new int[jsonArray.size()];
+            for (int i = 0; i < jsonArray.size(); i++) {
+                maps[i] = Integer.parseInt(jsonArray.get(i).toString());
+            }
+            return maps;
+
+        } catch (ParseException e) {
+            LogServer.LogException("Error parsing JSON: " + e.getMessage());
+            return new int[0];
+        }
+    }
+
 
     public GameMap findMapById(short id) {
         if (this.gameMaps.isEmpty()) {

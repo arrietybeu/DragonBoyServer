@@ -16,6 +16,7 @@ import java.time.temporal.ChronoUnit;
 @Data
 public class Player extends LiveObject {
 
+
     private final Session session;
     private final PlayerCurrencies playerCurrencies;
     private final PlayerStats stats;
@@ -52,14 +53,12 @@ public class Player extends LiveObject {
 
     public boolean isNewPlayer() {
         long days = this.getDaysSinceCreation();
-        System.out.println("Người chơi " + this.getName() +" đã tạo tài khoản được " + days + " ngày.");
+        System.out.println("Người chơi " + this.getName() + " đã tạo tài khoản được " + days + " ngày.");
         return days < 30;
     }
 
     public long getDaysSinceCreation() {
         return ChronoUnit.DAYS.between(createdAt, Instant.now());
     }
-
-
 
 }

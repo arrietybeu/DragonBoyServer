@@ -39,7 +39,9 @@ public class DataMap {
                 message.writer().writeShort(npc.head());
                 message.writer().writeShort(npc.body());
                 message.writer().writeShort(npc.leg());
-                message.writer().writeByte(0);
+                message.writer().writeByte(1);
+                message.writer().writeByte(1);
+                message.writer().writeUTF("Nói chuyện");
             }
 
             message.writer().writeShort(sizeMonster);

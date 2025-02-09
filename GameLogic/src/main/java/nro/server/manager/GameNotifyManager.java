@@ -39,6 +39,7 @@ public class GameNotifyManager implements IManager {
     @Override
     public void clear() {
         this.notifyList.clear();
+        this.dataNotify = null;
     }
 
     private void loadNotify() {
