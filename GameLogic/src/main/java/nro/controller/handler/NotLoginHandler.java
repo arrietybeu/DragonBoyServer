@@ -105,10 +105,6 @@ public class NotLoginHandler implements IMessageProcessor {
      */
 
     private void setClientType(Session session, Message message) {
-        if (session.getClientInfo().isSetClientType()) {
-//            LogServer.LogException("Error setClientType: isSetClientType");
-            return;
-        }
         try {
             this.readAndSetClientType(session, message);
         } catch (Exception e) {
@@ -127,6 +123,7 @@ public class NotLoginHandler implements IMessageProcessor {
         }
 
         clientInfo.setTypeClient(typeClient);
+        System.out.println("set zoom level: " + zoomLevel);
         clientInfo.setZoomLevel(zoomLevel);
 
         var is = message.reader().readBoolean();

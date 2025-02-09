@@ -47,9 +47,10 @@ public class NpcManager implements IManager {
                     var head = rs.getShort("head");
                     var body = rs.getShort("body");
                     var leg = rs.getShort("leg");
+                    var avatar = rs.getShort("avatar_id");
                     var menu = rs.getString("menu");
 
-                    NpcTemplate template = new NpcTemplate(id, name, head, body, leg, menu);
+                    NpcTemplate template = new NpcTemplate(id, name, head, body, leg, avatar, menu);
                     this.NPC_TEMPLATE.add(template);
                 }
                 LogServer.LogInit("NpcManager initialized size: " + NPC_TEMPLATE.size());
@@ -65,6 +66,14 @@ public class NpcManager implements IManager {
 
     public List<NpcTemplate> getNpcTemplates() {
         return this.NPC_TEMPLATE;
+    }
+
+    public short getAvatarNpcById(short id) {
+        return this.getNpcTemplate(id).avatarId();
+    }
+
+    public String findNameNpcByTemplate(short id) {
+        return this.getNpcTemplate(id).name();
     }
 
     public int sizeNpc() {

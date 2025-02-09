@@ -59,9 +59,10 @@ public class PlayerService {
 
     public void onPlayerLoginSuccess(Player player) {
         Service service = Service.getInstance();
+        TaskService taskService = TaskService.getInstance();
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
-        TaskService.getInstance().sendTaskMain(player);// 40
+        taskService.sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
         this.sendPointForMe(player);// -42
         this.sendInfoPlayer(player);// -30
@@ -79,6 +80,7 @@ public class PlayerService {
         this.sendSkillShortCut(player);// -113
         service.sendGameNotify(player);// 50
         this.sendCaptionForPlayer(player);// -41
+        taskService.sendInfoTaskForNpcTalkByUI(player);
     }
 
     public void sendCaptionForPlayer(Player player) {
@@ -278,7 +280,7 @@ public class PlayerService {
             sendInventoryForPlayer(msg, itemsBox);
 
             out.write(itemManager.getDataItemhead());
-            sendPlayerBirdFrames(out, gender);
+            sendPlayerBirdFrames(out, player);
 
             // type fusion = 0 return 0 = false
             out.writeByte(player.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
@@ -294,29 +296,12 @@ public class PlayerService {
         }
     }
 
-    private void sendPlayerBirdFrames(DataOutputStream out, int gender) throws IOException {
-        short frame1, frame2, avatar;
 
-        switch (gender) {
-            case ConstPlayer.TRAI_DAT -> {
-                frame1 = 281;
-                frame2 = 361;
-                avatar = 351;
-            }
-            case ConstPlayer.NAMEC -> {
-                frame1 = 512;
-                frame2 = 513;
-                avatar = 536;
-            }
-            default -> {
-                frame1 = 514;
-                frame2 = 515;
-                avatar = 537;
-            }
-        }
-        out.writeShort(frame1);
-        out.writeShort(frame2);
-        out.writeShort(avatar);
+    private void sendPlayerBirdFrames(DataOutputStream out, Player player) throws IOException {
+        short[] frames = player.getPlayerBirdFrames();
+        out.writeShort(frames[0]); // frame1
+        out.writeShort(frames[1]); // frame2
+        out.writeShort(frames[2]); // avatar
     }
 
     private void sendInventoryForPlayer(Message message, List<Item> items) throws IOException {

@@ -15,7 +15,6 @@ public class PlayerMoveHandler implements IMessageProcessor {
         try{
             Player player = session.getPlayer();
             if (player == null) {
-                LogServer.LogException("Error PlayerMoveHandler: player null");
                 return;
             }
             byte isOnGround = message.reader().readByte();
@@ -25,7 +24,6 @@ public class PlayerMoveHandler implements IMessageProcessor {
 
             if (message.available() > 0) {
                 newY = message.reader().readShort();
-                System.out.println("message thua: " + newY);
             }
 
             if (Math.abs(newX - player.getX()) > 50 || Math.abs(newY - player.getY()) > 100) {
