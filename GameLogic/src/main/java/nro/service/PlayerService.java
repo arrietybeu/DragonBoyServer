@@ -57,6 +57,7 @@ public class PlayerService {
     }
 
     public void onPlayerLoginSuccess(Player player) {
+        Service service = Service.getInstance();
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
         TaskService.getInstance().sendTaskMain(player);// 40
@@ -68,20 +69,21 @@ public class PlayerService {
         this.sendPlayerBody(player);// -90
         MapService.getInstance().sendMapInfo(player);// -24
         this.sendCurrencyHpMp(player);// -30
-        this.sendThongBaoInfoTask(player);
+        this.sendThongBaoInfoTask(player, service);
         this.sendMaxStamina(player);// -69
         this.sendStamina(player);// -68
         this.sendUpdateActivePoint(player);// -97
         this.sendHaveDisciple(player);// -107
         this.sendPlayerRank(player);// -119
         this.sendSkillShortCut(player);// -113
+        service.sendGameNotify(player);// 50
     }
 
-    private void sendThongBaoInfoTask(Player player) {
+    private void sendThongBaoInfoTask(Player player, Service service) {
         TaskMain taskMain = player.getPlayerTask().getTaskMain();
         List<TaskMain.SubName> subNames = taskMain.getSubNameList();
         String subNameTask = "Nhiệm vụ của bạn là " + subNames.get(taskMain.getIndex()).getName();
-        Service.getInstance().sendChatGlobal(player.getSession(), null, subNameTask, false);
+        service.sendChatGlobal(player.getSession(), null, subNameTask, false);
     }
 
     private void sendHaveDisciple(Player player) {

@@ -11,6 +11,7 @@ import nro.network.Message;
 import nro.network.Session;
 import nro.server.LogServer;
 import nro.server.config.ConfigServer;
+import nro.server.manager.GameNotifyManager;
 import nro.server.manager.resources.PartManager;
 
 import java.io.DataOutputStream;
@@ -113,6 +114,17 @@ public class Service {
         } catch (Exception e) {
             LogServer.LogException("Error in sendChatGlobal: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public void sendGameNotify(Player player) {
+        try (Message message = new Message(50)) {
+            byte[] data = GameNotifyManager.getInstance().getDataNotify();
+            message.writer().write(data);
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error in sendGameNotify: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

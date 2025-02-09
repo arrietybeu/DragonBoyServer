@@ -26,6 +26,7 @@ public class ManagerRegistry {
         MANAGERS.add(CaptionManager.getInstance());
         MANAGERS.add(SpeacialSkillManager.getInstance());
         MANAGERS.add(TaskManager.getInstance());
+        MANAGERS.add(GameNotifyManager.getInstance());
     }
 
     public static void initAll() {
