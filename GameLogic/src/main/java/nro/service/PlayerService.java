@@ -60,10 +60,12 @@ public class PlayerService {
         this.sendPointForMe(player);// -42
         TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
+        this.sendPointForMe(player);// -42
         this.sendInfoPlayer(player);// -30
         ClanService.getInstance().sendClanInfo(player);// -53
         InventoryService.getInstance().sendFlagBag(player);// -64
         this.sendPlayerBody(player);// -90
+        MapService.getInstance().sendMapInfo(player);// -24
         this.sendStamina(player);// -68
         this.sendMaxStamina(player);// -69
         this.sendUpdateActivePoint(player);// -97
@@ -71,7 +73,6 @@ public class PlayerService {
         this.sendPlayerRank(player);// -119
         this.sendCurrencyHpMp(player);// -30
         this.sendSkillShortCut(player);// -113
-        MapService.getInstance().sendMapInfo(player);// -24
     }
 
     private void sendHaveDisciple(Player player) {
@@ -91,7 +92,7 @@ public class PlayerService {
                 out.writeByte(skill);
             }
             player.sendMessage(message);
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogServer.LogException("Error sendSkillShortCut: " + e.getMessage());
         }
     }
@@ -303,6 +304,14 @@ public class PlayerService {
                 message.writer().writeShort(itemOption.getOptionTemplate().id());
                 message.writer().writeInt(itemOption.getParam());
             }
+        }
+    }
+
+    private void sendPlayerMove(Player player) {
+        try (Message message = new Message(-7)) {
+
+        } catch (Exception e) {
+            LogServer.LogException("Error sendPlayerMove for player Id: " + player.getId());
         }
     }
 

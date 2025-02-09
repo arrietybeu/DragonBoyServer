@@ -10,6 +10,8 @@ public class SessionInfo {
     private boolean connected;
     private final byte[] keys = {0};
     private boolean isUpdateItem;
+    private boolean isClientOk;
+    private boolean isLogin;
 
     public byte curR, curW;
     public int recvByteCount, sendByteCount;

@@ -1,6 +1,5 @@
 package nro.controller.handler;
 
-import nro.data.DataMap;
 import nro.network.Message;
 import nro.network.Session;
 import nro.controller.APacketHandler;
@@ -45,6 +44,9 @@ public class NotLoginHandler implements IMessageProcessor {
     }
 
     private void login(Session session, Message message) {
+        if (session.getSessionInfo().isLogin()) {
+            return;
+        }
         if (!this.activeLogin(session)) {
             return;
         }
@@ -67,14 +69,11 @@ public class NotLoginHandler implements IMessageProcessor {
             }
 
             ResourceService resourcesService = ResourceService.getInstance();
-            resourcesService.sendDataBackgroundMapTemplate(session);// -31
-            resourcesService.sendTileSetInfo(session); //-82
             resourcesService.sendSmallVersion(session);// -77
             resourcesService.sendBackgroundVersion(session);// -93
-            DataMap.updateMapData(session);
             resourcesService.sendVersionDataGame(session);
-
             UserManager.getInstance().add(userInfo);
+            session.getSessionInfo().setLogin(true);
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException("Error login: " + e.getMessage());

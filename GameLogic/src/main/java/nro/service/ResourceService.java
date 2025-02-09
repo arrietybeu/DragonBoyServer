@@ -256,7 +256,7 @@ public class ResourceService {
             MapManager mapManager = MapManager.getInstance();
             byte[] item_bg = mapManager.getBackgroundMapData();
             msg.writer().write(item_bg);
-            session.sendMessage(msg);
+            session.doSendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendDataBackgroundMapTemplate: " + e.getMessage());
         }
@@ -301,7 +301,7 @@ public class ResourceService {
                     }
                 }
             }
-            session.sendMessage(message);
+            session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
         }
@@ -319,6 +319,14 @@ public class ResourceService {
 //    }
 
     public void clientOk(Session session) {
+        if(!session.getSessionInfo().isClientOk()){
+            ResourceService resourcesService = ResourceService.getInstance();
+            resourcesService.sendDataBackgroundMapTemplate(session);// -31
+            resourcesService.sendTileSetInfo(session); //-82
+            resourcesService.sendSmallVersion(session);// -77
+            resourcesService.sendBackgroundVersion(session);// -93
+            session.getSessionInfo().setClientOk(true);
+        }
     }
 
 }

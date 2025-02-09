@@ -10,7 +10,6 @@ import nro.network.Session;
 import java.io.IOException;
 
 /**
- *
  * @author Arriety
  */
 public interface IMessageProcessor {

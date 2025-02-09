@@ -19,11 +19,13 @@ public class PlayerMoveHandler implements IMessageProcessor {
                 return;
             }
             byte isOnGround = message.reader().readByte();
+
             short newX = message.reader().readShort();
             short newY = player.getY();
 
             if (message.available() > 0) {
                 newY = message.reader().readShort();
+                System.out.println("message thua: " + newY);
             }
 
             if (Math.abs(newX - player.getX()) > 50 || Math.abs(newY - player.getY()) > 100) {
