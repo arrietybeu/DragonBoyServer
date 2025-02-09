@@ -80,7 +80,7 @@ public class PlayerService {
     private void sendThongBaoInfoTask(Player player) {
         TaskMain taskMain = player.getPlayerTask().getTaskMain();
         List<TaskMain.SubName> subNames = taskMain.getSubNameList();
-        String subNameTask = subNames.get(taskMain.getIndex()).getName();
+        String subNameTask = "Nhiệm vụ của bạn là " + subNames.get(taskMain.getIndex()).getName();
         Service.getInstance().sendChatGlobal(player.getSession(), null, subNameTask, false);
     }
 
