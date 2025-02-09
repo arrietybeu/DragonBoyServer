@@ -8,7 +8,7 @@ import lombok.Setter;
 public abstract class LiveObject {
 
     private int id;
-    private String name;
+    private String name = "";
     private byte typeObject;
 
     private short aura;

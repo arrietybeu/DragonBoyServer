@@ -7,6 +7,7 @@ import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
+import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
 import nro.network.Message;
 import nro.network.Session;
@@ -66,13 +67,21 @@ public class PlayerService {
         InventoryService.getInstance().sendFlagBag(player);// -64
         this.sendPlayerBody(player);// -90
         MapService.getInstance().sendMapInfo(player);// -24
-        this.sendStamina(player);// -68
+        this.sendCurrencyHpMp(player);// -30
+        this.sendThongBaoInfoTask(player);
         this.sendMaxStamina(player);// -69
+        this.sendStamina(player);// -68
         this.sendUpdateActivePoint(player);// -97
         this.sendHaveDisciple(player);// -107
         this.sendPlayerRank(player);// -119
-        this.sendCurrencyHpMp(player);// -30
         this.sendSkillShortCut(player);// -113
+    }
+
+    private void sendThongBaoInfoTask(Player player) {
+        TaskMain taskMain = player.getPlayerTask().getTaskMain();
+        List<TaskMain.SubName> subNames = taskMain.getSubNameList();
+        String subNameTask = subNames.get(taskMain.getIndex()).getName();
+        Service.getInstance().sendChatGlobal(player.getSession(), null, subNameTask, false);
     }
 
     private void sendHaveDisciple(Player player) {

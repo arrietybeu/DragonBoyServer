@@ -4,11 +4,16 @@
  */
 package nro.service;
 
+import nro.model.player.Player;
+import nro.model.player.PlayerFashion;
+import nro.model.template.entity.PartInfo;
 import nro.network.Message;
 import nro.network.Session;
 import nro.server.LogServer;
 import nro.server.config.ConfigServer;
+import nro.server.manager.resources.PartManager;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
@@ -81,4 +86,34 @@ public class Service {
             LogServer.LogException("Error switchToRegisterScr: " + e.getMessage());
         }
     }
+
+    public void sendChatGlobal(Session session, Player player, String text, boolean isChatServer) {
+        final int MESSAGE_CHAT_GLOBAL = 92;
+
+        try (Message message = new Message(MESSAGE_CHAT_GLOBAL)) {
+            DataOutputStream out = message.writer();
+
+            String name = (player != null) ? player.getName() : "";
+            out.writeUTF(name);
+            out.writeUTF(text);
+
+            if (player != null) {
+                PlayerFashion fashion = player.getPlayerFashion();
+                PartInfo part = PartManager.getInstance().findPartById(fashion.getHead());
+
+                out.writeInt(player.getId());
+                out.writeShort(fashion.getHead());
+                out.writeShort(part.getIcon(0));
+                out.writeShort(fashion.getBody());
+                out.writeShort(fashion.getFlagBag());
+                out.writeShort(fashion.getLeg());
+                out.writeByte(isChatServer ? 0 : 1);
+            }
+            session.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error in sendChatGlobal: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }
