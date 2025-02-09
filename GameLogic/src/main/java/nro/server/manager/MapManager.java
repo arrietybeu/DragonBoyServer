@@ -38,7 +38,7 @@ public class MapManager implements IManager {
     @Getter
     private static final MapManager instance = new MapManager();
 
-    private final Map<Short, GameMap> gameMaps = new HashMap<>();
+    private final Map<Integer, GameMap> gameMaps = new HashMap<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
 
@@ -74,7 +74,7 @@ public class MapManager implements IManager {
             Map<Integer, TileMap> tileMaps = loadAllMapTiles(connection);
 
             while (rs.next()) {
-                short id = rs.getShort("id");
+                var id = rs.getInt("id");
                 var name = rs.getString("name");
                 var zone = rs.getByte("zone");
                 var maxPlayer = rs.getByte("max_player");
@@ -85,13 +85,11 @@ public class MapManager implements IManager {
                 var bgType = rs.getByte("background_type");
 
                 List<BgItem> bgItems = this.loadItemBackgroundMap(connection, id);
-                List<BackgroudEffect> effects = this.loadMapEffects(id);
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
-
+                List<BackgroudEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
                 TileMap tileMap = tileMaps.get(id);
 
                 GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgType, bgItems, effects, waypoints, tileMap);
-
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }
@@ -221,11 +219,6 @@ public class MapManager implements IManager {
             LogServer.LogException("Error loadWaypoints: " + e.getMessage());
         }
         return waypoints;
-    }
-
-    private List<BackgroudEffect> loadMapEffects(int mapId) {
-        List<BackgroudEffect> effects = new ArrayList<>();
-        return effects;
     }
 
     private void loadDataBackgroundMap() {
@@ -386,15 +379,38 @@ public class MapManager implements IManager {
         }
     }
 
+    private List<BackgroudEffect> parseEffectMap(String jsonEffect) {
+        List<BackgroudEffect> effects = new ArrayList<>();
 
-    public GameMap findMapById(short id) {
+        if (jsonEffect == null || jsonEffect.trim().isEmpty()) {
+            LogServer.LogException("Error json Effect by Map Template Is NUll");
+            return effects;
+        }
+
+        try {
+            JSONArray effectArray = (JSONArray) JSONValue.parseWithException(jsonEffect);
+            for (Object obj : effectArray) {
+                if (obj instanceof JSONArray) {
+                    JSONArray eff = (JSONArray) obj;
+                    if (eff.size() >= 2) {
+                        String effectType = eff.get(0).toString();
+                        String effectValue = eff.get(1).toString();
+                        effects.add(new BackgroudEffect(effectType, effectValue));
+                    }
+                }
+            }
+        } catch (ParseException e) {
+            LogServer.LogException("Error parsing effect_map JSON: " + e.getMessage());
+        }
+
+        return effects;
+    }
+
+    public GameMap findMapById(int id) {
         if (this.gameMaps.isEmpty()) {
             return null;
         }
         if (id < 0 || id >= this.gameMaps.size()) {
-            return null;
-        }
-        if (this.gameMaps.get(id).getId() != id) {
             return null;
         }
         return this.gameMaps.get(id);

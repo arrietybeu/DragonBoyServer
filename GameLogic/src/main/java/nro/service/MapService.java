@@ -4,6 +4,7 @@ import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
+import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
 import nro.model.monster.Monster;
 import nro.model.npc.Npc;
@@ -54,6 +55,7 @@ public class MapService {
 
         List<BgItem> bgItems = map.getBgItems();
         List<Waypoint> wayPoints = map.getWaypoints();
+        List<BackgroudEffect> backgroudEffects = map.getBackgroudEffects();
 
         Map<Integer, Monster> monsters = area.getMonsters();
         Map<Integer, Npc> npcs = area.getNpcs();
@@ -129,7 +131,11 @@ public class MapService {
         }
 
         // send effect in Map
-        output.writeShort(0);//write effect
+        output.writeShort(backgroudEffects.size());//write effect
+        for(BackgroudEffect backgroudEffect : backgroudEffects){
+            output.writeUTF(backgroudEffect.key());
+            output.writeUTF(backgroudEffect.value());
+        }
 
         output.writeByte(map.getBgType());
         output.writeByte(-1); // is teleport

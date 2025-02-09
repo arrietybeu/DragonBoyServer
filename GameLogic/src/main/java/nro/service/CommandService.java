@@ -2,6 +2,7 @@ package nro.service;
 
 import nro.model.item.Item;
 import nro.model.map.GameMap;
+import nro.model.map.decorates.BackgroudEffect;
 import nro.model.npc.Npc;
 import nro.model.template.CaptionTemplate;
 import nro.model.template.map.TileSetTemplate;
@@ -155,6 +156,18 @@ public class CommandService {
                         List<CaptionTemplate.CaptionLevel> captionLevels = CaptionManager.getInstance().getCaptionLevelsByGender((byte) 2);
                         for (var captionLevel : captionLevels) {
                             System.out.println(captionLevel.name());
+                        }
+                        break;
+                    case "eff_map":
+                        try {
+                            GameMap gameMap = MapManager.getInstance().findMapById(0);
+                            List<BackgroudEffect> backgroudEffects = gameMap.getBackgroudEffects();
+                            System.out.println(backgroudEffects.size());
+                            for (var back : backgroudEffects) {
+                                System.out.println(back.key() + " - " + back.value());
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
                         }
                         break;
                     default:
