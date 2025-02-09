@@ -3,6 +3,7 @@ package nro.service;
 import nro.model.item.Item;
 import nro.model.map.GameMap;
 import nro.model.npc.Npc;
+import nro.model.template.CaptionTemplate;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
@@ -149,6 +150,12 @@ public class CommandService {
                     case "task":
                         TaskManager taskManager = TaskManager.getInstance();
                         System.out.println(taskManager.getTaskMainById(0).getSubNameList().get(0).toString());
+                        break;
+                    case "caption":
+                        List<CaptionTemplate.CaptionLevel> captionLevels = CaptionManager.getInstance().getCaptionLevelsByGender((byte) 2);
+                        for (var captionLevel : captionLevels) {
+                            System.out.println(captionLevel.name());
+                        }
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

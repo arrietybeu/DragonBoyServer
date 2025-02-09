@@ -16,6 +16,7 @@ import nro.repositories.player.PlayerCreator;
 import nro.repositories.player.PlayerLoader;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
+import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
 
 import javax.xml.crypto.Data;
@@ -77,6 +78,29 @@ public class PlayerService {
         this.sendPlayerRank(player);// -119
         this.sendSkillShortCut(player);// -113
         service.sendGameNotify(player);// 50
+        this.sendCaptionForPlayer(player);// -41
+    }
+
+    public void sendCaptionForPlayer(Player player) {
+        try (Message message = new Message(-41)) {
+            CaptionManager captionManager = CaptionManager.getInstance();
+            var gender = player.getGender();
+            byte[] dataToSend;
+            switch (gender) {
+                case 0 -> dataToSend = captionManager.getTraiDat();
+                case 1 -> dataToSend = captionManager.getNamec();
+                case 2 -> dataToSend = captionManager.getXayda();
+                default -> {
+                    LogServer.LogException("SendCaptionForPlayer invalid  gender: " + gender);
+                    return;
+                }
+            }
+            message.writer().write(dataToSend);
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     private void sendThongBaoInfoTask(Player player, Service service) {
