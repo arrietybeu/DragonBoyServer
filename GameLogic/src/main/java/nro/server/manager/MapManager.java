@@ -93,6 +93,7 @@ public class MapManager implements IManager {
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }
+
             LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadMap: " + e.getMessage());
@@ -310,7 +311,6 @@ public class MapManager implements IManager {
         }
         return tileTypes;
     }
-
 
     private void setDataBackgroundMap() {
         try (Message ms = new Message()) {

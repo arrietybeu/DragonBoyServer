@@ -13,18 +13,18 @@ import java.util.Scanner;
  */
 public class MainServer implements Runnable {
 
-    public static void main(String[] args) throws IOException {
+//    public static void main(String[] args) throws IOException {
+////        for (int i = 0; i < 1000; i++) {
+////            UUID uuid = UUID.randomUUID();
+////            int id = (int) (uuid.getMostSignificantBits() & Short.MAX_VALUE);
+////            System.out.println("Generated int ID: " + id);
+////        }
+//
 //        for (int i = 0; i < 1000; i++) {
-//            UUID uuid = UUID.randomUUID();
-//            int id = (int) (uuid.getMostSignificantBits() & Short.MAX_VALUE);
-//            System.out.println("Generated int ID: " + id);
+//            Thread thread = new Thread(new MainServer());
+//            thread.start();
 //        }
-
-        for (int i = 0; i < 1000; i++) {
-            Thread thread = new Thread(new MainServer());
-            thread.start();
-        }
-    }
+//    }
 
     @Override
     public void run() {

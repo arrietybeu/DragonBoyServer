@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package nro.server;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -15,28 +12,25 @@ import java.util.concurrent.Executors;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import nro.network.Session;
-import nro.server.config.ConfigServer;
-import nro.consts.ConstsCmd;
 import nro.controller.Controller;
+import nro.consts.ConstsCmd;
+import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
+import nro.server.config.ConfigServer;
 import nro.server.manager.Manager;
-import nro.service.CommandService;
 import nro.server.manager.SessionManager;
+import nro.service.CommandService;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Arriety
- */
 public class MainServer {
 
-    private static ServerSocket server;
-    private static final Controller controller = new Controller();
+    private ServerSocket serverSocket;
+    private final Controller controller = new Controller();
     private static MainServer instance;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private volatile boolean running;
 
-    public static MainServer gI() {
+    public static synchronized MainServer getInstance() {
         if (instance == null) {
             instance = new MainServer();
             instance.init();
@@ -51,66 +45,54 @@ public class MainServer {
 
     public static void main(String[] args) {
         try {
-            Config();
-            ActiveCommandLine();
-            ActiveDeadLockDetector();
-            MainServer.gI().run();
+            configure();
+            startCommandLine();
+            startDeadLockDetector();
+            MainServer.getInstance().start();
         } catch (Exception e) {
             LogServer.LogException("Error main: " + e.getMessage());
         }
     }
-
-    public void run() {
+    public void start() {
         try {
             this.running = true;
-            this.startGame();
-            this.startServerSocket();// tao 1 luong quan ly ket noi, 1 session = 2 luong
+            startGame();
+            startServerSocket();
         } catch (Exception e) {
-            LogServer.LogException("Error run: " + e.getMessage());
+            LogServer.LogException("Error start: " + e.getMessage());
         }
     }
 
     private void startServerSocket() {
-//        threadPool.execute(() -> {
-            if (this.getSocket() != null && !this.getSocket().isClosed()) {
-                LogServer.DebugLogic("Server is already running.");
-                return;
-            }
-            try {
-                this.setSocket(new ServerSocket(ConfigServer.PORT));
-                LogServer.DebugLogic("Server started at port [" + ConfigServer.PORT + "]");
+        if (this.serverSocket != null && !this.serverSocket.isClosed()) {
+            LogServer.DebugLogic("Server is already running.");
+            return;
+        }
+        try {
+            this.serverSocket = new ServerSocket(ConfigServer.PORT);
+            LogServer.DebugLogic("Server started at port [" + ConfigServer.PORT + "]");
 
-                while (this.running && this.getSocket() != null && !this.getSocket().isClosed()) {
-                    try {
-
-                        new Session(this.getSocket().accept(), controller);
-
-                    } catch (SocketException e) {
-                        if (!this.running) {
-                            LogServer.DebugLogic("Server stopped gracefully.");
-                        } else {
-                            LogServer.LogException("Socket exception: " + e.getMessage());
-                        }
-                        break;
-                    } catch (Exception e) {
-                        LogServer.LogException("Error in client connection: " + e.getMessage());
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                LogServer.LogException("Error starting server: " + e.getMessage());
-                System.exit(0);
-            } finally {
+            while (this.running && this.serverSocket != null && !this.serverSocket.isClosed()) {
                 try {
-                    if (this.getSocket() != null && !this.getSocket().isClosed()) {
-                        this.getSocket().close();
+                    Socket clientSocket = this.serverSocket.accept();
+                    new Session(clientSocket, controller);
+                } catch (SocketException se) {
+                    if (!this.running) {
+                        LogServer.DebugLogic("Server stopped gracefully.");
+                    } else {
+                        LogServer.LogException("Socket exception: " + se.getMessage());
                     }
-                    LogServer.DebugLogic("Server socket closed.");
+                    break;
                 } catch (Exception e) {
-                    LogServer.LogException("Error closing server: " + e.getMessage());
+                    LogServer.LogException("Error in client connection: " + e.getMessage());
                 }
             }
-//        });
+        } catch (IOException e) {
+            LogServer.LogException("Error starting server: " + e.getMessage());
+            System.exit(0);
+        } finally {
+            closeServerSocket();
+        }
     }
 
     private void startGame() {
@@ -121,55 +103,46 @@ public class MainServer {
         }
     }
 
-    private static void ActiveCommandLine() {
+    private static void startCommandLine() {
         threadPool.execute(CommandService::ActiveCommandLine);
     }
 
-    private static void ActiveDeadLockDetector() {
+    private static void startDeadLockDetector() {
         DeadLockDetector deadLockDetector = new DeadLockDetector(Duration.ofSeconds(2L), () -> {
             System.out.println("isRestartOnDeadLock");
         });
         deadLockDetector.start();
     }
 
-    public void close() {
+    public void shutdown() {
         try {
             this.running = false;
-            this.closeServerSocket();
+            closeServerSocket();
             SessionManager.getInstance().kickAllPlayer("Bảo trì");
             DatabaseConnectionPool.closeConnections();
             LogServer.DebugLogic("Server closed");
             System.exit(0);
         } catch (Exception e) {
-            LogServer.LogException("Error close: " + e.getMessage());
+            LogServer.LogException("Error shutdown: " + e.getMessage());
         } finally {
             instance = null;
         }
     }
 
-    // close server socket
     private void closeServerSocket() {
-        try {
-            if (this.getSocket() != null && !this.getSocket().isClosed()) {
-                this.getSocket().close();
+        if (this.serverSocket != null && !this.serverSocket.isClosed()) {
+            try {
+                this.serverSocket.close();
+            } catch (IOException e) {
+                LogServer.LogException("Error closing server socket: " + e.getMessage());
             }
-        } catch (Exception e) {
-            LogServer.LogException("Error closeServerSocket: " + e.getMessage());
         }
+        LogServer.DebugLogic("Server socket closed.");
     }
 
-    public static void Config() {
+    public static void configure() {
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
-
         ((Logger) LoggerFactory.getLogger("org.reflections")).setLevel(Level.ERROR);
         ((Logger) LoggerFactory.getLogger("com.zaxxer.hikari")).setLevel(Level.ERROR);
-    }
-
-    public ServerSocket getSocket() {
-        return server;
-    }
-
-    public synchronized void setSocket(ServerSocket server) {
-        MainServer.server = server;
     }
 }

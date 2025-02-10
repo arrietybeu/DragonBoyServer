@@ -36,7 +36,7 @@ public class Manager {
         } catch (Exception e) {
             LogServer.LogException("Error loadDataBase: " + e.getMessage());
             System.exit(0);
-            MainServer.gI().close();
+            MainServer.getInstance().shutdown();
         } finally {
             System.gc();
         }

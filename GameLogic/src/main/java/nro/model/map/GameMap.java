@@ -30,8 +30,7 @@ public class GameMap {
     public GameMap(int id, String name, byte planetId,
                    byte tileId, byte bgId, byte bgType, byte typeMap,
                    List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
-                   List<Waypoint> waypoints, TileMap tileMap
-    ) {
+                   List<Waypoint> waypoints, TileMap tileMap) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;

@@ -53,7 +53,6 @@ public final class Session {
             this.socket.setKeepAlive(true);
             this.sessionInfo.setIp(this.socket.getInetAddress().getHostAddress());
             this.executorService = Executors.newFixedThreadPool(2);
-
             this.initCommunication();
             SessionManager.getInstance().add(this);
         } catch (Exception e) {

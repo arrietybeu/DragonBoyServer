@@ -41,7 +41,7 @@ public class Maintenance {
                     LogServer.LogException("Error Maintenance 2: " + e.getMessage());
                 }
             }
-            MainServer.gI().close();
+            MainServer.getInstance().shutdown();
 
             LogServer.DebugLogic("Maintenance stop server");
         } catch (Exception e) {

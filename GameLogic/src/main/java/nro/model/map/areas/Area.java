@@ -20,7 +20,6 @@ public class Area {
     private final int maxPlayers;
     private final GameMap map;
 
-
     private final Map<Integer, Player> players;
     private final Map<Integer, Monster> monsters;
     private final Map<Integer, Npc> npcs;
@@ -30,9 +29,9 @@ public class Area {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
-        this.players = new ConcurrentHashMap<>();
         this.monsters = monsters;
         this.npcs = npcs;
+        this.players = new ConcurrentHashMap<>();
         this.items = new ConcurrentHashMap<>();
     }
 
