@@ -110,14 +110,6 @@ public class PlayerCreator {
         }
     }
 
-    /**
-     *
-     * @param connection
-     * @param playerId
-     * @param gender
-     * @throws SQLException
-     */
-
     private void createPlayerPoint(Connection connection, int playerId, byte gender) throws SQLException {
         String query = "INSERT INTO player_point (player_id, " +
                 "hp, hp_default, hp_max, hp_current, " +
@@ -177,7 +169,6 @@ public class PlayerCreator {
             }
         }
     }
-
 
     private void createMagicTreePlayer(Connection connection, int playerId) throws SQLException {
         String query = "INSERT INTO player_magic_tree (player_id, is_upgrade, time_upgrade, level, time_harvest, curr_pea) VALUES (?, ?, ?, ?, ?, ?)";

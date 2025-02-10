@@ -11,7 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SessionManager {
+public class SessionManager  {
 
     @Getter
     private static final SessionManager instance = new SessionManager();
@@ -19,7 +19,6 @@ public class SessionManager {
     private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     private final ConcurrentHashMap<Integer, Session> sessions = new ConcurrentHashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
 
     public Session getSessionById(int id) {
         this.lock.readLock().lock();
@@ -102,7 +101,6 @@ public class SessionManager {
                     LogServer.LogException("Error khi check session time out: " + e.getMessage());
                 }
             });
-//            LogServer.DebugLogic("Check Session Size: " + this.sessions.size());
         } catch (Exception e) {
             LogServer.LogException("Error checkInactiveSessions: " + e.getMessage());
             e.printStackTrace();

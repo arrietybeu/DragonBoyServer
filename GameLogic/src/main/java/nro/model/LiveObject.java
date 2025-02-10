@@ -7,7 +7,6 @@ import lombok.Setter;
 @Data
 public abstract class LiveObject {
 
-
     private int id;
     private String name = "";
     private byte typeObject;

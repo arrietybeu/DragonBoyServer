@@ -53,6 +53,7 @@ public class MainServer {
             LogServer.LogException("Error main: " + e.getMessage());
         }
     }
+
     public void start() {
         try {
             this.running = true;

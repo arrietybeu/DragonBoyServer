@@ -235,7 +235,6 @@ public class ResourceService {
         }
     }
 
-
     public void sendDataBackgroundMap(Session session, int id) {
         try (Message message = new Message(-32)) {
             byte[] data = FileNio.loadDataFile("resources/x" + session.getClientInfo().getZoomLevel() + "/image_background/" + id + ".png");
@@ -244,7 +243,6 @@ public class ResourceService {
             assert data != null : "Data Background is null: " + id;
             message.writer().writeInt(data.length);
             message.writer().write(data);
-
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error requestBackgroundTemplate: " + e.getMessage());
@@ -287,20 +285,8 @@ public class ResourceService {
 
     public void sendTileSetInfo(Session session) {
         try (Message message = new Message(-82)) {
-            MapManager mapManager = MapManager.getInstance();
-            var data = mapManager.getTileSetTemplates();
-            message.writer().writeByte(data.size());
-            for (var tileSet : data) {
-                message.writer().writeByte(tileSet.getTile_type());
-                for (var tile : tileSet.getTileTypes()) {
-                    message.writer().writeInt(tile.getTileSetId());
-                    message.writer().writeByte(tile.getIndex());
-
-                    for (var indexValue : tile.getIndex_value()) {
-                        message.writer().writeByte(indexValue);
-                    }
-                }
-            }
+            byte[] data = FileNio.loadDataFile("resources/data/tile_data/tile_set_info");
+            message.writer().write(data);
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
@@ -319,7 +305,7 @@ public class ResourceService {
 //    }
 
     public void clientOk(Session session) {
-        if(!session.getSessionInfo().isClientOk()){
+        if (!session.getSessionInfo().isClientOk()) {
             ResourceService resourcesService = ResourceService.getInstance();
             resourcesService.sendDataBackgroundMapTemplate(session);// -31
             resourcesService.sendTileSetInfo(session); //-82

@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lombok.Getter;
-import nro.server.LogServer;
 
 /**
  * @author Arriety
@@ -23,6 +22,7 @@ public class Maintenance {
 
     public void active(int seconds) {
         if (this.isMaintenance) {
+            LogServer.DebugLogic("isMaintenance = true");
             return;
         }
         this.isMaintenance = true;

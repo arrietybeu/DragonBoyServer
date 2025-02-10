@@ -23,6 +23,4 @@ public class Clan {
     private final List<ClanMember> clanMembers;
     private final List<ClanMessage> currClanMessages;
 
-
-
 }

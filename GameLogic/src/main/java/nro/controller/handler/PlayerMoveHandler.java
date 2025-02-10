@@ -27,7 +27,7 @@ public class PlayerMoveHandler implements IMessageProcessor {
             }
 
             if (Math.abs(newX - player.getX()) > 50 || Math.abs(newY - player.getY()) > 100) {
-                LogServer.LogWarning("Player " + player.getName() + " có di chuyển bất thường!");
+//                LogServer.LogWarning("Player " + player.getName() + " có di chuyển bất thường!");
 //                return;
             }
 

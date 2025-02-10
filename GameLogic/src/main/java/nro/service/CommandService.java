@@ -170,6 +170,9 @@ public class CommandService {
                             ex.printStackTrace();
                         }
                         break;
+                    case "addPlayerInZone":
+
+                        break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");
                         break;

@@ -29,37 +29,7 @@ public class DragonBall {
 
     public static void main(String[] args) {
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
-        try {
-            for (int i = 1245234; i < 1257060; i++) {// 1245466
-                try {
-                    String url = "https://tienhiep.org/doc-truyen/hau-due-kiem-than/read/" + i + ".html";
-                    Document doc = Jsoup.connect(url).get();
-                    String title = doc.title();
-                    System.out.println("title: " + title);
 
-                    Elements scriptTags = doc.select("script");
-
-                    File file = new File("truyen/page_" + i + ".txt");
-                    // try with resources
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                        writer.write("Title: " + title);
-                        writer.newLine();
-
-                        for (Element script : scriptTags) {
-                            writer.write("Script Content: " + script.html());
-                            writer.newLine();
-                        }
-                    }
-
-                    System.out.println("save page " + i + " to file: " + file.getName());
-                    Thread.sleep(1000);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static void main(String args) {

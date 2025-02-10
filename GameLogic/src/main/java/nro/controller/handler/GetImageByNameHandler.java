@@ -4,7 +4,6 @@ import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
 import nro.network.Message;
 import nro.network.Session;
-import nro.server.LogServer;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -19,7 +18,6 @@ public class GetImageByNameHandler implements IMessageProcessor {
             var name = stream.readUTF();
         } catch (IOException ex) {
             ex.printStackTrace();
-//            LogServer.LogException();
         }
     }
 }

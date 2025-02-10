@@ -104,8 +104,7 @@ public class MapManager implements IManager {
         String query = "SELECT * FROM `map_tiles`";
         Map<Integer, TileMap> tileMaps = new HashMap<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(query);
-             ResultSet rs = statement.executeQuery()) {
+        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
                 int mapId = rs.getInt("map_id");
@@ -129,20 +128,14 @@ public class MapManager implements IManager {
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
         List<Area> areas = new ArrayList<>();
         for (int i = 0; i < zone; i++) {
-            Area area = new Area(
-                    map,
-                    i,
-                    maxPlayer,
-                    this.loadMonsters(connection, map.getId()),
-                    this.loadNpcs(connection, map.getId())
-            );
+            Area area = new Area(map, i, maxPlayer, this.loadMonsters(connection, map.getId()), this.loadNpcs(connection, map.getId()));
             areas.add(area);
         }
         return areas;
     }
 
     private Map<Integer, Monster> loadMonsters(Connection connection, int mapId) {
-        Map<Integer, Monster> monsters = new ConcurrentHashMap<>();
+        Map<Integer, Monster> monsters = new HashMap<>();
         String query = "SELECT * FROM `map_monsters` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -174,7 +167,7 @@ public class MapManager implements IManager {
     }
 
     private Map<Integer, Npc> loadNpcs(Connection connection, int mapId) {
-        Map<Integer, Npc> npcs = new ConcurrentHashMap<>();
+        Map<Integer, Npc> npcs = new HashMap<>();
         String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -264,7 +257,9 @@ public class MapManager implements IManager {
 
     private void loadTileSetInfo() {
         String query = "SELECT * FROM `map_tile_set_info`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+             PreparedStatement ps = connection.prepareStatement(query);
+             var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var tileSet = new TileSetTemplate();
                 tileSet.setId(rs.getInt("id"));

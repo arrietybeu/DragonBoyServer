@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import nro.model.LiveObject;
 import nro.model.clan.Clan;
 import nro.model.map.areas.Area;
-import nro.model.pet.Disciple;
+import nro.model.discpile.Disciple;
 import nro.network.Message;
 import nro.network.Session;
 
