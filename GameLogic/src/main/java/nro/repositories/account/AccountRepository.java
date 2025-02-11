@@ -74,10 +74,12 @@ public class AccountRepository {
             } catch (Exception e) {
                 LogServer.LogException("Error checkAccount: " + e.getMessage());
                 e.printStackTrace();
+                return false;
             }
         } catch (Exception e) {
             LogServer.LogException("Error checkAccount: " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
 
         return true;

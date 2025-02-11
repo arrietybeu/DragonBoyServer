@@ -53,11 +53,11 @@ public class Player extends LiveObject {
 
     public boolean isNewPlayer() {
         long days = this.getDaysSinceCreation();
-        System.out.println("Người chơi " + this.getName() + " đã tạo tài khoản được " + days + " ngày.");
+        System.out.println("Player name: " + this.getName() + " create " + days + " day.");
         return days < 30;
     }
 
-    public long getDaysSinceCreation() {
+    private long getDaysSinceCreation() {
         return ChronoUnit.DAYS.between(createdAt, Instant.now());
     }
 

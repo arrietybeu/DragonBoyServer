@@ -10,7 +10,7 @@ import java.io.*;
 public class OpenAIChatClient {
     private static final String OPEN_AI_ENDPOINT = "http://localhost:1234/v1/chat/completions";
 
-    public static void main(String[] args) {
+    public static void main() {
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
         Scanner scanner = new Scanner(System.in);
         List<Map<String, String>> messages = new ArrayList<>();

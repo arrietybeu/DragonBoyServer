@@ -120,6 +120,7 @@ public class MainServer {
             this.running = false;
             closeServerSocket();
             SessionManager.getInstance().kickAllPlayer("Bảo trì");
+            Manager.getInstance().clearAllData();
             DatabaseConnectionPool.closeConnections();
             LogServer.DebugLogic("Server closed");
             System.exit(0);

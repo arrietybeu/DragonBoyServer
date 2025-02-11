@@ -12,6 +12,7 @@ public class ImageSourceHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         try {
             short id = message.reader().readShort();
+            System.out.println(id);
         } catch (Exception e) {
             LogServer.LogException("Error ImageSourceHandler: " + e.getMessage());
             e.printStackTrace();

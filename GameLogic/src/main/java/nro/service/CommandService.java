@@ -52,6 +52,10 @@ public class CommandService {
                     case "thread":
                         LogServer.DebugLogic("Thread: " + Thread.activeCount());
                         break;
+                    case "quantity_thread":
+                        var num = Runtime.getRuntime().availableProcessors(); // so luong cpu
+                        LogServer.DebugLogic("So luong cpu: " + num);
+                        break;
                     case "session":
                         LogServer.DebugLogic("Session: " + SessionManager.getInstance().getSizeSession());
                         break;

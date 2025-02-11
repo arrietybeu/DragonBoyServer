@@ -52,10 +52,13 @@ public class ManagerRegistry {
     public static void clearAll() {
         for (IManager manager : MANAGERS) {
             try {
+                LogServer.DebugLogic("Clearing manager: " + manager.getClass().getSimpleName());
                 manager.clear();
+                LogServer.DebugLogic("  - After clear: " + manager.getClass().getSimpleName() + " is cleared");
             } catch (Exception e) {
                 LogServer.LogException("Error clearing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
             }
         }
     }
+
 }

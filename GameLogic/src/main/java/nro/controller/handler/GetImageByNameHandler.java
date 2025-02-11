@@ -16,6 +16,7 @@ public class GetImageByNameHandler implements IMessageProcessor {
         try {
             DataInputStream stream = message.reader();
             var name = stream.readUTF();
+            System.out.println(name);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

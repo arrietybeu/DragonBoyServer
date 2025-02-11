@@ -52,8 +52,9 @@ public class PlayerService {
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException(e.getMessage());
-            Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
-                    ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
+            Service.dialogMessage(session,
+                    String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
+                            ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
         }
     }
 
@@ -100,7 +101,8 @@ public class PlayerService {
             message.writer().write(dataToSend);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage());
+            LogServer.LogException(
+                    "Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -296,7 +298,6 @@ public class PlayerService {
         }
     }
 
-
     private void sendPlayerBirdFrames(DataOutputStream out, Player player) throws IOException {
         short[] frames = player.getPlayerBirdFrames();
         out.writeShort(frames[0]); // frame1
@@ -306,7 +307,8 @@ public class PlayerService {
 
     private void sendInventoryForPlayer(Message message, List<Item> items) throws IOException {
         message.writer().writeByte(items.size());
-        for (Item item : items) {
+        for (int i = 0; i < items.size(); i++) {
+            Item item = items.get(i);
             if (item == null) {
                 message.writer().writeShort(-1);
                 continue;
@@ -315,14 +317,16 @@ public class PlayerService {
             message.writer().writeInt(item.getQuantity());
             message.writer().writeUTF(item.getInfo());
             message.writer().writeUTF(item.getContent());
-            message.writer().writeByte(item.getItemOptions().size());
-            for (int j = 0; j < item.getItemOptions().size(); j++) {
-                ItemOption itemOption = item.getItemOptions().get(j);
-                if (itemOption == null) {
-                    continue;
+            if (item.getItemOptions().isEmpty()) {
+                message.writer().writeByte(1);
+                message.writer().writeShort(73);// base options
+                message.writer().writeInt(0);
+            } else {
+                message.writer().writeByte(item.getItemOptions().size());
+                for (var itemOption : item.getItemOptions()) {
+                    message.writer().writeShort(itemOption.getOptionTemplate().id());
+                    message.writer().writeInt(itemOption.getParam());
                 }
-                message.writer().writeShort(itemOption.getOptionTemplate().id());
-                message.writer().writeInt(itemOption.getParam());
             }
         }
     }
@@ -368,8 +372,7 @@ public class PlayerService {
                         session.getUserInfo().getId(),
                         name,
                         gender,
-                        hair
-                );
+                        hair);
 
                 if (!isCreated) {
                     Service.dialogMessage(session, "Tạo nhân vật thất bại.");
@@ -379,9 +382,9 @@ public class PlayerService {
         } catch (SQLException e) {
             LogServer.LogException(String.format(
                     "Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s",
-                    session.getUserInfo().getId(), name, gender, hair, e.getMessage()
-            ));
-            Service.dialogMessage(session, "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
+                    session.getUserInfo().getId(), name, gender, hair, e.getMessage()));
+            Service.dialogMessage(session,
+                    "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
             throw e;
         }
     }

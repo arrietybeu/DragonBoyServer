@@ -17,6 +17,9 @@ public class SessionInfo {
     public int recvByteCount, sendByteCount;
     public String strRecvByteCount;
 
+    public int constLogin;
+    private long banUntil = 0;
+
     public boolean getConnect() {
         return this.connected;
     }

@@ -41,4 +41,16 @@ public class Manager {
             System.gc();
         }
     }
+
+    public void clearAllData() {
+        try {
+            ManagerRegistry.clearAll();
+        } catch (Exception e) {
+            LogServer.LogException("Error Clear All Data Manager: " + e.getMessage());
+            System.exit(0);
+            MainServer.getInstance().shutdown();
+        } finally {
+            System.gc();
+        }
+    }
 }

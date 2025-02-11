@@ -29,6 +29,28 @@ public class MapService {
         return InstanceHolder.instance;
     }
 
+    public void requestMaptemplate(Player player) {
+        try (Message message = new Message(-28)) {
+            DataOutputStream data = message.writer();
+            GameMap map = player.getArea().getMap();
+            data.writeByte(10);
+            data.writeByte(map.getTileMap().tmh());
+            data.writeByte(map.getTileMap().tmh());
+
+            for (int i = 0; i < map.getTileMap().tiles().length; i++) {
+                data.writeByte(map.getTileMap().tiles()[i]);
+            }
+
+            this.loadInfoMap(player, data);
+
+            data.writeByte(map.getIsMapDouble());
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error request Map Template: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
     public void sendMapInfo(Player player) {
         Area area = player.getArea();
         try (Message message = new Message(-24)) {
@@ -43,6 +65,7 @@ public class MapService {
 
             this.loadInfoMap(player, output);
 
+            output.writeByte(area.getMap().getIsMapDouble());
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendMapInfo: " + e.getMessage());
@@ -132,7 +155,7 @@ public class MapService {
 
         // send effect in Map
         output.writeShort(backgroudEffects.size());//write effect
-        for(BackgroudEffect backgroudEffect : backgroudEffects){
+        for (BackgroudEffect backgroudEffect : backgroudEffects) {
             output.writeUTF(backgroudEffect.key());
             output.writeUTF(backgroudEffect.value());
         }

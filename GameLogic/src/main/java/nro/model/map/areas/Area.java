@@ -7,7 +7,6 @@ import nro.model.npc.Npc;
 import nro.model.player.Player;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;

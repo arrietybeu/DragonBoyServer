@@ -29,8 +29,8 @@ public class NotLoginHandler implements IMessageProcessor {
                     break;
                 case 2:
                     this.setClientType(session, message);
-                    ResourceService.getInstance().sendDataImageVersion(session);
-                    Service.getInstance().sendNotLoginResponse(session);
+                    ResourceService.getInstance().sendDataImageVersion(session);// -111
+                    Service.getInstance().sendNotLoginResponse(session);// -29
                     break;
                 default:
                     LogServer.LogException("Unknow command NotLoginHandler: [" + cmd + "]");
@@ -44,9 +44,6 @@ public class NotLoginHandler implements IMessageProcessor {
     }
 
     private void login(Session session, Message message) {
-        if (session.getSessionInfo().isLogin()) {
-            return;
-        }
         if (!this.activeLogin(session)) {
             return;
         }
@@ -63,10 +60,19 @@ public class NotLoginHandler implements IMessageProcessor {
 
             if (!accountRepository.checkAccount(userInfo)) {
                 Service.sendLoginFail(userInfo.getSession());
-                SessionManager.getInstance().kickSession(userInfo.getSession());
+                session.getSessionInfo().constLogin++;
+
+                if (session.getSessionInfo().constLogin > 10) {
+                    session.getSessionInfo().setBanUntil(System.currentTimeMillis() + 3 * 60 * 1000);
+                    Service.dialogMessage(session,
+                            "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi 3 phút để thử lại.");
+                }
+                // SessionManager.getInstance().kickSession(userInfo.getSession());
                 // checkAccount return false => account not exist
                 return;
             }
+
+            session.getSessionInfo().constLogin = 0;
 
             ResourceService resourcesService = ResourceService.getInstance();
             resourcesService.sendSmallVersion(session);// -77
@@ -132,7 +138,7 @@ public class NotLoginHandler implements IMessageProcessor {
         var isTouch = message.reader().readBoolean();
         String platform = message.reader().readUTF();
         // TODO write data info
-//        LogServer.DebugLogic(platform);
+        // LogServer.DebugLogic(platform);
         clientInfo.setPlatform(platform);
         clientInfo.setSetClientType(true);
     }
@@ -145,7 +151,20 @@ public class NotLoginHandler implements IMessageProcessor {
             return false;
         }
 
-        // TODO check message rate limit, if message count > 5,000 then kick session v..vvv
+        if (session.getSessionInfo().isLogin()) {
+            return false;
+        }
+
+        long currentTime = System.currentTimeMillis();
+        if (session.getSessionInfo().getBanUntil() > currentTime) {
+            long remainingSeconds = (session.getSessionInfo().getBanUntil() - currentTime) / 1000;
+            Service.dialogMessage(session,
+                    "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi " + remainingSeconds + " giây để thử lại.");
+            return false;
+        }
+
+        // TODO check message rate limit, if message count > 5,000 then kick session
+        // v..vvv
         return true;
     }
 

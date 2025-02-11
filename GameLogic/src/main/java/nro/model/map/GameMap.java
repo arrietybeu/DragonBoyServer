@@ -1,16 +1,14 @@
 package nro.model.map;
 
-import ch.qos.logback.classic.spi.IThrowableProxy;
 import lombok.Data;
 import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
-import nro.utils.Util;
 
 import java.util.List;
 
 @Data
-public class GameMap {
+public class GameMap implements Runnable {
 
     private final int id;
     private final String name;
@@ -19,6 +17,7 @@ public class GameMap {
     private final byte bgId;
     private final byte bgType;
     private final byte typeMap;
+    private final byte isMapDouble;
     private final TileMap tileMap;
 
     private final List<Waypoint> waypoints;
@@ -28,16 +27,17 @@ public class GameMap {
     private List<Area> areas;
 
     public GameMap(int id, String name, byte planetId,
-                   byte tileId, byte bgId, byte bgType, byte typeMap,
+                   byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap,
                    List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
                    List<Waypoint> waypoints, TileMap tileMap) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;
         this.tileId = tileId;
-        this.typeMap = typeMap;
+        this.isMapDouble = isMapDouble;
         this.bgId = bgId;
         this.bgType = bgType;
+        this.typeMap = typeMap;
         this.bgItems = bgItems;
         this.backgroudEffects = backgroudEffects;
         this.waypoints = waypoints;
@@ -48,7 +48,6 @@ public class GameMap {
         List<Area> areas = this.areas;
         for (Area area : areas) {
             int count = area.getPlayers().size();
-
             if (count < area.getMaxPlayers()) {
                 return area;
             }
@@ -65,4 +64,8 @@ public class GameMap {
                 || mapID == 130;
     }
 
+    @Override
+    public void run() {
+
+    }
 }

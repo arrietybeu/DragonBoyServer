@@ -1,5 +1,6 @@
 package nro.controller.handler;
 
+import nro.model.player.Player;
 import nro.network.Message;
 import nro.network.Session;
 import nro.controller.APacketHandler;
@@ -7,6 +8,7 @@ import nro.controller.IMessageProcessor;
 import nro.data.DataItem;
 import nro.data.DataMap;
 import nro.data.DataSkill;
+import nro.service.MapService;
 import nro.service.PlayerService;
 import nro.service.ResourceService;
 import nro.service.Service;
@@ -33,7 +35,10 @@ public class NotMapHandler implements IMessageProcessor {
                     DataItem.getInstance().sendDataItem(session);
                     break;
                 case 10:
-                    // TODO requestMaptemplate (Send tile map)
+                    Player player = session.getPlayer();
+                    if (player != null && player.getArea() != null) {
+                        MapService.getInstance().requestMaptemplate(player);
+                    }
                     break;
                 case 13:
                     ResourceService.getInstance().clientOk(session);

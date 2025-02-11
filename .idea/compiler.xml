@@ -11,6 +11,6 @@
         <module name="GameServer.GameLogic.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="19" />
+    <bytecodeTargetLevel target="21" />
   </component>
 </project>

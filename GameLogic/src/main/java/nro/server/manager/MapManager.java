@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Getter
 @SuppressWarnings("ALL")
@@ -42,6 +44,8 @@ public class MapManager implements IManager {
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
 
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(200);
+
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
 
@@ -50,21 +54,35 @@ public class MapManager implements IManager {
         this.loadMapTemplate();
         this.loadDataBackgroundMap();
         this.loadTileSetInfo();
+        this.start();
     }
 
     @Override
     public void reload() {
+
         this.clear();
         this.init();
     }
 
     @Override
     public void clear() {
+        this.threadPool.shutdown();
         this.gameMaps.clear();
         this.backgroundMapTemplates.clear();
         this.tileSetTemplates.clear();
         this.BackgroundMapData = null;
         this.TileSetData = null;
+    }
+
+    private void start() {
+        try {
+            for (GameMap map : this.gameMaps.values()) {
+                this.threadPool.submit(map);
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("Error start thread pool Map: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     private void loadMapTemplate() {
@@ -83,13 +101,14 @@ public class MapManager implements IManager {
                 var tileId = rs.getByte("tile_id");
                 var bgId = rs.getByte("background_id");
                 var bgType = rs.getByte("background_type");
+                var isMapDouble = rs.getByte("is_map_double");
 
                 List<BgItem> bgItems = this.loadItemBackgroundMap(connection, id);
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
                 List<BackgroudEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
                 TileMap tileMap = tileMaps.get(id);
 
-                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, type, bgId, bgType, bgItems, effects, waypoints, tileMap);
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems, effects, waypoints, tileMap);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }
@@ -414,4 +433,5 @@ public class MapManager implements IManager {
     public int sizeMap() {
         return this.gameMaps.size();
     }
+
 }
