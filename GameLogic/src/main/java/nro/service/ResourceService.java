@@ -313,7 +313,6 @@ public class ResourceService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("Error send Effect Data id: " + id + " " + ex.getMessage());
-            ex.printStackTrace();
         }
     }
 

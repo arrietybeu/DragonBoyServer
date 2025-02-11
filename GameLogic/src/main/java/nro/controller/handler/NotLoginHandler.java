@@ -50,7 +50,6 @@ public class NotLoginHandler implements IMessageProcessor {
         try {
             var username = message.reader().readUTF().toLowerCase();
             var password = message.reader().readUTF().toLowerCase();
-            System.out.println("username: " + username + " password: " + password);
             var version = message.reader().readUTF();
             var type = message.reader().readByte();// type login
 

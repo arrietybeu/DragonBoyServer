@@ -14,10 +14,8 @@ public class GetEffectDataHandler implements IMessageProcessor {
     @Override
     public void process(Session session, Message message) {
         try {
-
-            short idEffect = message.reader().readShort();
-
             Player player = session.getPlayer();
+            short idEffect = message.reader().readShort();
             if (player == null) return;
             ResourceService.getInstance().sendEffectData(player, idEffect);
         } catch (Exception ex) {
