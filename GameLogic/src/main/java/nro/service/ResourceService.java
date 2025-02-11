@@ -1,6 +1,8 @@
 package nro.service;
 
 import nro.consts.ConstMsgNotMap;
+import nro.model.player.Player;
+import nro.model.resources.Effect;
 import nro.model.template.CaptionTemplate;
 import nro.network.Message;
 import nro.network.Session;
@@ -290,6 +292,28 @@ public class ResourceService {
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
+        }
+    }
+
+    public void sendEffectData(Player player, short id) {
+        try (Message message = new Message(-66)) {
+            ResourcesManager manager = ResourcesManager.getInstance();
+            Effect effect = manager.get(id, (byte) player.getSession().getClientInfo().getZoomLevel());
+            DataOutputStream data = message.writer();
+            data.writeShort(id);
+            if (effect.type == 0) {
+                data.writeInt(effect.dataEffect.length);
+                data.write(effect.dataEffect);
+            } else {
+                // data new boss
+            }
+            data.writeByte(effect.type);
+            data.writeInt(effect.img.length);
+            data.write(effect.img);
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error send Effect Data id: " + id + " " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

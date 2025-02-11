@@ -7,6 +7,9 @@ import nro.consts.ConstMsgNotMap;
 import nro.server.manager.skill.SkillManager;
 import nro.server.LogServer;
 
+import javax.xml.crypto.Data;
+import java.io.DataOutputStream;
+
 public class DataSkill {
 
     public static void SendDataSkill(Session session) {
@@ -15,38 +18,40 @@ public class DataSkill {
         var skillOptions = skillManager.getSkillOptions();
 
         try (Message message = new Message(-28)) {
-            message.writer().writeByte(ConstMsgNotMap.UPDATE_SKILL);
-            message.writer().writeByte(ConfigServer.VERSION_SKILL);
-            message.writer().writeByte(skillOptions.size());// send skill options
+
+            DataOutputStream data = message.writer();
+            data.writeByte(ConstMsgNotMap.UPDATE_SKILL);
+            data.writeByte(ConfigServer.VERSION_SKILL);
+            data.writeByte(skillOptions.size());// send skill options
             for (var option : skillOptions) {
-                message.writer().writeUTF(option.name());
+                data.writeUTF(option.name());
             }
-            message.writer().writeByte(nClasses.size());// 23
+            data.writeByte(nClasses.size());// 23
             for (var classSkill : nClasses) {
-                message.writer().writeUTF(classSkill.getName());
-                message.writer().writeByte(classSkill.getSkillTemplates().size());
+                data.writeUTF(classSkill.getName());
+                data.writeByte(classSkill.getSkillTemplates().size());
                 for (var skillTemplate : classSkill.getSkillTemplates()) {
-                    message.writer().writeByte(skillTemplate.getId());
-                    message.writer().writeUTF(skillTemplate.getName());
-                    message.writer().writeByte(skillTemplate.getMaxPoint());
-                    message.writer().writeByte(skillTemplate.getManaUseType());
-                    message.writer().writeByte(skillTemplate.getType());
-                    message.writer().writeShort(skillTemplate.getIconId());
-                    message.writer().writeUTF(skillTemplate.getDamInfo());
-                    message.writer().writeUTF(skillTemplate.getDescription());
-                    message.writer().writeByte(skillTemplate.getSkills().size());
+                    data.writeByte(skillTemplate.getId());
+                    data.writeUTF(skillTemplate.getName());
+                    data.writeByte(skillTemplate.getMaxPoint());
+                    data.writeByte(skillTemplate.getManaUseType());
+                    data.writeByte(skillTemplate.getType());
+                    data.writeShort(skillTemplate.getIconId());
+                    data.writeUTF(skillTemplate.getDamInfo());
+                    data.writeUTF(skillTemplate.getDescription());
+                    data.writeByte(skillTemplate.getSkills().size());
                     for (var skill : skillTemplate.getSkills()) {
-                        message.writer().writeShort(skill.getSkillId());
-                        message.writer().writeByte(skill.getPoint());
-                        message.writer().writeLong(skill.getPowRequire());
-                        message.writer().writeShort(skill.getManaUse());
-                        message.writer().writeInt(skill.getCoolDown());
-                        message.writer().writeShort(skill.getDx());
-                        message.writer().writeShort(skill.getDy());
-                        message.writer().writeByte(skill.getMaxFight());
-                        message.writer().writeShort(skill.getDamage());
-                        message.writer().writeShort(skill.getPrice());
-                        message.writer().writeUTF(skill.getMoreInfo());
+                        data.writeShort(skill.getSkillId());
+                        data.writeByte(skill.getPoint());
+                        data.writeLong(skill.getPowRequire());
+                        data.writeShort(skill.getManaUse());
+                        data.writeInt(skill.getCoolDown());
+                        data.writeShort(skill.getDx());
+                        data.writeShort(skill.getDy());
+                        data.writeByte(skill.getMaxFight());
+                        data.writeShort(skill.getDamage());
+                        data.writeShort(skill.getPrice());
+                        data.writeUTF(skill.getMoreInfo());
                     }
                 }
             }

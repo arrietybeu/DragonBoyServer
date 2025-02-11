@@ -11,6 +11,8 @@ import nro.model.map.GameMap;
 import nro.model.template.NpcTemplate;
 import nro.server.LogServer;
 
+import java.io.DataOutputStream;
+
 public class DataMap {
 
     public static void updateMapData(Session session) {
@@ -23,35 +25,37 @@ public class DataMap {
 
         try (Message message = new Message(-28)) {
             // send type msg
-            message.writer().writeByte(ConstMsgNotMap.UPDATE_MAP);
-            // send version map (check neu local client != server client se thi update)
-            message.writer().writeByte(ConfigServer.VERSION_MAP);// 1
 
-            message.writer().writeShort(sizeMap);// TODO version < 2.4.3 write byte
+            DataOutputStream data = message.writer();
+            data.writeByte(ConstMsgNotMap.UPDATE_MAP);
+            // send version map (check neu local client != server client se thi update)
+            data.writeByte(ConfigServer.VERSION_MAP);// 1
+
+            data.writeShort(sizeMap);// TODO version < 2.4.3 write byte
 
             for (GameMap gameMap : mapManager.getGameMaps().values()) {
-                message.writer().writeUTF(gameMap.getName());
+                data.writeUTF(gameMap.getName());
             }
 
-            message.writer().writeByte(sizeNpc);
+            data.writeByte(sizeNpc);
             for (NpcTemplate npc : npcManager.getNpcTemplates()) {
-                message.writer().writeUTF(npc.name());
-                message.writer().writeShort(npc.head());
-                message.writer().writeShort(npc.body());
-                message.writer().writeShort(npc.leg());
-                message.writer().writeByte(1);
-                message.writer().writeByte(1);
-                message.writer().writeUTF("Nói chuyện");
+                data.writeUTF(npc.name());
+                data.writeShort(npc.head());
+                data.writeShort(npc.body());
+                data.writeShort(npc.leg());
+                data.writeByte(1);
+                data.writeByte(1);
+                data.writeUTF("Nói chuyện");
             }
 
-            message.writer().writeShort(sizeMonster);
+            data.writeShort(sizeMonster);
             for (var monster : monsterManager.getMonsterTemplates()) {
-                message.writer().writeByte(monster.type());
-                message.writer().writeUTF(monster.name());
-                message.writer().writeLong(monster.hp());
-                message.writer().writeByte(monster.rangeMove());
-                message.writer().writeByte(monster.speed());
-                message.writer().writeByte(monster.dartType());
+                data.writeByte(monster.type());
+                data.writeUTF(monster.name());
+                data.writeLong(monster.hp());
+                data.writeByte(monster.rangeMove());
+                data.writeByte(monster.speed());
+                data.writeByte(monster.dartType());
             }
             session.sendMessage(message);
         } catch (Exception e) {

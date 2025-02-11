@@ -14,6 +14,7 @@ import nro.server.manager.*;
 import nro.server.manager.resources.PartManager;
 import nro.server.Maintenance;
 import nro.server.LogServer;
+import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SpeacialSkillManager;
 
 import java.io.DataInputStream;
@@ -176,6 +177,11 @@ public class CommandService {
                         break;
                     case "addPlayerInZone":
 
+                        break;
+                    case "eff":
+                        ResourcesManager manager = ResourcesManager.getInstance();
+                        var maps = manager.getEffectData().get(1);
+                        System.out.println(maps.get(1).getImgInfo()[1].toString());
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

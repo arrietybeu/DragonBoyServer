@@ -1,14 +1,28 @@
 package nro.controller.handler;
 
+import nro.model.player.Player;
 import nro.network.Message;
 import nro.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
+import nro.server.LogServer;
+import nro.service.ResourceService;
 
 @APacketHandler(-66)
 public class GetEffectDataHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
+        try {
+
+            short idEffect = message.reader().readShort();
+
+            Player player = session.getPlayer();
+            if (player == null) return;
+            ResourceService.getInstance().sendEffectData(player, idEffect);
+        } catch (Exception ex) {
+            LogServer.LogException("Error Write Message GetEffectDataHandler: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }
