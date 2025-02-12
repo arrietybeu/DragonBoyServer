@@ -7,6 +7,7 @@ import nro.model.item.ItemTemplate;
 import nro.server.manager.ItemManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ItemService {
 
@@ -26,8 +27,7 @@ public class ItemService {
     }
 
     public Item createItemNull() {
-        Item item = new Item();
-        return item;
+        return new Item();
     }
 
     public ItemTemplate getTemplate(short id) {
@@ -74,9 +74,38 @@ public class ItemService {
         return items;
     }
 
+
+    public List<Item> getItemsForGender(byte gender) {
+        List<Item> items = new ArrayList<>();
+
+        short[][] itemIdsByGender = {
+                {0, 6}, // Trái đất
+                {1, 7}, // Namec
+                {2, 8}  // Xayda
+        };
+
+        if (gender < 0 || gender >= itemIdsByGender.length) {
+            return items;
+        }
+
+        for (short itemId : itemIdsByGender[gender]) {
+            Item item = createAndInitItem(itemId);
+            if (item != null) {
+                items.add(item);
+            } else {
+                throw new RuntimeException("Failed to create item id: " + itemId);
+            }
+        }
+
+        while (items.size() < 10) {
+            items.add(createItemNull());
+        }
+
+        return items;
+    }
+
     private static Item createAndInitItem(short itemId) {
         Item item = ItemService.getInstance().createItem(itemId, 1);
-
         ItemService.getInstance().initBaseOptions(item);
         return item;
     }

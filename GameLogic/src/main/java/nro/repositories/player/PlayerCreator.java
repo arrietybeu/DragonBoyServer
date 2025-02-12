@@ -2,7 +2,6 @@ package nro.repositories.player;
 
 import lombok.Getter;
 import nro.model.item.Item;
-import nro.model.item.ItemTemplate;
 import nro.server.LogServer;
 import nro.service.ItemService;
 
@@ -16,18 +15,6 @@ public class PlayerCreator {
 
     @Getter
     private static final PlayerCreator instance = new PlayerCreator();
-
-    /**
-     * Tạo một player mới với các thông tin cơ bản
-     *
-     * @param connection Connection kết nối tới cơ sở dữ liệu
-     * @param accountId  ID của tài khoản
-     * @param name       Tên của player
-     * @param gender     Hành tinh (1 trái đất, 2 namec, 3 xayda)
-     * @param hair       Kiểu tóc của player
-     * @return true nếu tạo thành công, false nếu thất bại
-     * @throws SQLException Lỗi liên quan tới cơ sở dữ liệu
-     */
 
     public boolean createPlayer(Connection connection, int accountId, String name, byte gender, int hair) throws SQLException {
         var ms = System.currentTimeMillis();
@@ -111,6 +98,13 @@ public class PlayerCreator {
         }
     }
 
+
+    private void createPlayerPoint(Connection connection, int playerId) throws SQLException {
+        executeInsert(connection, "INSERT INTO player_point (player_id, hp, mp, dame, stamina, crit, defense, power, limit_power, tiem_nang, nang_dong) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                playerId, 120, 100, 15, 1000, 0, 0, 2000, 100, 1200, 0);
+    }
+
     private void createPlayerPoint(Connection connection, int playerId, byte gender) throws SQLException {
         String query = "INSERT INTO player_point (player_id, " +
                 "hp, hp_default, hp_max, hp_current, " +
@@ -189,12 +183,9 @@ public class PlayerCreator {
 
     private void createPlayerInventory(Connection connection, int playerId, byte gender) throws SQLException {
         List<Item> itemsBody = ItemService.initializePlayerItems(gender);
-        ensureItemSlots(itemsBody, 10);
-
         List<Item> itemsBag = createEmptyItems(20);
-
         List<Item> itemsBox = createEmptyItems(20);
-
+        ensureItemSlots(itemsBody, 10);
         insertItemsToDatabase(connection, playerId, "player_items_body", itemsBody);
         insertItemsToDatabase(connection, playerId, "player_items_bag", itemsBag);
         insertItemsToDatabase(connection, playerId, "player_items_box", itemsBox);
@@ -233,29 +224,6 @@ public class PlayerCreator {
         }
     }
 
-    private void createItemBodyPlayer(Connection connection, int playerId, byte gender) throws SQLException {
-        List<Item> items = ItemService.initializePlayerItems(gender);
-        if (items.isEmpty()) {
-            throw new SQLException("Failed to initialize player items id: " + playerId);
-        }
-        String query = "INSERT INTO player_items_body (player_id, temp_id, quantity, options) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (Item item : items) {
-                statement.setInt(1, playerId);
-                statement.setInt(2, item.getTemplate() == null ? -1 : item.getTemplate().id());
-                statement.setInt(3, item.getQuantity());
-                statement.setString(4, item.getJsonOptions());
-                statement.addBatch();
-            }
-            int[] rowsAffected = statement.executeBatch();
-            if (Arrays.stream(rowsAffected).sum() == 0) {
-                throw new SQLException("Failed to create item body player.");
-            }
-        } catch (SQLException ex) {
-            throw ex;
-        }
-    }
-
     private void createPlayerDataTask(Connection connection, int playerId) throws SQLException {
         String query = "INSERT INTO player_task (player_id, task_id, task_index, task_count) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -271,6 +239,7 @@ public class PlayerCreator {
             throw ex;
         }
     }
+
 
     private void createPlayerSkillsShortCut(Connection connection, int playerId, int gender) throws SQLException {
 
@@ -294,6 +263,17 @@ public class PlayerCreator {
         } catch (SQLException e) {
             LogServer.LogException("Lỗi khi tạo shortcut skill: " + e.getMessage());
             throw e;
+        }
+    }
+
+    private void executeInsert(Connection connection, String query, Object... params) throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (int i = 0; i < params.length; i++) {
+                statement.setObject(i + 1, params[i]);
+            }
+            if (statement.executeUpdate() == 0) {
+                throw new SQLException("Insert operation failed for query: " + query);
+            }
         }
     }
 
