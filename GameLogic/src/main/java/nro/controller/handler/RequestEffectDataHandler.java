@@ -9,7 +9,7 @@ import nro.server.LogServer;
 import nro.service.ResourceService;
 
 @APacketHandler(-66)
-public class GetEffectDataHandler implements IMessageProcessor {
+public class RequestEffectDataHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
@@ -19,7 +19,7 @@ public class GetEffectDataHandler implements IMessageProcessor {
             if (player == null) return;
             ResourceService.getInstance().sendEffectData(player, idEffect);
         } catch (Exception ex) {
-            LogServer.LogException("Error Write Message GetEffectDataHandler: " + ex.getMessage());
+            LogServer.LogException("Error Write Message RequestEffectDataHandler: " + ex.getMessage());
             ex.printStackTrace();
         }
     }

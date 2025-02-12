@@ -8,7 +8,7 @@ import nro.service.ResourceService;
 import nro.server.LogServer;
 
 @APacketHandler(-32)
-public class BackgroundTemplateHandler implements IMessageProcessor {
+public class RequestBackgroundTemplateHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
@@ -16,7 +16,7 @@ public class BackgroundTemplateHandler implements IMessageProcessor {
             var id = message.reader().readShort();
             ResourceService.getInstance().sendDataBackgroundMap(session, id);
         } catch (Exception e) {
-            LogServer.LogException("Error in BackgroundTemplateHandler: " + e.getMessage());
+            LogServer.LogException("Error in RequestBackgroundTemplateHandler: " + e.getMessage());
         }
     }
 }

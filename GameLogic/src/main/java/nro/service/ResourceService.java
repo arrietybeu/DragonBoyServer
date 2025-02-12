@@ -71,15 +71,6 @@ public class ResourceService {
         message.writer().write(data);
     }
 
-    public void requestMobTemplate(Session session) {
-        try (Message message = new Message(11)) {
-            message.writer().writeShort(1);
-            message.writer().writeByte(1);
-            session.sendMessage(message);
-        } catch (Exception e) {
-            LogServer.LogException("Error requestMobTemplate: " + e.getMessage());
-        }
-    }
 
     public void downloadResources(Session session, Message ms) {
         int zoomLevel = session.getClientInfo().getZoomLevel();
@@ -295,26 +286,58 @@ public class ResourceService {
         }
     }
 
+
+    public void sendMonsterData(Player player, short id) {
+
+        try (Message message = new Message(11)) {
+            ResourcesManager manager = ResourcesManager.getInstance();
+            Effect effect = manager.getMonsterData(id, (byte) player.getSession().getClientInfo().getZoomLevel());
+            DataOutputStream data = message.writer();
+            data.writeShort(id);
+            data.writeByte(effect.getType());
+
+            if (effect.getType() != 0) {
+//                data.write(effect.get());
+            } else {
+                data.writeInt(effect.getDataEffectMonster().length);
+                data.write(effect.getDataEffectMonster());
+            }
+
+            data.writeInt(effect.getImg().length);
+            data.write(effect.getImg());
+
+            data.writeByte(effect.getTypeData());
+            if (effect.getTypeData() == 1 || effect.getTypeData() == 2) {
+                data.write(effect.getDataEffectBigMonster());
+            }
+
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error requestMobTemplate: " + e.getMessage());
+        }
+    }
+
     public void sendEffectData(Player player, short id) {
         try (Message message = new Message(-66)) {
             ResourcesManager manager = ResourcesManager.getInstance();
-            Effect effect = manager.get(id, (byte) player.getSession().getClientInfo().getZoomLevel());
+            Effect effect = manager.getEffectData(id, (byte) player.getSession().getClientInfo().getZoomLevel());
             DataOutputStream data = message.writer();
             data.writeShort(id);
-            if (effect.type == 0) {
-                data.writeInt(effect.dataEffect.length);
-                data.write(effect.dataEffect);
+            if (effect.getType() == 0) {
+                data.writeInt(effect.getDataEffect().length);
+                data.write(effect.getDataEffect());
             } else {
                 // data new boss
             }
-            data.writeByte(effect.type);
-            data.writeInt(effect.img.length);
-            data.write(effect.img);
+            data.writeByte(effect.getType());
+            data.writeInt(effect.getImg().length);
+            data.write(effect.getImg());
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("Error send Effect Data id: " + id + " " + ex.getMessage());
         }
     }
+
 
 //    public void sendTileSetInfo(Session session) {
 //        try (Message message = new Message(-82)) {

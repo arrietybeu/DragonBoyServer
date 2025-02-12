@@ -6,7 +6,7 @@ import nro.network.*;
 import nro.server.LogServer;
 
 @APacketHandler(-111)
-public class ImageSourceHandler implements IMessageProcessor {
+public class RequestImageSourceHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
@@ -14,7 +14,7 @@ public class ImageSourceHandler implements IMessageProcessor {
             short id = message.reader().readShort();
 //            System.out.println(id);
         } catch (Exception e) {
-            LogServer.LogException("Error ImageSourceHandler: " + e.getMessage());
+            LogServer.LogException("Error RequestImageSourceHandler: " + e.getMessage());
             e.printStackTrace();
         }
     }

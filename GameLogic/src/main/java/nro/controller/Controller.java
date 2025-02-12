@@ -4,6 +4,7 @@ import nro.network.Message;
 import nro.network.Session;
 import nro.consts.ConstsCmd;
 import nro.server.LogServer;
+import nro.service.Service;
 
 /**
  * @author Arriety
@@ -25,7 +26,9 @@ public class Controller {
             if (processor != null) {
                 processor.process(session, msg);
             } else {
-                LogServer.LogException("Unknow command: [" + cmd + "] " + ConstsCmd.getMessageName(cmd));
+                var info = "Unknow command: [" + cmd + "] " + ConstsCmd.getMessageName(cmd);
+                Service.dialogMessage(session, info);
+                LogServer.LogException(info);
             }
         } catch (Exception e) {
             LogServer.LogException("Error Message Processor: [" + cmd + "] " + e.getMessage());
@@ -37,7 +40,7 @@ public class Controller {
     private void checkTimeDelay(Session session, byte cmd, long time) {
         long executionTime = System.currentTimeMillis() - time;
 //        LogServer.DebugLogic("session " + session.getSessionInfo().getId() + " get message [" + cmd + "] - " + executionTime + " ms");
-        if (executionTime > 5000) {
+        if (executionTime > 1000) {
             LogServer.LogException("Session IP: " + session.getSessionInfo().getIp() + " time delay: [" + cmd + "] - " + executionTime + " ms");
         }
     }

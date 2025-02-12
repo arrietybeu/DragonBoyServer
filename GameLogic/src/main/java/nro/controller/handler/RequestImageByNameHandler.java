@@ -9,7 +9,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 @APacketHandler(66)
-public class GetImageByNameHandler implements IMessageProcessor {
+public class RequestImageByNameHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {

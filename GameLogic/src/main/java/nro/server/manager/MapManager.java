@@ -115,6 +115,7 @@ public class MapManager implements IManager {
 
             LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException("Error loadMap: " + e.getMessage());
         }
     }
@@ -147,14 +148,19 @@ public class MapManager implements IManager {
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
         List<Area> areas = new ArrayList<>();
         for (int i = 0; i < zone; i++) {
-            Area area = new Area(map, i, maxPlayer, this.loadMonsters(connection, map.getId()), this.loadNpcs(connection, map.getId()));
+            Area area = new Area(
+                    map,
+                    i,// zone id
+                    maxPlayer,
+                    this.loadMonsters(connection, map.getId()),
+                    this.loadNpcs(connection, map.getId()));
             areas.add(area);
         }
         return areas;
     }
 
-    private Map<Integer, Monster> loadMonsters(Connection connection, int mapId) {
-        Map<Integer, Monster> monsters = new HashMap<>();
+    private List<Monster> loadMonsters(Connection connection, int mapId) {
+        List<Monster> monsters = new ArrayList<>();
         String query = "SELECT * FROM `map_monsters` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -162,6 +168,7 @@ public class MapManager implements IManager {
                 while (rs.next()) {
                     Monster monster = new Monster();
                     monster.setId(rs.getInt("mob_id"));
+                    monster.setTemplateId((short) monster.getId());
                     monster.setSys(rs.getByte("sys"));
                     monster.setHp(rs.getLong("hp"));
                     monster.setLevel(rs.getByte("level"));
@@ -176,7 +183,7 @@ public class MapManager implements IManager {
                     monster.setFire(rs.getByte("is_fire") == 1);
                     monster.setIce(rs.getByte("is_ice") == 1);
                     monster.setWind(rs.getByte("is_wind") == 1);
-                    monsters.put(monster.getId(), monster);
+                    monsters.add(monster);
                 }
             }
         } catch (SQLException e) {
@@ -185,8 +192,8 @@ public class MapManager implements IManager {
         return monsters;
     }
 
-    private Map<Integer, Npc> loadNpcs(Connection connection, int mapId) {
-        Map<Integer, Npc> npcs = new HashMap<>();
+    private List<Npc> loadNpcs(Connection connection, int mapId) {
+        List<Npc> npcs = new ArrayList<>();
         String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -198,7 +205,7 @@ public class MapManager implements IManager {
                     npc.setX(rs.getShort("x"));
                     npc.setY(rs.getShort("y"));
                     npc.setAvatar(rs.getShort("avatar"));
-                    npcs.put(npc.getTemplateId(), npc);
+                    npcs.add(npc);
                 }
             }
         } catch (SQLException e) {

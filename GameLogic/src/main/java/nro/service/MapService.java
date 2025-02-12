@@ -80,9 +80,9 @@ public class MapService {
         List<Waypoint> wayPoints = map.getWaypoints();
         List<BackgroudEffect> backgroudEffects = map.getBackgroudEffects();
 
-        Map<Integer, Monster> monsters = area.getMonsters();
-        Map<Integer, Npc> npcs = area.getNpcs();
-        Map<Integer, ItemMap> itemMaps = area.getItems();
+        List<Monster> monsters = area.getMonsters();
+        List<Npc> npcs = area.getNpcs();
+        List<ItemMap> itemMaps = area.getItems();
 
         // send location
         output.writeShort(player.getX());
@@ -102,7 +102,7 @@ public class MapService {
 
         // send mob
         output.writeByte(monsters.size());
-        for (Monster monster : monsters.values()) {
+        for (Monster monster : monsters) {
             output.writeBoolean(monster.isDisable());
             output.writeBoolean(monster.isDontMove());
             output.writeBoolean(monster.isFire());
@@ -111,6 +111,7 @@ public class MapService {
             output.writeShort(monster.getTemplateId());
             output.writeByte(monster.getSys());
             output.writeLong(monster.getHp());
+
             output.writeByte(monster.getLevel());
             output.writeLong(monster.getMaxp());
             output.writeShort(monster.getX());
@@ -124,7 +125,7 @@ public class MapService {
 
         // send npc
         output.writeByte(npcs.size());
-        for (Npc npc : npcs.values()) {
+        for (Npc npc : npcs) {
             output.writeByte(npc.getStatus());
             output.writeShort(npc.getX());
             output.writeShort(npc.getY());
@@ -134,7 +135,7 @@ public class MapService {
 
         // send item in Map
         output.writeByte(itemMaps.size());
-        for (ItemMap item : itemMaps.values()) {
+        for (ItemMap item : itemMaps) {
             output.writeShort(item.getItemMapID());
             output.writeShort(item.getItemTemplate().id());
             output.writeShort(item.getX());

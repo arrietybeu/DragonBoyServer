@@ -21,18 +21,18 @@ public class Area {
     private final GameMap map;
 
     private final Map<Integer, Player> players;
-    private final Map<Integer, Monster> monsters;
-    private final Map<Integer, Npc> npcs;
-    private final Map<Integer, ItemMap> items;
+    private final List<Monster> monsters;
+    private final List<Npc> npcs;
+    private final List<ItemMap> items;
 
-    public Area(GameMap map, int zoneId, int maxPlayers, Map<Integer, Monster> monsters, Map<Integer, Npc> npcs) {
+    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters, List<Npc> npcs) {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
         this.monsters = monsters;
         this.npcs = npcs;
         this.players = new HashMap<>();
-        this.items = new HashMap<>();
+        this.items = new ArrayList<>();
     }
 
     public void addPlayer(Player player) {
