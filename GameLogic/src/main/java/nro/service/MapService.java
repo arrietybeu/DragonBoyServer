@@ -34,7 +34,7 @@ public class MapService {
             DataOutputStream data = message.writer();
             GameMap map = player.getArea().getMap();
             data.writeByte(10);
-            data.writeByte(map.getTileMap().tmh());
+            data.writeByte(map.getTileMap().tmw());
             data.writeByte(map.getTileMap().tmh());
 
             for (int i = 0; i < map.getTileMap().tiles().length; i++) {

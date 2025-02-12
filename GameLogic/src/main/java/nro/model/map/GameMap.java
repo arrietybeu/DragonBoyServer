@@ -66,6 +66,5 @@ public class GameMap implements Runnable {
 
     @Override
     public void run() {
-
     }
 }

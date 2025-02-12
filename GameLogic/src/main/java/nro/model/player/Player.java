@@ -53,7 +53,7 @@ public class Player extends LiveObject {
 
     public boolean isNewPlayer() {
         long days = this.getDaysSinceCreation();
-        System.out.println("Player name: " + this.getName() + " create " + days + " day.");
+//        System.out.println("Player name: " + this.getName() + " create " + days + " day.");
         return days < 30;
     }
 

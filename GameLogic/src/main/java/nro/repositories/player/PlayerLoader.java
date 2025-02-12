@@ -1,6 +1,7 @@
 package nro.repositories.player;
 
 import lombok.Getter;
+import nro.model.item.Item;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
@@ -12,9 +13,11 @@ import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
+import nro.service.ItemService;
 
 import java.sql.*;
 import java.time.Instant;
+import java.util.List;
 
 @SuppressWarnings("ALL")
 public class PlayerLoader {
@@ -38,6 +41,7 @@ public class PlayerLoader {
                 }
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new Exception("Error loading p layer for account_id: " + session.getUserInfo().getId() + ", Error: " + e.getMessage());
         }
         return null;
@@ -70,7 +74,44 @@ public class PlayerLoader {
 
         // Load player skills shortcut
         this.loadPlayerSkillsShortCut(player, connection);
+
+        // Load player inventory
+        this.loadPlayerInventory(player, connection);
         return player;
+    }
+
+
+    private void loadPlayerInventory(Player player, Connection connection) throws SQLException {
+        loadInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
+        loadInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
+        loadInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
+    }
+
+    private void loadInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
+        String query = "SELECT temp_id, quantity, create_time, options FROM " + tableName + " WHERE player_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, player.getId());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    short tempId = resultSet.getShort("temp_id");
+                    int quantity = resultSet.getInt("quantity");
+                    Timestamp timestamp = resultSet.getTimestamp("create_time");
+                    long createTime = (timestamp != null) ? timestamp.getTime() : 0;
+                    String optionsText = resultSet.getString("options");
+
+                    Item item = (tempId != -1) ? ItemService.getInstance().createItem(tempId, quantity) : ItemService.getInstance().createItemNull();
+
+                    if (tempId != -1) {
+                        item.setCreateTime(createTime);
+                        item.setJsonOptions(optionsText);
+                    }
+
+                    inventory.add(item);
+                }
+            }
+        }
     }
 
     private void loadPlayerCurrencies(Player player, Connection connection) throws SQLException {
@@ -208,6 +249,7 @@ public class PlayerLoader {
             }
         }
     }
+
 
     private void loadPlayerSkillsShortCut(Player player, Connection connection) throws SQLException {
         String query = "SELECT * FROM player_skills_shortcut WHERE player_id = ?";

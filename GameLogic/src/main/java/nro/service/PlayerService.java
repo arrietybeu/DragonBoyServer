@@ -59,6 +59,9 @@ public class PlayerService {
     }
 
     public void onPlayerLoginSuccess(Player player) {
+
+        player.getArea().addPlayer(player);
+
         Service service = Service.getInstance();
         TaskService taskService = TaskService.getInstance();
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
@@ -294,6 +297,7 @@ public class PlayerService {
             out.writeShort(player.getIdHat());
             player.sendMessage(msg);
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
         }
     }
@@ -309,7 +313,7 @@ public class PlayerService {
         message.writer().writeByte(items.size());
         for (int i = 0; i < items.size(); i++) {
             Item item = items.get(i);
-            if (item == null) {
+            if (item == null || item.getTemplate() == null) {
                 message.writer().writeShort(-1);
                 continue;
             }
@@ -317,16 +321,13 @@ public class PlayerService {
             message.writer().writeInt(item.getQuantity());
             message.writer().writeUTF(item.getInfo());
             message.writer().writeUTF(item.getContent());
-            if (item.getItemOptions().isEmpty()) {
-                message.writer().writeByte(1);
-                message.writer().writeShort(73);// base options
-                message.writer().writeInt(0);
-            } else {
-                message.writer().writeByte(item.getItemOptions().size());
-                for (var itemOption : item.getItemOptions()) {
-                    message.writer().writeShort(itemOption.getOptionTemplate().id());
-                    message.writer().writeInt(itemOption.getParam());
-                }
+
+            List<ItemOption> itemOptions = item.getItemOptions();
+
+            message.writer().writeByte(itemOptions.size());
+            for (var itemOption : itemOptions) {
+                message.writer().writeShort(itemOption.getId());
+                message.writer().writeInt(itemOption.getParam());
             }
         }
     }

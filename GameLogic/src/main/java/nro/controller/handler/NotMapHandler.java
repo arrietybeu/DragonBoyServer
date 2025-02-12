@@ -110,6 +110,7 @@ public class NotMapHandler implements IMessageProcessor {
                         + ", hair=" + hair + ")");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException("Error createChar: " + e.getMessage());
         }
     }

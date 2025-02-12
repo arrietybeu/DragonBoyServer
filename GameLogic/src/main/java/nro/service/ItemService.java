@@ -21,7 +21,12 @@ public class ItemService {
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
         item.setContent(item.getContent());
-        item.setInfo(item.getInfo());
+        item.setInfo(item.getInfoOption());
+        return item;
+    }
+
+    public Item createItemNull() {
+        Item item = new Item();
         return item;
     }
 
@@ -63,12 +68,17 @@ public class ItemService {
                 throw new RuntimeException("Failed to create item id: " + itemId);
             }
         }
+        while (items.size() < 10) {
+            items.add(ItemService.getInstance().createItemNull());
+        }
         return items;
     }
 
     private static Item createAndInitItem(short itemId) {
         Item item = ItemService.getInstance().createItem(itemId, 1);
+
         ItemService.getInstance().initBaseOptions(item);
         return item;
     }
+
 }

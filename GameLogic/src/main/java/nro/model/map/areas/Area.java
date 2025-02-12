@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
+import nro.network.Message;
 
 @Getter
 public class Area {
@@ -34,6 +35,23 @@ public class Area {
         this.players = new HashMap<>();
         this.items = new ArrayList<>();
     }
+
+    public void sendToAllPlayers(Message message) {
+        if (message == null) return;
+        this.lock.readLock().lock();
+        try {
+            for (Player player : this.players.values()) {
+                if (player != null) {
+                    player.sendMessage(message);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
 
     public void addPlayer(Player player) {
         this.lock.writeLock().lock();

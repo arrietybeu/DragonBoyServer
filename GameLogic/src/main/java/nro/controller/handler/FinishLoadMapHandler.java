@@ -12,4 +12,5 @@ public class FinishLoadMapHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         // send message 38
     }
+
 }

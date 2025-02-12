@@ -2,10 +2,12 @@ package nro.repositories.player;
 
 import lombok.Getter;
 import nro.model.item.Item;
+import nro.model.item.ItemTemplate;
 import nro.server.LogServer;
 import nro.service.ItemService;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class PlayerCreator {
                 this.createPlayerPoint(connection, playerId, gender);
                 this.createPlayerSkillsShortCut(connection, playerId, gender);
                 this.createMagicTreePlayer(connection, playerId);
-                this.createItemBodyPlayer(connection, playerId, gender);
+                this.createPlayerInventory(connection, playerId, gender);
                 this.createPlayerDataTask(connection, playerId);
                 connection.commit();
 
@@ -76,7 +78,6 @@ public class PlayerCreator {
         if (playerId == 0) {
             throw new SQLException("Failed to create player.");
         }
-        LogServer.DebugLogic("Time create player base: " + (System.currentTimeMillis() - ms) + " ms");
 
         return playerId;
     }
@@ -186,6 +187,52 @@ public class PlayerCreator {
         }
     }
 
+    private void createPlayerInventory(Connection connection, int playerId, byte gender) throws SQLException {
+        List<Item> itemsBody = ItemService.initializePlayerItems(gender);
+        ensureItemSlots(itemsBody, 10);
+
+        List<Item> itemsBag = createEmptyItems(20);
+
+        List<Item> itemsBox = createEmptyItems(20);
+
+        insertItemsToDatabase(connection, playerId, "player_items_body", itemsBody);
+        insertItemsToDatabase(connection, playerId, "player_items_bag", itemsBag);
+        insertItemsToDatabase(connection, playerId, "player_items_box", itemsBox);
+    }
+
+    private void ensureItemSlots(List<Item> items, int requiredSize) {
+        while (items.size() < requiredSize) {
+            items.add(ItemService.getInstance().createItemNull());
+        }
+    }
+
+    private List<Item> createEmptyItems(int count) {
+        List<Item> items = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            items.add(ItemService.getInstance().createItemNull());
+        }
+        return items;
+    }
+
+    private void insertItemsToDatabase(Connection connection, int playerId, String tableName, List<Item> items) throws SQLException {
+        String query = "INSERT INTO " + tableName + " (player_id, temp_id, quantity, options) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (Item item : items) {
+                statement.setInt(1, playerId);
+                statement.setInt(2, item.getTemplate() == null ? -1 : item.getTemplate().id());
+                statement.setInt(3, item.getQuantity());
+                statement.setString(4, item.getJsonOptions());
+                statement.addBatch();
+            }
+            int[] rowsAffected = statement.executeBatch();
+            if (Arrays.stream(rowsAffected).sum() == 0) {
+                throw new SQLException("Failed to insert items into " + tableName);
+            }
+        } catch (SQLException ex) {
+            throw ex;
+        }
+    }
+
     private void createItemBodyPlayer(Connection connection, int playerId, byte gender) throws SQLException {
         List<Item> items = ItemService.initializePlayerItems(gender);
         if (items.isEmpty()) {
@@ -195,7 +242,7 @@ public class PlayerCreator {
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (Item item : items) {
                 statement.setInt(1, playerId);
-                statement.setInt(2, item.getTemplate().id());
+                statement.setInt(2, item.getTemplate() == null ? -1 : item.getTemplate().id());
                 statement.setInt(3, item.getQuantity());
                 statement.setString(4, item.getJsonOptions());
                 statement.addBatch();
@@ -204,6 +251,8 @@ public class PlayerCreator {
             if (Arrays.stream(rowsAffected).sum() == 0) {
                 throw new SQLException("Failed to create item body player.");
             }
+        } catch (SQLException ex) {
+            throw ex;
         }
     }
 
@@ -218,6 +267,8 @@ public class PlayerCreator {
                 LogServer.LogException("No rows were inserted into player_task for playerId: " + playerId);
                 throw new SQLException("Failed to insert player task.");
             }
+        } catch (SQLException ex) {
+            throw ex;
         }
     }
 
@@ -241,7 +292,7 @@ public class PlayerCreator {
                 throw new SQLException("Failed to create player skills shortcut.");
             }
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tạo shortcut skill: " + e.getMessage());
+            LogServer.LogException("Lỗi khi tạo shortcut skill: " + e.getMessage());
             throw e;
         }
     }

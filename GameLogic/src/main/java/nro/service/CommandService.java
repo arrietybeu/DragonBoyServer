@@ -115,7 +115,7 @@ public class CommandService {
                     case "create_item":
                         List<Item> items = ItemService.initializePlayerItems((byte) 0);
                         for (var item : items) {
-                            System.out.println(item.getJsonOptions());
+//                            System.out.println(item.getJsonOptions());
                         }
                         break;
                     case "item_bg":

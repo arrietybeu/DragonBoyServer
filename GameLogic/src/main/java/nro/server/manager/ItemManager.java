@@ -94,7 +94,7 @@ public class ItemManager implements IManager {
                     }
                     for (Object o : dataArray) {
                         JSONArray opt = (JSONArray) o;
-                        var idOption = Integer.parseInt(String.valueOf(opt.get(0)));
+                        var idOption = Short.parseShort(String.valueOf(opt.get(0)));
                         var param = Integer.parseInt(String.valueOf(opt.get(1)));
                         itemOptions.add(new ItemOption(idOption, param));
                     }
@@ -212,8 +212,7 @@ public class ItemManager implements IManager {
 
     private void setItemOption() {
         try (Message message = new Message()) {
-            message.writer().writeByte(ITEM_OPTION);
-            message.writer().writeByte(0); //update option
+            message.writer().writeByte(ITEM_OPTION); //update option
             message.writer().writeShort(itemOptionTemplates.size());// dis true
             for (ItemOptionTemplate itemOptionTemplate : itemOptionTemplates.values()) {
                 message.writer().writeUTF(itemOptionTemplate.name());

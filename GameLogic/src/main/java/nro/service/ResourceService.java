@@ -286,7 +286,6 @@ public class ResourceService {
         }
     }
 
-
     public void sendMonsterData(Player player, short id) {
 
         try (Message message = new Message(11)) {

@@ -59,7 +59,6 @@ public class MapManager implements IManager {
 
     @Override
     public void reload() {
-
         this.clear();
         this.init();
     }
