@@ -17,8 +17,8 @@ public class ChatMapHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
-        if (session == null || message == null) {
-            LogServer.LogException("ChatMapHandler: Session hoặc Message bị null.");
+        if (session == null) {
+            LogServer.LogException("ChatMapHandler: session null");
             return;
         }
 
@@ -48,7 +48,7 @@ public class ChatMapHandler implements IMessageProcessor {
             ChatService.getInstance().chatMap(player, text);
 
         } catch (Exception ex) {
-            LogServer.LogException("Lỗi xử lý ChatMapHandler: " + ex.getMessage());
+            LogServer.LogException("Error ChatMapHandler: " + ex.getMessage());
             ex.printStackTrace();
         }
     }

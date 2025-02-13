@@ -21,8 +21,6 @@ public class ItemService {
         item.setTemplate(getTemplate(tempId));
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
-        item.setContent(item.getContent());
-        item.setInfo(item.getInfoOption());
         return item;
     }
 

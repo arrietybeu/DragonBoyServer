@@ -2,14 +2,12 @@ package nro.repositories.player;
 
 import lombok.Getter;
 import nro.model.item.Item;
-import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
-import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
@@ -144,7 +142,7 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    PlayerStats stats = player.getStats();
+                    PlayerStats stats = player.getPlayerStats();
 
                     // --- HP
                     stats.setBaseHP((int) rs.getLong("hp"));           // cHPGoc

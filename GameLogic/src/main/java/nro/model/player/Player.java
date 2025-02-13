@@ -19,7 +19,7 @@ public class Player extends LiveObject {
 
     private final Session session;
     private final PlayerCurrencies playerCurrencies;
-    private final PlayerStats stats;
+    private final PlayerStats playerStats;
     private final PlayerTask playerTask;
     private final PlayerFashion playerFashion;
     private final PlayerSkill playerSkill;
@@ -39,7 +39,7 @@ public class Player extends LiveObject {
         this.session = session;
         this.createdAt = createdAt;
         this.playerCurrencies = new PlayerCurrencies(this);
-        this.stats = new PlayerStats(this);
+        this.playerStats = new PlayerStats(this);
         this.playerTask = new PlayerTask(this);
         this.playerFashion = new PlayerFashion(this);
         this.playerSkill = new PlayerSkill(this);

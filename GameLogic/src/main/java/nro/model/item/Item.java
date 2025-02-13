@@ -27,18 +27,6 @@ public class Item {
         this.createTime = System.currentTimeMillis();
     }
 
-    public String getContent() {
-        return "Yêu cầu sức mạnh " + this.template.strRequire() + " trở lên";
-    }
-
-    public String getInfoOption() {
-        String strInfo = "";
-        for (ItemOption itemOption : this.itemOptions) {
-            strInfo += itemOption.getOptionString(itemOption.getId());
-        }
-        return strInfo;
-    }
-
     public String getJsonOptions() {
         JSONArray options = new JSONArray();
         for (ItemOption io : this.itemOptions) {

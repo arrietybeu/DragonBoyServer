@@ -68,6 +68,7 @@ public class TaskService {
                     case 0:
                         switch (player.getGender()) {
                             case 0:
+                                npcService.sendNpcTalkUI(player, 5, "Hãy di chuyển đến Nhà Moori, ông Moori đang chờ bạn ở đằng kia!", avatarBirdNpc);
                                 break;
                             case 1:
                                 npcService.sendNpcTalkUI(player, 5, "Hãy di chuyển đến Nhà Moori, ông Moori đang chờ bạn ở đằng kia!", avatarBirdNpc);

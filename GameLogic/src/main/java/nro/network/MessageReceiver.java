@@ -17,11 +17,11 @@ import nro.server.LogServer;
 @SuppressWarnings("ALL")
 public final class MessageReceiver {
 
+    private static final int MAX_MESSAGE_SIZE = 1024;
     private final Session session;
     private DataInputStream dis;
     private long lastMessageTimestamp;
     private int messageCount = 0;
-
 
     public MessageReceiver(Session session, DataInputStream dis) {
         this.session = session;
@@ -66,45 +66,41 @@ public final class MessageReceiver {
     }
 
     private Message readMessage() throws IOException {
-        int num;
-        byte cmd = this.dis.readByte();
-        if (this.session.getClientInfo().isSendKeyComplete()) {
-            cmd = this.readKey(cmd);
+        final boolean sendKeyComplete = session.getClientInfo().isSendKeyComplete();
+        byte cmd = dis.readByte();
+        if (sendKeyComplete) {
+            cmd = readKey(cmd);
         }
-
         if (!checkMessageRateLimit(cmd)) {
             return null;
         }
 
-        if (this.session.getClientInfo().isSendKeyComplete()) {
-            byte b2 = this.dis.readByte();
-            byte b3 = this.dis.readByte();
-            num = ((readKey(b2) & 0xFF) << 8) | (readKey(b3) & 0xFF);
+        int payloadLength;
+        if (sendKeyComplete) {
+            byte b2 = dis.readByte();
+            byte b3 = dis.readByte();
+            payloadLength = ((readKey(b2) & 0xFF) << 8) | (readKey(b3) & 0xFF);
         } else {
-            num = this.dis.readUnsignedShort();
+            payloadLength = dis.readUnsignedShort();
         }
 
-        if (num > 1024) {
-            throw new IOException("Data too big");
+        if (payloadLength > MAX_MESSAGE_SIZE) {
+            LogServer.LogException("Data too big cmd: " + cmd);
         }
 
-        byte[] array = new byte[num];
-        byte[] src = new byte[num];
+        byte[] payload = new byte[payloadLength];
+        dis.readFully(payload);
 
-        this.dis.readFully(src);
-        System.arraycopy(src, 0, array, 0, num);
-        this.session.getSessionInfo().recvByteCount += 5 + num;
+        session.getSessionInfo().recvByteCount += 5 + payloadLength;
+        int totalBytes = session.getSessionInfo().recvByteCount + session.getSessionInfo().sendByteCount;
+        session.getSessionInfo().strRecvByteCount = (totalBytes / 1024) + "." + ((totalBytes % 1024) / 102) + "Kb";
 
-        int num4 = this.session.getSessionInfo().recvByteCount + this.session.getSessionInfo().sendByteCount;
-        this.session.getSessionInfo().strRecvByteCount = (num4 / 1024) + "." + (num4 % 1024 / 102) + "Kb";
-//        LogServer.DebugLogic(this.session.getSessionInfo().strRecvByteCount);
-
-        if (this.session.getClientInfo().isSendKeyComplete()) {
-            for (int i = 0; i < array.length; i++) {
-                array[i] = this.readKey(array[i]);
+        if (sendKeyComplete) {
+            for (int i = 0; i < payload.length; i++) {
+                payload[i] = readKey(payload[i]);
             }
         }
-        return new Message(cmd, array);
+        return new Message(cmd, payload);
     }
 
     private byte readKey(byte b) {

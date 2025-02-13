@@ -26,6 +26,7 @@ public class GameMap implements Runnable {
 
     private List<Area> areas;
 
+    //id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems, effects, waypoints, tileMap
     public GameMap(int id, String name, byte planetId,
                    byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap,
                    List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
@@ -55,13 +56,21 @@ public class GameMap implements Runnable {
         return null;
     }
 
-    public static boolean isVoDaiMap(int mapID) {
-        return mapID == 51
-                || mapID == 103
-                || mapID == 112
-                || mapID == 113
-                || mapID == 129
-                || mapID == 130;
+    public boolean isVoDaiMap() {
+        return this.id == 51
+                || this.id == 103
+                || this.id == 112
+                || this.id == 113
+                || this.id == 129
+                || this.id == 130;
+    }
+
+    public boolean isTrainingMap() {
+        return this.id == 39 || this.id == 40 || this.id == 41;
+    }
+
+    public boolean isMapLang() {
+        return this.id == 0 || this.id == 7 || this.id == 14;
     }
 
     @Override

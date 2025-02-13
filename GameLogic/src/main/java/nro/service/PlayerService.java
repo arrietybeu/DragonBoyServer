@@ -2,7 +2,6 @@ package nro.service;
 
 import nro.consts.ConstError;
 import nro.consts.ConstMsgSubCommand;
-import nro.consts.ConstPlayer;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
@@ -19,7 +18,6 @@ import nro.server.config.ConfigDB;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
 
-import javax.xml.crypto.Data;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -170,8 +168,8 @@ public class PlayerService {
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP);
             out.writeLong(player.getPlayerCurrencies().getGold());
             out.writeInt(player.getPlayerCurrencies().getGem());
-            out.writeLong(player.getStats().getCurrentHP());
-            out.writeLong(player.getStats().getCurrentMP());
+            out.writeLong(player.getPlayerStats().getCurrentHP());
+            out.writeLong(player.getPlayerStats().getCurrentMP());
             out.writeInt(player.getPlayerCurrencies().getRuby());
             player.sendMessage(message);
         } catch (Exception e) {
@@ -182,7 +180,7 @@ public class PlayerService {
     private void sendMaxStamina(Player player) {
         try (Message msg = new Message(-69)) {
             DataOutputStream out = msg.writer();
-            out.writeShort(player.getStats().getMaxStamina());
+            out.writeShort(player.getPlayerStats().getMaxStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendMaxStamina: " + e.getMessage());
@@ -202,7 +200,7 @@ public class PlayerService {
     private void sendStamina(Player player) {
         try (Message msg = new Message(-68)) {
             DataOutputStream out = msg.writer();
-            out.writeShort(player.getStats().getStamina());
+            out.writeShort(player.getPlayerStats().getStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendStamina: " + e.getMessage());
@@ -211,7 +209,7 @@ public class PlayerService {
 
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
-            PlayerStats stats = player.getStats();
+            PlayerStats stats = player.getPlayerStats();
             DataOutputStream out = msg.writer();
             out.writeInt(stats.getBaseHP());
             out.writeInt(stats.getBaseMP());
@@ -251,7 +249,7 @@ public class PlayerService {
             out.writeUTF(player.getName());
             out.writeByte(0);// cpk
             out.writeByte(player.getTypePk());
-            out.writeLong(player.getStats().getPower());
+            out.writeLong(player.getPlayerStats().getPower());
             out.writeShort(0);// eff5BuffHp
             out.writeShort(0);// eff5BuffMp
             out.writeByte(gender);
@@ -293,7 +291,7 @@ public class PlayerService {
 
             out.writeByte(player.isNewPlayer() ? 1 : 0);
             out.writeShort(player.getAura());
-            out.writeByte(player.getIdEffSetItem());
+            out.writeByte(player.getEffSetItem());
             out.writeShort(player.getIdHat());
             player.sendMessage(msg);
         } catch (Exception e) {
@@ -319,8 +317,8 @@ public class PlayerService {
             }
             message.writer().writeShort(item.getTemplate().id());
             message.writer().writeInt(item.getQuantity());
-            message.writer().writeUTF(item.getInfo());
-            message.writer().writeUTF(item.getContent());
+            message.writer().writeUTF("tuanbeo");
+            message.writer().writeUTF("tuanbeo");
 
             List<ItemOption> itemOptions = item.getItemOptions();
 

@@ -107,7 +107,7 @@ public class MapManager implements IManager {
                 List<BackgroudEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
                 TileMap tileMap = tileMaps.get(id);
 
-                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems, effects, waypoints, tileMap);
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }

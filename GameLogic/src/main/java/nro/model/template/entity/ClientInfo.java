@@ -2,6 +2,7 @@ package nro.model.template.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.utils.Util;
 
 /**
  * @author Arriety
@@ -19,6 +20,7 @@ public class ClientInfo {
     private int zoomLevel;
 
     public void updateLastActiveTime() {
+        Util.getMethodCaller();
         this.lastActiveTime = System.currentTimeMillis();
     }
 }

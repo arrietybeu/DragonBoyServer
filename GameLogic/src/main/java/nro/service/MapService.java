@@ -62,9 +62,7 @@ public class MapService {
             output.writeByte(area.getMap().getTypeMap());
             output.writeUTF(area.getMap().getName());
             output.writeByte(area.getId());
-
             this.loadInfoMap(player, output);
-
             output.writeByte(area.getMap().getIsMapDouble());
             player.sendMessage(message);
         } catch (Exception e) {

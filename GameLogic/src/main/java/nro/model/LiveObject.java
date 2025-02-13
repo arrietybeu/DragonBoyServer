@@ -9,10 +9,6 @@ public abstract class LiveObject {
     private String name = "";
     private byte typeObject;
 
-    private short aura;
-    private byte idEffSetItem = -1;
-    private short idHat;
-
     private byte gender;
     private byte typePk;
 
@@ -29,6 +25,18 @@ public abstract class LiveObject {
             {"Puaru"}, {"Piano"}, {"Icarus"}
     };
 
+    public short getAura() {
+        return -1;
+    }
+
+    public byte getEffSetItem() {
+        return -1;
+    }
+
+    public short getIdHat() {
+        return -1;
+    }
+
     public short[] getPlayerBirdFrames() {
         var gender = this.getGender();
         if (gender < 0 || gender >= BIRD_FRAMES.length) {
@@ -44,5 +52,4 @@ public abstract class LiveObject {
         }
         return BIRD_NAMES[gender];
     }
-
 }
