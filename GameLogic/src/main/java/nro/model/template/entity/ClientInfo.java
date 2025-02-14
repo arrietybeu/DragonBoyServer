@@ -20,7 +20,7 @@ public class ClientInfo {
     private int zoomLevel;
 
     public void updateLastActiveTime() {
-        Util.getMethodCaller();
+//        Util.getMethodCaller();
         this.lastActiveTime = System.currentTimeMillis();
     }
 }

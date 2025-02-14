@@ -138,7 +138,7 @@ public class ResourceService {
         try (Message mss = new Message(-74)) {
             String strPath = FileNio.cutPng(file.getPath().replace("\\", "/"));
 
-            System.out.println(strPath);
+//            System.out.println(strPath);
             DataOutputStream ds = mss.writer();
             ds.writeByte(2);
             ds.writeUTF(strPath);

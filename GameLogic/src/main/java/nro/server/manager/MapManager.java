@@ -40,11 +40,11 @@ public class MapManager implements IManager {
     @Getter
     private static final MapManager instance = new MapManager();
 
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(200);
     private final Map<Integer, GameMap> gameMaps = new HashMap<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
 
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
@@ -54,7 +54,7 @@ public class MapManager implements IManager {
         this.loadMapTemplate();
         this.loadDataBackgroundMap();
         this.loadTileSetInfo();
-        this.start();
+//        this.start();
     }
 
     @Override

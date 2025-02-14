@@ -5,7 +5,6 @@
 package nro.server.config;
 
 /**
- *
  * @author Arriety
  */
 public final class ConfigDB {

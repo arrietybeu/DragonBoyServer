@@ -6,11 +6,19 @@
  */
 
 plugins {
+    id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 repositories {
     mavenCentral()
+}
+
+shadowJar {
+    archiveBaseName.set('GameLogic')
+    archiveClassifier.set('all')
+    archiveVersion.set('1.0')
 }
 
 dependencies {
@@ -21,13 +29,24 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
-
-//    https://mvnrepository.com/artifact/org.appenders.log4j/log4j2-elasticsearch-hc
-//    implementation group: 'org.appenders.log4j', name: 'log4j2-elasticsearch-hc', version: '1.5.0'
 }
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'nro.server.MainServer'
+        )
+    }
+}
+
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
+    manifest {
+        attributes(
+                'Main-Class': 'nro.server.MainServer'
+        )
+    }
     toolchain {
         languageVersion = JavaLanguageVersion.of(19)
     }
