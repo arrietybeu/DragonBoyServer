@@ -15,7 +15,7 @@ public class RequestIconHandler implements IMessageProcessor {
         try {
             var id = message.reader().readInt();
             ResourceService.getInstance().sendImageRes(session, id);
-        }catch (Exception e) {
+        } catch (Exception e) {
             LogServer.LogException("RequestIconHandler error: " + e.getMessage());
         }
     }

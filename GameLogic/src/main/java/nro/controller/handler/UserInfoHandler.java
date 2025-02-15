@@ -7,9 +7,8 @@ import nro.network.Session;
 
 @APacketHandler(42)
 public class UserInfoHandler implements IMessageProcessor {
+    
     @Override
     public void process(Session session, Message message) {
-
     }
-
 }

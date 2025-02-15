@@ -12,4 +12,5 @@ public class SkillSelectHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
 
     }
+
 }

@@ -30,7 +30,7 @@ public abstract class LiveObject {
     }
 
     public byte getEffSetItem() {
-        return -1;
+        return 8;
     }
 
     public short getIdHat() {

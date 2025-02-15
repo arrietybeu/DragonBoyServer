@@ -111,35 +111,31 @@ public class NotLoginHandler implements IMessageProcessor {
 
     private void setClientType(Session session, Message message) {
         try {
-            this.readAndSetClientType(session, message);
+            var clientInfo = session.getClientInfo();
+            var typeClient = message.reader().readByte();
+            var zoomLevel = message.reader().readByte();
+
+            if (zoomLevel < 0 || zoomLevel > 4) {
+                SessionManager.getInstance().kickSession(session);
+                throw new Exception("Error zoomLevel: " + zoomLevel);
+            }
+
+            clientInfo.setTypeClient(typeClient);
+            clientInfo.setZoomLevel(zoomLevel);
+
+            var is = message.reader().readBoolean();
+            var w = message.reader().readInt();
+            var h = message.reader().readInt();
+            var isQwerty = message.reader().readBoolean();
+            var isTouch = message.reader().readBoolean();
+            String platform = message.reader().readUTF();
+            // TODO write data info
+            // LogServer.DebugLogic(platform);
+            clientInfo.setPlatform(platform);
+            clientInfo.setSetClientType(true);
         } catch (Exception e) {
             LogServer.LogException("Error setClientType: " + e.getMessage());
         }
-    }
-
-    private void readAndSetClientType(Session session, Message message) throws Exception {
-        var clientInfo = session.getClientInfo();
-        var typeClient = message.reader().readByte();
-        var zoomLevel = message.reader().readByte();
-
-        if (zoomLevel < 0 || zoomLevel > 4) {
-            SessionManager.getInstance().kickSession(session);
-            throw new Exception("Error zoomLevel: " + zoomLevel);
-        }
-
-        clientInfo.setTypeClient(typeClient);
-        clientInfo.setZoomLevel(zoomLevel);
-
-        var is = message.reader().readBoolean();
-        var w = message.reader().readInt();
-        var h = message.reader().readInt();
-        var isQwerty = message.reader().readBoolean();
-        var isTouch = message.reader().readBoolean();
-        String platform = message.reader().readUTF();
-        // TODO write data info
-        // LogServer.DebugLogic(platform);
-        clientInfo.setPlatform(platform);
-        clientInfo.setSetClientType(true);
     }
 
     private boolean activeLogin(Session session) {

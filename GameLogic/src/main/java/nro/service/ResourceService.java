@@ -3,6 +3,7 @@ package nro.service;
 import nro.consts.ConstMsgNotMap;
 import nro.model.player.Player;
 import nro.model.resources.Effect;
+import nro.model.resources.ImageByName;
 import nro.model.template.CaptionTemplate;
 import nro.network.Message;
 import nro.network.Session;
@@ -281,6 +282,7 @@ public class ResourceService {
     public void sendTileSetInfo(Session session) {
         try (Message message = new Message(-82)) {
             byte[] data = FileNio.loadDataFile("resources/data/tile_data/tile_set_info");
+            if (data == null) return;
             message.writer().write(data);
             session.doSendMessage(message);
         } catch (Exception e) {
@@ -339,6 +341,29 @@ public class ResourceService {
         }
     }
 
+    public void sendImageByName(Player player, String img) {
+        var zoomLevel = player.getSession().getClientInfo().getZoomLevel();
+        if (zoomLevel < 1 || zoomLevel > 4) {
+            LogServer.LogException("Send Image Error ZoomLevel: " + zoomLevel);
+            return;
+        }
+        ImageByName imageByName = ResourcesManager.getInstance().getDataImageByName().get((byte) zoomLevel).get(img);
+        if (imageByName == null) {
+            LogServer.LogException("Error Send Image By Name: " + img + " zoomLevel: " + zoomLevel);
+            return;
+        }
+        try (Message message = new Message(66)) {
+            DataOutputStream data = message.writer();
+            data.writeUTF(imageByName.name());
+            data.writeByte(imageByName.frame());
+            data.writeInt(imageByName.data().length);
+            data.write(imageByName.data());
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendImageByName: " + ex.getMessage() + " Error Send Image By Name: " + img + " zoomLevel: " + zoomLevel);
+            ex.printStackTrace();
+        }
+    }
 
 //    public void sendTileSetInfo(Session session) {
 //        try (Message message = new Message(-82)) {
@@ -361,5 +386,4 @@ public class ResourceService {
             session.getSessionInfo().setClientOk(true);
         }
     }
-
 }
