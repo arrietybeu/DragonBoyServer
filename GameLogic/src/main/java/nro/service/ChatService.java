@@ -18,7 +18,7 @@ public class ChatService {
         try (Message message = new Message(44)) {
             message.writer().writeInt(player.getId());
             message.writer().writeUTF(text);
-            player.getArea().sendMsgAllPlayerInZone(message);
+            player.getArea().sendMsgAllPlayerInArea(message);
             this.commandForAdmins(player, text);
         } catch (Exception ex) {
             LogServer.LogException("Error Service Chat Map: " + ex.getMessage());

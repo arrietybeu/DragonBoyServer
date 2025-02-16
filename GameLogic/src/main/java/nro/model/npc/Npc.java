@@ -9,7 +9,10 @@ import nro.model.LiveObject;
 public class Npc extends LiveObject {
 
     private int status;
-    private int templateId;
     private int avatar;
+
+    @Override
+    public void update() {
+    }
 
 }

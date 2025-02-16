@@ -5,6 +5,8 @@ import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
 import nro.model.player.Player;
+import nro.server.LogServer;
+import nro.server.manager.MapManager;
 
 import java.util.*;
 
@@ -32,10 +34,7 @@ public class GameMap implements Runnable {
     private List<Area> areas;
 
     //id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems, effects, waypoints, tileMap
-    public GameMap(int id, String name, byte planetId,
-                   byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap,
-                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
-                   List<Waypoint> waypoints, TileMap tileMap) {
+    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;
@@ -80,12 +79,7 @@ public class GameMap implements Runnable {
     }
 
     public boolean isVoDaiMap() {
-        return this.id == 51
-                || this.id == 103
-                || this.id == 112
-                || this.id == 113
-                || this.id == 129
-                || this.id == 130;
+        return this.id == 51 || this.id == 103 || this.id == 112 || this.id == 113 || this.id == 129 || this.id == 130;
     }
 
     public int yPhysicInTop(int x, int y) {
@@ -125,5 +119,19 @@ public class GameMap implements Runnable {
 
     @Override
     public void run() {
+        while (MapManager.running) {
+            try {
+                long st = System.currentTimeMillis();
+                for (Area area : this.areas) {
+                    area.update();
+                }
+                long timeDo = System.currentTimeMillis() - st;
+                Thread.sleep(1000 - timeDo);
+            } catch (Exception ex) {
+                LogServer.LogException("Error Update Map id: " + this.id + " name: " + this.name + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
     }
+
 }

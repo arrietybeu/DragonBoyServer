@@ -52,4 +52,7 @@ public abstract class LiveObject {
         }
         return BIRD_NAMES[gender];
     }
+
+    public void update() {
+    }
 }

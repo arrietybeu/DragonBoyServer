@@ -99,22 +99,22 @@ public class MapService {
         // send mob
         output.writeByte(monsters.size());
         for (Monster monster : monsters) {
-            output.writeBoolean(monster.isDisable());
-            output.writeBoolean(monster.isDontMove());
-            output.writeBoolean(monster.isFire());
-            output.writeBoolean(monster.isIce());
-            output.writeBoolean(monster.isWind());
-            output.writeShort(monster.getTemplateId());
-            output.writeByte(monster.getSys());
-            output.writeLong(monster.getHp());
+            output.writeBoolean(monster.getStatus().isDisable());
+            output.writeBoolean(monster.getStatus().isDontMove());
+            output.writeBoolean(monster.getStatus().isFire());
+            output.writeBoolean(monster.getStatus().isIce());
+            output.writeBoolean(monster.getStatus().isWind());
+            output.writeShort(monster.getId());
+            output.writeByte(monster.getStatus().getSys());
+            output.writeLong(monster.getStats().getHp());
 
-            output.writeByte(monster.getLevel());
-            output.writeLong(monster.getMaxp());
+            output.writeByte(monster.getStats().getLevel());
+            output.writeLong(monster.getStats().getMaxHp());
             output.writeShort(monster.getX());
             output.writeShort(monster.getY());
-            output.writeByte(monster.getStatus());
-            output.writeByte(monster.getLevelBoss());
-            output.writeBoolean(monster.isBoss());
+            output.writeByte(monster.getStatus().getStatus());
+            output.writeByte(monster.getInfo().getLevelBoss());
+            output.writeBoolean(monster.getInfo().isBoss());
         }
 
         output.writeByte(0);
@@ -125,7 +125,7 @@ public class MapService {
             output.writeByte(npc.getStatus());
             output.writeShort(npc.getX());
             output.writeShort(npc.getY());
-            output.writeByte(npc.getTemplateId());
+            output.writeByte(npc.getId());
             output.writeShort(npc.getAvatar());
         }
 

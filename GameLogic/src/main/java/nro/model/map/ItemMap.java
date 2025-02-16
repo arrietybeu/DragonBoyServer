@@ -13,4 +13,7 @@ public class ItemMap {
     private short range;
     private ItemTemplate itemTemplate;
 
+    public void update() {
+
+    }
 }

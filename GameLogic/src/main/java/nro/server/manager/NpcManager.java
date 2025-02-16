@@ -48,9 +48,9 @@ public class NpcManager implements IManager {
                     var body = rs.getShort("body");
                     var leg = rs.getShort("leg");
                     var avatar = rs.getShort("avatar_id");
-                    var menu = rs.getString("menu");
+                    var chat = rs.getString("chat");
 
-                    NpcTemplate template = new NpcTemplate(id, name, head, body, leg, avatar, menu);
+                    NpcTemplate template = new NpcTemplate(id, name, head, body, leg, avatar, chat);
                     this.NPC_TEMPLATE.add(template);
                 }
                 LogServer.LogInit("NpcManager initialized size: " + NPC_TEMPLATE.size());

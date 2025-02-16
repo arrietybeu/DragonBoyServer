@@ -29,37 +29,48 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @SuppressWarnings("ALL")
 public class MapManager implements IManager {
 
+    public static volatile boolean running = false;
+
     @Getter
     private static final MapManager instance = new MapManager();
-
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(200);
+    private ExecutorService threadPool = Executors.newFixedThreadPool(200);
     private final Map<Integer, GameMap> gameMaps = new HashMap<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
-
-
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
+
 
     @Override
     public void init() {
         this.loadMapTemplate();
         this.loadDataBackgroundMap();
         this.loadTileSetInfo();
-//        this.start();
+        running = true;
+        this.start();
     }
 
     @Override
     public void reload() {
+        running = false;
         this.clear();
+        try {
+            if (!this.threadPool.awaitTermination(3, TimeUnit.SECONDS)) {
+                this.threadPool.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            this.threadPool.shutdownNow();
+        }
+
+        this.threadPool = Executors.newFixedThreadPool(200);
         this.init();
     }
 
@@ -165,23 +176,12 @@ public class MapManager implements IManager {
             ps.setInt(1, mapId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Monster monster = new Monster();
-                    monster.setId(rs.getInt("mob_id"));
-                    monster.setTemplateId((short) monster.getId());
-                    monster.setSys(rs.getByte("sys"));
-                    monster.setHp(rs.getLong("hp"));
-                    monster.setLevel(rs.getByte("level"));
-                    monster.setMaxp(rs.getLong("maxp"));
-                    monster.setX(rs.getShort("x"));
-                    monster.setY(rs.getShort("y"));
-                    monster.setStatus(rs.getByte("status"));
-                    monster.setLevelBoss(rs.getByte("level_boss"));
-                    monster.setBoss(rs.getByte("is_boss") == 1);
-                    monster.setDisable(rs.getByte("is_disable") == 1);
-                    monster.setDontMove(rs.getByte("is_dont_move") == 1);
-                    monster.setFire(rs.getByte("is_fire") == 1);
-                    monster.setIce(rs.getByte("is_ice") == 1);
-                    monster.setWind(rs.getByte("is_wind") == 1);
+                    var id = (rs.getInt("mob_id"));
+                    var hpMax = (rs.getLong("max_hp"));
+                    var level = (rs.getByte("level"));
+                    var x = (rs.getShort("x"));
+                    var y = (rs.getShort("y"));
+                    Monster monster = new Monster(id, hpMax, level, x, y);
                     monsters.add(monster);
                 }
             }
@@ -199,7 +199,7 @@ public class MapManager implements IManager {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Npc npc = new Npc();
-                    npc.setTemplateId(rs.getInt("npc_id"));
+                    npc.setId(rs.getInt("npc_id"));
                     npc.setStatus(rs.getByte("status"));
                     npc.setX(rs.getShort("x"));
                     npc.setY(rs.getShort("y"));

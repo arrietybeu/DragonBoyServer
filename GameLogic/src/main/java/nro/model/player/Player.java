@@ -64,4 +64,8 @@ public class Player extends LiveObject {
         return ChronoUnit.DAYS.between(createdAt, Instant.now());
     }
 
+    @Override
+    public void update() {
+    }
+
 }

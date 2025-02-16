@@ -1,31 +1,34 @@
 package nro.model.monster;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import nro.model.LiveObject;
 import nro.model.template.MonsterTemplate;
 import nro.server.manager.MonsterManager;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class Monster {
+public class Monster extends LiveObject {
 
-    private int id;
-    private boolean isDisable;
-    private boolean isDontMove;
-    private boolean isFire;
-    private boolean isIce;
-    private boolean isWind;
-    private short templateId;
-    private byte sys;
-    private long hp;
-    private byte level;
-    private long maxp;
-    private short x;
-    private short y;
-    private byte status;
-    private byte levelBoss;
-    private boolean isBoss;
+    private final MonsterStats stats;
+    private final MonsterStatus status;
+    private final MonsterInfo info;
+
+    public Monster(int id, long maxHp, byte level, short x, short y) {
+        this.setId(id);
+        this.setX(x);
+        this.setY(y);
+        this.stats = new MonsterStats(maxHp, level);
+        this.info = new MonsterInfo();
+        this.status = new MonsterStatus();
+    }
 
     public String findNameMonsterByTemplate() {
-        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.id);
+        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.getId());
         return template.name();
+    }
+
+    @Override
+    public void update() {
     }
 }

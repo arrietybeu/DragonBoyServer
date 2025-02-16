@@ -2,7 +2,6 @@ package nro.model.map.areas;
 
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
-import nro.model.map.Waypoint;
 import nro.model.monster.Monster;
 import nro.model.npc.Npc;
 import nro.model.player.Player;
@@ -12,6 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
 import nro.network.Message;
+import nro.server.LogServer;
 
 @Getter
 public class Area {
@@ -37,19 +37,59 @@ public class Area {
         this.items = new ArrayList<>();
     }
 
-    public void sendMsgAllPlayerInZone(Message message) {
-        if (message == null) return;
+    private void updateMonsters() {
+        this.lock.readLock().lock();
+        try {
+            for (Monster monster : monsters) {
+                monster.update();
+            }
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    private void updatePlayer() {
         this.lock.readLock().lock();
         try {
             for (Player player : this.players.values()) {
-                if (player != null) {
-                    player.sendMessage(message);
-                }
+                player.update();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         } finally {
             this.lock.readLock().unlock();
+        }
+    }
+
+    private void updateNpc() {
+        this.lock.readLock().lock();
+        try {
+            for (Npc npc : this.npcList) {
+                npc.update();
+            }
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    private void updateItemMap() {
+        this.lock.readLock().lock();
+        try {
+            for (ItemMap itemMap : this.items) {
+                itemMap.update();
+            }
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    public void update() {
+        try {
+            this.updatePlayer();
+            this.updateMonsters();
+            this.updateItemMap();
+            this.updateNpc();
+        } catch (Exception ex) {
+            LogServer.LogException("update zone: " + this.id + " message: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -58,6 +98,7 @@ public class Area {
         try {
             this.players.put(player.getId(), player);
         } catch (Exception ex) {
+            LogServer.LogException("addPlayer: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
             this.lock.writeLock().unlock();
@@ -69,6 +110,7 @@ public class Area {
         try {
             this.players.remove(player.getId());
         } catch (Exception ex) {
+            LogServer.LogException("removePlayer: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
             this.lock.writeLock().unlock();
@@ -80,6 +122,7 @@ public class Area {
         try {
             return this.players.get(id);
         } catch (Exception ex) {
+            LogServer.LogException("getPlayer: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
             this.lock.readLock().unlock();
@@ -98,4 +141,23 @@ public class Area {
         }
         return null;
     }
+
+    public void sendMsgAllPlayerInArea(Message message) {
+        if (message == null) return;
+        this.lock.readLock().lock();
+        try {
+            for (Player player : this.players.values()) {
+                if (player != null) {
+                    player.sendMessage(message);
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("sendMsgAllPlayerInArea: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+
 }
