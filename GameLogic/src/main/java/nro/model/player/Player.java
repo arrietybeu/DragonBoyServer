@@ -35,6 +35,9 @@ public class Player extends LiveObject {
     private int activePoint;
     private int rank;
 
+    // -1 (có lia cam) || 0 (không lia cam) || 1 có lia cam ||
+    private int teleport = 0;
+
     public Player(Session session, Instant createdAt) {
         this.session = session;
         this.createdAt = createdAt;

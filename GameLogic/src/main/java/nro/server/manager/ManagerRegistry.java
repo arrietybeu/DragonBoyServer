@@ -61,4 +61,19 @@ public class ManagerRegistry {
         }
     }
 
+    public static <T extends IManager> void reloadManager(Class<T> managerClass) {
+        for (IManager manager : MANAGERS) {
+            if (manager.getClass().equals(managerClass)) {
+                try {
+                    manager.reload();
+                    LogServer.DebugLogic("Reloaded manager: " + managerClass.getSimpleName());
+                } catch (Exception e) {
+                    LogServer.LogException("Error reloading manager: " + managerClass.getSimpleName() + " - " + e.getMessage());
+                }
+                return;
+            }
+        }
+        LogServer.LogException("Manager not found: " + managerClass.getSimpleName());
+    }
+
 }

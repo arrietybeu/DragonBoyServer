@@ -3,7 +3,6 @@ package nro.service;
 import nro.model.item.Item;
 import nro.model.map.GameMap;
 import nro.model.map.decorates.BackgroudEffect;
-import nro.model.npc.Npc;
 import nro.model.template.CaptionTemplate;
 import nro.model.template.map.TileSetTemplate;
 import nro.repositories.DatabaseConnectionPool;
@@ -142,7 +141,7 @@ public class CommandService {
                         System.out.println("Zone size: " + map.getAreas().size());
                         for (var zone : map.getAreas()) {
                             System.out.println("Zone id: " + zone.getId());
-                            System.out.println("Npc size: " + zone.getNpcs().size());
+                            System.out.println("Npc size: " + zone.getNpcList().size());
 //                            for (Npc npc : zone.getNpcs()) {
 //                                System.out.println("Npc: " + npc.toString());
 //                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
@@ -182,6 +181,9 @@ public class CommandService {
                         ResourcesManager manager = ResourcesManager.getInstance();
                         var maps = manager.getEffectData().get(1);
                         System.out.println(maps.get(1).getImgInfo()[1].toString());
+                        break;
+                    case "reload_map":
+                        ManagerRegistry.reloadManager(MapManager.class);
                         break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");

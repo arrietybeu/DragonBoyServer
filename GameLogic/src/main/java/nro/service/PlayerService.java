@@ -1,9 +1,13 @@
 package nro.service;
 
+import lombok.Getter;
 import nro.consts.ConstError;
 import nro.consts.ConstMsgSubCommand;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
+import nro.model.map.GameMap;
+import nro.model.map.Waypoint;
+import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
@@ -29,14 +33,8 @@ import java.util.regex.Pattern;
 
 public class PlayerService {
 
-    private static PlayerService instance;
-
-    public static PlayerService getInstance() {
-        if (instance == null) {
-            instance = new PlayerService();
-        }
-        return instance;
-    }
+    @Getter
+    private static final PlayerService instance = new PlayerService();
 
     public void finishUpdateHandler(Session session) {
         try {
@@ -56,10 +54,8 @@ public class PlayerService {
         }
     }
 
-    public void onPlayerLoginSuccess(Player player) {
-
+    private void onPlayerLoginSuccess(Player player) {
         player.getArea().addPlayer(player);
-
         Service service = Service.getInstance();
         TaskService taskService = TaskService.getInstance();
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
@@ -85,7 +81,7 @@ public class PlayerService {
         taskService.sendInfoTaskForNpcTalkByUI(player);
     }
 
-    public void sendCaptionForPlayer(Player player) {
+    private void sendCaptionForPlayer(Player player) {
         try (Message message = new Message(-41)) {
             CaptionManager captionManager = CaptionManager.getInstance();
             var gender = player.getGender();
@@ -162,7 +158,7 @@ public class PlayerService {
         }
     }
 
-    private void sendCurrencyHpMp(Player player) {
+    public void sendCurrencyHpMp(Player player) {
         try (Message message = new Message(-30)) {
             DataOutputStream out = message.writer();
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP);
@@ -197,7 +193,7 @@ public class PlayerService {
         }
     }
 
-    private void sendStamina(Player player) {
+    public void sendStamina(Player player) {
         try (Message msg = new Message(-68)) {
             DataOutputStream out = msg.writer();
             out.writeShort(player.getPlayerStats().getStamina());
@@ -295,7 +291,6 @@ public class PlayerService {
             out.writeShort(player.getIdHat());
             player.sendMessage(msg);
         } catch (Exception e) {
-            e.printStackTrace();
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
         }
     }

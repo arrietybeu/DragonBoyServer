@@ -2,6 +2,7 @@ package nro.model.map.areas;
 
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
+import nro.model.map.Waypoint;
 import nro.model.monster.Monster;
 import nro.model.npc.Npc;
 import nro.model.player.Player;
@@ -23,20 +24,20 @@ public class Area {
 
     private final Map<Integer, Player> players;
     private final List<Monster> monsters;
-    private final List<Npc> npcs;
+    private final List<Npc> npcList;
     private final List<ItemMap> items;
 
-    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters, List<Npc> npcs) {
+    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters, List<Npc> npcList) {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
         this.monsters = monsters;
-        this.npcs = npcs;
+        this.npcList = npcList;
         this.players = new HashMap<>();
         this.items = new ArrayList<>();
     }
 
-    public void sendToAllPlayers(Message message) {
+    public void sendMsgAllPlayerInZone(Message message) {
         if (message == null) return;
         this.lock.readLock().lock();
         try {
@@ -51,7 +52,6 @@ public class Area {
             this.lock.readLock().unlock();
         }
     }
-
 
     public void addPlayer(Player player) {
         this.lock.writeLock().lock();
@@ -79,6 +79,18 @@ public class Area {
         this.lock.readLock().lock();
         try {
             return this.players.get(id);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+        return null;
+    }
+
+    public Map<Integer, Player> getAllPlayerInZone() {
+        this.lock.readLock().lock();
+        try {
+            return this.players;
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {

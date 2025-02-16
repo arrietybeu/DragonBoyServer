@@ -15,7 +15,6 @@ import nro.server.LogServer;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class MapService {
 
@@ -42,7 +41,6 @@ public class MapService {
             }
 
             this.loadInfoMap(player, data);
-
             data.writeByte(map.getIsMapDouble());
             player.sendMessage(message);
         } catch (Exception ex) {
@@ -79,7 +77,7 @@ public class MapService {
         List<BackgroudEffect> backgroudEffects = map.getBackgroudEffects();
 
         List<Monster> monsters = area.getMonsters();
-        List<Npc> npcs = area.getNpcs();
+        List<Npc> npcs = area.getNpcList();
         List<ItemMap> itemMaps = area.getItems();
 
         // send location
@@ -160,9 +158,8 @@ public class MapService {
         }
 
         output.writeByte(map.getBgType());
-        output.writeByte(-1); // is teleport
+        output.writeByte(player.getTeleport()); // is teleport
     }
-
 
     /**
      * {@link #clearMap}
