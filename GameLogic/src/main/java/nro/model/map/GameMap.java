@@ -54,17 +54,43 @@ public class GameMap implements Runnable {
     }
 
     public Waypoint getWayPointInMap(Player player) {
-        var x = player.getX();
-        var y = player.getY();
-        Map.Entry<Integer, List<Waypoint>> entry = waypointMap.floorEntry((int) x);
-        if (entry != null) {
-            for (Waypoint wp : entry.getValue()) {
-                if (x >= wp.getMinX() && x <= wp.getMaxX() && y >= wp.getMinY() && y <= wp.getMaxY()) {
-                    return wp;
+        try {
+            var x = player.getX();
+            var y = player.getY();
+
+            if (this.id == 46) {
+                int deltaX = 1000;
+                NavigableMap<Integer, List<Waypoint>> subMap = waypointMap.subMap((int) x - deltaX, true, (int) x + deltaX, true);
+                for (List<Waypoint> waypoints : subMap.values()) {
+                    for (Waypoint wp : waypoints) {
+                        if (x >= wp.getMinX() - deltaX && x <= wp.getMaxX() + deltaX &&
+                                y >= wp.getMinY() && y <= wp.getMaxY()) {
+                            return wp;
+                        }
+                    }
+                }
+            } else {
+                Map.Entry<Integer, List<Waypoint>> entry = waypointMap.floorEntry((int) x);
+                if (entry != null) {
+                    for (Waypoint wp : entry.getValue()) {
+                        if (x >= wp.getMinX() && x <= wp.getMaxX() && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                            return wp;
+                        }
+                    }
                 }
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        return null;
+        return this.getWaypointBase(player);
+    }
+
+    private Waypoint getWaypointBase(Player player) {
+        Waypoint waypoint = new Waypoint();
+        waypoint.setGoMap(21 + player.getGender());
+        waypoint.setGoX((short) 200);
+        waypoint.setGoY((short) 336);
+        return waypoint;
     }
 
     public Area getArea() {

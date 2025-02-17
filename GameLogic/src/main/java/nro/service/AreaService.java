@@ -172,9 +172,6 @@ public class AreaService {
         if (area.getAllPlayerInZone().containsKey(player.getId())) {
             this.sendRemovePlayerExitArea(player);
             area.removePlayer(player);
-        } else {
-            LogServer.LogException("Lỗi Logic không tìm thấy Player In Area để Remove: " + player.getId()
-                    + " map: " + area.getMap().getId() + " zone id: " + area.getId());
         }
     }
 

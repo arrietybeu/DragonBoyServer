@@ -135,9 +135,17 @@ public class PlayerUpdate {
     private void savePlayerLocation(Player player, Connection connection) throws SQLException {
         String query = "UPDATE player_location SET pos_x = ?, pos_y = ?, map_id = ? WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setShort(1, player.getX());
-            statement.setShort(2, player.getY());
-            statement.setShort(3, (short) player.getArea().getMap().getId());
+            var x = player.getX();
+            var y = player.getY();
+            short mapID = (short) player.getArea().getMap().getId();
+            if (x < 20 || y < 20) {
+                x = 200;
+                y = 336;
+                mapID = (short) (21 + player.getGender());
+            }
+            statement.setShort(1, x);
+            statement.setShort(2, y);
+            statement.setShort(3, mapID);
             statement.setInt(4, player.getId());
             statement.executeUpdate();
         }

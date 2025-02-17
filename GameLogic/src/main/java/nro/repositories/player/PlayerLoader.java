@@ -196,10 +196,16 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    player.setX(resultSet.getShort("pos_x"));
-                    player.setY(resultSet.getShort("pos_y"));
-
+                    short x = resultSet.getShort("pos_x");
+                    short y = resultSet.getShort("pos_y");
                     short mapID = resultSet.getShort("map_id");
+                    if (x < 0 || y < 0) {
+                        x = 200;
+                        y = 336;
+                        mapID = (short) (21 + player.getGender());
+                    }
+                    player.setX(x);
+                    player.setY(y);
                     Area gameMap = MapManager.getInstance().findMapById(mapID).getArea();
                     if (gameMap == null) {
                         throw new SQLException("Map not found for player location: " + mapID);
