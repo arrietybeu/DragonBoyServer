@@ -10,7 +10,6 @@ public class CaptionTemplate {
     private int id;
     private long exp;
 
-
     public record CaptionLevel(int id, byte gender, String name) {
     }
 }

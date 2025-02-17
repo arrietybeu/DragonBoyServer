@@ -246,8 +246,8 @@ public class PlayerService {
             out.writeByte(0);// cpk
             out.writeByte(player.getTypePk());
             out.writeLong(player.getPlayerStats().getPower());
-            out.writeShort(0);// eff5BuffHp
-            out.writeShort(0);// eff5BuffMp
+            out.writeShort(player.getPlayerStats().getEff5BuffHp());// eff5BuffHp
+            out.writeShort(player.getPlayerStats().getEff5BuffMp());// eff5BuffMp
             out.writeByte(gender);
 
             // ============ Send Skill ============

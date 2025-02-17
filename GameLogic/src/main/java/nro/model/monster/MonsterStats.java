@@ -8,6 +8,7 @@ public class MonsterStats {
     private long hp;
     private long maxHp;
     private byte level;
+    private long dame;
 
     public MonsterStats(long maxHp, byte level) {
         this.maxHp = maxHp;

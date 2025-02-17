@@ -5,14 +5,80 @@ import nro.model.map.GameMap;
 import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
+import nro.model.player.PlayerFashion;
 import nro.network.Message;
 import nro.server.LogServer;
+import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
+
+import java.io.DataOutputStream;
+import java.util.Map;
 
 public class AreaService {
 
     @Getter
     public static final AreaService instance = new AreaService();
+
+    public void sendInfoAllPlayerInArea(Player player) {
+        try {
+            Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
+            for (Player plInZone : players.values()) {
+                this.addPlayer(player, plInZone);
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void addPlayer(Player isMe, Player playerInfo) {
+        try (Message message = new Message(-5)) {
+            DataOutputStream data = message.writer();
+            PlayerFashion playerFashion = playerInfo.getPlayerFashion();
+            data.writeInt(playerInfo.getId());
+            data.writeInt(playerInfo.getClan().getId());
+            if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
+                data.writeByte(playerInfo.getTeleport());
+                data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
+                data.writeShort(playerInfo.getMount());
+            }
+
+            data.writeByte(playerFashion.getFlag());
+            data.writeByte(playerInfo.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
+            data.writeShort(playerInfo.getAura());
+            data.writeByte(playerInfo.getEffSetItem());
+            data.writeShort(playerInfo.getIdHat());
+            isMe.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("addPlayer: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
+        System.out.println("Level: " + CaptionManager.getInstance().getLevel(player));
+
+        byte level = (byte) CaptionManager.getInstance().getLevel(player);
+        data.writeByte(level);
+        data.writeBoolean(true);// write isInvisiblez
+        data.writeByte(player.getTypePk()); // write type Pk
+        data.writeByte(player.getGender());
+        data.writeByte(player.getGender());
+        data.writeShort(playerFashion.getHead());
+        data.writeUTF(player.getName());
+        data.writeLong(player.getPlayerStats().getCurrentHP());
+        data.writeLong(player.getPlayerStats().getMaxHP());
+        data.writeShort(playerFashion.getBody());
+        data.writeShort(playerFashion.getLeg());
+        data.writeShort(playerFashion.getFlagBag());
+        data.writeByte(19);
+        data.writeShort(player.getX());
+        data.writeShort(player.getY());
+        data.writeShort(player.getPlayerStats().getEff5BuffHp());
+        data.writeShort(player.getPlayerStats().getEff5BuffMp());
+        data.writeByte(0);
+        return true;
+    }
 
     public void playerMove(Player player) {
     }

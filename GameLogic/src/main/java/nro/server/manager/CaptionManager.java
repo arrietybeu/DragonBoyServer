@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -123,6 +124,16 @@ public class CaptionManager implements IManager {
             ex.printStackTrace();
         }
 
+    }
+
+    public int getLevel(Player player) {
+        long power = player.getPlayerStats().getPower();
+        return CAPTIONS.stream()
+                .sorted(Comparator.comparingLong(CaptionTemplate::getExp).reversed())
+                .filter(caption -> power >= caption.getExp())
+                .findFirst()
+                .map(CAPTIONS::indexOf)
+                .orElse(0);
     }
 
 }

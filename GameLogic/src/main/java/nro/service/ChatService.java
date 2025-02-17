@@ -29,6 +29,16 @@ public class ChatService {
     private void commandForAdmins(Player playerChat, String text) {
         Service service = Service.getInstance();
         try {
+            switch (text) {
+                case "reload_map":
+                    ManagerRegistry.reloadManager(MapManager.class);
+                    service.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
+                    break;
+                case "area_check":
+                    var info = "Area Size PLayer: " + playerChat.getArea().getPlayers().size();
+                    service.sendChatGlobal(playerChat.getSession(), null, info, false);
+                    break;
+            }
             if (text.startsWith("m ")) {
                 int mapId = Integer.parseInt(text.substring(2).trim());
 
@@ -49,9 +59,6 @@ public class ChatService {
 
                 AreaService.getInstance().gotoMap(playerChat, newMap, x, y);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
-            } else if (text.equals("reload_map")) {
-                ManagerRegistry.reloadManager(MapManager.class);
-                service.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
             }
 
         } catch (NumberFormatException e) {

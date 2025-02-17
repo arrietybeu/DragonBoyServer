@@ -20,7 +20,10 @@ public class Clan {
     private int level;
     private int clanPoint;
 
-    private final List<ClanMember> clanMembers;
-    private final List<ClanMessage> currClanMessages;
+    private List<ClanMember> clanMembers;
+    private List<ClanMessage> currClanMessages;
+
+    public Clan() {
+    }
 
 }

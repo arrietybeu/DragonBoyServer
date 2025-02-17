@@ -37,6 +37,9 @@ public class PlayerStats {
     private byte mpPer1000Potential;
     private byte damagePer1000Potential;
 
+    private short eff5BuffHp;
+    private short eff5BuffMp;
+
     // power level
     private long power;
 

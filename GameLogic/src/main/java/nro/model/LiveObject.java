@@ -12,6 +12,8 @@ public abstract class LiveObject {
     private byte gender;
     private byte typePk;
 
+    private short mount = -1;
+
     private short x;
     private short y;
 
