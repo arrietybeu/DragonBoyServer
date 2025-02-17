@@ -69,6 +69,13 @@ public class PlayerCreator {
         return playerId;
     }
 
+    private void createPlayerSkills(Connection connection, int playerId) throws SQLException {
+        String query = "INSERT INTO player_skills (player_id, skill_id, current_level, last_time_use_skill) VALUES (?, ?, ?, ?);";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, playerId);
+        }
+    }
+
     private void createLocationPlayer(Connection connection, int playerId, byte gender) throws SQLException {
         String query = "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {

@@ -16,6 +16,11 @@ public class ItemOption {
         this.param = param;
     }
 
+    public ItemOption() {
+        this.id = 73;
+        this.param = 0;
+    }
+
     public String getOptionString(int idOptions) {
         ItemOptionTemplate optionTemplate = itemManager.getItemOptionTemplates().get((short) idOptions);
         return optionTemplate.name().replace("#", String.valueOf(param));

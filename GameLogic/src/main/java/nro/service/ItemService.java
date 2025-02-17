@@ -34,8 +34,13 @@ public class ItemService {
 
     public void initBaseOptions(Item item) throws RuntimeException {
         item.getItemOptions().clear();
-        for (ItemOption option : item.getTemplate().options()) {
+        if (item.getTemplate().options().isEmpty()) {
+            ItemOption option = new ItemOption();
             item.getItemOptions().add(option);
+        } else {
+            for (ItemOption option : item.getTemplate().options()) {
+                item.getItemOptions().add(option);
+            }
         }
     }
 

@@ -109,17 +109,17 @@ public class SkillManager implements IManager {
                 while (rs.next()) {
                     SkillInfo skill = new SkillInfo();
                     skill.setTemplate(skillTemplate);
-                    skill.skillId = rs.getShort("id");
-                    skill.point = rs.getByte("point");
-                    skill.powRequire = rs.getLong("power_require");
-                    skill.manaUse = rs.getInt("mana_use");
-                    skill.coolDown = rs.getInt("cool_down");
-                    skill.dx = rs.getInt("dx");
-                    skill.dy = rs.getInt("dy");
-                    skill.maxFight = rs.getInt("max_fight");
-                    skill.damage = rs.getShort("damage");
-                    skill.price = rs.getShort("price");
-                    skill.moreInfo = rs.getString("more_info");
+                    skill.setSkillId(rs.getShort("id"));
+                    skill.setPoint(rs.getByte("point"));
+                    skill.setPowRequire(rs.getLong("power_require"));
+                    skill.setManaUse(rs.getInt("mana_use"));
+                    skill.setCoolDown(rs.getInt("cool_down"));
+                    skill.setDx(rs.getInt("dx"));
+                    skill.setDy(rs.getInt("dy"));
+                    skill.setMaxFight(rs.getInt("max_fight"));
+                    skill.setDamage(rs.getShort("damage"));
+                    skill.setPrice(rs.getShort("price"));
+                    skill.setMoreInfo(rs.getString("more_info"));
                     skillTemplate.addSkill(skill);
                 }
             }
@@ -147,7 +147,6 @@ public class SkillManager implements IManager {
             LogServer.LogInit("SkillOption initialized size: " + this.skillOptions.size());
         }
     }
-
 
 
 }

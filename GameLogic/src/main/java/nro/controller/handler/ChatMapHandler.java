@@ -46,7 +46,7 @@ public class ChatMapHandler implements IMessageProcessor {
             }
 
             ChatService.getInstance().chatMap(player, text);
-
+            ChatService.getInstance().commandForAdmins(player, text);
         } catch (Exception ex) {
             LogServer.LogException("Error ChatMapHandler: " + ex.getMessage());
             ex.printStackTrace();

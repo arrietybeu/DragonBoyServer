@@ -138,7 +138,7 @@ public class PlayerUpdate {
             var x = player.getX();
             var y = player.getY();
             short mapID = (short) player.getArea().getMap().getId();
-            if (x < 20 || y < 20) {
+            if (x < 0 || y < 0) {
                 x = 200;
                 y = 336;
                 mapID = (short) (21 + player.getGender());
