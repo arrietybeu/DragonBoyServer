@@ -84,6 +84,7 @@ public class ClanService {
             }
             player.sendMessage(message);
         } catch (Exception e) {
+            e.printStackTrace();
             LogServer.LogException("Error sendClanInfo: " + e.getMessage());
         }
     }

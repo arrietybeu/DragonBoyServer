@@ -23,10 +23,27 @@ public class AreaService {
         try {
             Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
             for (Player plInZone : players.values()) {
-                this.addPlayer(player, plInZone);
+                if (plInZone != player) {
+                    this.addPlayer(player, plInZone);
+                }
             }
+            this.sendPlayerInfoToAllInArea(player);
         } catch (Exception ex) {
             LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void sendPlayerInfoToAllInArea(Player player) {
+        try {
+            Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
+            for (Player plInZone : players.values()) {
+                if (plInZone != player) {
+                    this.addPlayer(plInZone, player);
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("sendPlayerInfoToAllInArea: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -36,7 +53,7 @@ public class AreaService {
             DataOutputStream data = message.writer();
             PlayerFashion playerFashion = playerInfo.getPlayerFashion();
             data.writeInt(playerInfo.getId());
-            data.writeInt(playerInfo.getClan().getId());
+            data.writeInt(playerInfo.getClan() != null ? playerInfo.getClan().getId() : -1);
             if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
                 data.writeByte(playerInfo.getTeleport());
                 data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
@@ -56,11 +73,9 @@ public class AreaService {
     }
 
     private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
-        System.out.println("Level: " + CaptionManager.getInstance().getLevel(player));
-
         byte level = (byte) CaptionManager.getInstance().getLevel(player);
         data.writeByte(level);
-        data.writeBoolean(true);// write isInvisiblez
+        data.writeBoolean(false);// write isInvisiblez
         data.writeByte(player.getTypePk()); // write type Pk
         data.writeByte(player.getGender());
         data.writeByte(player.getGender());
@@ -71,7 +86,7 @@ public class AreaService {
         data.writeShort(playerFashion.getBody());
         data.writeShort(playerFashion.getLeg());
         data.writeShort(playerFashion.getFlagBag());
-        data.writeByte(19);
+        data.writeByte(0);
         data.writeShort(player.getX());
         data.writeShort(player.getY());
         data.writeShort(player.getPlayerStats().getEff5BuffHp());
@@ -81,6 +96,16 @@ public class AreaService {
     }
 
     public void playerMove(Player player) {
+        try (Message message = new Message(-7)) {
+            DataOutputStream data = message.writer();
+            data.writeInt(player.getId());
+            data.writeShort(player.getX());
+            data.writeShort(player.getY());
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + player.getId());
+            ex.printStackTrace();
+        }
     }
 
     public void playerChangerMap(Player player) {
@@ -113,24 +138,55 @@ public class AreaService {
     }
 
     public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
-        Area currentArea = player.getArea();
-        Area newArea = goMap.getArea();
-        Service service = Service.getInstance();
+        try {
+            Area newArea = goMap.getArea();
+            Service service = Service.getInstance();
 
-        if (newArea == null) {
-            this.keepPlayerInSafeZone(player);
-            service.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
-            return;
+            if (newArea == null) {
+                this.keepPlayerInSafeZone(player);
+                service.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
+                return;
+            }
+
+            this.playerExitArea(player);
+
+            newArea.addPlayer(player);
+            player.setArea(newArea);
+
+            player.setX(goX);
+            player.setY(goY);
+
+            this.sendMessageChangerMap(player);
+
+            this.sendInfoAllPlayerInArea(player);
+            this.sendPlayerInfoToAllInArea(player);
+
+        } catch (Exception ex) {
+            LogServer.LogException("gotoMap: " + ex.getMessage());
+            ex.printStackTrace();
         }
+    }
 
-        currentArea.removePlayer(player);
-        newArea.addPlayer(player);
-        player.setArea(newArea);
+    public void playerExitArea(Player player) {
+        Area area = player.getArea();
+        if (area.getAllPlayerInZone().containsKey(player.getId())) {
+            this.sendRemovePlayerExitArea(player);
+            area.removePlayer(player);
+        } else {
+            LogServer.LogException("Lỗi Logic không tìm thấy Player In Area để Remove: " + player.getId()
+                    + " map: " + area.getMap().getId() + " zone id: " + area.getId());
+        }
+    }
 
-        player.setX(goX);
-        player.setY(goY);
+    private void sendRemovePlayerExitArea(Player player) {
+        try (Message message = new Message(-6)) {
+            message.writer().writeInt(player.getId());
 
-        this.sendMessageChangerMap(player);
+            player.getArea().sendMessageToPlayersInArea(message, player);
+        } catch (Exception ex) {
+            LogServer.LogException("sendRemovePlayerExitArea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     private void keepPlayerInSafeZone(Player player) {
@@ -169,6 +225,7 @@ public class AreaService {
             playerService.sendStamina(player);
             playerService.sendCurrencyHpMp(player);
             MapService.getInstance().sendMapInfo(player);// -24
+
         } catch (Exception ex) {
             LogServer.LogException("Error send Message Changer Map: " + ex.getMessage());
             ex.printStackTrace();

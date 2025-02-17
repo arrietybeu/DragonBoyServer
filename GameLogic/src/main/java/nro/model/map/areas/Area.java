@@ -133,26 +133,28 @@ public class Area {
     public Map<Integer, Player> getAllPlayerInZone() {
         this.lock.readLock().lock();
         try {
-            return this.players;
+            return new HashMap<>(this.players);
         } catch (Exception ex) {
+            LogServer.LogException("getAllPlayerInZone: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
             this.lock.readLock().unlock();
         }
-        return null;
+        return new HashMap<>();
     }
 
-    public void sendMsgAllPlayerInArea(Message message) {
+
+    public void sendMessageToPlayersInArea(Message message, Player exclude) {
         if (message == null) return;
         this.lock.readLock().lock();
         try {
             for (Player player : this.players.values()) {
-                if (player != null) {
+                if (exclude == null || player != exclude) {
                     player.sendMessage(message);
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("sendMsgAllPlayerInArea: " + ex.getMessage());
+            LogServer.LogException("sendMessageToPlayersInArea: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
             this.lock.readLock().unlock();

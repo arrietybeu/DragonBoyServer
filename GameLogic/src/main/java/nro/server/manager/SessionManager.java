@@ -1,17 +1,20 @@
 package nro.server.manager;
 
 import lombok.Getter;
+import nro.model.player.Player;
 import nro.network.Session;
+import nro.repositories.player.PlayerUpdate;
 import nro.server.LogServer;
 import nro.utils.Util;
 
+import javax.security.auth.login.LoginException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SessionManager  {
+public class SessionManager {
 
     @Getter
     private static final SessionManager instance = new SessionManager();
@@ -146,7 +149,6 @@ public class SessionManager  {
     }
 
     public void kickSession(Session session) {
-//        Util.getMethodCaller();
         this.lock.writeLock().lock();
         try {
             this.dispose(session);// save data player
@@ -161,9 +163,12 @@ public class SessionManager  {
     }
 
     private void dispose(Session session) {
-//        if (session.getPlayer() != null) {
-//            PlayerRepository.gI().savePlayer(session);
-//        }
+        Player player = session.getPlayer();
+        if (player != null) {
+            // save data player va giai phong du lieu  khi player da vao game
+            player.dispose();
+            PlayerUpdate.getInstance().savePlayer(player);
+        }
     }
 
     /**

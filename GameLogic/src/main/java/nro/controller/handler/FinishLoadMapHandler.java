@@ -22,5 +22,4 @@ public class FinishLoadMapHandler implements IMessageProcessor {
             ex.printStackTrace();
         }
     }
-
 }

@@ -8,6 +8,7 @@ import nro.model.map.areas.Area;
 import nro.model.discpile.Disciple;
 import nro.network.Message;
 import nro.network.Session;
+import nro.service.AreaService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -27,7 +28,7 @@ public class Player extends LiveObject {
     private final Instant createdAt;
 
     private Area area;
-    private final Clan clan;
+    private Clan clan;
     private Disciple disciple;
 
     private int role;
@@ -47,7 +48,6 @@ public class Player extends LiveObject {
         this.playerSkill = new PlayerSkill(this);
         this.playerInventory = new PlayerInventory(this);
         this.playerFusion = new PlayerFusion(this);
-        this.clan = new Clan();
     }
 
     public void sendMessage(Message message) {
@@ -66,6 +66,11 @@ public class Player extends LiveObject {
 
     @Override
     public void update() {
+    }
+
+    @Override
+    public void dispose() {
+        AreaService.getInstance().playerExitArea(this);
     }
 
 }

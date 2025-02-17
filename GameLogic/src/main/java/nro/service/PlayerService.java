@@ -55,6 +55,7 @@ public class PlayerService {
     }
 
     private void onPlayerLoginSuccess(Player player) {
+        player.getSession().getSessionInfo().setLoadData(true);
         player.getArea().addPlayer(player);
         Service service = Service.getInstance();
         TaskService taskService = TaskService.getInstance();

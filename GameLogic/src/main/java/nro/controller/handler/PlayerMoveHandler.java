@@ -2,10 +2,12 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
+import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.network.Message;
 import nro.network.Session;
 import nro.server.LogServer;
+import nro.service.AreaService;
 
 @APacketHandler(-7)
 public class PlayerMoveHandler implements IMessageProcessor {
@@ -34,6 +36,7 @@ public class PlayerMoveHandler implements IMessageProcessor {
             player.setX(newX);
             player.setY(newY);
 
+            AreaService.getInstance().playerMove(player);
         }catch (Exception e){
             e.printStackTrace();
             LogServer.LogException("Error PlayerMoveHandler: " + e.getMessage());

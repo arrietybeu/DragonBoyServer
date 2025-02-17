@@ -57,4 +57,7 @@ public abstract class LiveObject {
 
     public void update() {
     }
+
+    public void dispose() {
+    }
 }

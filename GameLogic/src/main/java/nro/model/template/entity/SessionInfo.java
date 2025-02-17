@@ -7,11 +7,15 @@ public class SessionInfo {
 
     private int id;
     private String ip;
-    private boolean connected;
     private final byte[] keys = {0};
+
+    private boolean connected;
     private boolean isUpdateItem;
     private boolean isClientOk;
     private boolean isLogin;
+
+    private boolean isLoadData;
+    private boolean isSaveData;
 
     public byte curR, curW;
     public int recvByteCount, sendByteCount;

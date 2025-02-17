@@ -18,7 +18,7 @@ public class ChatService {
         try (Message message = new Message(44)) {
             message.writer().writeInt(player.getId());
             message.writer().writeUTF(text);
-            player.getArea().sendMsgAllPlayerInArea(message);
+            player.getArea().sendMessageToPlayersInArea(message, null);
             this.commandForAdmins(player, text);
         } catch (Exception ex) {
             LogServer.LogException("Error Service Chat Map: " + ex.getMessage());
@@ -30,6 +30,9 @@ public class ChatService {
         Service service = Service.getInstance();
         try {
             switch (text) {
+                case "info":
+                    service.sendChatGlobal(playerChat.getSession(), null, "Thread const: " + Thread.activeCount(), false);
+                    break;
                 case "reload_map":
                     ManagerRegistry.reloadManager(MapManager.class);
                     service.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
