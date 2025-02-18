@@ -41,7 +41,7 @@ public class Controller {
         long executionTime = System.currentTimeMillis() - time;
 //        LogServer.DebugLogic("session " + session.getSessionInfo().getId() + " get message [" + cmd + "] - " + executionTime + " ms");
         if (executionTime > 1000) {
-            LogServer.LogException("Session IP: " + session.getSessionInfo().getIp() + " time delay: [" + cmd + "] - " + executionTime + " ms");
+            LogServer.LogWarning("Session IP: " + session.getSessionInfo().getIp() + " time delay: [" + cmd + "] - " + executionTime + " ms");
         }
     }
 }

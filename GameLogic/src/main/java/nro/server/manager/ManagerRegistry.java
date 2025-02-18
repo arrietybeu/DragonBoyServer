@@ -21,7 +21,7 @@ public class ManagerRegistry {
         MANAGERS.add(PartManager.getInstance());
         MANAGERS.add(MapManager.getInstance());
         MANAGERS.add(SkillManager.getInstance());
-        MANAGERS.add(SkillPaintManager.gI());
+        MANAGERS.add(SkillPaintManager.getInstance());
         MANAGERS.add(ItemManager.getInstance());
         MANAGERS.add(CaptionManager.getInstance());
         MANAGERS.add(SpeacialSkillManager.getInstance());

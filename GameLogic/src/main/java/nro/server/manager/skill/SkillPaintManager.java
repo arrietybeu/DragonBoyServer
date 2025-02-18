@@ -1,5 +1,6 @@
 package nro.server.manager.skill;
 
+import lombok.Getter;
 import nro.network.Message;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
@@ -19,15 +20,10 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class SkillPaintManager implements IManager {
 
+    @Getter
     private static final SkillPaintManager instance = new SkillPaintManager();
-
     private List<SkillPaint> skillPaintList;
-
     private byte[] skillPaintsData;
-
-    public static SkillPaintManager gI() {
-        return instance;
-    }
 
     @Override
     public void init() {

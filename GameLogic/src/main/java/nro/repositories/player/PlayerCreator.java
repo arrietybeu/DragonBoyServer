@@ -30,6 +30,7 @@ public class PlayerCreator {
                 this.createMagicTreePlayer(connection, playerId);
                 this.createPlayerInventory(connection, playerId, gender);
                 this.createPlayerDataTask(connection, playerId);
+                this.createPlayerSkills(connection, playerId, gender);
                 connection.commit();
 
                 LogServer.DebugLogic("Time create player name: " + name + " times: "
@@ -69,12 +70,25 @@ public class PlayerCreator {
         return playerId;
     }
 
-    private void createPlayerSkills(Connection connection, int playerId) throws SQLException {
+    private void createPlayerSkills(Connection connection, int playerId, int gender) throws SQLException {
         String query = "INSERT INTO player_skills (player_id, skill_id, current_level, last_time_use_skill) VALUES (?, ?, ?, ?);";
+
+        int[] skillsArr = gender == 0 ? new int[]{0, 1, 6, 9, 10, 20, 22, 19, 24, 27, 28}
+                : gender == 1 ? new int[]{2, 3, 7, 11, 12, 17, 18, 19, 26, 27, 28}
+                : new int[]{4, 5, 8, 13, 14, 21, 23, 19, 25, 27, 28};
+
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, playerId);
+            for (int i = 0; i < skillsArr.length; i++) {
+                statement.setInt(1, playerId);
+                statement.setInt(2, skillsArr[i]);
+                statement.setInt(3, (i == 0) ? 1 : 0);
+                statement.setLong(4, 0);
+                statement.addBatch();
+            }
+            statement.executeBatch();
         }
     }
+
 
     private void createLocationPlayer(Connection connection, int playerId, byte gender) throws SQLException {
         String query = "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) VALUES (?, ?, ?, ?)";

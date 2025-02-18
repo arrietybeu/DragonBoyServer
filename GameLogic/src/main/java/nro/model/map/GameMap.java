@@ -112,7 +112,6 @@ public class GameMap implements Runnable {
         int rX = x / SIZE;
         int rY = 0;
         int row = y / SIZE;
-
         int tmw = this.tileMap.tmw();
         int[] tiles = this.tileMap.tiles();
 

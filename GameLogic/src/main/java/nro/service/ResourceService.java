@@ -56,7 +56,7 @@ public class ResourceService {
     private byte[][] getBytes() {
         DataGame dataGame = DataGame.getInstance();
         PartManager partManager = PartManager.getInstance();
-        SkillPaintManager skillPaintManager = SkillPaintManager.gI();
+        SkillPaintManager skillPaintManager = SkillPaintManager.getInstance();
 
         return new byte[][]{dataGame.getDart(),
                 dataGame.getArrow(),
@@ -114,7 +114,8 @@ public class ResourceService {
 
     public void sendImageRes(Session session, int id) {
         try (Message message = new Message(-67)) {
-            byte[] data = FileNio.loadDataFile("resources/x" + session.getClientInfo().getZoomLevel() + "/icon/" + id + ".png");
+            String path = "resources/x" + session.getClientInfo().getZoomLevel() + "/icon/" + id + ".png";
+            byte[] data = FileNio.loadDataFile(path);
             message.writer().writeInt(id);
             assert data != null : "Data Image is null: " + id;
             message.writer().writeInt(data.length);
@@ -138,8 +139,6 @@ public class ResourceService {
     private void fileTransfer(Session session, File file) {
         try (Message mss = new Message(-74)) {
             String strPath = FileNio.cutPng(file.getPath().replace("\\", "/"));
-
-//            System.out.println(strPath);
             DataOutputStream ds = mss.writer();
             ds.writeByte(2);
             ds.writeUTF(strPath);
@@ -157,7 +156,6 @@ public class ResourceService {
     public void sendSmallVersion(Session session) {
         var res = ResourcesManager.getInstance();
         byte[][] smallVersion = res.getSmallVersion();
-//        System.out.println("Zoom Level: " + session.getClientInfo().getZoomLevel());
         byte[] data = smallVersion[session.getClientInfo().getZoomLevel() - 1];
         try (Message message = new Message(-77)) {
             message.writer().writeShort(data.length);
@@ -193,16 +191,6 @@ public class ResourceService {
         }
     }
 
-    /**
-     * Retrieves a cached list of resource files for the specified zoom level.
-     * If the resources for the given zoom level have not been cached, this method
-     * computes the list by reading the files from the appropriate directory, caches
-     * the result, and then returns the list.
-     *
-     * @param zoomLevel The zoom level for which to retrieve resources. This determines the directory path.
-     * @return A list of {@link File} objects representing the resource files for the given zoom level.
-     * @throws IllegalArgumentException If the directory for the specified zoom level does not exist or is not a directory.
-     */
     private List<File> getCachedResources(int zoomLevel) {
         return this.cachedResources.computeIfAbsent(zoomLevel, level -> {
             String path = "resources/x" + level + "/res";
@@ -220,7 +208,8 @@ public class ResourceService {
     }
 
     public void sendDataImageVersion(Session session) {
-        String path = "resources/x" + session.getClientInfo().getZoomLevel() + "/image_source/image_source_" + session.getClientInfo().getZoomLevel();
+        var zoomLevel = session.getClientInfo().getZoomLevel();
+        String path = "resources/x" + zoomLevel + "/image_source/image_source";
         try (Message msg = new Message(-111)) {
             msg.writer().write(Objects.requireNonNull(FileNio.loadDataFile(path)));
             session.doSendMessage(msg);
@@ -233,8 +222,8 @@ public class ResourceService {
 
     public void sendDataBackgroundMap(Session session, int id) {
         try (Message message = new Message(-32)) {
-            byte[] data = FileNio.loadDataFile("resources/x" + session.getClientInfo().getZoomLevel() + "/image_background/" + id + ".png");
-
+            String path = "resources/x" + session.getClientInfo().getZoomLevel() + "/image_background/" + id + ".png";
+            byte[] data = FileNio.loadDataFile(path);
             message.writer().writeShort(id);
             assert data != null : "Data Background is null: " + id;
             message.writer().writeInt(data.length);

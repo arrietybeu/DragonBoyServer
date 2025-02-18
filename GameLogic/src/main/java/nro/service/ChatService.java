@@ -8,6 +8,7 @@ import nro.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.ManagerRegistry;
 import nro.server.manager.MapManager;
+import nro.utils.FileNio;
 
 public class ChatService {
 
@@ -52,6 +53,9 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "cache":
+                    Service.dialogMessage(playerChat.getSession(), "Cache size: " + FileNio.CACHE.size());
+                    break;
                 case "info":
                     service.sendChatGlobal(playerChat.getSession(), null, "Thread const: " + Thread.activeCount(), false);
                     break;

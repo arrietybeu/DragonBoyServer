@@ -14,15 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileNio {
 
     // Bộ nhớ cache lưu trữ dữ liệu file để tránh đọc lại từ đĩa cho cùng một URL
-    private static final Map<String, byte[]> CACHE = new ConcurrentHashMap<>();
-
-    /**
-     * Phương thức loadDataFile dùng để tải dữ liệu từ file chỉ định bởi URL.
-     * Nếu file đã được tải trước đó, dữ liệu sẽ được lấy từ cache để tăng hiệu suất.
-     *
-     * @param url Đường dẫn tới file cần tải
-     * @return Mảng byte chứa dữ liệu file, hoặc null nếu xảy ra lỗi
-     */
+    public static final Map<String, byte[]> CACHE = new ConcurrentHashMap<>();
 
     public static byte[] loadDataFile(String url) {
         try {

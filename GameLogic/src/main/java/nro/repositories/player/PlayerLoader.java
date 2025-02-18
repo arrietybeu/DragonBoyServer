@@ -8,6 +8,7 @@ import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
+import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
@@ -25,6 +26,7 @@ public class PlayerLoader {
 
     public Player loadPlayer(Session session) throws Exception {
         String query = "SELECT * FROM player WHERE account_id = ? LIMIT 1";
+        var ms = System.currentTimeMillis();
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             if (connection == null) {
                 throw new Exception("Error loading player for account_id: " + session.getUserInfo().getId() + ", Error: connection null");
@@ -41,6 +43,9 @@ public class PlayerLoader {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new Exception("Error loading p layer for account_id: " + session.getUserInfo().getId() + ", Error: " + e.getMessage());
+        } finally {
+            var time = System.currentTimeMillis() - ms;
+            LogServer.DebugLogic("Last time load PLayer: " + time + " ms");
         }
         return null;
     }
