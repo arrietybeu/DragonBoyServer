@@ -152,7 +152,6 @@ public class ResourceService {
         }
     }
 
-
     public void sendSmallVersion(Session session) {
         var res = ResourcesManager.getInstance();
         byte[][] smallVersion = res.getSmallVersion();

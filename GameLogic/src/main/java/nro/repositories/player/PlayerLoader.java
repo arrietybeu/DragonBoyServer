@@ -6,12 +6,14 @@ import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
+import nro.model.template.entity.SkillInfo;
 import nro.network.Session;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
+import nro.server.manager.skill.SkillManager;
 import nro.service.ItemService;
 
 import java.sql.*;
@@ -78,16 +80,36 @@ public class PlayerLoader {
         // Load player skills shortcut
         this.loadPlayerSkillsShortCut(player, connection);
 
+        this.loadPlayerSkills(player, connection);
+
         // Load player inventory
         this.loadPlayerInventory(player, connection);
         return player;
     }
 
-
     private void loadPlayerInventory(Player player, Connection connection) throws SQLException {
         loadInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
         loadInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
         loadInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
+    }
+
+    private void loadPlayerSkills(Player player, Connection connection) throws SQLException {
+        String query = "SELECT skill_id, current_level, last_time_use_skill FROM player_skills WHERE player_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, player.getId());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    short skillId = resultSet.getShort("skill_id");
+                    short currentLevel = resultSet.getShort("current_level");
+                    long lastTimeUseSkill = resultSet.getLong("last_time_use_skill");
+                    if (currentLevel == 0) continue;
+                    SkillInfo skillInfo = SkillManager.getInstance().getSkillInfo(skillId, player.getGender(), currentLevel);
+                    if (skillInfo == null) continue;
+                    System.out.println("return: " + skillInfo.getSkillId() + " name: " + skillInfo.getTemplate().getName() + " level: " + currentLevel);
+                    player.getPlayerSkill().addSkill(skillInfo);
+                }
+            }
+        }
     }
 
     private void loadInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
@@ -134,15 +156,7 @@ public class PlayerLoader {
     }
 
     private void loadPlayerPoint(Player player, Connection connection) throws SQLException {
-        String query = "SELECT hp, hp_max, hp_current, " +
-                "mp, mp_max, mp_current, " +
-                "dame_max, dame_default, " +
-                "crit, crit_default, " +
-                "defense, def_default, " +
-                "stamina, max_stamina, " +
-                "power, limit_power, " +
-                "tiem_nang, nang_dong " +
-                "FROM player_point WHERE player_id = ?";
+        String query = "SELECT hp, hp_max, hp_current, " + "mp, mp_max, mp_current, " + "dame_max, dame_default, " + "crit, crit_default, " + "defense, def_default, " + "stamina, max_stamina, " + "power, limit_power, " + "tiem_nang, nang_dong " + "FROM player_point WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
             try (ResultSet rs = statement.executeQuery()) {

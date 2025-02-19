@@ -1,12 +1,14 @@
 package nro.model.player;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import nro.model.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class PlayerInventory {
 
     private final Player player;
@@ -19,5 +21,15 @@ public class PlayerInventory {
         this.itemsBody = new ArrayList<>();
         this.itemsBag = new ArrayList<>();
         this.itemsBox = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerInventory{" +
+                "player=" + player +
+                ", itemsBody=" + itemsBody +
+                ", itemsBag=" + itemsBag +
+                ", itemsBox=" + itemsBox +
+                '}';
     }
 }

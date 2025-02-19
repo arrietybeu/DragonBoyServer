@@ -1,9 +1,11 @@
 package nro.model.player;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import nro.model.task.TaskMain;
 
-@Data
+@Setter
+@Getter
 public class PlayerTask {
 
     private final Player player;
@@ -12,5 +14,13 @@ public class PlayerTask {
 
     public PlayerTask(Player player) {
         this.player = player;
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerTask{" +
+                "player=" + player +
+                ", taskMain=" + taskMain +
+                '}';
     }
 }

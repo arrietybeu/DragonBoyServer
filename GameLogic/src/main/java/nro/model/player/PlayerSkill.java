@@ -1,17 +1,18 @@
 package nro.model.player;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import nro.model.template.entity.SkillInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class PlayerSkill {
 
-    @Getter
-    private List<SkillInfo> skills;
+    private final List<SkillInfo> skills;
     private final Player player;
 
     private boolean isMonkey;
@@ -30,4 +31,13 @@ public class PlayerSkill {
         this.skills.remove(skill);
     }
 
+    @Override
+    public String toString() {
+        return "PlayerSkill{" +
+                "skills=" + skills +
+                ", player=" + player +
+                ", isMonkey=" + isMonkey +
+                ", skillShortCut=" + Arrays.toString(skillShortCut) +
+                '}';
+    }
 }

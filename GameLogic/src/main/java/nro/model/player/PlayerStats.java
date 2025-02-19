@@ -1,8 +1,10 @@
 package nro.model.player;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class PlayerStats {
 
     private final Player player;
@@ -46,4 +48,35 @@ public class PlayerStats {
     public PlayerStats(Player player) {
         this.player = player;
     }
+
+    @Override
+    public String toString() {
+        return "PlayerStats{" +
+                "player=" + player +
+                ", baseHP=" + baseHP +
+                ", baseMP=" + baseMP +
+                ", baseDamage=" + baseDamage +
+                ", baseDefense=" + baseDefense +
+                ", baseCriticalChance=" + baseCriticalChance +
+                ", movementSpeed=" + movementSpeed +
+                ", stamina=" + stamina +
+                ", currentHP=" + currentHP +
+                ", currentMP=" + currentMP +
+                ", maxHP=" + maxHP +
+                ", maxMP=" + maxMP +
+                ", maxStamina=" + maxStamina +
+                ", totalDamage=" + totalDamage +
+                ", totalDefense=" + totalDefense +
+                ", totalCriticalChance=" + totalCriticalChance +
+                ", potentialPoints=" + potentialPoints +
+                ", expPerStatIncrease=" + expPerStatIncrease +
+                ", hpPer1000Potential=" + hpPer1000Potential +
+                ", mpPer1000Potential=" + mpPer1000Potential +
+                ", damagePer1000Potential=" + damagePer1000Potential +
+                ", eff5BuffHp=" + eff5BuffHp +
+                ", eff5BuffMp=" + eff5BuffMp +
+                ", power=" + power +
+                '}';
+    }
+
 }

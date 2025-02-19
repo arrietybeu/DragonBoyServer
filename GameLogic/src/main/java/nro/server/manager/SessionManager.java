@@ -97,7 +97,7 @@ public class SessionManager {
                     var lastActiveTime = currentTime - session.getClientInfo().getLastActiveTime();
 //                    System.out.println("LastActiveTime: " + lastActiveTime + " | Timeout: " + timeout);
                     if (currentTime - session.getClientInfo().getLastActiveTime() > timeout) {
-                        this.kickSession(session);
+//                        this.kickSession(session);
 //                        LogServer.DebugLogic("Remove session id: " + userId);
                     }
                 } catch (Exception e) {

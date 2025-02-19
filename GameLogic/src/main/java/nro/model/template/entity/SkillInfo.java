@@ -20,16 +20,21 @@ public class SkillInfo {
     private int point;
     private long powRequire;
     private int coolDown;
-    private long lastTimeUseThisSkill;
     private int dx;
     private int dy;
     private int maxFight;
     private int manaUse;
-    private SkillOptionTemplate[] options;
-    private boolean paintCanNotUseSkill;
     private short damage;
     private String moreInfo;
     private short price;
+
     private short curExp;
+    private long lastTimeUseThisSkill;
+    private SkillOptionTemplate[] options;
+    private boolean paintCanNotUseSkill;
+
+
+    public SkillInfo() {
+    }
 
 }

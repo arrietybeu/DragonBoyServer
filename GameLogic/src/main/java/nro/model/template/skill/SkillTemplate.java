@@ -1,12 +1,14 @@
 package nro.model.template.skill;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import nro.model.template.entity.SkillInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class SkillTemplate {
 
     private byte id;
@@ -24,4 +26,12 @@ public class SkillTemplate {
     public void addSkill(SkillInfo skill) {
         this.skills.add(skill);
     }
+
+    public SkillInfo getSkill(short skillId, int level) {
+        return this.skills.stream()
+                .filter(skillInfo -> skillInfo.getTemplate().getId() == skillId && skillInfo.getSkillId() == level - 1)
+                .findFirst()
+                .orElse(null);
+    }
+
 }

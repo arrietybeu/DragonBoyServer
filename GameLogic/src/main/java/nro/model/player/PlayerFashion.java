@@ -1,8 +1,10 @@
 package nro.model.player;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class PlayerFashion {
 
     private final Player player;
@@ -18,4 +20,15 @@ public class PlayerFashion {
         this.player = player;
     }
 
+    @Override
+    public String toString() {
+        return "PlayerFashion{" +
+                "player=" + player +
+                ", flag=" + flag +
+                ", head=" + head +
+                ", body=" + body +
+                ", leg=" + leg +
+                ", flagBag=" + flagBag +
+                '}';
+    }
 }

@@ -28,9 +28,9 @@ public class DataSkill {
             }
             data.writeByte(nClasses.size());// 23
             for (var classSkill : nClasses) {
-                data.writeUTF(classSkill.getName());
-                data.writeByte(classSkill.getSkillTemplates().size());
-                for (var skillTemplate : classSkill.getSkillTemplates()) {
+                data.writeUTF(classSkill.name());
+                data.writeByte(classSkill.skillTemplates().size());
+                for (var skillTemplate : classSkill.skillTemplates()) {
                     data.writeByte(skillTemplate.getId());
                     data.writeUTF(skillTemplate.getName());
                     data.writeByte(skillTemplate.getMaxPoint());

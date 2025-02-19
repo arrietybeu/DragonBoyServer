@@ -42,22 +42,13 @@ public class SkillManager implements IManager {
 
     private void loadSkill() {
         String query = "SELECT * FROM skill_class";
-
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-            assert connection != null : "Connection is null";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var nClassId = resultSet.getInt("class_id");
                     var name = resultSet.getString("name");
-
-                    NClass nClass = new NClass();
-                    nClass.setClassId(nClassId);
-                    nClass.setName(name);
-
-                    var skillTemplates = this.loadSkillTemplate(connection, nClassId);
-
-                    nClass.setSkillTemplates(skillTemplates);
+                    NClass nClass = new NClass(nClassId, name, this.loadSkillTemplate(connection, nClassId));
                     this.nClasses.add(nClass);
                 }
                 LogServer.LogInit("Skill Class initialized size: " + this.nClasses.size());
@@ -87,9 +78,8 @@ public class SkillManager implements IManager {
                     skillTemplate.setIconId(resultSet.getInt("icon_id"));
                     skillTemplate.setDamInfo(resultSet.getString("dam_info"));
                     skillTemplate.setDescription(resultSet.getString("description"));
-                    skillTemplates.add(skillTemplate);
                     this.loadSKillInfo(connection, skillTemplate);
-
+                    skillTemplates.add(skillTemplate);
                 }
             }
         } catch (Exception e) {
@@ -101,7 +91,7 @@ public class SkillManager implements IManager {
     private void loadSKillInfo(Connection connection, SkillTemplate skillTemplate) {
         skillTemplate.getSkills().clear();
         int idSkill = skillTemplate.getId();
-        String query = "SELECT * FROM skill_info WHERE skill_id = ? AND class_id = ?";
+        String query = "SELECT * FROM skill_info WHERE skill_template_id = ? AND class_id = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idSkill);
             preparedStatement.setInt(2, skillTemplate.getClassId());
@@ -109,7 +99,7 @@ public class SkillManager implements IManager {
                 while (rs.next()) {
                     SkillInfo skill = new SkillInfo();
                     skill.setTemplate(skillTemplate);
-                    skill.setSkillId(rs.getShort("id"));
+                    skill.setSkillId(rs.getShort("skill_id"));
                     skill.setPoint(rs.getByte("point"));
                     skill.setPowRequire(rs.getLong("power_require"));
                     skill.setManaUse(rs.getInt("mana_use"));
@@ -145,6 +135,22 @@ public class SkillManager implements IManager {
             LogServer.LogException("Error loadSkillOption: " + e.getMessage());
         } finally {
             LogServer.LogInit("SkillOption initialized size: " + this.skillOptions.size());
+        }
+    }
+
+    public SkillInfo getSkillInfo(short skillId, int gender, int currentLevel) {
+        try {
+            return this.nClasses.stream()
+                    .filter(nClass -> nClass.classId() == gender)
+                    .flatMap(nClass -> nClass.skillTemplates().stream())
+                    .filter(skillTemplate -> skillTemplate.getId() == skillId)
+                    .map(skillTemplate -> skillTemplate.getSkill(skillId, currentLevel))
+                    .filter(skillInfo -> skillInfo != null && (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel))
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception ex) {
+            LogServer.LogException("skillId: " + skillId + " gender: " + gender + " currentLevel: " + currentLevel + "\nmessage: " + ex.getMessage());
+            return null;
         }
     }
 

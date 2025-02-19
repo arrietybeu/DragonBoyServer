@@ -1,8 +1,11 @@
 package nro.model.player;
 
-import lombok.Data;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PlayerCurrencies {
 
     private final Player player;
@@ -62,6 +65,15 @@ public class PlayerCurrencies {
             throw new NullPointerException("Player is null");
         }
         return player;
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerCurrencies{" +
+                "gold=" + gold +
+                ", gem=" + gem +
+                ", ruby=" + ruby +
+                '}';
     }
 
 }
