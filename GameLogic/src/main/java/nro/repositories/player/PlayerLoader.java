@@ -105,7 +105,6 @@ public class PlayerLoader {
                     if (currentLevel == 0) continue;
                     SkillInfo skillInfo = SkillManager.getInstance().getSkillInfo(skillId, player.getGender(), currentLevel);
                     if (skillInfo == null) continue;
-                    System.out.println("return: " + skillInfo.getSkillId() + " name: " + skillInfo.getTemplate().getName() + " level: " + currentLevel);
                     player.getPlayerSkill().addSkill(skillInfo);
                 }
             }

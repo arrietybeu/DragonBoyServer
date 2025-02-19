@@ -158,6 +158,4 @@ public class SkillManager implements IManager {
         }
         return null;
     }
-
-
 }

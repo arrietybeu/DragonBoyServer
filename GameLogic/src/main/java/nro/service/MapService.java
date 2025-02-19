@@ -107,7 +107,6 @@ public class MapService {
             output.writeShort(monster.getId());
             output.writeByte(monster.getStatus().getSys());
             output.writeLong(monster.getStats().getHp());
-
             output.writeByte(monster.getStats().getLevel());
             output.writeLong(monster.getStats().getMaxHp());
             output.writeShort(monster.getX());
