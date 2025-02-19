@@ -1,4 +1,10 @@
 package nro.model.boss;
 
-public class Boss {
+import nro.model.LiveObject;
+
+public class Boss extends LiveObject {
+
+    public Boss() {
+        this.setTypeObject(1);
+    }
 }

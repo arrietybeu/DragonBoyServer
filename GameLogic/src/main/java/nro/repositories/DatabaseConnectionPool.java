@@ -20,6 +20,7 @@ public class DatabaseConnectionPool {
 
     private static final HikariDataSource DYNAMIC_DATA_SOURCE;
     private static final HikariDataSource STATIC_DATA_SOURCE;
+    private static final HikariDataSource ENTITY_DATA_SOURCE;
 
     static {
         /*
@@ -51,9 +52,9 @@ public class DatabaseConnectionPool {
          */
         HikariConfig staticConfig = new HikariConfig();
         staticConfig.setDriverClassName(ConfigDB.DRIVER);
-        staticConfig.setJdbcUrl(ConfigDB.DB2_URL);
-        staticConfig.setUsername(ConfigDB.DB2_USER);
-        staticConfig.setPassword(ConfigDB.DB2_PASSWORD);
+        staticConfig.setJdbcUrl(ConfigDB.DB_STATIC_URL);
+        staticConfig.setUsername(ConfigDB.DB_STATIC_USER);
+        staticConfig.setPassword(ConfigDB.DB_STATIC_PASSWORD);
 
         staticConfig.addDataSourceProperty("cachePrepStmts", "true");
         staticConfig.addDataSourceProperty("prepStmtCacheSize", "250");
@@ -69,6 +70,29 @@ public class DatabaseConnectionPool {
 //        staticConfig.setLeakDetectionThreshold(3000);// canh bao ro ri ket noi 3s
 
         STATIC_DATA_SOURCE = new HikariDataSource(staticConfig);
+
+        /*
+         * Config Database Entity (Boss, NPC, Bot)
+         */
+        HikariConfig entityConfig = new HikariConfig();
+        entityConfig.setDriverClassName(ConfigDB.DRIVER);
+        entityConfig.setJdbcUrl(ConfigDB.DB_ENTITY_URL);
+        entityConfig.setUsername(ConfigDB.DB_ENTITY_USER);
+        entityConfig.setPassword(ConfigDB.DB_ENTITY_PASSWORD);
+
+        entityConfig.addDataSourceProperty("cachePrepStmts", "true");
+        entityConfig.addDataSourceProperty("prepStmtCacheSize", "250");
+        entityConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        entityConfig.addDataSourceProperty("characterEncoding", "utf8");
+        entityConfig.addDataSourceProperty("useUnicode", "true");
+
+        entityConfig.setMinimumIdle(5);
+        entityConfig.setMaximumPoolSize(50); // Giới hạn số kết nối cho database entity
+        entityConfig.setConnectionTimeout(30000); // Thời gian chờ kết nối
+        entityConfig.setIdleTimeout(60000); // Đóng kết nối sau 60s không sử dụng
+        entityConfig.setConnectionTestQuery("SELECT 1"); // Kiểm tra kết nối
+
+        ENTITY_DATA_SOURCE = new HikariDataSource(entityConfig);
     }
 
     public static Connection getConnectionForTask(int taskIndex, String... method) {
@@ -76,6 +100,7 @@ public class DatabaseConnectionPool {
             return switch (taskIndex) {
                 case ConfigDB.DATABASE_DYNAMIC -> DYNAMIC_DATA_SOURCE.getConnection();
                 case ConfigDB.DATABASE_STATIC -> STATIC_DATA_SOURCE.getConnection();
+                case ConfigDB.DATABASE_ENTITY -> ENTITY_DATA_SOURCE.getConnection();
                 default -> {
                     LogServer.LogException("Invalid taskIndex: " + taskIndex);
                     yield null;
@@ -87,7 +112,7 @@ public class DatabaseConnectionPool {
         }
     }
 
-    // close all
+    // close all connect database
     public static void closeConnections() {
         try {
             if (STATIC_DATA_SOURCE != null && !STATIC_DATA_SOURCE.isClosed()) {
@@ -103,6 +128,14 @@ public class DatabaseConnectionPool {
             }
         } catch (Exception e) {
             LogServer.LogException("Error closing DYNAMIC_DATA_SOURCE: " + e.getMessage());
+        }
+
+        try {
+            if (ENTITY_DATA_SOURCE != null && !ENTITY_DATA_SOURCE.isClosed()) {
+                ENTITY_DATA_SOURCE.close();
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error closing ENTITY_DATA_SOURCE: " + e.getMessage());
         }
     }
 }

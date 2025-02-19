@@ -2,7 +2,7 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.player.Player;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.skill.SkillManager;
 

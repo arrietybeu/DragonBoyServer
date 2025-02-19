@@ -6,8 +6,8 @@ import nro.model.LiveObject;
 import nro.model.clan.Clan;
 import nro.model.map.areas.Area;
 import nro.model.discpile.Disciple;
-import nro.network.Message;
-import nro.network.Session;
+import nro.server.network.Message;
+import nro.server.network.Session;
 import nro.service.AreaService;
 
 import java.time.Instant;
@@ -34,11 +34,10 @@ public class Player extends LiveObject {
     private int role;
     private int activePoint;
     private int rank;
-
-    // -1 (có lia cam) || 0 (không lia cam) || 1 có lia cam ||
     private int teleport = 0;
 
     public Player(Session session, Instant createdAt) {
+        this.setTypeObject(1);
         this.session = session;
         this.createdAt = createdAt;
         this.playerCurrencies = new PlayerCurrencies(this);
@@ -73,26 +72,8 @@ public class Player extends LiveObject {
         AreaService.getInstance().playerExitArea(this);
     }
 
-
     @Override
     public String toString() {
-        return "Player{" +
-                "session=" + session +
-                ", playerCurrencies=" + playerCurrencies +
-                ", playerStats=" + playerStats +
-                ", playerTask=" + playerTask +
-                ", playerFashion=" + playerFashion +
-                ", playerSkill=" + playerSkill +
-                ", playerInventory=" + playerInventory +
-                ", playerFusion=" + playerFusion +
-                ", createdAt=" + createdAt +
-                ", area=" + area +
-                ", clan=" + clan +
-                ", disciple=" + disciple +
-                ", role=" + role +
-                ", activePoint=" + activePoint +
-                ", rank=" + rank +
-                ", teleport=" + teleport +
-                '}';
+        return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerStats=" + playerStats + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill=" + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + ", teleport=" + teleport + '}';
     }
 }

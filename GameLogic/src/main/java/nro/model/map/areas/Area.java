@@ -1,5 +1,6 @@
 package nro.model.map.areas;
 
+import nro.model.bot.Bot;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.monster.Monster;
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.LogServer;
 
 @Getter

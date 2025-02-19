@@ -1,7 +1,7 @@
 package nro.controller;
 
-import nro.network.Message;
-import nro.network.Session;
+import nro.server.network.Message;
+import nro.server.network.Session;
 import nro.consts.ConstsCmd;
 import nro.server.LogServer;
 import nro.service.Service;

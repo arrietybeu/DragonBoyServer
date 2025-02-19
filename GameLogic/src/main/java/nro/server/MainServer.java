@@ -14,7 +14,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import nro.controller.Controller;
 import nro.consts.ConstsCmd;
-import nro.network.Session;
+import nro.server.network.Session;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
 import nro.server.manager.Manager;

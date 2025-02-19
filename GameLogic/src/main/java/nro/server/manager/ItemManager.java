@@ -3,7 +3,7 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.model.item.ItemOption;
 import nro.model.item.ItemOptionTemplate;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;

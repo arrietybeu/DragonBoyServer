@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.ManagerRegistry;
 import nro.server.manager.MapManager;

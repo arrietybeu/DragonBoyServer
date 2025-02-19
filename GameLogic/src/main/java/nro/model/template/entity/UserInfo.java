@@ -1,7 +1,7 @@
 package nro.model.template.entity;
 
 import lombok.Data;
-import nro.network.Session;
+import nro.server.network.Session;
 
 @Data
 public class UserInfo {

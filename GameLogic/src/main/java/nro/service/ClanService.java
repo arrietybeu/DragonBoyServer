@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.model.clan.Clan;
 import nro.model.clan.ClanMessage;
 import nro.model.player.Player;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.LogServer;
 
 import java.io.DataOutputStream;

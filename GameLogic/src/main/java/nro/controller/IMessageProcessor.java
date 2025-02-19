@@ -4,8 +4,8 @@
  */
 package nro.controller;
 
-import nro.network.Message;
-import nro.network.Session;
+import nro.server.network.Message;
+import nro.server.network.Session;
 
 /**
  * @author Arriety

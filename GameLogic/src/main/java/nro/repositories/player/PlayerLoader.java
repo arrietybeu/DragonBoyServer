@@ -7,7 +7,7 @@ import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
-import nro.network.Session;
+import nro.server.network.Session;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;

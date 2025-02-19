@@ -6,7 +6,7 @@ import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.player.PlayerFashion;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
@@ -108,7 +108,7 @@ public class AreaService {
         }
     }
 
-    public void playerChangerMap(Player player) {
+    public void playerChangerMapByWayPoint(Player player) {
         var ms = System.currentTimeMillis();
         try {
             Area currentArea = player.getArea();

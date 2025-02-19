@@ -1,7 +1,7 @@
 package nro.server.manager.skill;
 
 import lombok.Getter;
-import nro.network.Message;
+import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.SkillPaintInfo;

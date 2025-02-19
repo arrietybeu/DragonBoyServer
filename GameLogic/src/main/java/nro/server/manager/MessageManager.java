@@ -1,6 +1,6 @@
 package nro.server.manager;
 
-import nro.network.Message;
+import nro.server.network.Message;
 
 import java.util.concurrent.ConcurrentHashMap;
 

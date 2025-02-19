@@ -1,4 +1,4 @@
-package nro.network;
+package nro.server.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
