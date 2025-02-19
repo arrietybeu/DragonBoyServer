@@ -49,9 +49,7 @@ public class CaptionManager implements IManager {
 
     private void loadCaption() {
         String query = "SELECT * FROM game_caption";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             var rs = preparedStatement.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement preparedStatement = connection.prepareStatement(query); var rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getShort("id");
                 long exp = rs.getLong("exp");
@@ -67,9 +65,7 @@ public class CaptionManager implements IManager {
 
     private void loadCaptionLevel() {
         String query = "SELECT * FROM game_caption_level";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-             var rs = preparedStatement.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement preparedStatement = connection.prepareStatement(query); var rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getShort("id");
                 byte gender = rs.getByte("gender");
@@ -112,7 +108,6 @@ public class CaptionManager implements IManager {
                         case 1 -> namec = captionData;
                         case 2 -> xayda = captionData;
                     }
-
                 } catch (Exception ex) {
                     LogServer.LogException("Error setting Data Caption Level for gender " + i + ": " + ex.getMessage());
                     ex.printStackTrace();
@@ -122,17 +117,42 @@ public class CaptionManager implements IManager {
             LogServer.LogException("Unexpected error in setDataCaptionLevel: " + ex.getMessage());
             ex.printStackTrace();
         }
-
     }
 
     public int getLevel(Player player) {
         long power = player.getPlayerStats().getPower();
-        return CAPTIONS.stream()
-                .sorted(Comparator.comparingLong(CaptionTemplate::getExp).reversed())
-                .filter(caption -> power >= caption.getExp())
-                .findFirst()
-                .map(CAPTIONS::indexOf)
-                .orElse(0);
+        return CAPTIONS.stream().sorted(Comparator.comparingLong(CaptionTemplate::getExp).reversed()).filter(caption -> power >= caption.getExp()).findFirst().map(CAPTIONS::indexOf).orElse(0);
     }
+
+    public String getCaptionsByPower(long power, byte gender) {
+        if (power < 3000) {
+            return "+Tân Thủ";
+        }
+
+        if (power >= 100010000000L) {
+            return "+Thần hủy diệt cấp 2";
+        }
+
+        CaptionTemplate matchedCaption = null;
+
+        for (CaptionTemplate captionTemplate : CAPTIONS) {
+            if (captionTemplate.getExp() > power) {
+                break;
+            }
+            matchedCaption = captionTemplate;
+        }
+
+        if (matchedCaption == null) {
+            return "Arriety Béo";
+        }
+
+        for (CaptionTemplate.CaptionLevel captionLevel : CAPTION_LEVELS) {
+            if (captionLevel.gender() == gender && captionLevel.id() == matchedCaption.getId()) {
+                return captionLevel.name();
+            }
+        }
+        return "Arriety Béo";
+    }
+
 
 }

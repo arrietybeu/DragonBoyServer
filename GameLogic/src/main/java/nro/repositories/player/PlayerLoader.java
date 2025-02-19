@@ -56,7 +56,9 @@ public class PlayerLoader {
     private Player mapResultSetToPlayer(Session session, ResultSet resultSet, Connection connection) throws SQLException {
         Timestamp createdAtTimestamp = resultSet.getTimestamp("created_at");
         Instant createdAt = createdAtTimestamp.toInstant();
-        Player player = new Player(session, createdAt);
+        Player player = new Player();
+        player.setSession(session);
+        player.setCreatedAt(createdAt);
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));

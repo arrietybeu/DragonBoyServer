@@ -17,7 +17,6 @@ import java.time.temporal.ChronoUnit;
 @Setter
 public class Player extends LiveObject {
 
-    private final Session session;
     private final PlayerCurrencies playerCurrencies;
     private final PlayerStats playerStats;
     private final PlayerTask playerTask;
@@ -25,21 +24,21 @@ public class Player extends LiveObject {
     private final PlayerSkill playerSkill;
     private final PlayerInventory playerInventory;
     private final PlayerFusion playerFusion;
-    private final Instant createdAt;
 
     private Area area;
     private Clan clan;
     private Disciple disciple;
+
+    private Instant createdAt;
+    private Session session;
 
     private int role;
     private int activePoint;
     private int rank;
     private int teleport = 0;
 
-    public Player(Session session, Instant createdAt) {
+    public Player() {
         this.setTypeObject(1);
-        this.session = session;
-        this.createdAt = createdAt;
         this.playerCurrencies = new PlayerCurrencies(this);
         this.playerStats = new PlayerStats(this);
         this.playerTask = new PlayerTask(this);

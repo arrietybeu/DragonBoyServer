@@ -323,11 +323,16 @@ public class PlayerService {
         }
     }
 
-    private void sendPlayerMove(Player player) {
-        try (Message message = new Message(-7)) {
-
-        } catch (Exception e) {
-            LogServer.LogException("Error sendPlayerMove for player Id: " + player.getId());
+    public void sendMenuPlayerInfo(Player player, int playerId) {
+        try (Message message = new Message(-79)) {
+            Player playerInArea = player.getArea().getPlayer(playerId);
+            message.writer().writeInt(playerInArea.getId());
+            message.writer().writeLong(playerInArea.getPlayerStats().getPower());
+            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerStats().getPower(), playerInArea.getGender()));
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
