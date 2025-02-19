@@ -28,10 +28,12 @@ public class SkillTemplate {
     }
 
     public SkillInfo getSkill(short skillId, int level) {
-        return this.skills.stream()
-                .filter(skillInfo -> skillInfo.getTemplate().getId() == skillId && skillInfo.getSkillId() == level - 1)
-                .findFirst()
-                .orElse(null);
+        for (SkillInfo skillInfo : this.skills) {
+            if (skillInfo.getTemplate().getId() == skillId && skillInfo.getPoint() == level) {
+                return skillInfo;
+            }
+        }
+        return null;
     }
 
 }

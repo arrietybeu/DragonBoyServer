@@ -140,18 +140,23 @@ public class SkillManager implements IManager {
 
     public SkillInfo getSkillInfo(short skillId, int gender, int currentLevel) {
         try {
-            return this.nClasses.stream()
-                    .filter(nClass -> nClass.classId() == gender)
-                    .flatMap(nClass -> nClass.skillTemplates().stream())
-                    .filter(skillTemplate -> skillTemplate.getId() == skillId)
-                    .map(skillTemplate -> skillTemplate.getSkill(skillId, currentLevel))
-                    .filter(skillInfo -> skillInfo != null && (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel))
-                    .findFirst()
-                    .orElse(null);
+            for (NClass nClass : this.nClasses) {
+                if (nClass.classId() == gender) {
+                    for (SkillTemplate skillTemplate : nClass.skillTemplates()) {
+                        if (skillTemplate.getId() == skillId) {
+                            SkillInfo skillInfo = skillTemplate.getSkill(skillId, currentLevel);
+                            if (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel) {
+                                return skillInfo;
+                            }
+                        }
+                    }
+                }
+            }
         } catch (Exception ex) {
             LogServer.LogException("skillId: " + skillId + " gender: " + gender + " currentLevel: " + currentLevel + "\nmessage: " + ex.getMessage());
             return null;
         }
+        return null;
     }
 
 
