@@ -24,6 +24,31 @@ public class MapService {
         public static final MapService instance = new MapService();
     }
 
+    public void sendListUIArea(Player player) {
+        try (Message message = new Message(29)) {
+            DataOutputStream data = message.writer();
+
+            List<Area> areas = player.getArea().getMap().getAreas();
+            data.writeByte(areas.size());
+            for (Area area : areas) {
+                var slPlayer = area.getPlayers().size();
+                data.writeByte(area.getId());
+                data.writeByte(slPlayer < 5 ? 0 : slPlayer < 8 ? 1 : 2);// 0 blue || 1 yellow || 2 red
+                data.writeByte(slPlayer);
+                data.writeByte(area.getMaxPlayers());
+                data.writeByte(1);
+                data.writeUTF("arriety dep zai");
+                data.writeInt(1);
+                data.writeUTF("nguyen ngu");
+                data.writeInt(100);
+            }
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendListUIArea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
     public static MapService getInstance() {
         return InstanceHolder.instance;
     }
@@ -104,7 +129,7 @@ public class MapService {
             output.writeBoolean(monster.getStatus().isFire());
             output.writeBoolean(monster.getStatus().isIce());
             output.writeBoolean(monster.getStatus().isWind());
-            output.writeShort(monster.getId());
+            output.writeShort(monster.getTemplateId());
             output.writeByte(monster.getStatus().getSys());
             output.writeLong(monster.getStats().getHp());
             output.writeByte(monster.getStats().getLevel());

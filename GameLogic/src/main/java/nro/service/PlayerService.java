@@ -45,9 +45,7 @@ public class PlayerService {
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException(e.getMessage());
-            Service.dialogMessage(session,
-                    String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
-                            ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
+            Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]", ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
         }
     }
 
@@ -96,8 +94,7 @@ public class PlayerService {
             message.writer().write(dataToSend);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException(
-                    "Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage());
+            LogServer.LogException("Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -310,8 +307,8 @@ public class PlayerService {
             }
             message.writer().writeShort(item.getTemplate().id());
             message.writer().writeInt(item.getQuantity());
-            message.writer().writeUTF("tuanbeo");
-            message.writer().writeUTF("tuanbeo");
+            message.writer().writeUTF("");
+            message.writer().writeUTF("");
 
             List<ItemOption> itemOptions = item.getItemOptions();
 
@@ -364,12 +361,7 @@ public class PlayerService {
                     }
                 }
 
-                boolean isCreated = PlayerCreator.getInstance().createPlayer(
-                        connection,
-                        session.getUserInfo().getId(),
-                        name,
-                        gender,
-                        hair);
+                boolean isCreated = PlayerCreator.getInstance().createPlayer(connection, session.getUserInfo().getId(), name, gender, hair);
 
                 if (!isCreated) {
                     Service.dialogMessage(session, "Tạo nhân vật thất bại.");
@@ -377,11 +369,8 @@ public class PlayerService {
                 return isCreated;
             }
         } catch (SQLException e) {
-            LogServer.LogException(String.format(
-                    "Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s",
-                    session.getUserInfo().getId(), name, gender, hair, e.getMessage()));
-            Service.dialogMessage(session,
-                    "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
+            LogServer.LogException(String.format("Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s", session.getUserInfo().getId(), name, gender, hair, e.getMessage()));
+            Service.dialogMessage(session, "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
             throw e;
         }
     }

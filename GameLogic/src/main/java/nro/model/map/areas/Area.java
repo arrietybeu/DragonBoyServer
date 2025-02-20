@@ -144,7 +144,6 @@ public class Area {
         return new HashMap<>();
     }
 
-
     public void sendMessageToPlayersInArea(Message message, Player exclude) {
         if (message == null) return;
         this.lock.readLock().lock();

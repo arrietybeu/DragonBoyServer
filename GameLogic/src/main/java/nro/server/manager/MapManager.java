@@ -158,12 +158,8 @@ public class MapManager implements IManager {
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
         List<Area> areas = new ArrayList<>();
         for (int i = 0; i < zone; i++) {
-            Area area = new Area(
-                    map,
-                    i,// zone id
-                    maxPlayer,
-                    this.loadMonsters(connection, map.getId()),
-                    this.loadNpcs(connection, map.getId()));
+            Area area = new Area(map, i,// zone id
+                    maxPlayer, this.loadMonsters(connection, map.getId()), this.loadNpcs(connection, map.getId()));
             areas.add(area);
         }
         return areas;
@@ -181,7 +177,7 @@ public class MapManager implements IManager {
                     var level = (rs.getByte("level"));
                     var x = (rs.getShort("x"));
                     var y = (rs.getShort("y"));
-                    Monster monster = new Monster(id, hpMax, level, x, y);
+                    Monster monster = new Monster(id, monsters.size(), hpMax, level, x, y);
                     monsters.add(monster);
                 }
             }
@@ -282,9 +278,7 @@ public class MapManager implements IManager {
 
     private void loadTileSetInfo() {
         String query = "SELECT * FROM `map_tile_set_info`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = connection.prepareStatement(query);
-             var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var tileSet = new TileSetTemplate();
                 tileSet.setId(rs.getInt("id"));

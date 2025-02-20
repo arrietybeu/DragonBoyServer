@@ -19,6 +19,7 @@ public class AreaService {
     @Getter
     public static final AreaService instance = new AreaService();
 
+
     public void sendInfoAllPlayerInArea(Player player) {
         try {
             Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
@@ -137,6 +138,37 @@ public class AreaService {
         }
     }
 
+    public void changeArea(Player player, Area newArea) {
+
+        this.playerExitArea(player);
+
+        if (newArea == null) {
+            this.keepPlayerInSafeZone(player);
+            Service.getInstance().sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
+            return;
+        }
+
+        newArea.addPlayer(player);
+        player.setArea(newArea);
+
+        this.sendMessageChangerMap(player);
+        this.sendInfoAllPlayerInArea(player);
+        this.sendPlayerInfoToAllInArea(player);
+    }
+
+    public void playerExitArea(Player player) {
+        try {
+            Area area = player.getArea();
+            if (area.getAllPlayerInZone().containsKey(player.getId())) {
+                this.sendRemovePlayerExitArea(player);
+                area.removePlayer(player);
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("playerExitArea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
     public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
         try {
             Area newArea = goMap.getArea();
@@ -167,13 +199,6 @@ public class AreaService {
         }
     }
 
-    public void playerExitArea(Player player) {
-        Area area = player.getArea();
-        if (area.getAllPlayerInZone().containsKey(player.getId())) {
-            this.sendRemovePlayerExitArea(player);
-            area.removePlayer(player);
-        }
-    }
 
     private void sendRemovePlayerExitArea(Player player) {
         try (Message message = new Message(-6)) {
@@ -228,5 +253,6 @@ public class AreaService {
             ex.printStackTrace();
         }
     }
+
 
 }

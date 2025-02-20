@@ -10,11 +10,14 @@ import nro.server.manager.MonsterManager;
 @Data
 public class Monster extends LiveObject {
 
+    private final int templateId;
+
     private final MonsterStats stats;
     private final MonsterStatus status;
     private final MonsterInfo info;
 
-    public Monster(int id, long maxHp, byte level, short x, short y) {
+    public Monster(int templateId, int id, long maxHp, byte level, short x, short y) {
+        this.templateId = templateId;
         this.setId(id);
         this.setX(x);
         this.setY(y);

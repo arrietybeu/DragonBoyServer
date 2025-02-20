@@ -3,7 +3,6 @@ package nro.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
@@ -33,7 +32,7 @@ public abstract class LiveObject {
     };
 
     public short getAura() {
-        return -1;
+        return 2;
     }
 
     public byte getEffSetItem() {
