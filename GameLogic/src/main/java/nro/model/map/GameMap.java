@@ -4,6 +4,8 @@ import lombok.Data;
 import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
+import nro.model.npc.Npc;
+import nro.model.npc.NpcFactory;
 import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.manager.MapManager;
@@ -30,11 +32,14 @@ public class GameMap implements Runnable {
     private final NavigableMap<Integer, List<Waypoint>> waypointMap;
     private final List<BgItem> bgItems;
     private final List<BackgroudEffect> backgroudEffects;
+    private final List<Npc> npcs;
 
     private List<Area> areas;
 
+
     //id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems, effects, waypoints, tileMap
-    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap, List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap) {
+    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap,
+                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap, List<Npc> npcs) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;
@@ -48,8 +53,19 @@ public class GameMap implements Runnable {
         this.waypoints = waypoints;
         this.tileMap = tileMap;
         this.waypointMap = new TreeMap<>();
+        this.npcs = npcs;
         for (Waypoint wp : waypoints) {
             waypointMap.computeIfAbsent((int) wp.getMinX(), k -> new ArrayList<>()).add(wp);
+        }
+    }
+
+    public void initNpc() {
+        for (Area area : this.areas) {
+            for (Npc npc : this.npcs) {
+                Npc npcArea = NpcFactory.CreateNpc(npc.getTempId(), npc.getStatus(), this.id, npc.getX(), npc.getY(), npc.getAvatar());
+                if (npcArea == null) continue;
+                area.getNpcList().add(npcArea);
+            }
         }
     }
 

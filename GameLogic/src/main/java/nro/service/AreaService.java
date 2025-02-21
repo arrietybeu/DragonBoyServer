@@ -139,17 +139,34 @@ public class AreaService {
     }
 
     public void changeArea(Player player, Area newArea) {
+        this.transferPlayer(player, newArea, player.getX(), player.getY());
+    }
 
-        this.playerExitArea(player);
+    public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
+        Area newArea = goMap.getArea();
+        this.transferPlayer(player, newArea, goX, goY);
+    }
 
+    private void transferPlayer(Player player, Area newArea, short x, short y) {
         if (newArea == null) {
             this.keepPlayerInSafeZone(player);
             Service.getInstance().sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
             return;
         }
 
+        if (newArea.getPlayers().size() >= newArea.getMaxPlayers()) {
+            this.keepPlayerInSafeZone(player);
+            Service.getInstance().sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
+            return;
+        }
+
+        this.playerExitArea(player);
+
         newArea.addPlayer(player);
         player.setArea(newArea);
+
+        player.setX(x);
+        player.setY(y);
 
         this.sendMessageChangerMap(player);
         this.sendInfoAllPlayerInArea(player);
@@ -168,37 +185,6 @@ public class AreaService {
             ex.printStackTrace();
         }
     }
-
-    public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
-        try {
-            Area newArea = goMap.getArea();
-            Service service = Service.getInstance();
-
-            if (newArea == null) {
-                this.keepPlayerInSafeZone(player);
-                service.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
-                return;
-            }
-
-            this.playerExitArea(player);
-
-            newArea.addPlayer(player);
-            player.setArea(newArea);
-
-            player.setX(goX);
-            player.setY(goY);
-
-            this.sendMessageChangerMap(player);
-
-            this.sendInfoAllPlayerInArea(player);
-            this.sendPlayerInfoToAllInArea(player);
-
-        } catch (Exception ex) {
-            LogServer.LogException("gotoMap: " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
 
     private void sendRemovePlayerExitArea(Player player) {
         try (Message message = new Message(-6)) {

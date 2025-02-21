@@ -13,6 +13,15 @@ public class NpcService {
     @Getter
     private static final NpcService instance = new NpcService();
 
+    public void openMenuNpc(Player player, int npcId) {
+        Npc npc = player.getArea().getNpcById(npcId);
+        if (npc != null) {
+            npc.openMenu(player);
+        } else {
+            this.sendNpcChatAllPlayerInArea(player, npc, "Xin chào");
+        }
+    }
+
     public void sendNpcTalkUI(Player player, int npcId, String text, int avatarId) {
         try (Message message = new Message(38)) {
             DataOutputStream data = message.writer();
@@ -31,11 +40,11 @@ public class NpcService {
     public void sendNpcChatForPlayer(Player player) {
     }
 
-    public void sendNpcChatAllPlayerInArea(Player player, Npc npc) {
+    public void sendNpcChatAllPlayerInArea(Player player, Npc npc, String text) {
         try (Message message = new Message(124)) {
-            message.writer().writeShort(npc.getId());
-            message.writer().writeUTF(npc.getName());
-            player.sendMessage(message);
+            message.writer().writeShort(npc.getTempId());
+            message.writer().writeUTF(text);
+            player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendNpcChatAllPlayerInArea: " + ex.getMessage());
         }

@@ -114,13 +114,15 @@ public class InventoryService {
                     break;
                 }
                 case 1: {
-                    // item to box clan
+                    // open
                     break;
                 }
             }
+            player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendItemToBoxs: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
+
 }

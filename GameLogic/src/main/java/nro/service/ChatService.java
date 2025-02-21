@@ -10,6 +10,8 @@ import nro.server.manager.ManagerRegistry;
 import nro.server.manager.MapManager;
 import nro.utils.FileNio;
 
+import java.util.Map;
+
 public class ChatService {
 
     @Getter
@@ -53,6 +55,19 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "npc_size":
+                    int sizeNpcAllArea = 0;
+
+                    for (GameMap map : MapManager.getInstance().getGameMaps().values()) {
+                        for (Area area : map.getAreas()) {
+                            System.out.println("map id: " + map.getId() + " area id: " + area.getId() + " npc size: " + area.getNpcList().size());
+                            sizeNpcAllArea += area.getNpcList().size();
+                        }
+                    }
+
+                    String infoNpcSize = "Npc Size: " + sizeNpcAllArea;
+                    Service.dialogMessage(playerChat.getSession(), infoNpcSize);
+                    break;
                 case "cache":
                     Service.dialogMessage(playerChat.getSession(), "Cache size: " + FileNio.CACHE.size());
                     break;

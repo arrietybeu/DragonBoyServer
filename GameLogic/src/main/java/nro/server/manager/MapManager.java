@@ -8,6 +8,7 @@ import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
 import nro.model.monster.Monster;
 import nro.model.npc.Npc;
+import nro.model.npc.NpcFactory;
 import nro.model.template.map.TileSetTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
@@ -87,6 +88,7 @@ public class MapManager implements IManager {
     private void start() {
         try {
             for (GameMap map : this.gameMaps.values()) {
+                map.initNpc();
                 this.threadPool.submit(map);
             }
         } catch (Exception ex) {
@@ -117,8 +119,9 @@ public class MapManager implements IManager {
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
                 List<BackgroudEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
                 TileMap tileMap = tileMaps.get(id);
+                List<Npc> npcs = this.loadNpcs(connection, id);
 
-                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap);
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }
@@ -158,8 +161,7 @@ public class MapManager implements IManager {
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
         List<Area> areas = new ArrayList<>();
         for (int i = 0; i < zone; i++) {
-            Area area = new Area(map, i,// zone id
-                    maxPlayer, this.loadMonsters(connection, map.getId()), this.loadNpcs(connection, map.getId()));
+            Area area = new Area(map, i, maxPlayer, this.loadMonsters(connection, map.getId()));
             areas.add(area);
         }
         return areas;
@@ -194,12 +196,12 @@ public class MapManager implements IManager {
             ps.setInt(1, mapId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Npc npc = new Npc();
-                    npc.setId(rs.getInt("npc_id"));
-                    npc.setStatus(rs.getByte("status"));
-                    npc.setX(rs.getShort("x"));
-                    npc.setY(rs.getShort("y"));
-                    npc.setAvatar(rs.getShort("avatar"));
+                    var id = rs.getInt("npc_id");
+                    var status = rs.getByte("status");
+                    var x = rs.getShort("x");
+                    var y = rs.getShort("y");
+                    var avatar = rs.getShort("avatar");
+                    Npc npc = new Npc(id, x, y, status, avatar);
                     npcs.add(npc);
                 }
             }

@@ -149,7 +149,7 @@ public class MapService {
             output.writeByte(npc.getStatus());
             output.writeShort(npc.getX());
             output.writeShort(npc.getY());
-            output.writeByte(npc.getId());
+            output.writeByte(npc.getTempId());
             output.writeShort(npc.getAvatar());
         }
 

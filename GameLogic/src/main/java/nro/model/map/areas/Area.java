@@ -1,6 +1,5 @@
 package nro.model.map.areas;
 
-import nro.model.bot.Bot;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.monster.Monster;
@@ -28,14 +27,14 @@ public class Area {
     private final List<Npc> npcList;
     private final List<ItemMap> items;
 
-    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters, List<Npc> npcList) {
+    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters) {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
         this.monsters = monsters;
-        this.npcList = npcList;
         this.players = new HashMap<>();
         this.items = new ArrayList<>();
+        this.npcList = new ArrayList<>();
     }
 
     private void updateMonsters() {
@@ -63,9 +62,6 @@ public class Area {
     private void updateNpc() {
         this.lock.readLock().lock();
         try {
-            for (Npc npc : this.npcList) {
-                npc.update();
-            }
         } finally {
             this.lock.readLock().unlock();
         }
@@ -161,5 +157,21 @@ public class Area {
         }
     }
 
+    public Npc getNpcById(int npcId) {
+        this.lock.readLock().lock();
+        try {
+            for (Npc npc : this.getNpcList()) {
+                if (npc.getTempId() == npcId) {
+                    return npc;
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("getNpcById: " + npcId + " message: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+        return null;
+    }
 
 }

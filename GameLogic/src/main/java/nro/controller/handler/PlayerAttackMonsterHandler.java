@@ -28,6 +28,5 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
             LogServer.LogException("PlayerAttackMonsterHandler: " + ex.getMessage());
             ex.printStackTrace();
         }
-
     }
 }
