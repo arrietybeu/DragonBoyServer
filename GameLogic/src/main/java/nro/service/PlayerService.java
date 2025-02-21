@@ -261,17 +261,17 @@ public class PlayerService {
 
             // ============ Send Equipment To Body ============
             List<Item> itemsBody = player.getPlayerInventory().getItemsBody();
-            sendInventoryForPlayer(msg, itemsBody);
+            sendInventoryForPlayer(out, itemsBody);
 
             // ============ Send Equipment To Bag ============
 
             List<Item> itemsBag = player.getPlayerInventory().getItemsBag();
-            sendInventoryForPlayer(msg, itemsBag);
+            sendInventoryForPlayer(out, itemsBag);
 
             // ============ Send Equipment To Box ============
 
             List<Item> itemsBox = player.getPlayerInventory().getItemsBox();
-            sendInventoryForPlayer(msg, itemsBox);
+            sendInventoryForPlayer(out, itemsBox);
 
             out.write(itemManager.getDataItemhead());
             sendPlayerBirdFrames(out, player);
@@ -297,27 +297,31 @@ public class PlayerService {
         out.writeShort(frames[2]); // avatar
     }
 
-    private void sendInventoryForPlayer(Message message, List<Item> items) throws IOException {
-        message.writer().writeByte(items.size());
+    public void sendInventoryForPlayer(DataOutputStream data, List<Item> items) throws IOException {
+        data.writeByte(items.size());
         for (int i = 0; i < items.size(); i++) {
             Item item = items.get(i);
-            if (item == null || item.getTemplate() == null) {
-                message.writer().writeShort(-1);
+            if (item.getTemplate() == null) {
+                data.writeShort(-1);
                 continue;
             }
-            message.writer().writeShort(item.getTemplate().id());
-            message.writer().writeInt(item.getQuantity());
-            message.writer().writeUTF("");
-            message.writer().writeUTF("");
+            data.writeShort(item.getTemplate().id());
+            data.writeInt(item.getQuantity());
+            data.writeUTF("");
+            data.writeUTF("");
 
             List<ItemOption> itemOptions = item.getItemOptions();
 
-            message.writer().writeByte(itemOptions.size());
+            data.writeByte(itemOptions.size());
             for (var itemOption : itemOptions) {
-                message.writer().writeShort(itemOption.getId());
-                message.writer().writeInt(itemOption.getParam());
+                this.writeItemOptions(data, itemOption);
             }
         }
+    }
+
+    public void writeItemOptions(DataOutputStream dataOutputStream, ItemOption options) throws IOException {
+        dataOutputStream.writeShort(options.getId());
+        dataOutputStream.writeInt(options.getParam());
     }
 
     public void sendMenuPlayerInfo(Player player, int playerId) {

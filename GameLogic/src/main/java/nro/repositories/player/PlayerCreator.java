@@ -212,6 +212,26 @@ public class PlayerCreator {
         insertItemsToDatabase(connection, playerId, "player_items_box", itemsBox);
     }
 
+    private void insertItemsToDatabase(Connection connection, int playerId, String tableName, List<Item> items) throws SQLException {
+        String query = "INSERT INTO " + tableName + " (player_id, row_index, temp_id, quantity, options) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (int index = 0; index < items.size(); index++) {
+                Item item = items.get(index);
+                statement.setInt(1, playerId);
+                statement.setInt(2, index);
+                statement.setInt(3, item.getTemplate() == null ? -1 : item.getTemplate().id());
+                statement.setInt(4, item.getQuantity());
+                statement.setString(5, item.getJsonOptions());
+                statement.addBatch();
+            }
+            int[] rowsAffected = statement.executeBatch();
+            if (Arrays.stream(rowsAffected).sum() == 0) {
+                throw new SQLException("Failed to insert items into " + tableName);
+            }
+        }
+    }
+
+
     private void ensureItemSlots(List<Item> items, int requiredSize) {
         while (items.size() < requiredSize) {
             items.add(ItemService.getInstance().createItemNull());
@@ -226,24 +246,6 @@ public class PlayerCreator {
         return items;
     }
 
-    private void insertItemsToDatabase(Connection connection, int playerId, String tableName, List<Item> items) throws SQLException {
-        String query = "INSERT INTO " + tableName + " (player_id, temp_id, quantity, options) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (Item item : items) {
-                statement.setInt(1, playerId);
-                statement.setInt(2, item.getTemplate() == null ? -1 : item.getTemplate().id());
-                statement.setInt(3, item.getQuantity());
-                statement.setString(4, item.getJsonOptions());
-                statement.addBatch();
-            }
-            int[] rowsAffected = statement.executeBatch();
-            if (Arrays.stream(rowsAffected).sum() == 0) {
-                throw new SQLException("Failed to insert items into " + tableName);
-            }
-        } catch (SQLException ex) {
-            throw ex;
-        }
-    }
 
     private void createPlayerDataTask(Connection connection, int playerId) throws SQLException {
         String query = "INSERT INTO player_task (player_id, task_id, task_index, task_count) VALUES (?, ?, ?, ?)";

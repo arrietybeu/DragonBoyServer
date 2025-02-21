@@ -1,6 +1,7 @@
 package nro.repositories.player;
 
 import lombok.Getter;
+import nro.model.item.Item;
 import nro.model.player.Player;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
@@ -12,6 +13,7 @@ import nro.server.config.ConfigDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class PlayerUpdate {
 
@@ -83,6 +85,29 @@ public class PlayerUpdate {
             statement.setShort(3, player.getPlayerFashion().getHead());
             statement.setInt(4, player.getId());
             statement.executeUpdate();
+        }
+    }
+
+    private void savePlayerInventory(Player player, Connection connection) throws SQLException {
+        saveInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
+        saveInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
+        saveInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
+    }
+
+    private void saveInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
+        String query = "UPDATE " + tableName + " SET temp_id = ?, quantity = ?, options = ? WHERE player_id = ? AND row_index = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (int index = 0; index < inventory.size(); index++) {
+                Item item = inventory.get(index);
+                statement.setInt(1, item.getTemplate() == null ? -1 : item.getTemplate().id());
+                statement.setInt(2, item.getQuantity());
+                statement.setString(3, item.getJsonOptions());
+                statement.setInt(4, player.getId());
+                statement.setInt(5, index);
+                statement.addBatch();
+            }
+            statement.executeBatch();
         }
     }
 
@@ -186,8 +211,5 @@ public class PlayerUpdate {
             statement.setInt(4, player.getId());
             statement.executeUpdate();
         }
-    }
-
-    private void savePlayerInventory(Player player, Connection connection) throws SQLException {
     }
 }

@@ -12,9 +12,9 @@ import java.util.List;
 public class PlayerInventory {
 
     private final Player player;
-    public final List<Item> itemsBody;
-    public final List<Item> itemsBag;
-    public final List<Item> itemsBox;
+    private final List<Item> itemsBody;
+    private final List<Item> itemsBag;
+    private final List<Item> itemsBox;
 
     public PlayerInventory(Player player) {
         this.player = player;

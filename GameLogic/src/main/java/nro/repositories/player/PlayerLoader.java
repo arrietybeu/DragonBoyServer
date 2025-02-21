@@ -89,12 +89,6 @@ public class PlayerLoader {
         return player;
     }
 
-    private void loadPlayerInventory(Player player, Connection connection) throws SQLException {
-        loadInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
-        loadInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
-        loadInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
-    }
-
     private void loadPlayerSkills(Player player, Connection connection) throws SQLException {
         String query = "SELECT skill_id, current_level, last_time_use_skill FROM player_skills WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -112,6 +106,13 @@ public class PlayerLoader {
             }
         }
     }
+
+    private void loadPlayerInventory(Player player, Connection connection) throws SQLException {
+        loadInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
+        loadInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
+        loadInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
+    }
+
 
     private void loadInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
         String query = "SELECT temp_id, quantity, create_time, options FROM " + tableName + " WHERE player_id = ?";
@@ -133,7 +134,6 @@ public class PlayerLoader {
                         item.setCreateTime(createTime);
                         item.setJsonOptions(optionsText);
                     }
-
                     inventory.add(item);
                 }
             }
