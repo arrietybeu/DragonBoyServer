@@ -239,14 +239,25 @@ public class PlayerLoader {
     }
 
     private void loadPlayerMagicTree(Player player, Connection connection) throws SQLException {
-        String query = "SELECT is_upgrade, level, curr_pea FROM player_magic_tree WHERE player_id = ?";
+        String query = "SELECT is_upgrade, level, curr_pea, time_upgrade, time_harvest FROM player_magic_tree WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
+                    
 //                    player.setMagicTreeUpgrade(resultSet.getBoolean("is_upgrade"));
 //                    player.setMagicTreeLevel(resultSet.getInt("level"));
 //                    player.setMagicTreePea(resultSet.getInt("curr_pea"));
+                    /**
+                     *    dataArray = (JSONArray) jv.parse(rs.getString("data_magic_tree"));
+                     *                     boolean isUpgrade = Byte.parseByte(dataArray.get(0).toString()) == 1;
+                     *                     long lastTimeUpgrade = Long.parseLong(dataArray.get(1).toString());
+                     *                     byte level = Byte.parseByte(dataArray.get(2).toString());
+                     *                     long lastTimeHarvest = Long.parseLong(dataArray.get(3).toString());
+                     *                     byte currPea = Byte.parseByte(dataArray.get(4).toString());
+                     *                     player.magicTree = new MagicTree(player, level, currPea, lastTimeHarvest, isUpgrade, lastTimeUpgrade);
+                     *                     dataArray.clear();
+                     */
                 } else {
                     throw new SQLException("Khong tim thay magic tree for player id: " + player.getId());
                 }

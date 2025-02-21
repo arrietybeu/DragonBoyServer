@@ -62,7 +62,7 @@ public class GameMap implements Runnable {
     public void initNpc() {
         for (Area area : this.areas) {
             for (Npc npc : this.npcs) {
-                Npc npcArea = NpcFactory.CreateNpc(npc.getTempId(), npc.getStatus(), this.id, npc.getX(), npc.getY(), npc.getAvatar());
+                Npc npcArea = NpcFactory.createNpc(npc.getTempId(), npc.getStatus(), this.id, npc.getX(), npc.getY(), npc.getAvatar());
                 if (npcArea == null) continue;
                 area.getNpcList().add(npcArea);
             }

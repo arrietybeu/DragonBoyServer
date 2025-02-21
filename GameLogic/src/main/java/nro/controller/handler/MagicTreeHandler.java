@@ -1,5 +1,7 @@
 package nro.controller.handler;
 
+import nro.model.player.Player;
+import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
@@ -10,6 +12,23 @@ public class MagicTreeHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
+        Player player = session.getPlayer();
+        if (player == null) return;
+        try {
+            var type = message.reader().readByte();
+            System.out.println("MagicTreeHandler: " + type);
+            switch (type) {
+                case 1: {
+                    break;
+                }
+                case 2: {
 
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("MagicTreeHandler: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }

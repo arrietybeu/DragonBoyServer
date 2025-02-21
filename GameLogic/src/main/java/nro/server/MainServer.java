@@ -14,6 +14,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import nro.controller.Controller;
 import nro.consts.ConstsCmd;
+import nro.model.npc.NpcFactory;
 import nro.server.network.Session;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
@@ -39,6 +40,7 @@ public class MainServer {
     }
 
     private void init() {
+        NpcFactory.init("nro.model.npc.type");
         Manager.getInstance();
         ConstsCmd.addListMsg();
     }

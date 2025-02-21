@@ -1,41 +1,53 @@
 package nro.model.npc;
 
-import nro.consts.ConstNpc;
-import nro.model.npc.type.Bunma;
-import nro.model.npc.type.QuestGiver;
-import nro.model.npc.type.RuongDo;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.reflections.Reflections;
 import nro.server.LogServer;
 
 public class NpcFactory {
 
-    public static Npc CreateNpc(int npcId, int status, int mapId, int x, int y, int avatar) {
-        Npc npc = null;
+    private static final Map<Integer, Npc> npcMap = new HashMap<>();
+
+    public static void init(String packageName) {
         try {
-            switch (npcId) {
-                case ConstNpc.ONG_MOORI:
-                case ConstNpc.ONG_PARAGUS:
-                case ConstNpc.ONG_GOHAN: {
-                    npc = new QuestGiver(npcId, status, mapId, x, y, avatar);
-                    break;
-                }
-                case ConstNpc.RUONG_DO: {
-                    npc = new RuongDo(npcId, status, mapId, x, y, avatar);
-                    break;
-                }
-                case ConstNpc.BUNMA: {
-                    npc = new Bunma(npcId, status, mapId, x, y, avatar);
-                    break;
-                }
-                default: {
-                    LogServer.LogWarning("Npc Npc Chưa làm: [" + npcId + "] " + ConstNpc.getNpcName(npcId));
-                    break;
+            Reflections rf = new Reflections(packageName);
+            Set<Class<?>> classes = rf.getTypesAnnotatedWith(ANpcHandler.class);
+
+            for (Class<?> cls : classes) {
+                if (Npc.class.isAssignableFrom(cls)) {
+                    ANpcHandler annotation = cls.getAnnotation(ANpcHandler.class);
+                    if (annotation != null) {
+                        for (int npcId : annotation.value()) {
+                            try {
+                                Constructor<?> constructor = cls.getDeclaredConstructor(int.class, int.class, int.class, int.class, int.class, int.class);
+                                Npc npcInstance = (Npc) constructor.newInstance(npcId, 0, 0, 0, 0, 0);
+                                npcMap.put(npcId, npcInstance);
+                            } catch (Exception e) {
+                                LogServer.LogException("Error initializing NPC: " + e.getMessage());
+                            }
+                        }
+                    }
                 }
             }
-        } catch (Exception ex) {
-            LogServer.LogException("createNpc: " + npcId);
-            ex.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            LogServer.LogException("Error scanning NPCs: " + e.getMessage());
         }
-        return npc;
     }
+
+    public static Npc createNpc(int npcId, int status, int mapId, int x, int y, int avatar) {
+        try {
+            if (npcMap.containsKey(npcId)) {
+                return npcMap.get(npcId).cloneNpc(npcId, status, mapId, x, y, avatar);
+            }
+            LogServer.LogWarning("Unknown NPC: [" + npcId + "]");
+        } catch (Exception e) {
+            LogServer.LogException("createNpc error: " + e.getMessage());
+        }
+        return null;
+    }
+
 }
