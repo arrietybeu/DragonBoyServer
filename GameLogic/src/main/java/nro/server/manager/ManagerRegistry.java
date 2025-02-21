@@ -27,6 +27,7 @@ public class ManagerRegistry {
         MANAGERS.add(SpeacialSkillManager.getInstance());
         MANAGERS.add(TaskManager.getInstance());
         MANAGERS.add(GameNotifyManager.getInstance());
+        MANAGERS.add(MagicTreeManager.getInstance());
     }
 
     public static void initAll() {

@@ -6,6 +6,7 @@ import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
+import nro.service.NpcService;
 
 @APacketHandler(-34)
 public class MagicTreeHandler implements IMessageProcessor {
@@ -16,13 +17,12 @@ public class MagicTreeHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             var type = message.reader().readByte();
-            System.out.println("MagicTreeHandler: " + type);
             switch (type) {
                 case 1: {
                     break;
                 }
                 case 2: {
-
+                    NpcService.getInstance().loadMagicTree(player, 0);
                     break;
                 }
             }

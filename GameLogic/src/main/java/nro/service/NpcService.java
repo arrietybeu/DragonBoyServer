@@ -4,12 +4,14 @@ import lombok.Getter;
 import nro.model.npc.Npc;
 import nro.model.player.Player;
 import nro.model.player.PlayerMagicTree;
+import nro.model.template.MagicTreeTemplate;
 import nro.server.manager.MagicTreeManager;
 import nro.server.manager.MapManager;
 import nro.server.network.Message;
 import nro.server.LogServer;
 
 import java.io.DataOutputStream;
+import java.util.List;
 
 public class NpcService {
 
@@ -57,21 +59,27 @@ public class NpcService {
         try (Message message = new Message(-34)) {
             DataOutputStream data = message.writer();
             MagicTreeManager magicTreeManager = MagicTreeManager.getInstance();
-            PlayerMagicTree playerMagicTree = player.getPlayerMagicTree();
+            PlayerMagicTree plMagicTree = player.getPlayerMagicTree();
+            List<MagicTreeTemplate.MagicTreePosition> magicTreePositions = magicTreeManager.getMagicTreePosition(plMagicTree.getLevel());
             Npc npc = player.getArea().getNpcById(4);
             data.writeByte(type);
             switch (type) {
                 case 0: {
                     data.writeShort(magicTreeManager.getIconMagicTree(player));
-                    data.writeUTF(magicTreeManager.getNameMagicTree(playerMagicTree.getLevel()));
+                    data.writeUTF(magicTreeManager.getNameMagicTree(plMagicTree.getLevel()));
                     data.writeShort(npc.getX());
                     data.writeShort(npc.getY());
-                    data.writeByte(playerMagicTree.getLevel());
-                    data.writeShort(playerMagicTree.getCurrPeas());
-                    data.writeShort(playerMagicTree.getMaxPea());
+                    data.writeByte(plMagicTree.getLevel());
+                    data.writeShort(plMagicTree.getCurrPeas());
+                    data.writeShort(plMagicTree.getMaxPea());
                     data.writeUTF("");
-                    data.writeInt(1111);
-
+                    data.writeInt(plMagicTree.isUpgrade() ? plMagicTree.getSecondUpgrade() : plMagicTree.getSecondPea());
+                    data.writeByte(magicTreePositions.size());
+                    for (var magicTreePosition : magicTreePositions) {
+                        data.writeByte(magicTreePosition.x());
+                        data.writeByte(magicTreePosition.y());
+                    }
+                    data.writeBoolean(plMagicTree.isUpgrade());
                     break;
                 }
             }

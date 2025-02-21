@@ -3,6 +3,7 @@ package nro.repositories.player;
 import lombok.Getter;
 import nro.model.item.Item;
 import nro.model.player.Player;
+import nro.model.player.PlayerMagicTree;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SessionInfo;
@@ -203,12 +204,15 @@ public class PlayerUpdate {
     }
 
     private void savePlayerMagicTree(Player player, Connection connection) throws SQLException {
-        String query = "UPDATE player_magic_tree SET is_upgrade = ?, level = ?, curr_pea = ? WHERE player_id = ?";
+        String query = "UPDATE player_magic_tree SET is_upgrade = ?, level = ?, curr_pea = ?, time_upgrade = ?, time_harvest = ? WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setBoolean(1, false);
-            statement.setInt(2, 1);
-            statement.setInt(3, 0);
-            statement.setInt(4, player.getId());
+            PlayerMagicTree magicTree = player.getPlayerMagicTree();
+            statement.setInt(1, magicTree.isUpgrade() ? 1 : 0);
+            statement.setInt(2, magicTree.getLevel());
+            statement.setInt(3, magicTree.getCurrPeas());
+            statement.setLong(4, magicTree.getLastTimeUpgrade());
+            statement.setLong(5, magicTree.getLastTimeHarvest());
+            statement.setInt(6, player.getId());
             statement.executeUpdate();
         }
     }

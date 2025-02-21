@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.model.item.Item;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
+import nro.model.player.PlayerMagicTree;
 import nro.model.player.PlayerStats;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
@@ -244,20 +245,17 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    
-//                    player.setMagicTreeUpgrade(resultSet.getBoolean("is_upgrade"));
-//                    player.setMagicTreeLevel(resultSet.getInt("level"));
-//                    player.setMagicTreePea(resultSet.getInt("curr_pea"));
-                    /**
-                     *    dataArray = (JSONArray) jv.parse(rs.getString("data_magic_tree"));
-                     *                     boolean isUpgrade = Byte.parseByte(dataArray.get(0).toString()) == 1;
-                     *                     long lastTimeUpgrade = Long.parseLong(dataArray.get(1).toString());
-                     *                     byte level = Byte.parseByte(dataArray.get(2).toString());
-                     *                     long lastTimeHarvest = Long.parseLong(dataArray.get(3).toString());
-                     *                     byte currPea = Byte.parseByte(dataArray.get(4).toString());
-                     *                     player.magicTree = new MagicTree(player, level, currPea, lastTimeHarvest, isUpgrade, lastTimeUpgrade);
-                     *                     dataArray.clear();
-                     */
+                    var isUpgrade = resultSet.getByte("is_upgrade") == 1;
+                    var level = resultSet.getByte("level");
+                    var currPea = resultSet.getByte("curr_pea");
+                    var timeUpgrade = resultSet.getLong("time_upgrade");
+                    var timeHarvest = resultSet.getLong("time_harvest");
+                    PlayerMagicTree magicTree = player.getPlayerMagicTree();
+                    magicTree.setUpgrade(isUpgrade);
+                    magicTree.setLevel(level);
+                    magicTree.setCurrPeas(currPea);
+                    magicTree.setLastTimeUpgrade(timeUpgrade);
+                    magicTree.setLastTimeHarvest(timeHarvest);
                 } else {
                     throw new SQLException("Khong tim thay magic tree for player id: " + player.getId());
                 }
