@@ -25,6 +25,7 @@ public class Player extends LiveObject {
     private final PlayerInventory playerInventory;
     private final PlayerFusion playerFusion;
     private final PlayerMagicTree playerMagicTree;
+    private final PlayerStatus playerStatus;
 
     private Area area;
     private Clan clan;
@@ -48,6 +49,7 @@ public class Player extends LiveObject {
         this.playerInventory = new PlayerInventory(this);
         this.playerFusion = new PlayerFusion(this);
         this.playerMagicTree = new PlayerMagicTree(this);
+        this.playerStatus = new PlayerStatus(this);
     }
 
     public void sendMessage(Message message) {

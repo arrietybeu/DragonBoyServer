@@ -7,6 +7,7 @@ import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.manager.MapManager;
 import nro.service.NpcService;
+import nro.service.Service;
 
 @Getter
 @Setter
@@ -30,14 +31,6 @@ public class Npc implements INpcAction {
         this.map = MapManager.getInstance().findMapById(mapId);
     }
 
-    public Npc(int npcId, int x, int y, int status, int avatar) {
-        this.tempId = npcId;
-        this.x = x;
-        this.y = y;
-        this.status = status;
-        this.avatar = avatar;
-    }
-
     public Npc cloneNpc(int npcId, int status, int mapId, int x, int y, int avatar) {
         try {
             return this.getClass().getDeclaredConstructor(int.class, int.class, int.class, int.class, int.class, int.class)
@@ -51,6 +44,7 @@ public class Npc implements INpcAction {
 
     @Override
     public void openMenu(Player player) {
+        Service.getInstance().sendHideWaitDialog(player);
         NpcService.getInstance().sendNpcChatAllPlayerInArea(player, this, "Xin chào");
     }
 

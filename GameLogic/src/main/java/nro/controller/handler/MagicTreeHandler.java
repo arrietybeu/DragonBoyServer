@@ -22,7 +22,7 @@ public class MagicTreeHandler implements IMessageProcessor {
                     break;
                 }
                 case 2: {
-                    NpcService.getInstance().loadMagicTree(player, 0);
+                    NpcService.getInstance().loadMagicTree(player, 0, null);
                     break;
                 }
             }

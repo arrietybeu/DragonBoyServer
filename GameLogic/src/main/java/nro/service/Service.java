@@ -127,4 +127,14 @@ public class Service {
         }
     }
 
+    public void sendHideWaitDialog(Player player) {
+        try (Message message = new Message(-99)) {
+            message.writer().writeByte(-1);
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error in sendHideWaitDialog: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
 }

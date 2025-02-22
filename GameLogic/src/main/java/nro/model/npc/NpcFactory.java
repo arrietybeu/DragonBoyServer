@@ -50,4 +50,8 @@ public class NpcFactory {
         return null;
     }
 
+    public static Npc getNpc(int npcId) {
+        return npcMap.get(npcId);
+    }
+
 }

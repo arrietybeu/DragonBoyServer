@@ -2,7 +2,6 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.item.Item;
-import nro.model.item.ItemOption;
 import nro.model.player.Player;
 import nro.server.network.Message;
 import nro.server.LogServer;
@@ -103,7 +102,7 @@ public class InventoryService {
         }
     }
 
-    public void sendItemToBoxs(Player player, int type) {
+    public void sendItemsBox(Player player, int type) {
         try (Message message = new Message(-35)) {
             DataOutputStream data = message.writer();
             List<Item> itemsBox = player.getPlayerInventory().getItemsBox();

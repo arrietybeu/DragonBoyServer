@@ -15,7 +15,8 @@ public class RuongDo extends Npc {
 
     @Override
     public void openMenu(Player player) {
-        InventoryService.getInstance().sendItemToBoxs(player, 0);
-        InventoryService.getInstance().sendItemToBoxs(player, 1);
+        InventoryService.getInstance().sendItemsBox(player, 0);
+        InventoryService.getInstance().sendItemsBox(player, 1);
     }
+
 }

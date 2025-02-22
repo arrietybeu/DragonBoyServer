@@ -9,6 +9,7 @@ import nro.model.map.decorates.BgItem;
 import nro.model.monster.Monster;
 import nro.model.npc.Npc;
 import nro.model.npc.NpcFactory;
+import nro.model.template.NpcTemplate;
 import nro.model.template.map.TileSetTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
@@ -119,7 +120,7 @@ public class MapManager implements IManager {
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
                 List<BackgroudEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
                 TileMap tileMap = tileMaps.get(id);
-                List<Npc> npcs = this.loadNpcs(connection, id);
+                List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(connection, id);
 
                 GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
@@ -189,8 +190,8 @@ public class MapManager implements IManager {
         return monsters;
     }
 
-    private List<Npc> loadNpcs(Connection connection, int mapId) {
-        List<Npc> npcs = new ArrayList<>();
+    private List<NpcTemplate.NpcInfo> loadNpcs(Connection connection, int mapId) {
+        List<NpcTemplate.NpcInfo> npcs = new ArrayList<>();
         String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, mapId);
@@ -201,7 +202,7 @@ public class MapManager implements IManager {
                     var x = rs.getShort("x");
                     var y = rs.getShort("y");
                     var avatar = rs.getShort("avatar");
-                    Npc npc = new Npc(id, x, y, status, avatar);
+                    var npc = new NpcTemplate.NpcInfo(id, x, y, status, avatar);
                     npcs.add(npc);
                 }
             }

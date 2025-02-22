@@ -2,6 +2,7 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.npc.Npc;
+import nro.model.npc.NpcFactory;
 import nro.model.player.Player;
 import nro.model.player.PlayerMagicTree;
 import nro.model.template.MagicTreeTemplate;
@@ -9,6 +10,7 @@ import nro.server.manager.MagicTreeManager;
 import nro.server.manager.MapManager;
 import nro.server.network.Message;
 import nro.server.LogServer;
+import nro.utils.Util;
 
 import java.io.DataOutputStream;
 import java.util.List;
@@ -20,10 +22,40 @@ public class NpcService {
 
     public void openMenuNpc(Player player, int npcId) {
         Npc npc = player.getArea().getNpcById(npcId);
-        if (npc != null) {
-            npc.openMenu(player);
-        } else {
-            this.sendNpcChatAllPlayerInArea(player, npc, "Xin chào");
+
+        if (npc == null) {
+            if (npcId == 54) {
+                Npc lyTieuNuong = NpcFactory.getNpc(54);
+                if (lyTieuNuong != null) {
+                    lyTieuNuong.openMenu(player);
+                } else {
+                    NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.",
+                            -1);
+                }
+            } else {
+                NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.",
+                        -1);
+            }
+            return;
+        }
+
+        npc.openMenu(player);
+    }
+
+    public void createMenu(Player player, int npcId, int indexMenu, String npcSay, String... menus) {
+        try (Message message = new Message(32)) {
+            player.getPlayerStatus().setIndexMenu(indexMenu);
+            DataOutputStream data = message.writer();
+            data.writeShort(npcId);
+            data.writeUTF(npcSay);
+            data.writeByte(menus.length);
+            for (var menu : menus) {
+                data.writeUTF(menu);
+            }
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error createMenu: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
@@ -55,7 +87,7 @@ public class NpcService {
         }
     }
 
-    public void loadMagicTree(Player player, int type) {
+    public void loadMagicTree(Player player, int type, List<String> texts) {
         try (Message message = new Message(-34)) {
             DataOutputStream data = message.writer();
             MagicTreeManager magicTreeManager = MagicTreeManager.getInstance();
@@ -82,6 +114,17 @@ public class NpcService {
                     data.writeBoolean(plMagicTree.isUpgrade());
                     break;
                 }
+                case 1: {//
+                    for (var text : texts) {
+                        data.writeUTF(text);
+                    }
+                    break;
+                }
+                case 2: {// thu hoach dau
+                    data.writeShort(plMagicTree.getCurrPeas());
+                    data.writeInt(plMagicTree.getSecondPea());
+                    break;
+                }
             }
             player.sendMessage(message);
         } catch (Exception ex) {
@@ -89,4 +132,5 @@ public class NpcService {
             ex.printStackTrace();
         }
     }
+
 }

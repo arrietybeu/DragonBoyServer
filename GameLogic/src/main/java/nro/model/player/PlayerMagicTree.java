@@ -49,6 +49,27 @@ public class PlayerMagicTree {
         return (short) (this.level * 60);
     }
 
+    public String getTextUpgrade() {
+        var magicTreeTimeUpgrade = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level);
+        String text = "Nâng cấp\n";
+        int day = magicTreeTimeUpgrade.day();
+        int hour = magicTreeTimeUpgrade.hour();
+        int minute = magicTreeTimeUpgrade.minute();
+        int gold = magicTreeTimeUpgrade.gold();
+
+        if (day > 0) {
+            text += day + "d";
+        }
+        if (hour > 0) {
+            text += hour + "h";
+        }
+        if (minute > 0) {
+            text += minute + "'";
+        }
+        text += "\n" + gold + (this.level <= 3 ? " k" : " Tr") + "\nvàng";
+        return text;
+    }
+
     public void update() {
         if (this.isUpgrade) {
             if (this.lastTimeUpgrade <= System.currentTimeMillis()) {
@@ -71,5 +92,6 @@ public class PlayerMagicTree {
             }
         }
     }
+
 
 }
