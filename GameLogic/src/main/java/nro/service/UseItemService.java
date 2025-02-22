@@ -6,6 +6,7 @@ import nro.model.item.Item;
 import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
+import nro.service.core.UseItem;
 
 import java.io.DataOutputStream;
 import java.util.List;
@@ -18,6 +19,10 @@ public class UseItemService {
     public void useItem(Player player, byte type, byte where, byte index, short template) {
         try {
             switch (type) {
+                case ConstUseItem.USE_ITEM: {
+                    UseItem.getInstance().useItem(player, index);
+                    break;
+                }
                 case ConstUseItem.CONFIRM_THROW_ITEM: {
                     this.confirmThrowItem(player, type, where, index);
                     break;

@@ -18,7 +18,7 @@ public class ItemService {
 
     public Item createItem(int tempId, int quantity) {
         Item item = new Item();
-        item.setTemplate(getTemplate((short) tempId));
+        item.setTemplate(getTemplate(tempId));
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
         return item;
@@ -38,8 +38,8 @@ public class ItemService {
         return itemClone;
     }
 
-    public ItemTemplate getTemplate(short id) {
-        return itemManager.getItemTemplates().get(id);
+    public ItemTemplate getTemplate(int id) {
+        return itemManager.getItemTemplates().get((short) id);
     }
 
     public void initBaseOptions(Item item) throws RuntimeException {

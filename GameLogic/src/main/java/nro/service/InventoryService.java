@@ -19,27 +19,46 @@ public class InventoryService {
         this.sendItemToBags(player, 0);
     }
 
-    public void addItemBody(Player player, Item item) {
+    public void addItemBody(Player player, Item item, int maxQuantity) {
         addItem(player.getPlayerInventory().getItemsBody(), item);
         this.sendItemToBodys(player);
     }
 
-    public void addItemBox(Player player, Item item) {
+    public void addItemBox(Player player, Item item, int maxQuantity) {
         addItem(player.getPlayerInventory().getItemsBox(), item);
         this.sendItemsBox(player, 0);
     }
 
     public void addItem(List<Item> items, Item item) {
-        this.addOptionsDefault(item);
+        try {
+            this.addOptionsDefault(item);
 
-        var quantity = item.getQuantity();
-
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i) != null) {
-                items.set(i, ItemService.getInstance().clone(item));
-                item.setQuantity(0);
-                return;
+            if (item.getTemplate().isUpToUp()) {
+                for (Item it : items) {
+                    if (it.getTemplate() == null) {
+                        continue;
+                    }
+                    if (it.getTemplate().id() == item.getTemplate().id()) {
+                        System.out.println("cong iem vo o cu");
+                        int combinedQuantity = it.getQuantity() + item.getQuantity();
+                        it.addQuantity(item.getQuantity());
+                        return;
+                    }
+                }
             }
+
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getTemplate() == null) {
+                    items.set(i, ItemService.getInstance().clone(item));
+                    item.setQuantity(0);
+                    return;
+                }
+            }
+
+            item.dispose();
+        } catch (Exception e) {
+            LogServer.LogException("Error addItem: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -86,7 +105,6 @@ public class InventoryService {
             }
         }
     }
-
 
     public void sendFlagBag(Player player) {
         try (Message msg = new Message(-64)) {

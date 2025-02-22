@@ -104,7 +104,7 @@ public class DauThan extends Npc {
         NpcService.getInstance().createMenu(
                 player,
                 this.getTempId(),
-                ConstMenu.MENU_MAGIC_TREE_UPGRADE,
+                ConstMenu.MENU_CANCEL_UPGRADE_MAGIC_TREE,
                 "Hủy nâng cấp hồi " + player.getPlayerMagicTree().getGold(),
                 "Hủy nâng cấp"
         );

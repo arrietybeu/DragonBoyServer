@@ -3,7 +3,7 @@ package nro.model.player;
 import lombok.Getter;
 import lombok.Setter;
 import nro.model.item.Item;
-import nro.model.item.ItemOption;
+import nro.server.LogServer;
 import nro.server.manager.MagicTreeManager;
 import nro.service.InventoryService;
 import nro.service.ItemService;
@@ -107,6 +107,7 @@ public class PlayerMagicTree {
         if (this.level < 10) {
             this.level++;
         }
+        this.currPeas = this.getMaxPea();
         this.isUpgrade = false;
         this.lastTimeUpgrade = 0;
         NpcService.getInstance().loadMagicTree(this.player, 0, null);
@@ -115,7 +116,6 @@ public class PlayerMagicTree {
     public void cancelUpgradeMagicTree() {
         var gold = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
         var goldRefund = (gold * (this.level <= 3 ? 1000 : 1000000)) / 2;
-        System.out.println("goldRefund = " + goldRefund);
         this.player.getPlayerCurrencies().addGold(goldRefund);
         this.isUpgrade = false;
         this.lastTimeUpgrade = 0;
@@ -125,10 +125,8 @@ public class PlayerMagicTree {
     public void harvestPea() {
         if (this.currPeas > 0) {
             byte currPeasTemp = (byte) this.currPeas;
-            this.currPeas = this.addPeaHarvenst(currPeasTemp);
-            if (this.currPeas == currPeasTemp) {
-                return;
-            }
+            this.addPeaHarvenst(currPeasTemp);
+            this.currPeas = 0;
             this.lastTimeHarvest = System.currentTimeMillis();
             NpcService.getInstance().loadMagicTree(this.player, 2, null);
         }
@@ -148,21 +146,20 @@ public class PlayerMagicTree {
         NpcService.getInstance().loadMagicTree(this.player, 0, null);
     }
 
-    private int addPeaHarvenst(int quantity) {
-        InventoryService inventory = InventoryService.getInstance();
+    private void addPeaHarvenst(int quantity) {
+        try {
+            InventoryService inventory = InventoryService.getInstance();
 
-        var magicTreeLevel = MagicTreeManager.getInstance().getMagicTreeLevel(this.level);
-        Item pea = ItemService.getInstance().createItem(magicTreeLevel.itemId(), quantity);
-        pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
+            var magicTreeLevel = MagicTreeManager.getInstance().getMagicTreeLevel(this.level);
+            Item pea = ItemService.getInstance().createItem(magicTreeLevel.itemId(), quantity);
+            pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
 
-        inventory.addItemBag(this.player, pea);
-        if (pea.getQuantity() < quantity) {
-            String text = "Bạn vừa thu hoạch được " + (quantity - pea.getQuantity()) + " hạt " + pea.getTemplate().name();
+            inventory.addItemBag(this.player, pea);
+            String text = "Bạn vừa thu hoạch được " + quantity + " hạt " + pea.getTemplate().name();
             Service.getInstance().sendChatGlobal(this.player.getSession(), null, text, false);
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerMagicTree.addPeaHarvenst" + ex.getMessage());
+            ex.printStackTrace();
         }
-
-        return pea.getQuantity();
     }
-
-
 }

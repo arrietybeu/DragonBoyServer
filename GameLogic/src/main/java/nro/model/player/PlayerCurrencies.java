@@ -46,6 +46,14 @@ public class PlayerCurrencies {
         }
     }
 
+    public boolean subGemIfPossible(int num) {
+        if (this.gem < num) {
+            return false;
+        }
+        this.gem -= num;
+        return true;
+    }
+
     public void addRuby(int num) {
         this.ruby += num;
         if (this.ruby >= 1000000000) {

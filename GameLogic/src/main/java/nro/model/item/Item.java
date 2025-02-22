@@ -63,7 +63,7 @@ public class Item {
         }
     }
 
-    public void subtractQuantity(int quantity) {
+    public void subQuantity(int quantity) {
         this.quantity -= quantity;
         if (this.quantity < 0) {
             this.quantity = 0;
@@ -71,7 +71,15 @@ public class Item {
     }
 
     public void addQuantity(int quantity) {
+        System.out.println("addQuantity: " + quantity);
         this.quantity += quantity;
+    }
+
+    public void dispose() {
+        this.quantity = 0;
+        this.createTime = 0;
+        this.template = null;
+        this.itemOptions.clear();
     }
 
 }

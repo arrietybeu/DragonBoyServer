@@ -27,12 +27,10 @@ public class NpcService {
                 if (lyTieuNuong != null) {
                     lyTieuNuong.openMenu(player);
                 } else {
-                    NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.",
-                            -1);
+                    NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.", -1);
                 }
             } else {
-                NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.",
-                        -1);
+                NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.", -1);
             }
             return;
         }
