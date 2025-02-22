@@ -27,7 +27,7 @@ public class DauThan extends Npc {
 
         if (playerMagicTree.isUpgrade()) {
             menu.add("Nâng cấp\nnhanh");
-            menu.add("Hủy\nnâng cấp");
+            menu.add("Hủy\nnâng cấp\nhồi " + playerMagicTree.getGold());
             playerStatus.setIndexMenu(ConstMenu.MENU_MAGIC_TREE_UPGRADE);
         } else {
             menu.add("Thu\nhoạch");
@@ -37,6 +37,7 @@ public class DauThan extends Npc {
             if (playerMagicTree.getCurrPeas() < playerMagicTree.getMaxPea()) {
                 menu.add("Kết hạt\nnhanh");
             }
+            playerStatus.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
         }
         NpcService.getInstance().loadMagicTree(player, 1, menu);
     }
@@ -44,21 +45,79 @@ public class DauThan extends Npc {
     @Override
     public void openUIConFirm(Player player, int select) {
         var indexMenu = player.getPlayerStatus().getIndexMenu();
+        var playerMagicTree = player.getPlayerMagicTree();
         switch (indexMenu) {
-            case ConstMenu.MENU_MAGIC_TREE_UPGRADE -> {
+            case ConstMenu.MENU_HARVEST_PEA: {
                 switch (select) {
-                    case 0 -> {
+                    case 0: {
+                        playerMagicTree.harvestPea();
+                        break;
                     }
-                    case 1 -> {
+                    case 1: {
+                        if (playerMagicTree.getLevel() < 10) {
+                            this.sendMenuUpgradeMagicTree(player);
+                        } else {
+                            if (playerMagicTree.getCurrPeas() < playerMagicTree.getMaxPea()) {
+                                playerMagicTree.resetPea();
+                            }
+                        }
+                        break;
+                    }
+                    case 2: {
+                        if (playerMagicTree.getCurrPeas() < playerMagicTree.getMaxPea()) {
+                            playerMagicTree.resetPea();
+                        }
+                        break;
                     }
                 }
+                break;
             }
-            case ConstMenu.MENU_HARVEST_PEA -> {
+            case ConstMenu.MENU_MAGIC_TREE_UPGRADE: {
                 switch (select) {
-                    case 0 -> {
+                    case 0: {
+                        player.getPlayerMagicTree().fastUpgradeMagicTree();
+                        break;
+                    }
+                    case 1: {
+                        this.sendMenuCancelUpgrade(player);
+                        break;
                     }
                 }
+                break;
+            }
+            case ConstMenu.MENU_CANCEL_UPGRADE_MAGIC_TREE: {
+                if (select == 0) {
+                    player.getPlayerMagicTree().cancelUpgradeMagicTree();
+                }
+                break;
+            }
+            case ConstMenu.MENU_UPGRADE_MAGIC_TREE: {
+                if (select == 0) {
+                    player.getPlayerMagicTree().upgradeMagicTree();
+                }
+                break;
             }
         }
+    }
+
+    private void sendMenuCancelUpgrade(Player player) {
+        NpcService.getInstance().createMenu(
+                player,
+                this.getTempId(),
+                ConstMenu.MENU_MAGIC_TREE_UPGRADE,
+                "Hủy nâng cấp hồi " + player.getPlayerMagicTree().getGold(),
+                "Hủy nâng cấp"
+        );
+    }
+
+    private void sendMenuUpgradeMagicTree(Player player) {
+        NpcService.getInstance().createMenu(
+                player,
+                this.getTempId(),
+                ConstMenu.MENU_UPGRADE_MAGIC_TREE,
+                "Bạn có chắc chắn nâng cấp cây đậu?",
+                "OK", "Từ chối"
+        );
+
     }
 }

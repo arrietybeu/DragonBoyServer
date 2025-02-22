@@ -7,6 +7,7 @@ import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
+import nro.service.Service;
 
 @APacketHandler(22)
 public class SelectMenuMagicTreeHandler implements IMessageProcessor {
@@ -20,9 +21,12 @@ public class SelectMenuMagicTreeHandler implements IMessageProcessor {
             var select = message.reader().readByte();
             var option = message.reader().readByte();
 
-            Npc npc = player.getArea().getNpcById(npcId);
-            npc.openUIConFirm(player, select);
-
+            if (npcId == 4) {
+                Npc npc = player.getArea().getNpcById(npcId);
+                npc.openUIConFirm(player, select);
+                return;
+            }
+            Service.getInstance().sendHideWaitDialog(player);
         } catch (Exception ex) {
             LogServer.LogException("SelectMenuMagicTreeHandler: " + ex.getMessage());
             ex.printStackTrace();

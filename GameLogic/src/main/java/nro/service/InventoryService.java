@@ -14,6 +14,55 @@ public class InventoryService {
     @Getter
     private static final InventoryService instance = new InventoryService();
 
+    public void addItemBag(Player player, Item item) {
+        addItem(player.getPlayerInventory().getItemsBag(), item);
+        this.sendItemToBags(player, 0);
+    }
+
+    public void addItemBody(Player player, Item item) {
+        addItem(player.getPlayerInventory().getItemsBody(), item);
+        this.sendItemToBodys(player);
+    }
+
+    public void addItemBox(Player player, Item item) {
+        addItem(player.getPlayerInventory().getItemsBox(), item);
+        this.sendItemsBox(player, 0);
+    }
+
+    public void addItem(List<Item> items, Item item) {
+        this.addOptionsDefault(item);
+
+        var quantity = item.getQuantity();
+
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i) != null) {
+                items.set(i, ItemService.getInstance().clone(item));
+                item.setQuantity(0);
+                return;
+            }
+        }
+    }
+
+    // neu item khong co options thi add options mac dinh
+    private void addOptionsDefault(Item item) {
+        if (item.getItemOptions().isEmpty()) {
+            item.addOption(73, 0);
+        }
+    }
+
+    public void removeItemBag(Player player, int index) {
+        removeItem(player.getPlayerInventory().getItemsBag(), index);
+    }
+
+    public void removeItemBody(Player player, int index) {
+        removeItem(player.getPlayerInventory().getItemsBody(), index);
+    }
+
+    public void removeItem(List<Item> items, int index) {
+        Item item = ItemService.getInstance().createItemNull();
+        items.set(index, item);
+    }
+
     public void throwItem(Player player, byte where, byte index) {
         switch (where) {
             case 0: {
@@ -38,18 +87,6 @@ public class InventoryService {
         }
     }
 
-    public void removeItemBag(Player player, int index) {
-        removeItem(player.getPlayerInventory().getItemsBag(), index);
-    }
-
-    public void removeItemBody(Player player, int index) {
-        removeItem(player.getPlayerInventory().getItemsBody(), index);
-    }
-
-    public void removeItem(List<Item> items, int index) {
-        Item item = ItemService.getInstance().createItemNull();
-        items.set(index, item);
-    }
 
     public void sendFlagBag(Player player) {
         try (Message msg = new Message(-64)) {

@@ -16,9 +16,9 @@ public class ItemService {
 
     private final static ItemManager itemManager = ItemManager.getInstance();
 
-    public Item createItem(short tempId, int quantity) {
+    public Item createItem(int tempId, int quantity) {
         Item item = new Item();
-        item.setTemplate(getTemplate(tempId));
+        item.setTemplate(getTemplate((short) tempId));
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
         return item;
@@ -26,6 +26,16 @@ public class ItemService {
 
     public Item createItemNull() {
         return new Item();
+    }
+
+    public Item clone(Item item) {
+        Item itemClone = new Item();
+        itemClone.setTemplate(item.getTemplate());
+        itemClone.setQuantity(item.getQuantity());
+        for (ItemOption io : item.getItemOptions()) {
+            itemClone.getItemOptions().add(io);
+        }
+        return itemClone;
     }
 
     public ItemTemplate getTemplate(short id) {

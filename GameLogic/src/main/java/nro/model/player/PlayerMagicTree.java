@@ -2,7 +2,13 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.model.item.Item;
+import nro.model.item.ItemOption;
 import nro.server.manager.MagicTreeManager;
+import nro.service.InventoryService;
+import nro.service.ItemService;
+import nro.service.NpcService;
+import nro.service.Service;
 
 @Getter
 @Setter
@@ -55,7 +61,6 @@ public class PlayerMagicTree {
         int day = magicTreeTimeUpgrade.day();
         int hour = magicTreeTimeUpgrade.hour();
         int minute = magicTreeTimeUpgrade.minute();
-        int gold = magicTreeTimeUpgrade.gold();
 
         if (day > 0) {
             text += day + "d";
@@ -66,8 +71,13 @@ public class PlayerMagicTree {
         if (minute > 0) {
             text += minute + "'";
         }
-        text += "\n" + gold + (this.level <= 3 ? " k" : " Tr") + "\nvàng";
+        text += "\n" + this.getGold();
         return text;
+    }
+
+    public String getGold() {
+        var magicTreeTimeUpgrade = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level);
+        return magicTreeTimeUpgrade.gold() + (this.level <= 3 ? " k" : " Tr") + "\nvàng";
     }
 
     public void update() {
@@ -91,6 +101,67 @@ public class PlayerMagicTree {
                 }
             }
         }
+    }
+
+    public void fastUpgradeMagicTree() {
+        if (this.level < 10) {
+            this.level++;
+        }
+        this.isUpgrade = false;
+        this.lastTimeUpgrade = 0;
+        NpcService.getInstance().loadMagicTree(this.player, 0, null);
+    }
+
+    public void cancelUpgradeMagicTree() {
+        var gold = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
+        var goldRefund = (gold * (this.level <= 3 ? 1000 : 1000000)) / 2;
+        System.out.println("goldRefund = " + goldRefund);
+        this.player.getPlayerCurrencies().addGold(goldRefund);
+        this.isUpgrade = false;
+        this.lastTimeUpgrade = 0;
+        NpcService.getInstance().loadMagicTree(this.player, 0, null);
+    }
+
+    public void harvestPea() {
+        if (this.currPeas > 0) {
+            byte currPeasTemp = (byte) this.currPeas;
+            this.currPeas = this.addPeaHarvenst(currPeasTemp);
+            if (this.currPeas == currPeasTemp) {
+                return;
+            }
+            this.lastTimeHarvest = System.currentTimeMillis();
+            NpcService.getInstance().loadMagicTree(this.player, 2, null);
+        }
+    }
+
+    public void upgradeMagicTree() {
+        long gold = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
+        System.out.println("gold = " + gold);
+        this.isUpgrade = true;
+        this.lastTimeUpgrade = System.currentTimeMillis() + getTimeUpgrade();
+        NpcService.getInstance().loadMagicTree(this.player, 0, null);
+    }
+
+    public void resetPea() {
+        this.currPeas = this.getMaxPea();
+        this.lastTimeHarvest = System.currentTimeMillis();
+        NpcService.getInstance().loadMagicTree(this.player, 0, null);
+    }
+
+    private int addPeaHarvenst(int quantity) {
+        InventoryService inventory = InventoryService.getInstance();
+
+        var magicTreeLevel = MagicTreeManager.getInstance().getMagicTreeLevel(this.level);
+        Item pea = ItemService.getInstance().createItem(magicTreeLevel.itemId(), quantity);
+        pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
+
+        inventory.addItemBag(this.player, pea);
+        if (pea.getQuantity() < quantity) {
+            String text = "Bạn vừa thu hoạch được " + (quantity - pea.getQuantity()) + " hạt " + pea.getTemplate().name();
+            Service.getInstance().sendChatGlobal(this.player.getSession(), null, text, false);
+        }
+
+        return pea.getQuantity();
     }
 
 

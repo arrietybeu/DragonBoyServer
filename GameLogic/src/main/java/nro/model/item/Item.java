@@ -1,7 +1,9 @@
 package nro.model.item;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nro.utils.Util;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -12,19 +14,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Data
+@Getter
+@Setter
 @SuppressWarnings("unchecked")
 public class Item {
+
     private int quantity;
     private long createTime;
     private ItemTemplate template;
     private final List<ItemOption> itemOptions;
-    private String info;
-    private String content;
 
     public Item() {
         this.itemOptions = new ArrayList<>();
         this.createTime = System.currentTimeMillis();
+    }
+
+    public void addOption(int id, int param) {
+        this.itemOptions.add(new ItemOption(id, param));
     }
 
     public String getJsonOptions() {
@@ -55,6 +61,17 @@ public class Item {
             System.err.println("Lỗi parse JSON options: " + jsonOptions);
             e.printStackTrace();
         }
+    }
+
+    public void subtractQuantity(int quantity) {
+        this.quantity -= quantity;
+        if (this.quantity < 0) {
+            this.quantity = 0;
+        }
+    }
+
+    public void addQuantity(int quantity) {
+        this.quantity += quantity;
     }
 
 }

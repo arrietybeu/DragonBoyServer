@@ -7,10 +7,8 @@ import nro.model.player.Player;
 import nro.model.player.PlayerMagicTree;
 import nro.model.template.MagicTreeTemplate;
 import nro.server.manager.MagicTreeManager;
-import nro.server.manager.MapManager;
 import nro.server.network.Message;
 import nro.server.LogServer;
-import nro.utils.Util;
 
 import java.io.DataOutputStream;
 import java.util.List;
@@ -40,6 +38,15 @@ public class NpcService {
         }
 
         npc.openMenu(player);
+    }
+
+    public void confirmMenu(Player player, int npcId, int select) {
+        Npc npc = player.getArea().getNpcById(npcId);
+        if (npc == null) {
+            Service.getInstance().sendHideWaitDialog(player);
+            return;
+        }
+        npc.openUIConFirm(player, select);
     }
 
     public void createMenu(Player player, int npcId, int indexMenu, String npcSay, String... menus) {

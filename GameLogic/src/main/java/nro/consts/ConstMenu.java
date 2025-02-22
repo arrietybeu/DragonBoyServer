@@ -7,6 +7,8 @@ public class ConstMenu {
 
     // index menu dau than
     public static final int MENU_MAGIC_TREE_UPGRADE = 100;
-    public static final int MENU_HARVEST_PEA = 101;
+    public static final int MENU_CANCEL_UPGRADE_MAGIC_TREE = 101;
+    public static final int MENU_HARVEST_PEA = 102;
+    public static final int MENU_UPGRADE_MAGIC_TREE = 103;
 
 }

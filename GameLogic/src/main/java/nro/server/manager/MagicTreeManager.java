@@ -47,13 +47,36 @@ public class MagicTreeManager implements IManager {
                     var icon = rs.getInt("icon_id");
                     var magicTreePositions = this.loadPositionMagicTree(level);
                     var timeUpgrade = this.loadTimeUpgradeMagicTree(level);
-                    MagicTreeTemplate template = new MagicTreeTemplate(level, gender, icon, magicTreePositions, timeUpgrade);
+                    var magicTreeLevel = this.loadMagicTreeLevel(level);
+                    MagicTreeTemplate template = new MagicTreeTemplate(level, gender, icon, magicTreePositions, timeUpgrade, magicTreeLevel);
                     iconsMagicTree.add(template);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private MagicTreeTemplate.MagicTreeLevel loadMagicTreeLevel(int level) {
+        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            String query = "SELECT * FROM magic_tree_level WHERE level = ?";
+            try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+                preparedStatement.setInt(1, level);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        var itemId = resultSet.getInt("item_id");
+                        var optionId = resultSet.getInt("option_id");
+                        var optionParam = resultSet.getInt("option_param");
+                        var maxPea = resultSet.getInt("max_pea");
+                        return new MagicTreeTemplate.MagicTreeLevel(itemId, optionId, optionParam, maxPea);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error load magic tree level: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private MagicTreeTemplate.MagicTreeTimeUpgrade loadTimeUpgradeMagicTree(int level) {
@@ -122,6 +145,15 @@ public class MagicTreeManager implements IManager {
         for (MagicTreeTemplate template : this.iconsMagicTree) {
             if (template.getLevel() == level) {
                 return template.getTimeUpgrades();
+            }
+        }
+        return null;
+    }
+
+    public MagicTreeTemplate.MagicTreeLevel getMagicTreeLevel(int level) {
+        for (MagicTreeTemplate template : this.iconsMagicTree) {
+            if (template.getLevel() == level) {
+                return template.getMagicTreeLevel();
             }
         }
         return null;
