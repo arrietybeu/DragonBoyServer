@@ -20,7 +20,7 @@ public class UseItemService {
         try {
             switch (type) {
                 case ConstUseItem.USE_ITEM: {
-                    UseItem.getInstance().useItem(player, index);
+                    UseItem.getInstance().useItem(player, index, template);
                     break;
                 }
                 case ConstUseItem.CONFIRM_THROW_ITEM: {
@@ -28,7 +28,7 @@ public class UseItemService {
                     break;
                 }
                 case ConstUseItem.ACCEPT_THROW_ITEM: {
-                    InventoryService.getInstance().throwItem(player, where, index);
+                    player.getPlayerInventory().throwItem(where, index);
                     break;
                 }
                 default: {

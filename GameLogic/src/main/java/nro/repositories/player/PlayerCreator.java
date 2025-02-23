@@ -231,7 +231,6 @@ public class PlayerCreator {
         }
     }
 
-
     private void ensureItemSlots(List<Item> items, int requiredSize) {
         while (items.size() < requiredSize) {
             items.add(ItemService.getInstance().createItemNull());

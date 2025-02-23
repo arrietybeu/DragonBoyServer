@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit;
 public class Player extends LiveObject {
 
     private final PlayerCurrencies playerCurrencies;
-    private final PlayerStats playerStats;
+    private final PlayerPoints playerPoints;
     private final PlayerTask playerTask;
     private final PlayerFashion playerFashion;
     private final PlayerSkill playerSkill;
@@ -42,7 +42,7 @@ public class Player extends LiveObject {
     public Player() {
         this.setTypeObject(1);
         this.playerCurrencies = new PlayerCurrencies(this);
-        this.playerStats = new PlayerStats(this);
+        this.playerPoints = new PlayerPoints(this);
         this.playerTask = new PlayerTask(this);
         this.playerFashion = new PlayerFashion(this);
         this.playerSkill = new PlayerSkill(this);
@@ -80,6 +80,6 @@ public class Player extends LiveObject {
 
     @Override
     public String toString() {
-        return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerStats=" + playerStats + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill=" + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + ", teleport=" + teleport + '}';
+        return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerPoints=" + playerPoints + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill=" + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + ", teleport=" + teleport + '}';
     }
 }

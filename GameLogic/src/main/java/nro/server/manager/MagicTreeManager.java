@@ -159,6 +159,15 @@ public class MagicTreeManager implements IManager {
         return null;
     }
 
+    public int getLevelMagicTreeByItemId(int itemId) {
+        for (MagicTreeTemplate template : this.iconsMagicTree) {
+            if (template.getMagicTreeLevel().itemId() == itemId) {
+                return template.getLevel();
+            }
+        }
+        return -1;
+    }
+
     public String getNameMagicTree(int level) {
         return "Đậu thần cấp " + level;
     }

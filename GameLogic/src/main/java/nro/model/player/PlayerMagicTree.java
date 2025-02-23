@@ -23,6 +23,7 @@ public class PlayerMagicTree {
 
     private long lastTimeUpgrade;
     private long lastTimeHarvest;
+    private long lastUsePea;
 
     public PlayerMagicTree(Player player) {
         this.player = player;
@@ -148,13 +149,11 @@ public class PlayerMagicTree {
 
     private void addPeaHarvenst(int quantity) {
         try {
-            InventoryService inventory = InventoryService.getInstance();
-
             var magicTreeLevel = MagicTreeManager.getInstance().getMagicTreeLevel(this.level);
             Item pea = ItemService.getInstance().createItem(magicTreeLevel.itemId(), quantity);
             pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
 
-            inventory.addItemBag(this.player, pea);
+            player.getPlayerInventory().addItemBag(pea);
             String text = "Bạn vừa thu hoạch được " + quantity + " hạt " + pea.getTemplate().name();
             Service.getInstance().sendChatGlobal(this.player.getSession(), null, text, false);
         } catch (Exception ex) {

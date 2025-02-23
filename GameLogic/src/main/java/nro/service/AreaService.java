@@ -82,16 +82,16 @@ public class AreaService {
         data.writeByte(player.getGender());
         data.writeShort(playerFashion.getHead());
         data.writeUTF(player.getName());
-        data.writeLong(player.getPlayerStats().getCurrentHP());
-        data.writeLong(player.getPlayerStats().getMaxHP());
+        data.writeLong(player.getPlayerPoints().getCurrentHP());
+        data.writeLong(player.getPlayerPoints().getMaxHP());
         data.writeShort(playerFashion.getBody());
         data.writeShort(playerFashion.getLeg());
         data.writeShort(playerFashion.getFlagBag());
         data.writeByte(0);
         data.writeShort(player.getX());
         data.writeShort(player.getY());
-        data.writeShort(player.getPlayerStats().getEff5BuffHp());
-        data.writeShort(player.getPlayerStats().getEff5BuffMp());
+        data.writeShort(player.getPlayerPoints().getEff5BuffHp());
+        data.writeShort(player.getPlayerPoints().getEff5BuffMp());
         data.writeByte(0);
         return true;
     }

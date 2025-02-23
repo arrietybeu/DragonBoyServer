@@ -43,7 +43,7 @@ public class NpcFactory {
             if (npcMap.containsKey(npcId)) {
                 return npcMap.get(npcId).cloneNpc(npcId, status, mapId, x, y, avatar);
             }
-            LogServer.LogWarning("Unknown NPC: [" + npcId + "]");
+//            LogServer.LogWarning("Unknown NPC: [" + npcId + "]");
         } catch (Exception e) {
             LogServer.LogException("createNpc error: " + e.getMessage());
         }

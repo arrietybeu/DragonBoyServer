@@ -117,7 +117,7 @@ public class ItemService {
         return items;
     }
 
-    private static Item createAndInitItem(short itemId) {
+    public static Item createAndInitItem(int itemId) {
         Item item = ItemService.getInstance().createItem(itemId, 1);
         ItemService.getInstance().initBaseOptions(item);
         return item;

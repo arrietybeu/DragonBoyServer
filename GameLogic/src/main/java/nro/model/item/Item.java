@@ -37,8 +37,8 @@ public class Item {
         JSONArray options = new JSONArray();
         for (ItemOption io : this.itemOptions) {
             JSONArray option = new JSONArray();
-            option.add(io.id);
-            option.add(io.param);
+            option.add(io.getId());
+            option.add(io.getParam());
             options.add(option);
         }
         return options.toJSONString();

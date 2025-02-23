@@ -6,7 +6,7 @@ import nro.consts.ConstMsgSubCommand;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
-import nro.model.player.PlayerStats;
+import nro.model.player.PlayerPoints;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
 import nro.server.network.Message;
@@ -159,8 +159,8 @@ public class PlayerService {
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP);
             out.writeLong(player.getPlayerCurrencies().getGold());
             out.writeInt(player.getPlayerCurrencies().getGem());
-            out.writeLong(player.getPlayerStats().getCurrentHP());
-            out.writeLong(player.getPlayerStats().getCurrentMP());
+            out.writeLong(player.getPlayerPoints().getCurrentHP());
+            out.writeLong(player.getPlayerPoints().getCurrentMP());
             out.writeInt(player.getPlayerCurrencies().getRuby());
             player.sendMessage(message);
         } catch (Exception e) {
@@ -171,7 +171,7 @@ public class PlayerService {
     private void sendMaxStamina(Player player) {
         try (Message msg = new Message(-69)) {
             DataOutputStream out = msg.writer();
-            out.writeShort(player.getPlayerStats().getMaxStamina());
+            out.writeShort(player.getPlayerPoints().getMaxStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendMaxStamina: " + e.getMessage());
@@ -191,16 +191,38 @@ public class PlayerService {
     public void sendStamina(Player player) {
         try (Message msg = new Message(-68)) {
             DataOutputStream out = msg.writer();
-            out.writeShort(player.getPlayerStats().getStamina());
+            out.writeShort(player.getPlayerPoints().getStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendStamina: " + e.getMessage());
         }
     }
 
+    public void sendHpForPlayer(Player player) {
+        try (Message message = new Message(-30)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(ConstMsgSubCommand.UPDATE_MY_HP);
+            out.writeLong(player.getPlayerPoints().getCurrentHP());
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendHpForPlayer: " + e.getMessage());
+        }
+    }
+
+    public void sendMpForPlayer(Player player) {
+        try (Message message = new Message(-30)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(ConstMsgSubCommand.UPDATE_MY_MP);
+            out.writeLong(player.getPlayerPoints().getCurrentMP());
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendHpForPlayer: " + e.getMessage());
+        }
+    }
+
     private void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
-            PlayerStats stats = player.getPlayerStats();
+            PlayerPoints stats = player.getPlayerPoints();
             DataOutputStream out = msg.writer();
             out.writeInt(stats.getBaseHP());
             out.writeInt(stats.getBaseMP());
@@ -240,9 +262,9 @@ public class PlayerService {
             out.writeUTF(player.getName());
             out.writeByte(0);// cpk
             out.writeByte(player.getTypePk());
-            out.writeLong(player.getPlayerStats().getPower());
-            out.writeShort(player.getPlayerStats().getEff5BuffHp());// eff5BuffHp
-            out.writeShort(player.getPlayerStats().getEff5BuffMp());// eff5BuffMp
+            out.writeLong(player.getPlayerPoints().getPower());
+            out.writeShort(player.getPlayerPoints().getEff5BuffHp());// eff5BuffHp
+            out.writeShort(player.getPlayerPoints().getEff5BuffMp());// eff5BuffMp
             out.writeByte(gender);
 
             // ============ Send Skill ============
@@ -328,8 +350,8 @@ public class PlayerService {
         try (Message message = new Message(-79)) {
             Player playerInArea = player.getArea().getPlayer(playerId);
             message.writer().writeInt(playerInArea.getId());
-            message.writer().writeLong(playerInArea.getPlayerStats().getPower());
-            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerStats().getPower(), playerInArea.getGender()));
+            message.writer().writeLong(playerInArea.getPlayerPoints().getPower());
+            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage());

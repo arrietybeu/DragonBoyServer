@@ -72,8 +72,7 @@ public class ItemManager implements IManager {
         String sql = "SELECT * FROM `item_template`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                 var resultSet = preparedStatement.executeQuery()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getShort("id");
                     var type = resultSet.getByte("type");
@@ -85,6 +84,9 @@ public class ItemManager implements IManager {
                     var iconID = resultSet.getShort("icon_id");
                     var part = resultSet.getShort("part");
                     var isUpToUp = resultSet.getByte("is_up_top") == 1;
+                    var head = resultSet.getShort("head");
+                    var body = resultSet.getShort("body");
+                    var leg = resultSet.getShort("leg");
                     var options = resultSet.getString("options");
 
                     List<ItemOption> itemOptions = new ArrayList<>();
@@ -99,19 +101,7 @@ public class ItemManager implements IManager {
                         itemOptions.add(new ItemOption(idOption, param));
                     }
 
-                    var itemTemplate = new ItemTemplate(
-                            id,
-                            type,
-                            gender,
-                            name,
-                            description,
-                            level,
-                            iconID,
-                            part,
-                            isUpToUp,
-                            powerRequire,
-                            itemOptions
-                    );
+                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, isUpToUp, powerRequire, head, body, leg, itemOptions);
                     this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
@@ -145,8 +135,7 @@ public class ItemManager implements IManager {
         String sql = "SELECT * FROM  item_head";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             if (connection == null) throw new SQLException("Connect connection select item_head = null");
-            try (var preparedStatement = connection.prepareStatement(sql);
-                 var resultSet = preparedStatement.executeQuery()) {
+            try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int headId = resultSet.getInt("head_id");
                     int avatarId = resultSet.getInt("avatar_id");
@@ -166,8 +155,7 @@ public class ItemManager implements IManager {
         String sql = "SELECT id, head_one, head_two FROM `item_arr_head_2frame`";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
-            try (var preparedStatement = connection.prepareStatement(sql);
-                 var resultSet = preparedStatement.executeQuery()) {
+            try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getInt("id");
                     var head_one = resultSet.getInt("head_one");

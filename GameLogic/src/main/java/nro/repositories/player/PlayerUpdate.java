@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.model.item.Item;
 import nro.model.player.Player;
 import nro.model.player.PlayerMagicTree;
-import nro.model.player.PlayerStats;
+import nro.model.player.PlayerPoints;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SessionInfo;
 import nro.repositories.DatabaseConnectionPool;
@@ -134,7 +134,7 @@ public class PlayerUpdate {
                 "tiem_nang = ?, nang_dong = ? " +
                 "WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            PlayerStats stats = player.getPlayerStats();
+            PlayerPoints stats = player.getPlayerPoints();
             statement.setLong(1, stats.getBaseHP());
             statement.setLong(2, stats.getMaxHP());
             statement.setLong(3, stats.getCurrentHP());

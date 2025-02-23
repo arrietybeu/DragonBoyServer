@@ -5,7 +5,7 @@ import nro.model.item.Item;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.player.PlayerMagicTree;
-import nro.model.player.PlayerStats;
+import nro.model.player.PlayerPoints;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
 import nro.server.network.Session;
@@ -163,17 +163,17 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    PlayerStats stats = player.getPlayerStats();
+                    PlayerPoints stats = player.getPlayerPoints();
 
                     // --- HP
                     stats.setBaseHP((int) rs.getLong("hp"));           // cHPGoc
                     stats.setMaxHP(rs.getLong("hp_max"));                // cHPFull
-                    stats.setCurrentHP(rs.getLong("hp_current"));        // cHP
+                    stats.setCurrentHp(rs.getLong("hp_current"));        // cHP
 
                     // --- MP
                     stats.setBaseMP((int) rs.getLong("mp"));             // cMPGoc
                     stats.setMaxMP(rs.getLong("mp_max"));                // cMPFull
-                    stats.setCurrentMP(rs.getLong("mp_current"));        // cMP
+                    stats.setCurrentMp(rs.getLong("mp_current"));        // cMP
 
                     // --- Damage
                     stats.setBaseDamage((int) rs.getLong("dame_default")); // cDamGoc

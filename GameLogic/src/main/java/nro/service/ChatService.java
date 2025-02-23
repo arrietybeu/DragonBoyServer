@@ -1,6 +1,7 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.model.item.Item;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
@@ -9,8 +10,6 @@ import nro.server.LogServer;
 import nro.server.manager.ManagerRegistry;
 import nro.server.manager.MapManager;
 import nro.utils.FileNio;
-
-import java.util.Map;
 
 public class ChatService {
 
@@ -29,11 +28,19 @@ public class ChatService {
         }
     }
 
+    private int getNumber(String text) {
+        try {
+            return Integer.parseInt(text.substring(2).trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
     public void commandForAdmins(Player playerChat, String text) {
         Service service = Service.getInstance();
         try {
             if (text.startsWith("m ")) {
-                int mapId = Integer.parseInt(text.substring(2).trim());
+                int mapId = this.getNumber(text);
 
                 GameMap newMap = MapManager.getInstance().findMapById(mapId);
                 if (newMap == null) {
@@ -52,6 +59,23 @@ public class ChatService {
 
                 AreaService.getInstance().gotoMap(playerChat, newMap, x, y);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
+                return;
+            } else if (text.startsWith("hp ")) {
+                int hp = this.getNumber(text);
+                playerChat.getPlayerPoints().setCurrentHp(hp);
+                playerChat.getPlayerPoints().setCurrentMp(hp);
+                PlayerService.getInstance().sendCurrencyHpMp(playerChat);
+                service.sendChatGlobal(playerChat.getSession(), null, "Set HP: " + hp, false);
+                return;
+            } else if (text.startsWith("it ")) {
+                int itemId = this.getNumber(text);
+                if (itemId == -1) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
+                    return;
+                }
+                Item item = ItemService.createAndInitItem(itemId);
+                playerChat.getPlayerInventory().addItemBag(item);
+                service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId , false);
                 return;
             }
             switch (text) {

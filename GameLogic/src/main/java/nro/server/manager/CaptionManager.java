@@ -120,7 +120,7 @@ public class CaptionManager implements IManager {
     }
 
     public int getLevel(Player player) {
-        long power = player.getPlayerStats().getPower();
+        long power = player.getPlayerPoints().getPower();
         return CAPTIONS.stream().sorted(Comparator.comparingLong(CaptionTemplate::getExp).reversed()).filter(caption -> power >= caption.getExp()).findFirst().map(CAPTIONS::indexOf).orElse(0);
     }
 

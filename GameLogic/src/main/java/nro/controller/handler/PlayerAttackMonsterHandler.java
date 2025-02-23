@@ -19,7 +19,7 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
             var mobId = message.reader().readByte();
             if (mobId != -1) {
                 LogServer.LogWarning("mobId:" + mobId);
-                MonsterService.getInstance().sendMonsterDie(player, mobId, player.getPlayerStats().getBaseDamage());
+                MonsterService.getInstance().sendMonsterDie(player, mobId, player.getPlayerPoints().getBaseDamage());
             } else {
                 var monsterID = message.reader().readInt();
                 LogServer.LogWarning("monsterId:" + monsterID);

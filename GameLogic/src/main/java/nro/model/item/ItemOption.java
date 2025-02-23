@@ -1,15 +1,17 @@
 package nro.model.item;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import nro.server.manager.ItemManager;
 
-@Data
+@Getter
+@Setter
 public class ItemOption {
 
     private final static ItemManager itemManager = ItemManager.getInstance();
 
-    public int id;
-    public int param;
+    private int id;
+    private int param;
 
     public ItemOption(int id, int param) {
         this.id = id;

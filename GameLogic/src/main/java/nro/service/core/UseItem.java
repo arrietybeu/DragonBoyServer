@@ -4,16 +4,20 @@ import lombok.Getter;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
+import nro.model.player.PlayerPoints;
+import nro.server.LogServer;
 import nro.service.NpcService;
+import nro.service.PlayerService;
+
 
 public class UseItem {
 
     @Getter
     private static final UseItem instance = new UseItem();
 
-    public void useItem(Player player, int index) {
+    public void useItem(Player player, int index, int template) {
         if (index == -1) {
-            this.eatPea(player);
+            this.eatPea(player, null, template);
             return;
         }
         Item item = player.getPlayerInventory().getItemsBag().get(index);
@@ -23,32 +27,101 @@ public class UseItem {
         }
         switch (item.getTemplate().type()) {
             case 6: {
-                this.eatPea(player);
+                this.eatPea(player, item);
                 break;
             }
         }
     }
 
-    private void eatPea(Player player) {
-        for (Item item : player.getPlayerInventory().getItemsBag()) {
-            if (item.getTemplate() == null) {
-                continue;
+    private void eatPea(Player player, Item item, int... itemId) {
+        long time = System.currentTimeMillis();
+
+        if (player.getPlayerMagicTree().getLastUsePea() + 10000 > time) {
+//            System.out.println("Còn thời gian chờ: " + (player.getPlayerMagicTree().getLastUsePea() + 10000 - time) + "ms");
+            return;
+        }
+
+        try {
+            Item pea = getItem(player, item, itemId);
+            PlayerService playerService = PlayerService.getInstance();
+
+            if (pea == null) {
+                return;
             }
-            if (item.getTemplate().type() == 6) {
-                int hpKiHoiPhuc = 0;
-                for (ItemOption io : item.getItemOptions()) {
-                    if (io.id == 2) {
-                        hpKiHoiPhuc = io.param * 1000;
-                        break;
-                    }
-                    if (io.id == 48) {
-                        hpKiHoiPhuc = io.param;
-                        break;
-                    }
+
+            PlayerPoints points = player.getPlayerPoints();
+
+            long currentMp = points.getCurrentMP();
+            long currentHP = points.getCurrentHP();
+
+            if (currentHP >= points.getMaxHP() && currentMp >= points.getMaxMP()) {
+                playerService.sendCurrencyHpMp(player);
+                return;
+            }
+
+            int hpKiHoiPhuc = 0;
+            for (ItemOption io : pea.getItemOptions()) {
+                if (io.getId() == 2) {
+                    hpKiHoiPhuc = io.getParam() * 1000;
+                    break;
                 }
-                // send gi do
+                if (io.getId() == 48) {
+                    hpKiHoiPhuc = io.getParam();
+                    break;
+                }
+            }
+
+            long newMP = currentMp + hpKiHoiPhuc;
+            long newHP = points.getCurrentHP() + hpKiHoiPhuc;
+
+            if (currentMp >= points.getMaxMP()) {
+                points.setCurrentHp(newHP);
+                playerService.sendHpForPlayer(player);
+            } else if (currentHP >= points.getMaxHP()) {
+                points.setCurrentMp(newMP);
+                playerService.sendMpForPlayer(player);
+            } else {
+                points.setCurrentMp(newMP);
+                points.setCurrentHp(newHP);
+                playerService.sendHpForPlayer(player);
+                playerService.sendMpForPlayer(player);
+            }
+
+            player.getPlayerInventory().subQuantityItemsBag(pea, 1);
+            player.getPlayerMagicTree().setLastUsePea(time);
+        } catch (Exception ex) {
+            LogServer.LogException("eatPea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private Item getItem(Player player, Item item, int[] itemId) {
+        Item pea = null;
+        if (item != null) {
+            pea = item;
+        } else {
+            for (Item it : player.getPlayerInventory().getItemsBag()) {
+                if (it.getTemplate() == null) {
+                    continue;
+                }
+                if (itemId != null && itemId.length > 0) {
+                    for (int id : itemId) {
+                        if (it.getTemplate().id() == id) {
+                            pea = it;
+                            break;
+                        }
+                    }
+                    if (pea != null) {
+                        break;
+                    }
+                    break;
+                } else if (it.getTemplate().type() == 6) {
+                    pea = it;
+                    break;
+                }
             }
         }
+        return pea;
     }
 
 }

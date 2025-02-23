@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PlayerStats {
+public class PlayerPoints {
 
     private final Player player;
 
@@ -45,13 +45,25 @@ public class PlayerStats {
     // power level
     private long power;
 
-    public PlayerStats(Player player) {
+    public PlayerPoints(Player player) {
         this.player = player;
+    }
+
+    public void setCurrentHp(long hp) {
+        if (hp < 0) {
+            this.currentHP = 0;
+        } else this.currentHP = Math.min(hp, this.maxHP);
+    }
+
+    public void setCurrentMp(long mp) {
+        if (mp < 0) {
+            this.currentMP = 0;
+        } else this.currentMP = Math.min(mp, this.maxMP);
     }
 
     @Override
     public String toString() {
-        return "PlayerStats{" +
+        return "PlayerPoints{" +
                 "player=" + player +
                 ", baseHP=" + baseHP +
                 ", baseMP=" + baseMP +
