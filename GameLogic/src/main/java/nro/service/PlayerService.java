@@ -321,8 +321,7 @@ public class PlayerService {
 
     public void sendInventoryForPlayer(DataOutputStream data, List<Item> items) throws IOException {
         data.writeByte(items.size());
-        for (int i = 0; i < items.size(); i++) {
-            Item item = items.get(i);
+        for (Item item : items) {
             if (item.getTemplate() == null) {
                 data.writeShort(-1);
                 continue;
@@ -333,7 +332,12 @@ public class PlayerService {
             data.writeUTF("");
 
             List<ItemOption> itemOptions = item.getItemOptions();
-
+            if (itemOptions.isEmpty()) {
+                data.writeByte(1);
+                data.writeShort(73);
+                data.writeInt(0);
+                continue;
+            }
             data.writeByte(itemOptions.size());
             for (var itemOption : itemOptions) {
                 this.writeItemOptions(data, itemOption);

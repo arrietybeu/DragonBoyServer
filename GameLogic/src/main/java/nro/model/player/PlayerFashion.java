@@ -2,7 +2,10 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.model.item.Item;
 import nro.server.LogServer;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -22,8 +25,9 @@ public class PlayerFashion {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
             if (playerInventory != null) {
-                if (playerInventory.getItemsBody().get(5) != null && playerInventory.getItemsBody().get(5).getTemplate() != null) {
-                    return (short) playerInventory.getItemsBody().get(5).getTemplate().head();
+                List<Item> itemsBody = playerInventory.getItemsBody();
+                if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
+                    return (short) itemsBody.get(5).getTemplate().head();
                 }
             }
             return head;
@@ -38,14 +42,15 @@ public class PlayerFashion {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
             if (playerInventory != null) {
-                if (playerInventory.getItemsBody().get(5) != null && playerInventory.getItemsBody().get(5).getTemplate() != null) {
-                    short body = (short) playerInventory.getItemsBody().get(5).getTemplate().body();
+                List<Item> itemsBody = playerInventory.getItemsBody();
+                if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
+                    short body = (short) itemsBody.get(5).getTemplate().body();
                     if (body != -1) {
                         return body;
                     }
                 }
-                if (playerInventory.getItemsBody().get(0) != null && playerInventory.getItemsBody().get(0).getTemplate() != null) {
-                    return playerInventory.getItemsBody().get(0).getTemplate().part();
+                if (itemsBody.get(0) != null && itemsBody.get(0).getTemplate() != null) {
+                    return itemsBody.get(0).getTemplate().part();
                 }
             }
             return -1;
@@ -60,14 +65,15 @@ public class PlayerFashion {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
             if (playerInventory != null) {
-                if (playerInventory.getItemsBody().get(5) != null && playerInventory.getItemsBody().get(5).getTemplate() != null) {
-                    short leg = (short) playerInventory.getItemsBody().get(5).getTemplate().leg();
+                List<Item> itemsBody = playerInventory.getItemsBody();
+                if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
+                    short leg = (short) itemsBody.get(5).getTemplate().leg();
                     if (leg != -1) {
                         return leg;
                     }
                 }
-                if (playerInventory.getItemsBody().get(1) != null && playerInventory.getItemsBody().get(1).getTemplate() != null) {
-                    return playerInventory.getItemsBody().get(1).getTemplate().part();
+                if (itemsBody.get(1) != null && itemsBody.get(1).getTemplate() != null) {
+                    return itemsBody.get(1).getTemplate().part();
                 }
             }
             return -1;

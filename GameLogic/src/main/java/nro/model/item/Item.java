@@ -49,8 +49,8 @@ public class Item {
         try {
             JSONArray jsonArray = (JSONArray) new JSONParser().parse(jsonOptions);
             for (Object obj : jsonArray) {
-                if (!(obj instanceof JSONArray)) continue;
-                JSONArray optionArray = (JSONArray) obj;
+                if (!(obj instanceof JSONArray optionArray)) continue;
+
                 if (optionArray.size() == 2) {
                     Number optionId = (Number) optionArray.get(0);
                     Number optionValue = (Number) optionArray.get(1);

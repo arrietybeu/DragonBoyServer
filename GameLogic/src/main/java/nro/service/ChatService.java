@@ -5,6 +5,7 @@ import nro.model.item.Item;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
+import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.ManagerRegistry;
@@ -75,7 +76,7 @@ public class ChatService {
                 }
                 Item item = ItemService.createAndInitItem(itemId);
                 playerChat.getPlayerInventory().addItemBag(item);
-                service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId , false);
+                service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
                 return;
             }
             switch (text) {
@@ -101,6 +102,10 @@ public class ChatService {
                 case "reload_map":
                     ManagerRegistry.reloadManager(MapManager.class);
                     service.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
+                    break;
+                case "reload_item":
+                    ManagerRegistry.reloadManager(ItemManager.class);
+                    service.sendChatGlobal(playerChat.getSession(), null, "Load Item Manager Thành Công: " + ItemManager.getInstance().getItemOptionTemplates().size(), false);
                     break;
                 case "area_check":
                     var info = "Area Size PLayer: " + playerChat.getArea().getPlayers().size();
