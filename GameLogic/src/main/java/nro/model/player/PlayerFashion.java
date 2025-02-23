@@ -27,7 +27,14 @@ public class PlayerFashion {
             if (playerInventory != null) {
                 List<Item> itemsBody = playerInventory.getItemsBody();
                 if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
-                    return (short) itemsBody.get(5).getTemplate().head();
+                    short head = itemsBody.get(5).getTemplate().head();
+                    if (head != -1) {
+                        return head;
+                    }
+                    short part = itemsBody.get(5).getTemplate().part();
+                    if (part != -1) {
+                        return part;
+                    }
                 }
             }
             return head;
@@ -44,7 +51,7 @@ public class PlayerFashion {
             if (playerInventory != null) {
                 List<Item> itemsBody = playerInventory.getItemsBody();
                 if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
-                    short body = (short) itemsBody.get(5).getTemplate().body();
+                    short body = itemsBody.get(5).getTemplate().body();
                     if (body != -1) {
                         return body;
                     }
@@ -67,7 +74,7 @@ public class PlayerFashion {
             if (playerInventory != null) {
                 List<Item> itemsBody = playerInventory.getItemsBody();
                 if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
-                    short leg = (short) itemsBody.get(5).getTemplate().leg();
+                    short leg = itemsBody.get(5).getTemplate().leg();
                     if (leg != -1) {
                         return leg;
                     }

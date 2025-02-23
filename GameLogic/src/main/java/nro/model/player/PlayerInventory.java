@@ -6,6 +6,7 @@ import nro.model.item.Item;
 import nro.server.LogServer;
 import nro.service.InventoryService;
 import nro.service.ItemService;
+import nro.service.PlayerService;
 import nro.service.Service;
 
 import java.util.ArrayList;
@@ -20,14 +21,19 @@ public class PlayerInventory {
     private final List<Item> itemsBag;
     private final List<Item> itemsBox;
 
+    private static final int MAX_ITEM_BODY = 10;
+    private static final int MAX_ITEM_BAG = 20;
+    private static final int MAX_ITEM_BOX = 20;
+
     public PlayerInventory(Player player) {
         this.player = player;
-        this.itemsBody = new ArrayList<>();
-        this.itemsBag = new ArrayList<>();
-        this.itemsBox = new ArrayList<>();
+        this.itemsBody = new ArrayList<>(MAX_ITEM_BODY);
+        this.itemsBag = new ArrayList<>(MAX_ITEM_BAG);
+        this.itemsBox = new ArrayList<>(MAX_ITEM_BOX);
     }
 
     private void ______________ADD_ITEM______________() {
+        // Xử lý người chơi nhận hoặc thêm item
     }
 
     public void addItemBag(Item item) {
@@ -48,6 +54,10 @@ public class PlayerInventory {
     private void addItem(List<Item> items, Item item) {
         try {
             this.addOptionsDefault(item);
+
+            if (item.getTemplate() == null) {
+                return;
+            }
 
             if (item.getTemplate().isUpToUp()) {
                 for (Item it : items) {
@@ -86,6 +96,7 @@ public class PlayerInventory {
     }
 
     private void ______________REMOVE_ITEM______________() {
+        // Xử lý người chơi xóa item
     }
 
     private void removeItemBag(int index) {
@@ -117,6 +128,7 @@ public class PlayerInventory {
     }
 
     private void _______________THROW_ITEM______________() {
+        // Xử lý người chơi vứt bỏ item
     }
 
     public void throwItem(byte where, byte index) {
@@ -144,6 +156,7 @@ public class PlayerInventory {
     }
 
     private void _______________SUB_QUANTITY_ITEM______________() {
+        // Xử lý trừ số lượng item
     }
 
     public void subQuantityItemsBag(Item item, int quantity) {
@@ -162,18 +175,159 @@ public class PlayerInventory {
     }
 
     private void subQuantityItem(List<Item> items, Item item, int quantity) {
-        for (Item it : items) {
-            if (it == item) {
+        for (int i = 0; i < items.size(); i++) {
+            Item it = items.get(i);
+            if (it.equals(item)) {
                 it.subQuantity(quantity);
                 if (it.getQuantity() <= 0) {
-                    this.removeItem(items, item);
+                    removeItem(items, item);
                 }
+                break;
             }
         }
+    }
+
+    private void _______________OPERATIONS_ITEM_______________() {
+        // Xử lý player thao tác với item
+    }
+
+    public void moveFromBoxToBag(int index) {
+        if (index < 0 || index >= this.itemsBox.size()) {
+            return;
+        }
+        Item itemBox = this.itemsBox.get(index);
+        if (itemBox != null && itemBox.getTemplate() != null) {
+            this.addItemBag(itemBox);
+            if (itemBox.getQuantity() == 0) {
+                Item itemNull = ItemService.getInstance().createItemNull();
+                this.itemsBox.set(index, itemNull);
+            }
+            InventoryService.getInstance().sendItemsBox(this.player, 0);
+        }
+    }
+
+    public void moveFromBagToBox(int index) {
+        if (index < 0 || index >= this.itemsBag.size()) {
+            return;
+        }
+        Item itemBag = this.itemsBag.get(index);
+        if (itemBag != null && itemBag.getTemplate() != null) {
+            this.addItemBox(itemBag);
+            if (itemBag.getQuantity() == 0) {
+                Item itemNull = ItemService.getInstance().createItemNull();
+                this.itemsBag.set(index, itemNull);
+            }
+            InventoryService.getInstance().sendItemToBags(this.player, 0);
+        }
+    }
+
+    public void moveFromBodyToBox(int index) {
+        if (index < 0 || index >= this.itemsBody.size()) {
+            return;
+        }
+        Item itemBody = this.itemsBody.get(index);
+        if (itemBody != null && itemBody.getTemplate() != null) {
+            this.addItemBox(itemBody);
+            if (itemBody.getQuantity() == 0) {
+                Item itemNull = ItemService.getInstance().createItemNull();
+                this.itemsBody.set(index, itemNull);
+            }
+            InventoryService.getInstance().sendItemToBodys(this.player);
+        }
+    }
+
+    public void equipItemFromBag(int index) {
+        if (index < 0 || index >= this.itemsBag.size()) {
+            return;
+        }
+        Item itemBag = this.itemsBag.get(index);
+        if (itemBag != null && itemBag.getTemplate() != null) {
+            this.itemsBag.set(index, this.putItemBodyForIndex(itemBag));
+            this.sendInfoAfterEquipItem();
+        }
+    }
+
+    public void unequipItemToBag(int index) {
+        if (index < 0 || index >= this.itemsBody.size()) {
+            return;
+        }
+        Item itemBody = this.itemsBody.get(index);
+        if (itemBody != null && itemBody.getTemplate() != null) {
+            this.itemsBody.set(index, this.putItemBag(itemBody));
+            this.sendInfoAfterEquipItem();
+        }
+    }
+
+    private Item putItemBag(Item item) {
+        for (int i = 0; i < itemsBag.size(); i++) {
+            Item itemBag = itemsBag.get(i);
+            if (itemBag == null || itemBag.getTemplate() == null) {
+                itemsBag.set(i, item);
+                return ItemService.getInstance().createItemNull();
+            }
+        }
+        return item;
+    }
+
+    private Item putItemBodyForIndex(Item item) {
+        Item itemBody = item;
+        try {
+            int index = -1;
+            if (item != null && item.getTemplate() != null) {
+                switch (item.getTemplate().type()) {
+                    // TODO add case type acp
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                        index = item.getTemplate().type();
+                        System.out.println(" is type: " + index);
+                        break;
+                    case 32:
+                        index = 6;
+                        break;
+                    case 11:
+                        index = 8;
+                        break;
+                    default: {
+                        Service.getInstance().sendChatGlobal(this.player.getSession(), null,
+                                "Trang bị không phù hợp.", false);
+                        return itemBody;
+                    }
+                }
+                if (index == -1) {
+                    return itemBody;
+                }
+                itemBody = this.itemsBody.get(index);// lay item o body item tai (khong co gi) set item itemBody = null
+                this.itemsBody.set(index, item);
+                return itemBody;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return itemBody;
+    }
+
+    private void sendInfoAfterEquipItem() {
+        InventoryService inventoryService = InventoryService.getInstance();
+        PlayerService playerService = PlayerService.getInstance();
+        inventoryService.sendItemToBags(this.player, 0);
+        inventoryService.sendItemToBodys(this.player);
+        playerService.sendPlayerBody(this.player);
+        playerService.sendPointForMe(this.player);
     }
 
     private void _______________FIND_ITEM______________() {
     }
 
+    private void _______________SORT_ITEM______________() {
+    }
+
+    public void sortItemsBag(List<Item> items) {
+        for (int i = 0; i < items.size(); i++) {
+        }
+    }
 
 }

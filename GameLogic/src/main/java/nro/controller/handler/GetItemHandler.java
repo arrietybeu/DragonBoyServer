@@ -17,8 +17,8 @@ public class GetItemHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             var type = message.reader().readByte();
-            var id = message.reader().readByte();
-            UseItemService.getInstance().getItem(player, type, id);
+            var index = message.reader().readByte();
+            UseItemService.getInstance().getItem(player, type, index);
         } catch (Exception ex) {
             LogServer.LogException("GetItemHandler: " + ex.getMessage());
             ex.printStackTrace();

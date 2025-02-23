@@ -42,9 +42,29 @@ public class UseItemService {
         }
     }
 
-    public void getItem(Player player, int type, int id) {
+    public void getItem(Player player, int type, int index) {
         try {
             switch (type) {
+                case ConstUseItem.MOVE_FROM_BOX_TO_BAG: {
+                    player.getPlayerInventory().moveFromBoxToBag(index);
+                    break;
+                }
+                case ConstUseItem.MOVE_FROM_BAG_TO_BOX: {
+                    player.getPlayerInventory().moveFromBagToBox(index);
+                    break;
+                }
+                case ConstUseItem.MOVE_FROM_BODY_TO_BOX: {
+                    player.getPlayerInventory().moveFromBodyToBox(index);
+                    break;
+                }
+                case ConstUseItem.EQUIP_ITEM_FROM_BAG: {
+                    player.getPlayerInventory().equipItemFromBag(index);
+                    break;
+                }
+                case ConstUseItem.UNEQUIP_ITEM_TO_BAG:{
+                    player.getPlayerInventory().unequipItemToBag(index);
+                    break;
+                }
                 default: {
                     LogServer.LogWarning("Get Item: Chua hoan thien type: " + type);
                     break;

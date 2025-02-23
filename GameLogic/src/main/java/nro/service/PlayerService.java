@@ -138,7 +138,7 @@ public class PlayerService {
         }
     }
 
-    private void sendPlayerBody(Player player) {
+    public void sendPlayerBody(Player player) {
         try (Message message = new Message(-90)) {
             DataOutputStream out = message.writer();
             out.writeByte(1);
@@ -220,7 +220,7 @@ public class PlayerService {
         }
     }
 
-    private void sendPointForMe(Player player) {
+    public void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
             PlayerPoints stats = player.getPlayerPoints();
             DataOutputStream out = msg.writer();

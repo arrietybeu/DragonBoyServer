@@ -79,12 +79,11 @@ public class PlayerUpdate {
 
 
     private void savePlayerInfo(Player player, Connection connection) throws SQLException {
-        String query = "UPDATE player SET name = ?, gender = ?, head = ? WHERE id = ?";
+        String query = "UPDATE player SET name = ?, gender = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, player.getName());
             statement.setByte(2, player.getGender());
-            statement.setShort(3, player.getPlayerFashion().getHead());
-            statement.setInt(4, player.getId());
+            statement.setInt(3, player.getId());
             statement.executeUpdate();
         }
     }
