@@ -89,7 +89,6 @@ public class PlayerCreator {
         }
     }
 
-
     private void createLocationPlayer(Connection connection, int playerId, byte gender) throws SQLException {
         String query = "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -205,11 +204,27 @@ public class PlayerCreator {
     private void createPlayerInventory(Connection connection, int playerId, byte gender) throws SQLException {
         List<Item> itemsBody = ItemService.initializePlayerItems(gender);
         List<Item> itemsBag = createEmptyItems(20);
-        List<Item> itemsBox = createEmptyItems(20);
+        List<Item> itemsBox = ItemService.initItemBox();
         ensureItemSlots(itemsBody, 11);
+        ensureItemSlots(itemsBag, 20);
+        ensureItemSlots(itemsBox, 20);
         insertItemsToDatabase(connection, playerId, "player_items_body", itemsBody);
         insertItemsToDatabase(connection, playerId, "player_items_bag", itemsBag);
         insertItemsToDatabase(connection, playerId, "player_items_box", itemsBox);
+    }
+
+    private void ensureItemSlots(List<Item> items, int requiredSize) {
+        while (items.size() < requiredSize) {
+            items.add(ItemService.getInstance().createItemNull());
+        }
+    }
+
+    private List<Item> createEmptyItems(int count) {
+        List<Item> items = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            items.add(ItemService.getInstance().createItemNull());
+        }
+        return items;
     }
 
     private void insertItemsToDatabase(Connection connection, int playerId, String tableName, List<Item> items) throws SQLException {
@@ -230,21 +245,6 @@ public class PlayerCreator {
             }
         }
     }
-
-    private void ensureItemSlots(List<Item> items, int requiredSize) {
-        while (items.size() < requiredSize) {
-            items.add(ItemService.getInstance().createItemNull());
-        }
-    }
-
-    private List<Item> createEmptyItems(int count) {
-        List<Item> items = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            items.add(ItemService.getInstance().createItemNull());
-        }
-        return items;
-    }
-
 
     private void createPlayerDataTask(Connection connection, int playerId) throws SQLException {
         String query = "INSERT INTO player_task (player_id, task_id, task_index, task_count) VALUES (?, ?, ?, ?)";

@@ -19,6 +19,7 @@ public class ItemService {
     public Item createItem(int tempId, int quantity) {
         Item item = new Item();
         item.setTemplate(getTemplate(tempId));
+        System.out.println("Item created: " + item.getTemplate().name());
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
         return item;
@@ -54,8 +55,8 @@ public class ItemService {
         }
     }
 
-    public static ArrayList<Item> initializePlayerItems(byte clazz) throws RuntimeException {
-        ArrayList<Item> items = new ArrayList<>();
+    public static List<Item> initializePlayerItems(byte clazz) throws RuntimeException {
+        List<Item> items = new ArrayList<>();
 
         // class[0] = trai dat,
         // class[1] = namec,
@@ -81,39 +82,20 @@ public class ItemService {
                 throw new RuntimeException("Failed to create item id: " + itemId);
             }
         }
-        while (items.size() < 10) {
-            items.add(ItemService.getInstance().createItemNull());
-        }
         return items;
     }
 
-
-    public List<Item> getItemsForGender(byte gender) {
+    public static List<Item> initItemBox() {
         List<Item> items = new ArrayList<>();
 
-        short[][] itemIdsByGender = {
-                {0, 6}, // Trái đất
-                {1, 7}, // Namec
-                {2, 8}  // Xayda
-        };
-
-        if (gender < 0 || gender >= itemIdsByGender.length) {
-            return items;
+        var itemId = 12;
+        Item item = createAndInitItem(itemId);
+        if (item != null) {
+            System.out.println("Item created: " + item.getTemplate().name());
+            items.add(item);
+        } else {
+            throw new RuntimeException("Failed to create item id: " + itemId);
         }
-
-        for (short itemId : itemIdsByGender[gender]) {
-            Item item = createAndInitItem(itemId);
-            if (item != null) {
-                items.add(item);
-            } else {
-                throw new RuntimeException("Failed to create item id: " + itemId);
-            }
-        }
-
-        while (items.size() < 10) {
-            items.add(createItemNull());
-        }
-
         return items;
     }
 

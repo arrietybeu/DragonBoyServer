@@ -16,7 +16,6 @@ public class SubCommandHandler implements IMessageProcessor {
             byte command = message.reader().readByte();
             switch (command) {
                 case 63:
-
                     break;
                 default:
                     var info = "Unknow command -30: [" + command + "] ";

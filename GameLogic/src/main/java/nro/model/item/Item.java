@@ -17,7 +17,7 @@ import java.util.Map;
 @Getter
 @Setter
 @SuppressWarnings("unchecked")
-public class Item {
+public class Item implements AutoCloseable {
 
     private int quantity;
     private long createTime;
@@ -82,4 +82,8 @@ public class Item {
         this.itemOptions.clear();
     }
 
+    @Override
+    public void close() {
+        this.dispose();
+    }
 }

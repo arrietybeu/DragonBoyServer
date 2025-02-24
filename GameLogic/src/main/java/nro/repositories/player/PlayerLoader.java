@@ -130,7 +130,6 @@ public class PlayerLoader {
                     String optionsText = resultSet.getString("options");
 
                     Item item = (tempId != -1) ? ItemService.getInstance().createItem(tempId, quantity) : ItemService.getInstance().createItemNull();
-
                     if (tempId != -1) {
                         item.setCreateTime(createTime);
                         item.setJsonOptions(optionsText);

@@ -83,7 +83,6 @@ public class TaskManager implements IManager {
                     for (int i = 0; i < dataArray.size(); i++) {
                         subName.npcList[i] = Short.parseShort(dataArray.get(i).toString());
                     }
-
                     subName.setMapId(rs.getShort("map_id"));
                     subNameList.add(subName);
                 }

@@ -44,8 +44,11 @@ public class TaskMain {
         }
 
         public short getNpcIdByGender(int gender) {
-            if (npcList.length == 0 || npcList.length <= 2) {
+            if (npcList.length == 0) {
                 return -1;
+            }
+            if (npcList.length == 1) {
+                return npcList[0];
             }
             return npcList[gender];
         }

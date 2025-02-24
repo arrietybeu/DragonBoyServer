@@ -171,4 +171,12 @@ public class ConstNpc {
             default -> "Arriety";
         };
     }
+
+    public static int GetIdNpcHomeByGender(int gender) {
+        return switch (gender) {
+            case ConstPlayer.NAMEC -> ConstNpc.ONG_MOORI;
+            case ConstPlayer.XAYDA -> ConstNpc.ONG_PARAGUS;
+            default -> ConstNpc.ONG_GOHAN;
+        };
+    }
 }

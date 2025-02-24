@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstMap;
 import nro.consts.ConstNpc;
+import nro.model.npc.Npc;
+import nro.model.npc.NpcFactory;
 import nro.model.task.TaskMain;
 import nro.server.LogServer;
 import nro.server.manager.MapManager;
@@ -15,7 +17,6 @@ import nro.service.TaskService;
 public class PlayerTask {
 
     private final Player player;
-
     private TaskMain taskMain;
 
     public PlayerTask(Player player) {
@@ -41,31 +42,69 @@ public class PlayerTask {
         }
     }
 
-    public void doneTask(int taskId, int index) {
-        if (!checkTaskInfo(taskId, index)) {
-            return;
-        }
-        this.addDoneSubTask();
-        NpcService npcService = NpcService.getInstance();
-        String npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
-        String mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
-        LogServer.DebugLogic("player name: " + this.player.getName() + " task " + this.taskMain.toString());
-        switch (taskId) {
-            case 0: {
-                switch (index) {
-                    case 0: {
-                        String content = String.format("Hãy di chuyển đến %s, %s đang chờ bạn ở đằng kia!", mapName, npcName);
-                        npcService.sendNpcTalkUI(player, 5, content, -1);
-                        break;
-                    }
-                    case 1: {
-                        String content = String.format("%s đang chờ. Bạn hãy đi đến gần và click đôi vào ông để trò chuyện", npcName);
-                        npcService.sendNpcTalkUI(player, 5, content, -1);
-                    }
-                }
-                break;
+    public boolean checkDoneTaskTalkNpc(Npc npc) {
+        switch (npc.getTempId()) {
+            case ConstNpc.ONG_GOHAN:
+            case ConstNpc.ONG_MOORI:
+            case ConstNpc.ONG_PARAGUS: {
+                return this.doneTask(0, 2);
+            }
+            case ConstNpc.RUONG_DO: {
+                return this.doneTask(0, 3);
             }
         }
+        return false;
+    }
+
+    public boolean doneTask(int taskId, int index) {
+        try {
+            if (!checkTaskInfo(taskId, index)) {
+                return false;
+            }
+            this.addDoneSubTask();
+            NpcService npcService = NpcService.getInstance();
+            String npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
+            String mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
+            LogServer.DebugLogic("player name: " + this.player.getName() + " task " + this.taskMain.toString());
+            switch (taskId) {
+                case 0: {
+                    switch (index) {
+                        case 0: { // 1
+                            String content = String.format("Hãy di chuyển đến %s, %s đang chờ bạn ở đằng kia!", mapName, npcName);
+                            npcService.sendNpcTalkUI(player, 5, content, -1);
+                            break;
+                        }
+                        case 1: {// 2
+                            String content = String.format("%s đang chờ. Bạn hãy đi đến gần và click đôi vào ông để trò chuyện", npcName);
+                            npcService.sendNpcTalkUI(player, 5, content, -1);
+                            break;
+                        }
+                        case 2: {
+                            String content = "Con mới đi đâu về thế ? Con hãy đến rương đồ để lấy rađa, sau đó lại thu hoạch những hạt đậu trên cây đậu thần đằng kia!";
+                            Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                            NpcService.getInstance().sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                            break;
+                        }
+                        case 3: {
+
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case 1: {
+                    break;
+                }
+            }
+            TaskService taskService = TaskService.getInstance();
+            taskService.sendTaskMain(this.player);
+            taskService.sendTaskMainUpdate(this.player);
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask doneTask" + ex.getMessage());
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     private void addDoneSubTask() {
@@ -81,12 +120,11 @@ public class PlayerTask {
             this.taskMain.setId(this.taskMain.getId() + 1);
         }
 
-        TaskService taskService = TaskService.getInstance();
-        taskService.sendTaskMain(this.player);
-        taskService.sendTaskMainUpdate(this.player);
+
     }
 
     private boolean checkTaskInfo(int taskId, int index) {
+
         return this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
     }
 
