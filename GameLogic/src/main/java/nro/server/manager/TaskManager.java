@@ -7,7 +7,10 @@ import nro.server.config.ConfigDB;
 
 import java.sql.*;
 import java.util.*;
+
 import lombok.Getter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 
 @SuppressWarnings("ALL")
 public class TaskManager implements IManager {
@@ -62,7 +65,7 @@ public class TaskManager implements IManager {
 
     private List<TaskMain.SubName> loadListSubNameTask(Connection connection, int taskId) {
         List<TaskMain.SubName> subNameList = new ArrayList<>();
-        String query = "SELECT name, max_count, content, npc_id, map_id FROM task_sub WHERE task_main_id = ?";
+        String query = "SELECT name, max_count, content, npc_list, map_id FROM task_sub WHERE task_main_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, taskId);
@@ -70,9 +73,17 @@ public class TaskManager implements IManager {
                 while (rs.next()) {
                     TaskMain.SubName subName = new TaskMain.SubName();
                     subName.setName(rs.getString("name"));
-                    subName.setMax(rs.getInt("max_count"));
+                    subName.setMaxCount(rs.getInt("max_count"));
                     subName.setContentInfo(rs.getString("content"));
-                    subName.setNpcId(rs.getByte("npc_id"));
+                    var npcJson = rs.getString("npc_list");
+
+                    JSONArray dataArray = (JSONArray) JSONValue.parse(npcJson);
+
+                    subName.npcList = new short[dataArray.size()];
+                    for (int i = 0; i < dataArray.size(); i++) {
+                        subName.npcList[i] = Short.parseShort(dataArray.get(i).toString());
+                    }
+
                     subName.setMapId(rs.getShort("map_id"));
                     subNameList.add(subName);
                 }

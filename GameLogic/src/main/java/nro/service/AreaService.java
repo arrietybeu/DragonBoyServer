@@ -19,7 +19,6 @@ public class AreaService {
     @Getter
     public static final AreaService instance = new AreaService();
 
-
     public void sendInfoAllPlayerInArea(Player player) {
         try {
             Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
@@ -58,7 +57,7 @@ public class AreaService {
             if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
                 data.writeByte(playerInfo.getTeleport());
                 data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
-                data.writeShort(playerInfo.getMount());
+                data.writeShort(playerFashion.getMount());
             }
 
             data.writeByte(playerFashion.getFlag());
@@ -145,6 +144,7 @@ public class AreaService {
     public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
         Area newArea = goMap.getArea();
         this.transferPlayer(player, newArea, goX, goY);
+        player.getPlayerTask().checkDoneTaskGoMap();
     }
 
     private void transferPlayer(Player player, Area newArea, short x, short y) {

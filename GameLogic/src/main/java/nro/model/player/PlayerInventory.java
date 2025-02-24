@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstItem;
 import nro.model.item.Item;
 import nro.server.LogServer;
 import nro.service.InventoryService;
@@ -21,7 +22,7 @@ public class PlayerInventory {
     private final List<Item> itemsBag;
     private final List<Item> itemsBox;
 
-    private static final int MAX_ITEM_BODY = 10;
+    private static final int MAX_ITEM_BODY = 11;
     private static final int MAX_ITEM_BAG = 20;
     private static final int MAX_ITEM_BOX = 20;
 
@@ -221,7 +222,7 @@ public class PlayerInventory {
         }
     }
 
-    public void moveFromBodyToBox(int index) {
+    public void moveFromBodyToBox(int index) throws RuntimeException {
         if (index < 0 || index >= this.itemsBody.size()) {
             return;
         }
@@ -236,7 +237,7 @@ public class PlayerInventory {
         }
     }
 
-    public void equipItemFromBag(int index) {
+    public void equipItemFromBag(int index) throws RuntimeException {
         if (index < 0 || index >= this.itemsBag.size()) {
             return;
         }
@@ -247,7 +248,7 @@ public class PlayerInventory {
         }
     }
 
-    public void unequipItemToBag(int index) {
+    public void unequipItemToBag(int index) throws RuntimeException {
         if (index < 0 || index >= this.itemsBody.size()) {
             return;
         }
@@ -258,7 +259,7 @@ public class PlayerInventory {
         }
     }
 
-    private Item putItemBag(Item item) {
+    private Item putItemBag(Item item) throws RuntimeException {
         for (int i = 0; i < itemsBag.size(); i++) {
             Item itemBag = itemsBag.get(i);
             if (itemBag == null || itemBag.getTemplate() == null) {
@@ -275,36 +276,40 @@ public class PlayerInventory {
             int index = -1;
             if (item != null && item.getTemplate() != null) {
                 switch (item.getTemplate().type()) {
-                    // TODO add case type acp
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
+                    case ConstItem.AO:
+                    case ConstItem.QUAN:
+                    case ConstItem.GANG:
+                    case ConstItem.GIAY:
+                    case ConstItem.RADA_OR_NHAN:
+                    case ConstItem.CAI_TRANG_OR_AVATAR:
                         index = item.getTemplate().type();
-                        System.out.println(" is type: " + index);
                         break;
-                    case 32:
+                    case ConstItem.GIAP_LUYEN_TAP:
                         index = 6;
                         break;
-                    case 11:
+                    case ConstItem.SACH_TUYET_KY:
+                        index = 7;
+                        break;
+                    case ConstItem.FLAG_BAG:
                         index = 8;
                         break;
+                    case ConstItem.MOUNT:
+                    case ConstItem.MOUNT_VIP:
+                        index = 9;
+                        break;
+                    // TODO mini pet index = 10
                     default: {
-                        Service.getInstance().sendChatGlobal(this.player.getSession(), null,
-                                "Trang bị không phù hợp.", false);
+                        Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Trang bị không phù hợp.", false);
                         return itemBody;
                     }
                 }
-                if (index == -1) {
-                    return itemBody;
-                }
                 itemBody = this.itemsBody.get(index);// lay item o body item tai (khong co gi) set item itemBody = null
+
                 this.itemsBody.set(index, item);
                 return itemBody;
             }
         } catch (Exception ex) {
+            LogServer.LogException("Error putItemBodyForIndex: " + ex.getMessage());
             ex.printStackTrace();
         }
         return itemBody;

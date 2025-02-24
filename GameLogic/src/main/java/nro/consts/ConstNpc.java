@@ -153,4 +153,22 @@ public class ConstNpc {
                 return "Unknown NPC";
         }
     }
+
+    public static String getNameNpcHouseByGender(int gender) {
+        return switch (gender) {
+            case ConstPlayer.TRAI_DAT -> "Ông Gôhan";
+            case ConstPlayer.NAMEC -> "Ông Moori";
+            case ConstPlayer.XAYDA -> "Ông Paragus";
+            default -> "Arriety";
+        };
+    }
+
+    public static String getNameNpcHomeByGender(int gender) {
+        return switch (gender) {
+            case ConstPlayer.TRAI_DAT -> "Quy lão";
+            case ConstPlayer.NAMEC -> "Trưởng lão Guru";
+            case ConstPlayer.XAYDA -> "Vua Vegeta";
+            default -> "Arriety";
+        };
+    }
 }

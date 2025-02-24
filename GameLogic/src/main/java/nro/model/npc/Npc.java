@@ -14,7 +14,7 @@ import nro.service.Service;
 public class Npc implements INpcAction {
 
     private int mapId;
-    private GameMap map;
+    private final GameMap map;
     private int status;
     private int avatar;
     private int x;
@@ -51,4 +51,5 @@ public class Npc implements INpcAction {
     @Override
     public void openUIConFirm(Player player, int select) {
     }
+
 }

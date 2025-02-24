@@ -206,7 +206,7 @@ public class PlayerCreator {
         List<Item> itemsBody = ItemService.initializePlayerItems(gender);
         List<Item> itemsBag = createEmptyItems(20);
         List<Item> itemsBox = createEmptyItems(20);
-        ensureItemSlots(itemsBody, 10);
+        ensureItemSlots(itemsBody, 11);
         insertItemsToDatabase(connection, playerId, "player_items_body", itemsBody);
         insertItemsToDatabase(connection, playerId, "player_items_bag", itemsBag);
         insertItemsToDatabase(connection, playerId, "player_items_box", itemsBox);

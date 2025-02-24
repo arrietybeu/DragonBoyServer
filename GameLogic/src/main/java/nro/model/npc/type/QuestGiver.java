@@ -1,6 +1,7 @@
 package nro.model.npc.type;
 
 import nro.consts.ConstNpc;
+import nro.consts.ConstPlayer;
 import nro.model.npc.ANpcHandler;
 import nro.model.npc.Npc;
 import nro.model.player.Player;
@@ -15,17 +16,10 @@ public class QuestGiver extends Npc {
 
     @Override
     public void openMenu(Player player) {
-        String npcName = getNpcNameById(this.getTempId());
+        String npcName = ConstNpc.getNameNpcHomeByGender(player.getGender());
         String text = "Con cố gắng theo " + npcName + " học thành tài, đừng lo lắng cho ta.";
         NpcService.getInstance().sendNpcTalkUI(player, this.getTempId(), text, this.getAvatar());
     }
 
-    private String getNpcNameById(int npcId) {
-        return switch (npcId) {
-            case ConstNpc.ONG_GOHAN -> "Quy lão";
-            case ConstNpc.ONG_MOORI -> "Trưởng lão Guru";
-            case ConstNpc.ONG_PARAGUS -> "Vua Vegeta";
-            default -> "Arriety";
-        };
-    }
+
 }

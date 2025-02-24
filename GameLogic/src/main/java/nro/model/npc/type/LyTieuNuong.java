@@ -1,12 +1,13 @@
 package nro.model.npc.type;
 
 import nro.consts.ConstMenu;
+import nro.consts.ConstNpc;
 import nro.model.npc.ANpcHandler;
 import nro.model.npc.Npc;
 import nro.model.player.Player;
 import nro.service.NpcService;
 
-@ANpcHandler({54})
+@ANpcHandler({ConstNpc.LY_TIEU_NUONG})
 public class LyTieuNuong extends Npc {
 
     public LyTieuNuong(int tempId, int status, int mapId, int cx, int cy, int avatar) {
@@ -22,4 +23,5 @@ public class LyTieuNuong extends Npc {
     @Override
     public void openUIConFirm(Player player, int select) {
     }
+
 }

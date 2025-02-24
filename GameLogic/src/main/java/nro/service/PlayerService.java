@@ -53,10 +53,9 @@ public class PlayerService {
         player.getSession().getSessionInfo().setLoadData(true);
         player.getArea().addPlayer(player);
         Service service = Service.getInstance();
-        TaskService taskService = TaskService.getInstance();
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
-        taskService.sendTaskMain(player);// 40
+        TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
         this.sendPointForMe(player);// -42
         this.sendInfoPlayer(player);// -30
@@ -74,7 +73,7 @@ public class PlayerService {
         this.sendSkillShortCut(player);// -113
         service.sendGameNotify(player);// 50
         this.sendCaptionForPlayer(player);// -41
-        taskService.sendInfoTaskForNpcTalkByUI(player);
+        player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
     }
 
     private void sendCaptionForPlayer(Player player) {

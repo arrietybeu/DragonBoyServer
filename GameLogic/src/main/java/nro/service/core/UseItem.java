@@ -1,9 +1,11 @@
 package nro.service.core;
 
 import lombok.Getter;
+import nro.consts.ConstItem;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
+import nro.model.player.PlayerInventory;
 import nro.model.player.PlayerPoints;
 import nro.server.LogServer;
 import nro.service.NpcService;
@@ -20,15 +22,20 @@ public class UseItem {
             this.eatPea(player, null, template);
             return;
         }
-        Item item = player.getPlayerInventory().getItemsBag().get(index);
+        PlayerInventory playerInventory = player.getPlayerInventory();
+        Item item = playerInventory.getItemsBag().get(index);
         if (item == null || item.getTemplate() == null) {
             NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.", -1);
             return;
         }
         switch (item.getTemplate().type()) {
-            case 6: {
+            case ConstItem.PEA: {
                 this.eatPea(player, item);
                 break;
+            }
+            case ConstItem.MOUNT:
+            case ConstItem.MOUNT_VIP: {
+                playerInventory.equipItemFromBag(index);
             }
         }
     }

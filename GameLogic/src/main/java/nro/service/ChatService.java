@@ -6,6 +6,7 @@ import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.server.manager.ItemManager;
+import nro.server.manager.SessionManager;
 import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.ManagerRegistry;
@@ -97,7 +98,12 @@ public class ChatService {
                     Service.dialogMessage(playerChat.getSession(), "Cache size: " + FileNio.CACHE.size());
                     break;
                 case "info":
-                    service.sendChatGlobal(playerChat.getSession(), null, "Thread const: " + Thread.activeCount(), false);
+                    String threadInfo = "Thread const: " + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession();
+                    String playerLocation = "\nPlayer Location mapId: "
+                            + playerChat.getArea().getMap().getId() + " zone id: " + playerChat.getArea().getId()
+                            + " x: " + playerChat.getX() + " y: " + playerChat.getY();
+                    String content = threadInfo + playerLocation;
+                    NpcService.getInstance().sendNpcTalkUI(playerChat, 5, content, -1);
                     break;
                 case "reload_map":
                     ManagerRegistry.reloadManager(MapManager.class);

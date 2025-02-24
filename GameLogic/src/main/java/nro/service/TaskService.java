@@ -27,8 +27,8 @@ public class TaskService {
             var subNames = taskMain.getSubNameList();
             int index = taskMain.getIndex();
 
-//            output.writeShort(taskMain.getId());
-            output.writeShort(30);
+            output.writeShort(taskMain.getId());
+//            output.writeShort(30);
             output.writeByte(index);
             output.writeUTF(taskMain.getName());
             output.writeUTF(taskMain.getDetail());
@@ -36,7 +36,7 @@ public class TaskService {
 
             for (var sub : subNames) {
                 output.writeUTF(sub.getName());
-                output.writeByte(sub.getNpcId());
+                output.writeByte(sub.getNpcIdByGender(player.getGender()));
                 output.writeShort(sub.getMapId());
                 output.writeUTF(sub.getContentInfo());
             }
@@ -44,7 +44,7 @@ public class TaskService {
             output.writeShort(subNames.get(index).getCount());
 
             for (var sub : subNames) {
-                output.writeShort(sub.getMax());
+                output.writeShort(sub.getMaxCount());
             }
 
             player.sendMessage(message);
@@ -54,33 +54,16 @@ public class TaskService {
         }
     }
 
-    public void sendInfoTaskForNpcTalkByUI(Player player) {
-        TaskMain taskMain = player.getPlayerTask().getTaskMain();
-        NpcService npcService = NpcService.getInstance();
-
-        short avatarBirdNpc = player.getPlayerBirdFrames()[2];
-
-        String BirdNameNpc = player.getPlayerBirdNames()[0];
-
-        switch (taskMain.getId()) {
-            case 0:
-                switch (taskMain.getIndex()) {
-                    case 0:
-                        switch (player.getGender()) {
-                            case 0:
-                                npcService.sendNpcTalkUI(player, 5, "Hãy di chuyển đến Nhà Moori, ông Moori đang chờ bạn ở đằng kia!", avatarBirdNpc);
-                                break;
-                            case 1:
-                                npcService.sendNpcTalkUI(player, 5, "Hãy di chuyển đến Nhà Moori, ông Moori đang chờ bạn ở đằng kia!", avatarBirdNpc);
-                                break;
-                            case 2:
-                                break;
-                        }
-                        break;
-                    case 1:
-                        break;
-                }
-                break;
+    public void sendTaskMainUpdate(Player player) {
+        try (Message message = new Message(43);
+             DataOutputStream output = message.writer()) {
+            var taskMain = player.getPlayerTask().getTaskMain();
+            var subNames = taskMain.getSubNameList();
+            output.writeShort(subNames.get(taskMain.getIndex()).getCount());
+            player.sendMessage(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogServer.LogException("Error sendTaskMainUpdate: " + e.getMessage());
         }
     }
 }

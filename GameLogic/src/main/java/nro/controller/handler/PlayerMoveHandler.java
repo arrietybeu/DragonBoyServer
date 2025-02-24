@@ -13,7 +13,7 @@ public class PlayerMoveHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
-        try{
+        try {
             Player player = session.getPlayer();
             if (player == null) {
                 return;
@@ -35,8 +35,13 @@ public class PlayerMoveHandler implements IMessageProcessor {
             player.setX(newX);
             player.setY(newY);
 
+
+            if (player.getPlayerTask().getTaskMain().getId() == 0) {
+                player.getPlayerTask().checkDoneTaskGoMap();
+            }
             AreaService.getInstance().playerMove(player);
-        }catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException("Error PlayerMoveHandler: " + e.getMessage());
         }

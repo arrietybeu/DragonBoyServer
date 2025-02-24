@@ -14,7 +14,6 @@ public class PlayerFashion {
     private final Player player;
 
     private byte flag = 0;
-
     private short head = -1;
 
     public PlayerFashion(Player player) {
@@ -89,6 +88,24 @@ public class PlayerFashion {
             exception.printStackTrace();
             return -1;
         }
+    }
+
+    public short getMount() {
+        try {
+            PlayerInventory playerInventory = this.player.getPlayerInventory();
+            if (playerInventory != null) {
+                List<Item> itemsBody = playerInventory.getItemsBody();
+                if (itemsBody.get(9) != null && itemsBody.get(9).getTemplate() != null) {
+                    return itemsBody.get(9).getTemplate().id();
+                }
+            }
+            return -1;
+        } catch (Exception exception) {
+            LogServer.LogException("PlayerFashion.getMount: " + exception.getMessage());
+            exception.printStackTrace();
+            return -1;
+        }
+
     }
 
     public short getFlagBag() {
