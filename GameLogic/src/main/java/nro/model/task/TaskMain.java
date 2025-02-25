@@ -52,6 +52,11 @@ public class TaskMain {
             }
             return npcList[gender];
         }
+
+        @Override
+        public String toString() {
+            return "SubName{" + "npcList=" + npcList.length + ", count=" + count + ", mapId=" + mapId + ", maxCount=" + maxCount + ", name='" + name + '\'' + ", contentInfo='" + contentInfo + '\'' + '}';
+        }
     }
 
 }

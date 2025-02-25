@@ -19,7 +19,6 @@ public class ItemService {
     public Item createItem(int tempId, int quantity) {
         Item item = new Item();
         item.setTemplate(getTemplate(tempId));
-        System.out.println("Item created: " + item.getTemplate().name());
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
         return item;
@@ -91,7 +90,6 @@ public class ItemService {
         var itemId = 12;
         Item item = createAndInitItem(itemId);
         if (item != null) {
-            System.out.println("Item created: " + item.getTemplate().name());
             items.add(item);
         } else {
             throw new RuntimeException("Failed to create item id: " + itemId);

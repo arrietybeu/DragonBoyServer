@@ -25,7 +25,10 @@ public class DauThan extends Npc {
         PlayerStatus playerStatus = player.getPlayerStatus();
         List<String> menu = new ArrayList<>();
 
-        if (playerMagicTree.isUpgrade()) {
+        if (player.getPlayerTask().getTaskMain().getId() == 0) {
+            menu.add("Thu\nhoạch");
+            playerStatus.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
+        } else if (playerMagicTree.isUpgrade()) {
             menu.add("Nâng cấp\nnhanh");
             menu.add("Hủy\nnâng cấp\nhồi " + playerMagicTree.getGold());
             playerStatus.setIndexMenu(ConstMenu.MENU_MAGIC_TREE_UPGRADE);
@@ -51,6 +54,7 @@ public class DauThan extends Npc {
                 switch (select) {
                     case 0: {
                         playerMagicTree.harvestPea();
+                        player.getPlayerTask().checkDoneTaskConfirmMenuNpc(this.getTempId());
                         break;
                     }
                     case 1: {

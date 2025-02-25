@@ -65,6 +65,7 @@ public class TaskManager implements IManager {
 
     private List<TaskMain.SubName> loadListSubNameTask(Connection connection, int taskId) {
         List<TaskMain.SubName> subNameList = new ArrayList<>();
+
         String query = "SELECT name, max_count, content, npc_list, map_id FROM task_sub WHERE task_main_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -84,6 +85,7 @@ public class TaskManager implements IManager {
                         subName.npcList[i] = Short.parseShort(dataArray.get(i).toString());
                     }
                     subName.setMapId(rs.getShort("map_id"));
+
                     subNameList.add(subName);
                 }
             }

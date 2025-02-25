@@ -78,6 +78,10 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "send_task": {
+                    playerChat.getPlayerTask().sendTaskInfo();
+                    break;
+                }
                 case "npc_size":
                     int sizeNpcAllArea = 0;
 

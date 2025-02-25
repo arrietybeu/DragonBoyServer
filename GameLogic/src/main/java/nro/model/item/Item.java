@@ -71,7 +71,7 @@ public class Item implements AutoCloseable {
     }
 
     public void addQuantity(int quantity) {
-        System.out.println("addQuantity: " + quantity);
+//        System.out.println("addQuantity: " + quantity);
         this.quantity += quantity;
     }
 

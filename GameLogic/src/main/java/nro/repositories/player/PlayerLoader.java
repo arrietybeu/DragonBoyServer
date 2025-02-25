@@ -271,6 +271,7 @@ public class PlayerLoader {
                     var taskId = resultSet.getInt("task_id");
                     var taskIndex = resultSet.getInt("task_index");
                     var taskCount = resultSet.getShort("task_count");
+                    System.out.println("TaskId: " + taskId + ", taskIndex: " + taskIndex + ", taskCount: " + taskCount);
                     TaskMain taskMain = TaskManager.getInstance().getTaskMainById(taskId);
                     taskMain.getSubNameList().get(taskIndex).setCount(taskCount);
                     taskMain.setIndex(taskIndex);

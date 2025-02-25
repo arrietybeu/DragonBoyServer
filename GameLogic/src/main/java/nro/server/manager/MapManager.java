@@ -465,4 +465,23 @@ public class MapManager implements IManager {
         return mapName;
     }
 
+    public String getNameMapVillageByGender(int gender) {
+        String mapName = "vilage";
+        switch (gender) {
+            case ConstPlayer.TRAI_DAT: {
+                mapName = this.getNameMapById(0);
+                break;
+            }
+            case ConstPlayer.NAMEC: {
+                mapName = this.getNameMapById(7);
+                break;
+            }
+            case ConstPlayer.XAYDA: {
+                mapName = this.getNameMapById(14);
+                break;
+            }
+        }
+        return mapName;
+    }
+
 }

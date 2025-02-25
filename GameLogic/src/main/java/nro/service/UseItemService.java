@@ -105,7 +105,6 @@ public class UseItemService {
             LogServer.LogException("confirmThrowItem: " + ex.getMessage());
             ex.printStackTrace();
         }
-
     }
 
     public void eventUseItem(Player player, int itemAction, int where, int index, String info) {

@@ -66,7 +66,6 @@ public class PlayerInventory {
                         continue;
                     }
                     if (it.getTemplate().id() == item.getTemplate().id()) {
-                        System.out.println("cong iem vo o cu");
                         int combinedQuantity = it.getQuantity() + item.getQuantity();
                         it.addQuantity(item.getQuantity());
                         return;
@@ -198,6 +197,9 @@ public class PlayerInventory {
         }
         Item itemBox = this.itemsBox.get(index);
         if (itemBox != null && itemBox.getTemplate() != null) {
+            if (itemBox.getTemplate().id() == 12) {
+                player.getPlayerTask().checkDoneTaskGetItemBox();
+            }
             this.addItemBag(itemBox);
             if (itemBox.getQuantity() == 0) {
                 Item itemNull = ItemService.getInstance().createItemNull();
