@@ -97,14 +97,7 @@ public class TaskManager implements IManager {
     }
 
     public TaskMain getTaskMainById(int id) {
-        LogServer.LogWarning("getTaskMainById: " + id);
-
-        TaskMain task = TaskManager.getInstance().getTaskMainById(id);
-        if (task == null) {
-            LogServer.LogWarning("⚠️ Không tìm thấy TaskMain ID: " + id);
-            return null;
-        }
-
+        TaskMain task = TASKS.get(id);
         return task;
     }
 
