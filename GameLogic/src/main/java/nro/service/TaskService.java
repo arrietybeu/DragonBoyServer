@@ -28,7 +28,6 @@ public class TaskService {
             output.writeUTF(taskMain.getDetail());
             output.writeByte(subNames.size());
 
-            System.out.println("TaskMain id: " + taskMain.getId() + " name: " + taskMain.getName() + " " + taskMain.getDetail() + " " + subNames.size());
             for (int i = 0; i < subNames.size(); i++) {
                 var sub = subNames.get(i);
                 String nameToSend = (i <= index) ? sub.getName() : "...";

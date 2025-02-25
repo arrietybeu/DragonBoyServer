@@ -4,13 +4,16 @@
  */
 package nro.server.config;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * @author Arriety
  */
 public final class ConfigServer {
 
-    public static String IP = "127.0.0.1";
-    public static String LINK_IP_PORT = String.format("Arriety:%s:14445", IP);
+    public static String IP;
+    public static String LINK_IP_PORT;
     public static int PORT = 14445;
 
     public static int MAX_SESSIONS = 1000;
@@ -31,4 +34,15 @@ public final class ConfigServer {
     public static final String BACKUP_FOLDER_PATH = "\\backup";
     public static final String MYSQL_DUMP_PATH = "";
 
+    static {
+        try {
+//            IP = InetAddress.getLocalHost().getHostAddress();
+            IP = "206.189.150.19";
+            System.out.println("IP may: " + IP);
+        } catch (Exception e) {
+            IP = "127.0.0.1";
+            System.err.println("khong tim thay ip may chuyen ip default: " + IP);
+        }
+        LINK_IP_PORT = String.format("Arriety:%s:14445", IP);
+    }
 }

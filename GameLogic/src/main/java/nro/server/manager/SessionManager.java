@@ -147,6 +147,7 @@ public class SessionManager {
     }
 
     public void kickSession(Session session) {
+        System.out.println("Kick session: " + session.getSessionInfo().getId());
         this.lock.writeLock().lock();
         try {
             this.dispose(session);// save data player
