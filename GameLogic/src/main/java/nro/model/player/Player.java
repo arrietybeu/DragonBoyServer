@@ -68,7 +68,7 @@ public class Player extends LiveObject {
 
     @Override
     public void update() {
-        if(this.playerMagicTree != null) {
+        if (this.playerMagicTree != null) {
             this.playerMagicTree.update();
         }
     }

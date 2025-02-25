@@ -20,7 +20,6 @@ public class ChatService {
             message.writer().writeInt(player.getId());
             message.writer().writeUTF(text);
             player.getArea().sendMessageToPlayersInArea(message, null);
-
         } catch (Exception ex) {
             LogServer.LogException("Error Service Chat Map: " + ex.getMessage());
             ex.printStackTrace();
@@ -80,6 +79,7 @@ public class ChatService {
             switch (text) {
                 case "send_task": {
                     playerChat.getPlayerTask().sendTaskInfo();
+                    service.sendChatGlobal(playerChat.getSession(), null, "Send Task Thành Công", false);
                     break;
                 }
                 case "npc_size":

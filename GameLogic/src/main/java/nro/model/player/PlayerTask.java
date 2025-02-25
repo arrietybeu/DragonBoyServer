@@ -10,6 +10,7 @@ import nro.model.npc.NpcFactory;
 import nro.model.task.TaskMain;
 import nro.server.LogServer;
 import nro.server.manager.MapManager;
+import nro.server.manager.TaskManager;
 import nro.service.NpcService;
 import nro.service.TaskService;
 
@@ -22,6 +23,11 @@ public class PlayerTask {
 
     public PlayerTask(Player player) {
         this.player = player;
+    }
+
+    public TaskMain getTaskMainById(int id) {
+        TaskManager taskManager = TaskManager.getInstance();
+        return taskManager.getTaskMainById(id);
     }
 
     public void checkDoneTaskGoMap() {
@@ -81,7 +87,6 @@ public class PlayerTask {
             String npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
             String mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
             String mapNameVillage = MapManager.getInstance().getNameMapVillageByGender(player.getGender());
-            LogServer.DebugLogic(String.format("Done task - Player: %s, Task: %s", player.getName(), taskMain));
             switch (taskId) {
                 case 0 -> handleTaskZero(index, npcService, npcName, mapName, mapNameVillage);
                 case 1 -> {
@@ -122,39 +127,51 @@ public class PlayerTask {
         }
     }
 
-
     private void addDoneSubTask() {
-        this.taskMain.getSubNameList().get(this.taskMain.getIndex()).addCount(1);
+        var subList = this.taskMain.getSubNameList();
+        var currentIndex = this.taskMain.getIndex();
 
-        var count = this.taskMain.getSubNameList().get(this.taskMain.getIndex()).getCount();
-        if (count >= this.taskMain.getSubNameList().get(this.taskMain.getIndex()).getMaxCount()) {
-            this.taskMain.setIndex(this.taskMain.getIndex() + 1);
+        subList.get(currentIndex).addCount(1);
+
+        var count = subList.get(currentIndex).getCount();
+        if (count >= subList.get(currentIndex).getMaxCount()) {
+            this.taskMain.setIndex(currentIndex + 1);
         }
 
-        if (this.taskMain.getIndex() >= this.taskMain.getSubNameList().size()) {
-            this.taskMain.setIndex(0);
-            this.taskMain.setId(this.taskMain.getId() + 1);
+        if (this.taskMain.getIndex() >= subList.size()) {
+            TaskMain nextTask = this.getTaskMainById(this.taskMain.getId() + 1);
+            if (nextTask != null) {
+                this.taskMain = nextTask;
+                this.taskMain.setIndex(0);
+            } else {
+                LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
+            }
         }
-
         this.sendTaskInfo();
     }
 
+
     private boolean checkTaskInfo(int taskId, int index) {
-        return this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
+        return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
     }
 
     public void sendInfoTaskForNpcTalkByUI(Player player) {
         TaskMain taskMain = player.getPlayerTask().getTaskMain();
-        NpcService npcService = NpcService.getInstance();
-        String BirdNameNpc = player.getPlayerBirdNames()[0];
-        if (taskMain.getId() == 0) {
-            if (taskMain.getIndex() == 0) {
-                String wellCome = String.format("Chào mừng %s đến với thế giới Ngọc Rồng!\n", player.getName());
-                String content = wellCome
-                        + String.format("Mình là %s sẽ đồng hành cùng bạn ở thế giới này\n", BirdNameNpc)
-                        + "Để di chuyển, hãy click chuột vào nơi muốn đến";
-                npcService.sendNpcTalkUI(player, 5, content, -1);
-            }
+        if (taskMain == null) {
+            LogServer.LogWarning("Không thể gửi nhiệm vụ: taskMain null!");
+            return;
+        }
+
+        if (taskMain.getId() == 0 && taskMain.getIndex() == 0) {
+            String birdNameNpc = player.getPlayerBirdNames()[0];
+            String content = String.format(
+                    "Chào mừng %s đến với thế giới Ngọc Rồng!\nMình là %s sẽ đồng hành cùng bạn ở thế giới này\n" +
+                            "Để di chuyển, hãy click chuột vào nơi muốn đến",
+                    player.getName(), birdNameNpc
+            );
+
+            NpcService.getInstance().sendNpcTalkUI(player, 5, content, -1);
         }
     }
+
 }

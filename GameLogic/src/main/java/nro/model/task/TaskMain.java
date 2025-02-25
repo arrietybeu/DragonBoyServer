@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,7 +13,7 @@ public class TaskMain {
     private int id;
     private final String name;
     private final String detail;
-    private final List<SubName> subNameList;
+    private List<SubName> subNameList;
     private int index;
 
     public TaskMain(int id, String name, String detail, List<SubName> subNameList) {

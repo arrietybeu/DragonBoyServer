@@ -28,6 +28,7 @@ public class PlayerLoader {
     private static final PlayerLoader instance = new PlayerLoader();
 
     public Player loadPlayer(Session session) throws Exception {
+        System.out.println("Load player for account_id: " + session.getUserInfo().getId());
         String query = "SELECT * FROM player WHERE account_id = ? LIMIT 1";
         var ms = System.currentTimeMillis();
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
@@ -271,10 +272,11 @@ public class PlayerLoader {
                     var taskId = resultSet.getInt("task_id");
                     var taskIndex = resultSet.getInt("task_index");
                     var taskCount = resultSet.getShort("task_count");
-                    System.out.println("TaskId: " + taskId + ", taskIndex: " + taskIndex + ", taskCount: " + taskCount);
+                    LogServer.LogWarning("get data task for database: " + taskId + ", " + taskIndex + ", " + taskCount);
                     TaskMain taskMain = TaskManager.getInstance().getTaskMainById(taskId);
                     taskMain.getSubNameList().get(taskIndex).setCount(taskCount);
                     taskMain.setIndex(taskIndex);
+                    LogServer.LogWarning("data task return  : " + taskMain.getId() + ", " + taskMain.getIndex() + ", " + taskMain.getSubNameList().get(taskIndex).getCount());
                     player.getPlayerTask().setTaskMain(taskMain);
                 } else {
                     throw new SQLException("Khong tim thay task for player id: " + player.getId());
@@ -282,7 +284,6 @@ public class PlayerLoader {
             }
         }
     }
-
 
     private void loadPlayerSkillsShortCut(Player player, Connection connection) throws SQLException {
         String query = "SELECT * FROM player_skills_shortcut WHERE player_id = ?";

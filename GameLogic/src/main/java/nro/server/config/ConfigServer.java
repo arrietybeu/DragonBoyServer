@@ -10,7 +10,7 @@ package nro.server.config;
 public final class ConfigServer {
 
     public static String IP = "127.0.0.1";
-    public static String LINK_IP_PORT = "Arriety:localhost:14445";
+    public static String LINK_IP_PORT = String.format("Arriety:%s:14445", IP);
     public static int PORT = 14445;
 
     public static int MAX_SESSIONS = 1000;
