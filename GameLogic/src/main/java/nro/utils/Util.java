@@ -1,5 +1,8 @@
 package nro.utils;
 
+import nro.model.monster.Monster;
+import nro.model.player.Player;
+
 import java.util.SplittableRandom;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,4 +31,19 @@ public class Util {
         return (int) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 
+    public static int getDistance(Player player, Monster monster) {
+        return getDistance(player.getX(), player.getY(), monster.getX(), monster.getY());
+    }
+
+    public static boolean canDoWithTime(long lastTime, long miniTimeTarget) {
+        return System.currentTimeMillis() - lastTime > miniTimeTarget;
+    }
+
+    public static void delay(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -23,6 +23,7 @@ public class TaskService {
             var subNames = taskMain.getSubNameList();
             int index = taskMain.getIndex();
             output.writeShort(taskMain.getId());
+//            output.writeShort(15);
             output.writeByte(index);
             output.writeUTF(taskMain.getName());
             output.writeUTF(taskMain.getDetail());

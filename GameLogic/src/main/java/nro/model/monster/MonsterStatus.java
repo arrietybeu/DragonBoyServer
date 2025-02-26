@@ -1,18 +1,25 @@
 package nro.model.monster;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class MonsterStatus {
+
+    private final Monster monster;
 
     private byte status = 5;
     private byte sys;
-
     private boolean isDisable;
     private boolean isDontMove;
     private boolean isFire;
     private boolean isIce;
     private boolean isWind;
+
+    public MonsterStatus(Monster monster) {
+        this.monster = monster;
+    }
 
     public void resetStatus() {
         this.isDisable = false;

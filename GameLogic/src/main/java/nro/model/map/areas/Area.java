@@ -1,5 +1,6 @@
 package nro.model.map.areas;
 
+import lombok.Setter;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.monster.Monster;
@@ -14,6 +15,7 @@ import nro.server.network.Message;
 import nro.server.LogServer;
 
 @Getter
+
 public class Area {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -22,16 +24,18 @@ public class Area {
     private final int maxPlayers;
     private final GameMap map;
 
+    @Setter
+    private List<Monster> monsters;
+
     private final Map<Integer, Player> players;
-    private final List<Monster> monsters;
+
     private final List<Npc> npcList;
     private final List<ItemMap> items;
 
-    public Area(GameMap map, int zoneId, int maxPlayers, List<Monster> monsters) {
+    public Area(GameMap map, int zoneId, int maxPlayers) {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
-        this.monsters = monsters;
         this.players = new HashMap<>();
         this.items = new ArrayList<>();
         this.npcList = new ArrayList<>();
@@ -117,7 +121,10 @@ public class Area {
     public Player getPlayer(int id) {
         this.lock.readLock().lock();
         try {
-            return this.players.get(id);
+            Player player = this.players.get(id);
+            if (player.getTypeObject() == 1) {
+                return player;
+            }
         } catch (Exception ex) {
             LogServer.LogException("getPlayer: " + ex.getMessage());
             ex.printStackTrace();
@@ -167,6 +174,23 @@ public class Area {
             }
         } catch (Exception ex) {
             LogServer.LogException("getNpcById: " + npcId + " message: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            this.lock.readLock().unlock();
+        }
+        return null;
+    }
+
+    public Monster getMonsterInAreaById(int monsterId) {
+        this.lock.readLock().lock();
+        try {
+            for (Monster monster : this.getMonsters()) {
+                if (monster.getId() == monsterId) {
+                    return monster;
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage());
             ex.printStackTrace();
         } finally {
             this.lock.readLock().unlock();

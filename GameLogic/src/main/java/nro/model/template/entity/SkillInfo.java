@@ -33,7 +33,6 @@ public class SkillInfo {
     private SkillOptionTemplate[] options;
     private boolean paintCanNotUseSkill;
 
-
     public SkillInfo() {
     }
 

@@ -49,6 +49,10 @@ public class PlayerPoints {
         this.player = player;
     }
 
+    public boolean isDead() {
+        return this.currentHP <= 0;
+    }
+
     public void setCurrentHp(long hp) {
         if (hp < 0) {
             this.currentHP = 0;

@@ -150,7 +150,6 @@ public class PlayerTask {
         this.sendTaskInfo();
     }
 
-
     private boolean checkTaskInfo(int taskId, int index) {
         return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
     }

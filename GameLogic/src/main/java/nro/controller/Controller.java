@@ -24,7 +24,6 @@ public class Controller {
         try {
             IMessageProcessor processor = this.factory.getProcessor(cmd);
             if (processor != null) {
-//                System.out.println("Processing message: " + cmd);
                 processor.process(session, msg);
             } else {
                 var info = "Unknow command: [" + cmd + "] " + ConstsCmd.getMessageName(cmd);

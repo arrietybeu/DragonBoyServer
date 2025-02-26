@@ -2,6 +2,7 @@ package nro.server.manager;
 
 import lombok.Getter;
 import nro.model.player.Player;
+import nro.repositories.account.AccountRepository;
 import nro.server.network.Session;
 import nro.repositories.player.PlayerUpdate;
 import nro.server.LogServer;
@@ -167,6 +168,7 @@ public class SessionManager {
             // save data player va giai phong du lieu  khi player da vao game
             player.dispose();
             PlayerUpdate.getInstance().savePlayer(player);
+            AccountRepository.updateAccountLogout(session.getUserInfo());
         }
     }
 

@@ -291,19 +291,29 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
 
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    byte[] skillShortCut = new byte[10];
-
-                    for (int i = 0; i < 10; i++) {
-                        skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
-                    }
-
-                    player.getPlayerSkill().setSkillShortCut(skillShortCut);
-                } else {
-                    throw new SQLException("Khong tim thay skill short cut for player id: " + player.getId());
+                if (!resultSet.next()) {
+                    throw new SQLException("Không tìm thấy skill short cut cho player id: " + player.getId());
                 }
+
+                byte[] skillShortCut = new byte[10];
+                for (int i = 0; i < 10; i++) {
+                    skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
+                }
+                player.getPlayerSkill().setSkillShortCut(skillShortCut);
+
+                SkillInfo selectedSkill = null;
+                for (byte skillId : skillShortCut) {
+                    selectedSkill = player.getPlayerSkill().getSkillById(skillId);
+                    if (selectedSkill != null) break;
+                }
+
+                if (selectedSkill == null) {
+                    selectedSkill = player.getPlayerSkill().getSkillDefaultByGender(player.getGender());
+                }
+                player.getPlayerSkill().setSkillSelect(selectedSkill);
             }
         }
     }
+
 
 }

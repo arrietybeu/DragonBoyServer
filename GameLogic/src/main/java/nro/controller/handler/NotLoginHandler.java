@@ -12,6 +12,7 @@ import nro.service.ResourceService;
 import nro.service.Service;
 import nro.server.manager.SessionManager;
 import nro.server.LogServer;
+import nro.utils.Util;
 
 @APacketHandler(-29)
 public class NotLoginHandler implements IMessageProcessor {
@@ -59,15 +60,6 @@ public class NotLoginHandler implements IMessageProcessor {
 
             if (!accountRepository.checkAccount(userInfo)) {
                 Service.sendLoginFail(userInfo.getSession());
-                session.getSessionInfo().constLogin++;
-
-                if (session.getSessionInfo().constLogin > 10) {
-                    session.getSessionInfo().setBanUntil(System.currentTimeMillis() + 3 * 60 * 1000);
-                    Service.dialogMessage(session,
-                            "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi 3 phút để thử lại.");
-                }
-                // SessionManager.getInstance().kickSession(userInfo.getSession());
-                // checkAccount return false => account not exist
                 return;
             }
 
@@ -115,12 +107,13 @@ public class NotLoginHandler implements IMessageProcessor {
             var typeClient = message.reader().readByte();
             var zoomLevel = message.reader().readByte();
 
-            if (zoomLevel < 0 || zoomLevel > 4) {
+            if (zoomLevel <= 0 || zoomLevel > 4) {
                 SessionManager.getInstance().kickSession(session);
                 throw new Exception("Error zoomLevel: " + zoomLevel);
             }
 
             clientInfo.setTypeClient(typeClient);
+            System.out.println("set zoom levle: " + zoomLevel);
             clientInfo.setZoomLevel(zoomLevel);
 
             var is = message.reader().readBoolean();
@@ -153,8 +146,7 @@ public class NotLoginHandler implements IMessageProcessor {
         long currentTime = System.currentTimeMillis();
         if (session.getSessionInfo().getBanUntil() > currentTime) {
             long remainingSeconds = (session.getSessionInfo().getBanUntil() - currentTime) / 1000;
-            Service.dialogMessage(session,
-                    "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi " + remainingSeconds + " giây để thử lại.");
+            Service.dialogMessage(session, "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi " + remainingSeconds + " giây để thử lại.");
             return false;
         }
 

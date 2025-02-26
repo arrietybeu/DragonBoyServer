@@ -1,5 +1,6 @@
 package nro.repositories.account;
 
+import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.UserInfo;
@@ -7,20 +8,15 @@ import nro.server.manager.UserManager;
 import nro.service.Service;
 import nro.server.manager.SessionManager;
 import nro.server.LogServer;
+import nro.utils.Util;
 
 import java.sql.*;
 
 @SuppressWarnings("ALL")
 public class AccountRepository {
 
-    private static AccountRepository instance;
-
-    public static AccountRepository getInstance() {
-        if (instance == null) {
-            instance = new AccountRepository();
-        }
-        return instance;
-    }
+    @Getter
+    private static final AccountRepository instance = new AccountRepository();
 
     public boolean checkAccount(UserInfo userInfo) {
         try {
@@ -34,35 +30,72 @@ public class AccountRepository {
 
             String query = "SELECT * FROM `account` WHERE `username` = ? AND `password` = ? LIMIT 1;";
 
-            try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login");
-                 PreparedStatement ps = conn.prepareStatement(query)) {
+            try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login"); PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, username);
                 ps.setString(2, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         Service.dialogMessage(userInfo.getSession(), "Thông tin đăng nhập không chính xác");
+                        userInfo.getSession().getSessionInfo().constLogin++;
+                        if (userInfo.getSession().getSessionInfo().constLogin > 10) {
+                            userInfo.getSession().getSessionInfo().setBanUntil(System.currentTimeMillis() + 3 * 60 * 1000);
+                            Service.dialogMessage(userInfo.getSession(), "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi 3 phút để thử lại.");
+                        }
+                        Util.delay(2000);
+                        SessionManager.getInstance().kickSession(userInfo.getSession());
                         return false;
                     } else {
                         userInfo.setId(rs.getInt("id"));
-
-//                        UserInfo plOnline = UserManager.getInstance().get(userInfo.getId());
-//                        System.out.println("plOnline: " + plOnline);
-//                        if (plOnline != null) {
-//                            Service.dialogMessage(plOnline.getSession(), "Bạn hiện tại không thể vào Account\nkhi có người đang trong Account của bạn");
-//                            Service.dialogMessage(userInfo.getSession(), "Bạn hiện tại không thể vào Account\nkhi có người đang trong Account của bạn");
-//                            try {
-//                                Thread.sleep(1000);
-//                            } catch (Exception ignored) {
-//                            }
-//                            return false;
-//                        }
+                        UserInfo plOnline = UserManager.getInstance().get(userInfo.getId());
+                        if (plOnline != null) {
+                            System.out.println("plOnline: " + plOnline.getUsername());
+                            String text = "Tài khoản đã có người đăng nhập xin quay lại sau vài phút";
+                            Service.dialogMessage(plOnline.getSession(), text);
+                            Service.dialogMessage(userInfo.getSession(), text);
+                            Util.delay(2000);
+                            SessionManager.getInstance().kickSession(userInfo.getSession());
+                            SessionManager.getInstance().kickSession(plOnline.getSession());
+                            return false;
+                        }
 
                         userInfo.setAdmin(rs.getBoolean("is_admin"));
                         userInfo.setActive(rs.getBoolean("active"));
-                        userInfo.setLastTimeLogin(rs.getTimestamp("last_time_login").getTime());
-                        userInfo.setLastTimeLogout(rs.getTimestamp("last_time_logout").getTime());
                         userInfo.setBan(rs.getBoolean("ban"));
+
+                        long lastTimeLogin = rs.getTimestamp("last_time_login").getTime();
+                        long lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();
+                        long currentTime = System.currentTimeMillis();
+
+                        userInfo.setLastTimeLogin(lastTimeLogin);
+                        userInfo.setLastTimeLogout(lastTimeLogout);
+
+                        if ((lastTimeLogin - lastTimeLogout) <= 5000 && (currentTime - lastTimeLogout) < 10000) {
+                            long waitTime = 10000 - (currentTime - lastTimeLogout);
+                            short time = (short) (waitTime / 1000);
+
+                            Service.sendLoginDe(userInfo.getSession(), time);
+                            System.out.println("waitTime: " + waitTime);
+                            try {
+                                Thread.sleep(time * 1000L);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            UserInfo pl = UserManager.getInstance().get(userInfo.getId());
+                            if (pl != null) {
+                                System.out.println("plOnline: " + pl.getUsername());
+                                String text = "Tài khoản đã có người đăng nhập xin quay lại sau vài phút";
+                                Service.dialogMessage(pl.getSession(), text);
+                                Service.dialogMessage(userInfo.getSession(), text);
+                                Util.delay(2000);
+                                SessionManager.getInstance().kickSession(userInfo.getSession());
+                                SessionManager.getInstance().kickSession(pl.getSession());
+                                return false;
+                            }
+
+                            System.out.println("vao game");
+                        }
 
                         if (userInfo.isBan()) {
                             Service.dialogMessage(userInfo.getSession(), "Tài khoản đã bị khóa vì có hành vi xấu ảnh hưởng server");
@@ -81,7 +114,6 @@ public class AccountRepository {
             e.printStackTrace();
             return false;
         }
-
         return true;
     }
 
@@ -100,11 +132,7 @@ public class AccountRepository {
         }
     }
 
-    public void updateAccount(String username, String password) {
-        // TODO update account
-    }
-
-    public void updateAccountLogout(UserInfo userInfo) {
+    public static void updateAccountLogout(UserInfo userInfo) {
         String query = "UPDATE account SET last_time_logout = ? WHERE id = ?;";
 
         try (Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {

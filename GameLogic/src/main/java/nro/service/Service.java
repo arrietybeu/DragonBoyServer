@@ -52,6 +52,15 @@ public class Service {
         }
     }
 
+    public static void sendLoginDe(Session session, short delay) {
+        try (Message message = new Message(122)) {
+            message.writer().writeShort(delay);
+            session.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("Error sendLoginDe: " + ex.getMessage());
+        }
+    }
+
     public static void sendLoginFail(Session session) {
         try (Message message = new Message(-102)) {
             message.writer().writeByte(0);

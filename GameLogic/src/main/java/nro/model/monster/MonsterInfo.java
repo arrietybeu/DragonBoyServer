@@ -7,12 +7,19 @@ import nro.server.manager.MonsterManager;
 @Data
 public class MonsterInfo {
 
-    private int id;
+    private final Monster monster;
+
     private boolean isBoss;
     private byte levelBoss;
+    private long lastTimeDie;
+    private long lastTimeAttack;
+
+    public MonsterInfo(Monster monster) {
+        this.monster = monster;
+    }
 
     public String getName() {
-        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.id);
+        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.monster.getTemplateId());
         return template.name();
     }
 }

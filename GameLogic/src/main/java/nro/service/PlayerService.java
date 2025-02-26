@@ -53,6 +53,8 @@ public class PlayerService {
         player.getSession().getSessionInfo().setLoadData(true);
         player.getArea().addPlayer(player);
         Service service = Service.getInstance();
+        this.sendSelectSkillShortCut(player, "KSkill");
+        this.sendSelectSkillShortCut(player, "OSkill");
         SpeacialSkillService.getInstance().sendSpeacialSkill(player);// 112
         this.sendPointForMe(player);// -42
         TaskService.getInstance().sendTaskMain(player);// 40
@@ -124,6 +126,20 @@ public class PlayerService {
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendSkillShortCut: " + e.getMessage());
+        }
+    }
+
+    public void sendSelectSkillShortCut(Player player, String text) {
+        try (Message message = new Message(-30)) {
+            DataOutputStream data = message.writer();
+            data.writeByte(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT);
+            data.writeUTF(text);
+            data.writeInt(player.getPlayerSkill().getSkillShortCut().length);
+            data.write(player.getPlayerSkill().getSkillShortCut());
+            player.sendMessage(message);
+        } catch (Exception exception) {
+            LogServer.LogException("Error sendSelectSkillShortCut: " + exception.getMessage());
+            exception.printStackTrace();
         }
     }
 

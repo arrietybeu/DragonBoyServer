@@ -42,7 +42,6 @@ public final class MessageSender {
             }
 
             msg.writer().writeUTF(ConfigServer.IP);// write ip
-            System.out.println("send ip: " + ConfigServer.IP);
             msg.writer().writeInt(ConfigServer.PORT);// write port
 //            msg.writer().writeBoolean(false);// cai này vô cùng quan trọng nếu gửi true thì sẽ không vô được game =))
             msg.writer().writeByte(0);

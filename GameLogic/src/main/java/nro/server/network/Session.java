@@ -156,12 +156,16 @@ public final class Session {
 
     public void doSendMessage(Message message) {
         try {
+            if (this.messageSender == null) {
+                LogServer.LogWarning("Không thể gửi tin nhắn: Session đã đóng.");
+                return;
+            }
             this.messageSender.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error doSendMessage: " + e.getMessage());
-            e.printStackTrace();
         }
     }
+
 
     private boolean isSocketValid() {
         return this.socket != null && !this.socket.isClosed() && this.socket.isConnected();
@@ -199,9 +203,9 @@ public final class Session {
 
     private void disconnect() {
         sessionInfo.setConnected(false);
+        sessionInfo.setLogin(false);
         sessionInfo.curR = 0;
         sessionInfo.curW = 0;
-
         executorService.shutdown();
 
         try {

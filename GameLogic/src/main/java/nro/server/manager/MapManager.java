@@ -163,17 +163,18 @@ public class MapManager implements IManager {
     private List<Area> initArea(Connection connection, GameMap map, int zone, int maxPlayer) {
         List<Area> areas = new ArrayList<>();
         for (int i = 0; i < zone; i++) {
-            Area area = new Area(map, i, maxPlayer, this.loadMonsters(connection, map.getId()));
+            Area area = new Area(map, i, maxPlayer);
+            area.setMonsters(this.loadMonsters(connection, area));
             areas.add(area);
         }
         return areas;
     }
 
-    private List<Monster> loadMonsters(Connection connection, int mapId) {
+    private List<Monster> loadMonsters(Connection connection, Area area) {
         List<Monster> monsters = new ArrayList<>();
         String query = "SELECT * FROM `map_monsters` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, mapId);
+            ps.setInt(1, area.getMap().getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     var id = (rs.getInt("mob_id"));
@@ -181,7 +182,7 @@ public class MapManager implements IManager {
                     var level = (rs.getByte("level"));
                     var x = (rs.getShort("x"));
                     var y = (rs.getShort("y"));
-                    Monster monster = new Monster(id, monsters.size(), hpMax, level, x, y);
+                    Monster monster = new Monster(id, monsters.size(), hpMax, level, x, y, area);
                     monsters.add(monster);
                 }
             }
