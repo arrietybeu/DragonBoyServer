@@ -25,7 +25,7 @@ public class DauThan extends Npc {
         PlayerStatus playerStatus = player.getPlayerStatus();
         List<String> menu = new ArrayList<>();
 
-        if (player.getPlayerTask().getTaskMain().getId() == 0) {
+        if (player.getPlayerTask().getTaskMain().getId() <= 1) {
             menu.add("Thu\nhoạch");
             playerStatus.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
         } else if (playerMagicTree.isUpgrade()) {
@@ -105,23 +105,11 @@ public class DauThan extends Npc {
     }
 
     private void sendMenuCancelUpgrade(Player player) {
-        NpcService.getInstance().createMenu(
-                player,
-                this.getTempId(),
-                ConstMenu.MENU_CANCEL_UPGRADE_MAGIC_TREE,
-                "Hủy nâng cấp hồi " + player.getPlayerMagicTree().getGold(),
-                "Hủy nâng cấp"
-        );
+        NpcService.getInstance().createMenu(player, this.getTempId(), ConstMenu.MENU_CANCEL_UPGRADE_MAGIC_TREE, "Hủy nâng cấp hồi " + player.getPlayerMagicTree().getGold(), "Hủy nâng cấp");
     }
 
     private void sendMenuUpgradeMagicTree(Player player) {
-        NpcService.getInstance().createMenu(
-                player,
-                this.getTempId(),
-                ConstMenu.MENU_UPGRADE_MAGIC_TREE,
-                "Bạn có chắc chắn nâng cấp cây đậu?",
-                "OK", "Từ chối"
-        );
+        NpcService.getInstance().createMenu(player, this.getTempId(), ConstMenu.MENU_UPGRADE_MAGIC_TREE, "Bạn có chắc chắn nâng cấp cây đậu?", "OK", "Từ chối");
 
     }
 }

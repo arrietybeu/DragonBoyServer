@@ -70,7 +70,6 @@ public class MonsterService {
             DataOutputStream data = message.writer();
             data.writeByte(monster.getId());
             data.writeInt(player.getId());
-            System.out.println("sendMonsterAttackPlayer: " + player.getName() + " hp sub " + player.getPlayerPoints().getCurrentHP());
             data.writeLong(player.getPlayerPoints().getCurrentHP());
             if (MpShow > 0) {
                 data.writeLong(player.getPlayerPoints().getCurrentMP());
