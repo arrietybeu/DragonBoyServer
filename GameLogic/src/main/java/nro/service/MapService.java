@@ -1,5 +1,6 @@
 package nro.service;
 
+import nro.consts.ConstTypeObject;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.map.Waypoint;
@@ -15,6 +16,7 @@ import nro.server.LogServer;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public class MapService {
 
@@ -31,7 +33,7 @@ public class MapService {
             List<Area> areas = player.getArea().getMap().getAreas();
             data.writeByte(areas.size());
             for (Area area : areas) {
-                var slPlayer = area.getPlayers().size();
+                int slPlayer = area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
                 data.writeByte(area.getId());
                 data.writeByte(slPlayer < 5 ? 0 : slPlayer < 8 ? 1 : 2);// 0 blue || 1 yellow || 2 red
                 data.writeByte(slPlayer);
@@ -101,7 +103,7 @@ public class MapService {
         List<Waypoint> wayPoints = map.getWaypoints();
         List<BackgroudEffect> backgroudEffects = map.getBackgroudEffects();
 
-        List<Monster> monsters = area.getMonsters();
+        Map<Integer, Monster> monsters = area.getMonsters();
         List<Npc> npcs = area.getNpcList();
         List<ItemMap> itemMaps = area.getItems();
 
@@ -123,7 +125,7 @@ public class MapService {
 
         // send mob
         output.writeByte(monsters.size());
-        for (Monster monster : monsters) {
+        for (Monster monster : monsters.values()) {
             output.writeBoolean(monster.getStatus().isDisable());
             output.writeBoolean(monster.getStatus().isDontMove());
             output.writeBoolean(monster.getStatus().isFire());

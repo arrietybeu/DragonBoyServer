@@ -170,20 +170,21 @@ public class MapManager implements IManager {
         return areas;
     }
 
-    private List<Monster> loadMonsters(Connection connection, Area area) {
-        List<Monster> monsters = new ArrayList<>();
+    private Map<Integer, Monster> loadMonsters(Connection connection, Area area) {
+        Map<Integer, Monster> monsters = new HashMap<>();
         String query = "SELECT * FROM `map_monsters` WHERE map_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, area.getMap().getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    var id = (rs.getInt("mob_id"));
+                    var idTemplate = (rs.getInt("mob_id"));
                     var hpMax = (rs.getLong("max_hp"));
                     var level = (rs.getByte("level"));
                     var x = (rs.getShort("x"));
                     var y = (rs.getShort("y"));
-                    Monster monster = new Monster(id, monsters.size(), hpMax, level, x, y, area);
-                    monsters.add(monster);
+                    var id = monsters.size();
+                    Monster monster = new Monster(idTemplate, id, hpMax, level, x, y, area);
+                    monsters.put(id, monster);
                 }
             }
         } catch (SQLException e) {

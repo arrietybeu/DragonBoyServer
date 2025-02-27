@@ -185,6 +185,9 @@ public class CommandService {
                     case "reload_map":
                         ManagerRegistry.reloadManager(MapManager.class);
                         break;
+                    case "check_user_name":
+                        UserManager.getInstance().checkUserName();
+                        break;
                     default:
                         LogServer.DebugLogic("Command not found: [" + line + "]");
                         break;

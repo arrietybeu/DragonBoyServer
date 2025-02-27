@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.clan.Clan;
 import nro.model.map.areas.Area;
@@ -40,7 +41,7 @@ public class Player extends LiveObject {
     private int teleport = 0;
 
     public Player() {
-        this.setTypeObject(1);
+        this.setTypeObject(ConstTypeObject.TYPE_PLAYER);
         this.playerCurrencies = new PlayerCurrencies(this);
         this.playerPoints = new PlayerPoints(this);
         this.playerTask = new PlayerTask(this);

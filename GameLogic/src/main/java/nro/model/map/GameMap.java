@@ -1,6 +1,7 @@
 package nro.model.map;
 
 import lombok.Data;
+import nro.consts.ConstTypeObject;
 import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
@@ -112,8 +113,7 @@ public class GameMap implements Runnable {
     public Area getArea() {
         List<Area> areas = this.areas;
         for (Area area : areas) {
-            int count = area.getPlayers().size();
-            if (count < area.getMaxPlayers()) {
+            if (area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers()) {
                 return area;
             }
         }

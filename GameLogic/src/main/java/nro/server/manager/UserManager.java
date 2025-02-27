@@ -74,4 +74,33 @@ public class UserManager {
             this.lock.readLock().unlock();
         }
     }
+
+    public void checkUserName() {
+        this.lock.readLock().lock();
+        try {
+            this.userMap.values().forEach(user -> {
+                LogServer.LogWarning("User name is too short: " + user.getUsername());
+            });
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    public boolean checkUserNameLogin(String userName) {
+        this.lock.readLock().lock();
+        try {
+            return this.userMap.values().stream().anyMatch(user -> user.getUsername().equals(userName));
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    public UserInfo checkUserLogin(String userName) {
+        this.lock.readLock().lock();
+        try {
+            return this.userMap.values().stream().filter(user -> user.getUsername().equals(userName)).findFirst().orElse(null);
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
 }

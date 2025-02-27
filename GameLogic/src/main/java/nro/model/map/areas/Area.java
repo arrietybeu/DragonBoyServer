@@ -1,6 +1,8 @@
 package nro.model.map.areas;
 
 import lombok.Setter;
+import nro.consts.ConstTypeObject;
+import nro.model.LiveObject;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
 import nro.model.monster.Monster;
@@ -15,20 +17,17 @@ import nro.server.network.Message;
 import nro.server.LogServer;
 
 @Getter
-
 public class Area {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
     private final int id;
     private final int maxPlayers;
     private final GameMap map;
 
     @Setter
-    private List<Monster> monsters;
+    private Map<Integer, Monster> monsters;
 
     private final Map<Integer, Player> players;
-
     private final List<Npc> npcList;
     private final List<ItemMap> items;
 
@@ -41,23 +40,20 @@ public class Area {
         this.npcList = new ArrayList<>();
     }
 
-    private void updateMonsters() {
+    private void updateLiveObjects(Collection<? extends LiveObject> objects) {
         this.lock.readLock().lock();
         try {
-            for (Monster monster : monsters) {
-                monster.update();
+            for (LiveObject obj : objects) {
+                try {
+                    obj.update();
+                } catch (Exception e) {
+                    LogServer.LogException("Error updating object ID: " + obj.getId() + " in zone " + this.id + " - " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-        } finally {
-            this.lock.readLock().unlock();
-        }
-    }
-
-    private void updatePlayer() {
-        this.lock.readLock().lock();
-        try {
-            for (Player player : this.players.values()) {
-                player.update();
-            }
+        } catch (Exception ex) {
+            LogServer.LogException("updateLiveObjects: " + ex.getMessage());
+            ex.printStackTrace();
         } finally {
             this.lock.readLock().unlock();
         }
@@ -82,10 +78,10 @@ public class Area {
         }
     }
 
-    public void update() {
+    public final void update() {
         try {
-            this.updatePlayer();
-            this.updateMonsters();
+            updateLiveObjects(this.players.values());
+            updateLiveObjects(this.monsters.values());
             this.updateItemMap();
             this.updateNpc();
         } catch (Exception ex) {
@@ -122,16 +118,14 @@ public class Area {
         this.lock.readLock().lock();
         try {
             Player player = this.players.get(id);
-            if (player.getTypeObject() == 1) {
-                return player;
-            }
-        } catch (Exception ex) {
-            LogServer.LogException("getPlayer: " + ex.getMessage());
-            ex.printStackTrace();
+            return (player != null && player.getTypeObject() == ConstTypeObject.TYPE_PLAYER) ? player : null;
         } finally {
             this.lock.readLock().unlock();
         }
-        return null;
+    }
+
+    public Collection<Player> getPlayersByType(int typeObject) {
+        return this.players.values().stream().filter(player -> player.getTypeObject() == typeObject).toList();
     }
 
     public Map<Integer, Player> getAllPlayerInZone() {
@@ -151,7 +145,7 @@ public class Area {
         if (message == null) return;
         this.lock.readLock().lock();
         try {
-            for (Player player : this.players.values()) {
+            for (Player player : this.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
                 if (exclude == null || player != exclude) {
                     player.sendMessage(message);
                 }
@@ -184,11 +178,8 @@ public class Area {
     public Monster getMonsterInAreaById(int monsterId) {
         this.lock.readLock().lock();
         try {
-            for (Monster monster : this.getMonsters()) {
-                if (monster.getId() == monsterId) {
-                    return monster;
-                }
-            }
+            System.out.println("get monsterId: " + monsterId);
+            return this.monsters.get(monsterId);
         } catch (Exception ex) {
             LogServer.LogException("getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage());
             ex.printStackTrace();
@@ -196,6 +187,30 @@ public class Area {
             this.lock.readLock().unlock();
         }
         return null;
+    }
+
+    public void addMonster(Monster monster) {
+        this.lock.writeLock().lock();
+        try {
+            this.monsters.put(monster.getId(), monster);
+        } catch (Exception ex) {
+            LogServer.LogException("addMonster: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+    }
+
+    public void removeMonster(int id) {
+        this.lock.writeLock().lock();
+        try {
+            this.monsters.remove(id);
+        } catch (Exception ex) {
+            LogServer.LogException("removeMonster: " + ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 
 }

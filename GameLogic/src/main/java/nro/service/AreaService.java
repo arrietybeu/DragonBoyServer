@@ -1,6 +1,7 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.consts.ConstTypeObject;
 import nro.model.map.GameMap;
 import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
@@ -154,7 +155,7 @@ public class AreaService {
             return;
         }
 
-        if (newArea.getPlayers().size() >= newArea.getMaxPlayers()) {
+        if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
             this.keepPlayerInSafeZone(player);
             Service.getInstance().sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
             return;

@@ -1,9 +1,11 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.consts.ConstTypeObject;
 import nro.model.item.Item;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
+import nro.model.monster.Monster;
 import nro.model.player.Player;
 import nro.server.manager.*;
 import nro.server.network.Message;
@@ -39,7 +41,6 @@ public class ChatService {
         try {
             if (text.startsWith("m ")) {
                 int mapId = this.getNumber(text);
-
                 GameMap newMap = MapManager.getInstance().findMapById(mapId);
                 if (newMap == null) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Map không tồn tại: " + mapId, false);
@@ -74,6 +75,20 @@ public class ChatService {
                 Item item = ItemService.createAndInitItem(itemId);
                 playerChat.getPlayerInventory().addItemBag(item);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
+                return;
+            } else if (text.startsWith("rm ")) {
+                int mobId = this.getNumber(text);
+                if (mobId == -1) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Mob không hợp lệ: " + text, false);
+                    return;
+                }
+                Monster monster = playerChat.getArea().getMonsterInAreaById(mobId);
+                if (monster == null) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Không tìm thấy mob: " + mobId, false);
+                    return;
+                }
+                monster.die(playerChat, 500);
+                service.sendChatGlobal(playerChat.getSession(), null, "Đã xóa mob: " + mobId, false);
                 return;
             }
             switch (text) {
@@ -119,7 +134,7 @@ public class ChatService {
                     service.sendChatGlobal(playerChat.getSession(), null, "Load Task Manager Thành Công", false);
                     break;
                 case "area_check":
-                    var info = "Area Size PLayer: " + playerChat.getArea().getPlayers().size();
+                    var info = "Area Size PLayer: " + playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
                     service.sendChatGlobal(playerChat.getSession(), null, info, false);
                     break;
                 default:

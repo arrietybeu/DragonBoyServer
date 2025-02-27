@@ -154,8 +154,12 @@ public class ResourceService {
 
     public void sendSmallVersion(Session session) {
         var res = ResourcesManager.getInstance();
+        var zoomLevel = session.getClientInfo().getZoomLevel();
+        if (zoomLevel < 1 || zoomLevel > 4) {
+            throw new IllegalArgumentException("Invalid zoom level: " + zoomLevel);
+        }
         byte[][] smallVersion = res.getSmallVersion();
-        byte[] data = smallVersion[session.getClientInfo().getZoomLevel() - 1];
+        byte[] data = smallVersion[zoomLevel - 1];
         try (Message message = new Message(-77)) {
             message.writer().writeShort(data.length);
             message.writer().write(data);
@@ -167,8 +171,12 @@ public class ResourceService {
 
     public void sendBackgroundVersion(Session session) {
         var res = ResourcesManager.getInstance();
+        var zoomLevel = session.getClientInfo().getZoomLevel();
+        if (zoomLevel < 1 || zoomLevel > 4) {
+            throw new IllegalArgumentException("Invalid zoom level: " + zoomLevel);
+        }
         byte[][] backgroundVersion = res.getBackgroundVersion();
-        byte[] data = backgroundVersion[session.getClientInfo().getZoomLevel() - 1];
+        byte[] data = backgroundVersion[zoomLevel - 1];
 
         try (Message message = new Message(-93)) {
             message.writer().writeShort(data.length);
@@ -366,12 +374,28 @@ public class ResourceService {
 
     public void clientOk(Session session) {
         if (!session.getSessionInfo().isClientOk()) {
-            ResourceService resourcesService = ResourceService.getInstance();
-            resourcesService.sendDataBackgroundMapTemplate(session);// -31
-            resourcesService.sendTileSetInfo(session); //-82
-            resourcesService.sendSmallVersion(session);// -77
-            resourcesService.sendBackgroundVersion(session);// -93
+
+            this.sendDataBackgroundMapTemplate(session);// -31
+            this.sendTileSetInfo(session); //-82
+            this.sendSmallVersion(session);// -77
+            this.sendBackgroundVersion(session);// -93
             session.getSessionInfo().setClientOk(true);
         }
     }
+
+    public void sendResourcesLogin(Session session) {
+        try {
+            var zoomLevel = session.getClientInfo().getZoomLevel();
+            if (zoomLevel < 1 || zoomLevel > 4) {
+                LogServer.LogException("Error sendResourcesLogin: Invalid zoom level: " + zoomLevel);
+                return;
+            }
+            this.sendSmallVersion(session);// -77
+            this.sendBackgroundVersion(session);// -93
+            this.sendVersionDataGame(session);
+        } catch (Exception exception) {
+            LogServer.LogException("Error sendResourcesLogin: " + exception.getMessage());
+        }
+    }
+
 }

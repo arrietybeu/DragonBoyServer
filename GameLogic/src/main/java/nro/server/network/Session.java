@@ -59,7 +59,7 @@ public final class Session {
             this.handleInitializationError();
             LogServer.LogException("Error Session: " + e.getMessage());
         }
-        LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" + Thread.activeCount());
+        LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession());
     }
 
     private void initCommunication() throws IOException {

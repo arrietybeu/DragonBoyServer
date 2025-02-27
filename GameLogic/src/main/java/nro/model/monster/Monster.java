@@ -2,6 +2,7 @@ package nro.model.monster;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
@@ -9,6 +10,7 @@ import nro.server.LogServer;
 import nro.service.MonsterService;
 import nro.utils.Util;
 
+import java.util.Collection;
 import java.util.Map;
 
 @Getter
@@ -37,13 +39,19 @@ public class Monster extends LiveObject {
         if (this.stats.isDead()) {
             if (Util.canDoWithTime(this.info.getLastTimeDie(), 5000)) {
                 this.live(0);
-                System.out.println("quai hoi sink: " + this.getInfo().getName());
             }
         } else {
-            if (Util.canDoWithTime(this.info.getLastTimeAttack(), 2000)) {
-                this.attackPlayer();
+            if (this.isMonsterAttack()) {
+                if (Util.canDoWithTime(this.info.getLastTimeAttack(), 2000)) {
+                    this.attackPlayer();
+                }
             }
         }
+    }
+
+    private boolean isMonsterAttack() {
+        return this.status.getStatus() != 0 && this.status.getStatus() != 1 && !this.stats.isDead()
+                && this.templateId != 0 && this.templateId != 76 && this.templateId != 94;
     }
 
     public void takeDamage(Player plAttack, long damage) {
@@ -54,11 +62,9 @@ public class Monster extends LiveObject {
 //        MonsterService.getInstance().sendMonsterUpdateHP(this);
 
         if (this.stats.isDead()) {
-            this.die();
-            MonsterService.getInstance().sendMonsterDie(plAttack, this, damage);
+            this.die(plAttack, damage);
         }
     }
-
 
     public void live(int level) {
         this.stats.setDead(false);
@@ -66,13 +72,15 @@ public class Monster extends LiveObject {
         this.info.setLevelBoss((byte) level);
         this.stats.setHp(this.stats.getMaxHp());
         MonsterService.getInstance().sendMonsterRevice(this);
+        System.out.println("quai hoi sink: " + this.getInfo().getName());
     }
 
-    public void die() {
+    public void die(Player plAttack, long damage) {
         this.stats.setHp(0);
         this.stats.setDead(true);
         this.status.setStatus((byte) 0);
         this.info.setLastTimeDie(System.currentTimeMillis());
+        MonsterService.getInstance().sendMonsterDie(plAttack, this, damage);
     }
 
     private void attackPlayer() {
@@ -92,12 +100,12 @@ public class Monster extends LiveObject {
     }
 
     private long constDame(Player player) {
+        // TODO bù trừ dame
         return this.stats.getDameGoc();
     }
 
     private Player playerCanAttack() {
-        Map<Integer, Player> players = this.area.getPlayers();
-        for (Player player : players.values()) {
+        for (Player player : this.area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
             if (player == null) continue;
             if (player.getPlayerPoints().isDead()) continue;
             if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 80) {
@@ -107,4 +115,7 @@ public class Monster extends LiveObject {
         return null;
     }
 
+    @Override
+    public void dispose() {
+    }
 }

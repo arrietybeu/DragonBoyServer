@@ -12,7 +12,6 @@ import nro.service.ResourceService;
 import nro.service.Service;
 import nro.server.manager.SessionManager;
 import nro.server.LogServer;
-import nro.utils.Util;
 
 @APacketHandler(-29)
 public class NotLoginHandler implements IMessageProcessor {
@@ -56,21 +55,39 @@ public class NotLoginHandler implements IMessageProcessor {
 
             session.getClientInfo().setVersion(version);
             UserInfo userInfo = new UserInfo(session, username, password);
+
             AccountRepository accountRepository = AccountRepository.getInstance();
 
-            if (!accountRepository.checkAccount(userInfo)) {
+            if (accountRepository.handleCheckUserNameOnline(userInfo)) {
+                return;
+            }
+
+            if (UserManager.getInstance().checkUserNameLogin(username)) {
+                userInfo.getSession().getSessionInfo().constLogin++;
                 Service.sendLoginFail(userInfo.getSession());
                 return;
             }
 
-            session.getSessionInfo().constLogin = 0;
+            if (!accountRepository.handleLogin(userInfo)) {
+                userInfo.getSession().getSessionInfo().constLogin++;
+                Service.sendLoginFail(userInfo.getSession());
+                return;
+            }
 
-            ResourceService resourcesService = ResourceService.getInstance();
-            resourcesService.sendSmallVersion(session);// -77
-            resourcesService.sendBackgroundVersion(session);// -93
-            resourcesService.sendVersionDataGame(session);
+            if (accountRepository.checkLogin(userInfo)) {
+                userInfo.getSession().getSessionInfo().constLogin++;
+                Service.sendLoginFail(userInfo.getSession());
+                return;
+            }
+
+            if (accountRepository.handleCheckUserNameOnline(userInfo)) {
+                return;
+            }
+
+            session.getSessionInfo().constLogin = 0;
             UserManager.getInstance().add(userInfo);
             session.getSessionInfo().setLogin(true);
+            ResourceService.getInstance().sendResourcesLogin(session);
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException("Error login: " + e.getMessage());
@@ -113,7 +130,6 @@ public class NotLoginHandler implements IMessageProcessor {
             }
 
             clientInfo.setTypeClient(typeClient);
-            System.out.println("set zoom levle: " + zoomLevel);
             clientInfo.setZoomLevel(zoomLevel);
 
             var is = message.reader().readBoolean();

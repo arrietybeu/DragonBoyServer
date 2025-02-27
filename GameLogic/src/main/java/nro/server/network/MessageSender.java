@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import nro.consts.ConstsCmd;
 import nro.server.config.ConfigServer;
 import nro.server.manager.SessionManager;
 import nro.server.LogServer;
@@ -94,15 +95,10 @@ public final class MessageSender {
 //            if (size >= 65_535) {
 //                LogServer.DebugLogic("BigData: " + msg.getCommand() + " size: " + size + " bytes");
 //            }
-            if (msg.getCommand() == -32// BACKGROUND_TEMPLATE
-                    || msg.getCommand() == -66// GET_EFFDATA
-                    || msg.getCommand() == 11// REQUEST_MOB_TEMPLATE
-                    || msg.getCommand() == -67// REQUEST_ICON
-                    || msg.getCommand() == -74// GET_IMAGE_SOURCE
-                    || msg.getCommand() == -87// UPDATE_DATA
-                    || msg.getCommand() == 66// GET_IMG_BY_NAME
-                    || msg.getCommand() == 12// CMD_EXTRA_BIG
-            ) {
+            if (msg.getCommand() == ConstsCmd.BACKGROUND_TEMPLATE || msg.getCommand() == ConstsCmd.GET_EFFDATA
+                    || msg.getCommand() == ConstsCmd.REQUEST_MOB_TEMPLATE || msg.getCommand() == ConstsCmd.REQUEST_ICON
+                    || msg.getCommand() == ConstsCmd.GET_IMAGE_SOURCE || msg.getCommand() == ConstsCmd.UPDATE_DATA
+                    || msg.getCommand() == ConstsCmd.GET_IMG_BY_NAME || msg.getCommand() == ConstsCmd.CMD_EXTRA_BIG) {
                 byte b = writeKey((byte) (size));
                 dos.writeByte(b - 128);
                 byte b2 = writeKey((byte) (size >> 8));

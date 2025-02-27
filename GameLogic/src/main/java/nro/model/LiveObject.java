@@ -59,9 +59,8 @@ public abstract class LiveObject {
         return BIRD_NAMES[gender];
     }
 
-    public void update() {
-    }
+    public abstract void update();
 
-    public void dispose() {
-    }
+    public abstract void dispose();
+
 }
