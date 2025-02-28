@@ -11,6 +11,7 @@ import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
+import nro.utils.Util;
 
 import java.io.DataOutputStream;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class AreaService {
                 data.writeShort(playerFashion.getMount());
             }
 
-            data.writeByte(playerFashion.getFlag());
+            data.writeByte(playerFashion.getFlagPk());
             data.writeByte(playerInfo.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
             data.writeShort(playerInfo.getAura());
             data.writeByte(playerInfo.getEffSetItem());
@@ -130,7 +131,7 @@ public class AreaService {
                 return;
             }
 
-            this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY());
+            this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY(), 0);
 
         } catch (Exception ex) {
             LogServer.LogException("playerChangerMap: " + ex.getMessage());
@@ -139,16 +140,16 @@ public class AreaService {
     }
 
     public void changeArea(Player player, Area newArea) {
-        this.transferPlayer(player, newArea, player.getX(), player.getY());
+        this.transferPlayer(player, newArea, player.getX(), player.getY(), 0);
     }
 
-    public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
+    public void gotoMap(Player player, GameMap goMap, short goX, short goY, int teleport) {
         Area newArea = goMap.getArea();
-        this.transferPlayer(player, newArea, goX, goY);
+        this.transferPlayer(player, newArea, goX, goY, teleport);
         player.getPlayerTask().checkDoneTaskGoMap();
     }
 
-    private void transferPlayer(Player player, Area newArea, short x, short y) {
+    private void transferPlayer(Player player, Area newArea, short x, short y, int teleport) {
         if (newArea == null) {
             this.keepPlayerInSafeZone(player);
             Service.getInstance().sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
@@ -161,23 +162,23 @@ public class AreaService {
             return;
         }
 
-        this.playerExitArea(player);
+        this.playerExitArea(player, teleport);
 
         newArea.addPlayer(player);
         player.setArea(newArea);
-
         player.setX(x);
         player.setY(y);
-
         this.sendMessageChangerMap(player);
+
         this.sendInfoAllPlayerInArea(player);
         this.sendPlayerInfoToAllInArea(player);
     }
 
-    public void playerExitArea(Player player) {
+    public void playerExitArea(Player player, int teleport) {
         try {
             Area area = player.getArea();
             if (area.getAllPlayerInZone().containsKey(player.getId())) {
+                this.sendTeleport(player, teleport);
                 this.sendRemovePlayerExitArea(player);
                 area.removePlayer(player);
             }
@@ -240,5 +241,19 @@ public class AreaService {
         }
     }
 
+    public void sendTeleport(Player player, int teleport) {
+        if (teleport == 0) {
+            return;
+        }
+        try (Message message = new Message(-65)) {
+            DataOutputStream data = message.writer();
+            data.writeInt(player.getId());
+            data.writeByte(teleport);
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendTeleport: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
 
 }

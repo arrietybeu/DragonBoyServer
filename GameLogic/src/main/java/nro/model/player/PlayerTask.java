@@ -173,4 +173,11 @@ public class PlayerTask {
         }
     }
 
+    public boolean checkMapCanJoinToTask(int mapId) {
+//        return switch (mapId) {
+//            case ConstMap.MAP_OFFLINE ->
+//        };
+        return false;
+    }
+
 }

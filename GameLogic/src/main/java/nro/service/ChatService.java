@@ -57,7 +57,7 @@ public class ChatService {
                 short x = 500;
                 short y = (short) newArea.getMap().yPhysicInTop(x, 0);
 
-                AreaService.getInstance().gotoMap(playerChat, newMap, x, y);
+                AreaService.getInstance().gotoMap(playerChat, newMap, x, y, 0);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
             } else if (text.startsWith("hp ")) {

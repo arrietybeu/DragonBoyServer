@@ -24,7 +24,8 @@ public class ChangeAreaHandler implements IMessageProcessor {
             var areaId = message.reader().readByte();
             List<Area> areaList = player.getArea().getMap().getAreas();
             if (areaId <= 0 && areaId >= areaList.size()) {
-                Service.getInstance().sendChatGlobal(player.getSession(), null, "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
+                Service.getInstance().sendChatGlobal(player.getSession(), null,
+                        "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
                 return;
             }
             Area area = areaList.get(areaId);

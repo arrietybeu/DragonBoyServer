@@ -14,7 +14,6 @@ public class PlayerCurrencies {
 
     private long gold;
 
-
     public PlayerCurrencies(Player player) {
         this.player = player;
     }

@@ -24,7 +24,6 @@ public class PlayerReviveHandler implements IMessageProcessor {
         }
         try {
             if (player.getPlayerCurrencies().subCurrency(1)) {
-                System.out.println("PlayerReviveHandler: " + player.getName() + " revive");
                 if (player.getPlayerPoints().isDead()) {
                     player.getPlayerStatus().setLastTimeLive(time);
                     player.getPlayerPoints().setLive();

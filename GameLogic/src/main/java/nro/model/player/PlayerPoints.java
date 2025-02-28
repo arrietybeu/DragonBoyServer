@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.service.AreaService;
 import nro.service.PlayerService;
 
 @Getter
@@ -95,6 +96,17 @@ public class PlayerPoints {
         playerService.sendCurrencyHpMp(this.player);
         playerService.sendPlayerRevive(this.player);
         playerService.sendPlayerReviveToArea(this.player);
+    }
+
+    public void returnTownFromDead() {
+        if (!this.isDead()) return;
+
+        this.currentHP = 1;
+        this.player.getPlayerStatus().setLockMove(false);
+
+        PlayerService playerService = PlayerService.getInstance();
+        playerService.sendCurrencyHpMp(player);
+        playerService.sendPlayerRevive(player);
     }
 
     @Override

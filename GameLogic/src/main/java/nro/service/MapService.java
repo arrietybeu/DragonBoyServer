@@ -26,6 +26,10 @@ public class MapService {
         public static final MapService instance = new MapService();
     }
 
+    public static MapService getInstance() {
+        return InstanceHolder.instance;
+    }
+
     public void sendListUIArea(Player player) {
         try (Message message = new Message(29)) {
             DataOutputStream data = message.writer();
@@ -49,10 +53,6 @@ public class MapService {
             LogServer.LogException("sendListUIArea: " + ex.getMessage());
             ex.printStackTrace();
         }
-    }
-
-    public static MapService getInstance() {
-        return InstanceHolder.instance;
     }
 
     public void requestMaptemplate(Player player) {

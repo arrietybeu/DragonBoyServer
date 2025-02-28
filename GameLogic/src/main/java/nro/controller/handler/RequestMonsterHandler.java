@@ -9,7 +9,7 @@ import nro.server.LogServer;
 import nro.service.ResourceService;
 
 @APacketHandler(11)
-public class RequestMobHandler implements IMessageProcessor {
+public class RequestMonsterHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
@@ -19,7 +19,7 @@ public class RequestMobHandler implements IMessageProcessor {
             var id = message.reader().readShort();
             ResourceService.getInstance().sendMonsterData(player, id);
         } catch (Exception e) {
-            LogServer.LogException("Error RequestMobHandler: " + e.getMessage());
+            LogServer.LogException("Error RequestMonsterHandler: " + e.getMessage());
             e.printStackTrace();
         }
     }

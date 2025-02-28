@@ -1,7 +1,7 @@
 package nro.service;
 
 import lombok.Getter;
-import nro.model.item.FlagBag;
+import nro.model.item.Flag;
 import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.manager.ItemManager;
@@ -19,12 +19,12 @@ public class ItemService {
         try (Message message = new Message(-103);
              DataOutputStream writer = message.writer()) {
 
-            List<FlagBag> flagBags = ItemManager.getInstance().getFlagBags();
+            List<Flag> flags = ItemManager.getInstance().getFlags();
             writer.writeByte(0);
-            writer.writeByte(flagBags.size());
+            writer.writeByte(flags.size());
 
-            for (FlagBag flagBag : flagBags) {
-                var item = flagBag.itemFlagBag();
+            for (Flag flag : flags) {
+                var item = flag.itemFlagBag();
                 writer.writeShort(item.getTemplate().id());
                 writer.writeByte(item.getItemOptions().size());
 
@@ -37,6 +37,32 @@ public class ItemService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendShowListFlagBag: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void sendChangeFlag(Player player, int index) {
+        try (Message message = new Message(-103);
+             DataOutputStream writer = message.writer()) {
+            writer.writeByte(1);
+            writer.writeInt(player.getId());
+            writer.writeByte(index);
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendChangeFlag: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void sendImageFlag(Player player, int index, int icon) {
+        try (Message message = new Message(-103);
+             DataOutputStream writer = message.writer()) {
+            writer.writeByte(2);
+            writer.writeByte(index);
+            writer.writeShort(icon);
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendChangeFlag: " + ex.getMessage());
             ex.printStackTrace();
         }
     }

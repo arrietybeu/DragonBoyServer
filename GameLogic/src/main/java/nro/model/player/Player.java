@@ -5,11 +5,17 @@ import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.clan.Clan;
+import nro.model.item.Flag;
 import nro.model.map.areas.Area;
 import nro.model.discpile.Disciple;
+import nro.server.LogServer;
+import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.service.AreaService;
+import nro.service.ItemService;
+import nro.service.PlayerService;
+import nro.service.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -67,6 +73,56 @@ public class Player extends LiveObject {
         return ChronoUnit.DAYS.between(createdAt, Instant.now());
     }
 
+    public void changeFlag(int action, int index) {
+        try {
+            ItemService itemService = ItemService.getInstance();
+            long currentTime = System.currentTimeMillis();
+            long lastChangeTime = this.getPlayerStatus().getLastTimeChangeFlag();
+            boolean isInvalidIndex = index < 0 || index >= ItemManager.getInstance().getFlags().size();
+
+            switch (action) {
+                case 0 -> itemService.sendShowListFlagBag(this);
+                case 1 -> {
+                    if (index != 0 && lastChangeTime + 60000 > currentTime) {
+                        long remainingTime = (lastChangeTime + 60000 - currentTime) / 1000;
+                        Service.getInstance().sendChatGlobal(this.getSession(), null,
+                                String.format("Chỉ được đổi cờ sau %d giây nữa", remainingTime),
+                                false);
+                        return;
+                    }
+                    if (isInvalidIndex) {
+                        Service.getInstance().sendChatGlobal(this.getSession(), null,
+                                "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
+                        return;
+                    }
+
+                    if (index != 0) {
+                        this.getPlayerStatus().setLastTimeChangeFlag(currentTime);
+                    }
+
+                    this.playerFashion.setFlagPk((byte) index);
+                    itemService.sendChangeFlag(this, index);
+                    itemService.sendImageFlag(this, index, ItemManager.getInstance().findFlagId(index).icon());
+                }
+                case 2 -> {
+                    if (isInvalidIndex) {
+                        Service.getInstance().sendChatGlobal(this.getSession(), null,
+                                "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
+                        return;
+                    }
+
+                    if (index == 0 || lastChangeTime + 60000 <= currentTime) {
+                        itemService.sendImageFlag(this, index, ItemManager.getInstance().findFlagId(index).icon());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error changeFlag: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     public void update() {
         if (this.playerMagicTree != null) {
@@ -76,7 +132,6 @@ public class Player extends LiveObject {
 
     @Override
     public long handleAttack(Player player, long damage) {
-
         System.out.println("Player{" + this.getId() + "} attack Player{" + player.getId() + "} with damage: " + damage);
         if (this.playerPoints.isDead()) return 0;
 
@@ -85,13 +140,12 @@ public class Player extends LiveObject {
         if (this.playerPoints.isDead()) {
             this.playerPoints.setDie();
         }
-
         return damage;
     }
 
     @Override
     public void dispose() {
-        AreaService.getInstance().playerExitArea(this);
+        AreaService.getInstance().playerExitArea(this, 0);
     }
 
     @Override

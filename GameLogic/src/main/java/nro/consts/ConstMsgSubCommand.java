@@ -30,9 +30,9 @@ public class ConstMsgSubCommand {
 
     public static final byte CHAR_HP_CHANGE_EFFECT = 14;
 
-    public static final byte BOX_SORT = 19;
-
     public static final byte CHAR_REVIVE = 15;
+
+    public static final byte BOX_SORT = 19;
 
     public static final byte WITHDRAW_GOLD_FROM_BOX = 21;
 

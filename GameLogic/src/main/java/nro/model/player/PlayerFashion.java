@@ -13,7 +13,7 @@ public class PlayerFashion {
 
     private final Player player;
 
-    private byte flag = 0;
+    private byte flagPk = 0;
     private short head = -1;
 
     public PlayerFashion(Player player) {

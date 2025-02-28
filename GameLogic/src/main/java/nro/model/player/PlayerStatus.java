@@ -12,6 +12,7 @@ public class PlayerStatus {
     private int indexMenu;
     private boolean isLockMove;
     private long lastTimeLive;
+    private long lastTimeChangeFlag;
 
     public PlayerStatus(Player player) {
         this.player = player;

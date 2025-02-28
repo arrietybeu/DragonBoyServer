@@ -36,7 +36,7 @@ public class ItemManager implements IManager {
 
     private final List<ItemTemplate.HeadAvatar> itemHeadAvatars = new ArrayList<>();
     private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
-    private final List<FlagBag> flagBags = new ArrayList<>();
+    private final List<Flag> flags = new ArrayList<>();
 
     private byte[] dataItemTemplate;
     private byte[] dataItemOption;
@@ -161,16 +161,17 @@ public class ItemManager implements IManager {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     int itemId = resultSet.getInt("item_id");
+                    int icon = resultSet.getInt("icon");
 
                     Item itemFlagBag = ItemFactory.getInstance().createItemOptionsBase(itemId);
-                    FlagBag flagBag = new FlagBag(id, itemId, itemFlagBag);
-                    this.flagBags.add(flagBag);
+                    Flag flag = new Flag(id, itemId, icon, itemFlagBag);
+                    this.flags.add(flag);
                 }
             }
         } catch (SQLException e) {
             LogServer.LogException("Error loadFlagBag: " + e.getMessage());
         }
-        LogServer.LogInit("Item FlagBag initialized size: " + flagBags.size());
+        LogServer.LogInit("Item Flag initialized size: " + flags.size());
     }
 
     private void loadItemArrHead2Fr() {
@@ -270,6 +271,15 @@ public class ItemManager implements IManager {
         for (ItemTemplate itemTemplate : this.itemTemplates.values()) {
             LogServer.DebugLogic(itemTemplate.toString());
         }
+    }
+
+    public Flag findFlagId(int id) {
+        for (Flag flag : flags) {
+            if (flag.id() == id) {
+                return flag;
+            }
+        }
+        return null;
     }
 
     public void logItemArrHead2Fr() {
