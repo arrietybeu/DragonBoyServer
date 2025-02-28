@@ -13,6 +13,7 @@ public class PlayerStatus {
     private boolean isLockMove;
     private long lastTimeLive;
     private long lastTimeChangeFlag;
+    private long lastTimeChangeMap;
 
     public PlayerStatus(Player player) {
         this.player = player;

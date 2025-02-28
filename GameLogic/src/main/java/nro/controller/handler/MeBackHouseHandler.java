@@ -16,13 +16,10 @@ public class MeBackHouseHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             if (!player.getPlayerPoints().isDead()) return;
-
-
-
+            player.getPlayerPoints().returnTownFromDead();
         } catch (Exception ex) {
             LogServer.LogException("MeBackHouseHandler: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
-
 }

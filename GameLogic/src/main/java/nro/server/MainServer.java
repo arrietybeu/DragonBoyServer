@@ -77,8 +77,7 @@ public class MainServer {
 
             while (this.running && this.serverSocket != null && !this.serverSocket.isClosed()) {
                 try {
-                    Socket clientSocket = this.serverSocket.accept();
-                    new Session(clientSocket, controller);
+                    new Session(this.serverSocket.accept(), controller);
                 } catch (SocketException se) {
                     if (!this.running) {
                         LogServer.DebugLogic("Server stopped gracefully.");

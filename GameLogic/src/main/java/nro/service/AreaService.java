@@ -111,7 +111,6 @@ public class AreaService {
     }
 
     public void playerChangerMapByWayPoint(Player player) {
-        var ms = System.currentTimeMillis();
         try {
             Area currentArea = player.getArea();
             GameMap currentMap = currentArea.getMap();
@@ -131,7 +130,7 @@ public class AreaService {
                 return;
             }
 
-            this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY(), 0);
+            this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY());
 
         } catch (Exception ex) {
             LogServer.LogException("playerChangerMap: " + ex.getMessage());
@@ -140,16 +139,16 @@ public class AreaService {
     }
 
     public void changeArea(Player player, Area newArea) {
-        this.transferPlayer(player, newArea, player.getX(), player.getY(), 0);
+        this.transferPlayer(player, newArea, player.getX(), player.getY());
     }
 
-    public void gotoMap(Player player, GameMap goMap, short goX, short goY, int teleport) {
+    public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
         Area newArea = goMap.getArea();
-        this.transferPlayer(player, newArea, goX, goY, teleport);
+        this.transferPlayer(player, newArea, goX, goY);
         player.getPlayerTask().checkDoneTaskGoMap();
     }
 
-    private void transferPlayer(Player player, Area newArea, short x, short y, int teleport) {
+    private void transferPlayer(Player player, Area newArea, short x, short y) {
         if (newArea == null) {
             this.keepPlayerInSafeZone(player);
             Service.getInstance().sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
@@ -162,23 +161,22 @@ public class AreaService {
             return;
         }
 
-        this.playerExitArea(player, teleport);
+        this.playerExitArea(player);
 
         newArea.addPlayer(player);
         player.setArea(newArea);
         player.setX(x);
         player.setY(y);
         this.sendMessageChangerMap(player);
-
         this.sendInfoAllPlayerInArea(player);
         this.sendPlayerInfoToAllInArea(player);
+        player.setTeleport(0);
     }
 
-    public void playerExitArea(Player player, int teleport) {
+    public void playerExitArea(Player player) {
         try {
             Area area = player.getArea();
             if (area.getAllPlayerInZone().containsKey(player.getId())) {
-                this.sendTeleport(player, teleport);
                 this.sendRemovePlayerExitArea(player);
                 area.removePlayer(player);
             }
@@ -191,7 +189,6 @@ public class AreaService {
     private void sendRemovePlayerExitArea(Player player) {
         try (Message message = new Message(-6)) {
             message.writer().writeInt(player.getId());
-
             player.getArea().sendMessageToPlayersInArea(message, player);
         } catch (Exception ex) {
             LogServer.LogException("sendRemovePlayerExitArea: " + ex.getMessage());
@@ -228,9 +225,10 @@ public class AreaService {
         }
     }
 
-    private void sendMessageChangerMap(Player player) {
+    public void sendMessageChangerMap(Player player) {
         try {
             var playerService = PlayerService.getInstance();
+            this.sendTeleport(player);
             MapService.clearMap(player);
             playerService.sendStamina(player);
             playerService.sendCurrencyHpMp(player);
@@ -241,14 +239,11 @@ public class AreaService {
         }
     }
 
-    public void sendTeleport(Player player, int teleport) {
-        if (teleport == 0) {
-            return;
-        }
+    public void sendTeleport(Player player) {
         try (Message message = new Message(-65)) {
             DataOutputStream data = message.writer();
             data.writeInt(player.getId());
-            data.writeByte(teleport);
+            data.writeByte(player.getTeleport());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendTeleport: " + ex.getMessage());

@@ -1,5 +1,7 @@
 package nro.service;
 
+import nro.consts.ConstMsgNotMap;
+import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
@@ -59,7 +61,7 @@ public class MapService {
         try (Message message = new Message(-28)) {
             DataOutputStream data = message.writer();
             GameMap map = player.getArea().getMap();
-            data.writeByte(10);
+            data.writeByte(ConstMsgNotMap.REQUEST_MAP_TEMPLATE);
             data.writeByte(map.getTileMap().tmw());
             data.writeByte(map.getTileMap().tmh());
 

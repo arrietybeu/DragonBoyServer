@@ -154,18 +154,20 @@ public final class Session {
         }
     }
 
+    public boolean isClosed() {
+        return socket == null || socket.isClosed();
+    }
+
     public void doSendMessage(Message message) {
         try {
-            if (this.messageSender == null) {
+            if (this.messageSender == null || this.isClosed()) {
                 LogServer.LogWarning("Không thể gửi tin nhắn: Session đã đóng.");
                 return;
             }
             this.messageSender.doSendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error doSendMessage: " + e.getMessage());
         }
     }
-
 
     private boolean isSocketValid() {
         return this.socket != null && !this.socket.isClosed() && this.socket.isConnected();

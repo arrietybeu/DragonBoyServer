@@ -145,7 +145,7 @@ public class Player extends LiveObject {
 
     @Override
     public void dispose() {
-        AreaService.getInstance().playerExitArea(this, 0);
+        AreaService.getInstance().playerExitArea(this);
     }
 
     @Override

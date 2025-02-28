@@ -29,7 +29,7 @@ public class ChatMapHandler implements IMessageProcessor {
             }
 
             if (text.isEmpty()) {
-                LogServer.LogException("ChatMapHandler: Tin nhắn trống từ " + session.getPlayer().getName());
+//                LogServer.LogException("ChatMapHandler: Tin nhắn trống từ " + session.getPlayer().getName());
                 return;
             }
 

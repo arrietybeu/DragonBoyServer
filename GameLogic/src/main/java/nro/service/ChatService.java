@@ -12,6 +12,7 @@ import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.service.core.ItemFactory;
 import nro.utils.FileNio;
+import nro.utils.Util;
 
 public class ChatService {
 
@@ -55,9 +56,10 @@ public class ChatService {
                 }
 
                 short x = 500;
-                short y = (short) newArea.getMap().yPhysicInTop(x, 0);
+                short y = 5;
 
-                AreaService.getInstance().gotoMap(playerChat, newMap, x, y, 0);
+                playerChat.setTeleport(1);
+                AreaService.getInstance().gotoMap(playerChat, newMap, x, y);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
             } else if (text.startsWith("hp ")) {
@@ -93,6 +95,7 @@ public class ChatService {
                 return;
             }
             switch (text) {
+
                 case "send_task": {
                     playerChat.getPlayerTask().sendTaskInfo();
                     service.sendChatGlobal(playerChat.getSession(), null, "Send Task Thành Công", false);

@@ -2,8 +2,12 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.model.map.GameMap;
+import nro.server.LogServer;
+import nro.server.manager.MapManager;
 import nro.service.AreaService;
 import nro.service.PlayerService;
+import nro.service.Service;
 
 @Getter
 @Setter
@@ -99,14 +103,28 @@ public class PlayerPoints {
     }
 
     public void returnTownFromDead() {
-        if (!this.isDead()) return;
+        try {
+            if (!this.isDead()) return;
 
-        this.currentHP = 1;
-        this.player.getPlayerStatus().setLockMove(false);
+            this.currentHP = 1;
+            this.player.getPlayerStatus().setLockMove(false);
 
-        PlayerService playerService = PlayerService.getInstance();
-        playerService.sendCurrencyHpMp(player);
-        playerService.sendPlayerRevive(player);
+            short x = 400;
+            short y = 336;
+            short mapID = (short) (21 + this.player.getGender());
+
+            PlayerService playerService = PlayerService.getInstance();
+            playerService.sendPlayerRevive(player);//-16
+            GameMap newMap = MapManager.getInstance().findMapById(mapID);
+            if (newMap == null) {
+                Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID, false);
+                return;
+            }
+            AreaService.getInstance().gotoMap(this.player, newMap, x, y);
+        } catch (Exception ex) {
+            LogServer.LogException("returnTownFromDead: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
     @Override

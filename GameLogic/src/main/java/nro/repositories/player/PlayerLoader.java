@@ -221,7 +221,7 @@ public class PlayerLoader {
                     short mapID = resultSet.getShort("map_id");
                     if (x < 0 || y < 0 || player.getPlayerPoints().getCurrentHP() <= 0) {
                         player.getPlayerPoints().setCurrentHp(1);
-                        x = 200;
+                        x = 400;
                         y = 336;
                         mapID = (short) (21 + player.getGender());
                     }

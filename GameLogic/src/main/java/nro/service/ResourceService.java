@@ -154,8 +154,8 @@ public class ResourceService {
             ds.write(ab);
             ds.flush();
             session.doSendMessage(mss);
-        } catch (IOException ex) {
-            LogServer.LogException("Error fileTransfer: " + ex.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
