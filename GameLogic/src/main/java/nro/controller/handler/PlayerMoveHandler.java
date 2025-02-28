@@ -15,9 +15,10 @@ public class PlayerMoveHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         try {
             Player player = session.getPlayer();
-            if (player == null) {
-                return;
-            }
+            if (player == null) return;
+
+            if (player.getPlayerStatus().isLockMove()) return;
+
             byte isOnGround = message.reader().readByte();
 
             short newX = message.reader().readShort();
@@ -34,7 +35,6 @@ public class PlayerMoveHandler implements IMessageProcessor {
 
             player.setX(newX);
             player.setY(newY);
-
 
             if (player.getPlayerTask().getTaskMain().getId() == 0) {
                 player.getPlayerTask().checkDoneTaskGoMap();

@@ -131,28 +131,25 @@ public class Area {
     public Map<Integer, Player> getAllPlayerInZone() {
         this.lock.readLock().lock();
         try {
-            return new HashMap<>(this.players);
-        } catch (Exception ex) {
-            LogServer.LogException("getAllPlayerInZone: " + ex.getMessage());
-            ex.printStackTrace();
+            return Collections.unmodifiableMap(this.players);
         } finally {
             this.lock.readLock().unlock();
         }
-        return new HashMap<>();
     }
 
     public void sendMessageToPlayersInArea(Message message, Player exclude) {
         if (message == null) return;
         this.lock.readLock().lock();
         try {
-            for (Player player : this.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
+            this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(player -> {
                 if (exclude == null || player != exclude) {
-                    player.sendMessage(message);
+                    try {
+                        player.sendMessage(message);
+                    } catch (Exception e) {
+                        LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone " + this.id + " - " + e.getMessage());
+                    }
                 }
-            }
-        } catch (Exception ex) {
-            LogServer.LogException("sendMessageToPlayersInArea: " + ex.getMessage());
-            ex.printStackTrace();
+            });
         } finally {
             this.lock.readLock().unlock();
         }
@@ -178,7 +175,6 @@ public class Area {
     public Monster getMonsterInAreaById(int monsterId) {
         this.lock.readLock().lock();
         try {
-            System.out.println("get monsterId: " + monsterId);
             return this.monsters.get(monsterId);
         } catch (Exception ex) {
             LogServer.LogException("getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage());

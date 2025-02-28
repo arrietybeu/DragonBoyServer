@@ -5,8 +5,7 @@ import lombok.Setter;
 import nro.model.item.Item;
 import nro.server.LogServer;
 import nro.server.manager.MagicTreeManager;
-import nro.service.InventoryService;
-import nro.service.ItemService;
+import nro.service.core.ItemFactory;
 import nro.service.NpcService;
 import nro.service.Service;
 
@@ -150,7 +149,7 @@ public class PlayerMagicTree {
     private void addPeaHarvenst(int quantity) {
         try {
             var magicTreeLevel = MagicTreeManager.getInstance().getMagicTreeLevel(this.level);
-            Item pea = ItemService.getInstance().createItem(magicTreeLevel.itemId(), quantity);
+            Item pea = ItemFactory.getInstance().createItemNotOptionsBase(magicTreeLevel.itemId(), quantity);
             pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
 
             player.getPlayerInventory().addItemBag(pea);

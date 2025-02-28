@@ -10,6 +10,7 @@ import nro.model.player.Player;
 import nro.server.manager.*;
 import nro.server.network.Message;
 import nro.server.LogServer;
+import nro.service.core.ItemFactory;
 import nro.utils.FileNio;
 
 public class ChatService {
@@ -72,7 +73,7 @@ public class ChatService {
                     service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
                     return;
                 }
-                Item item = ItemService.createAndInitItem(itemId);
+                Item item = ItemFactory.getInstance().createItemOptionsBase(itemId);
                 playerChat.getPlayerInventory().addItemBag(item);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
                 return;
@@ -87,7 +88,7 @@ public class ChatService {
                     service.sendChatGlobal(playerChat.getSession(), null, "Không tìm thấy mob: " + mobId, false);
                     return;
                 }
-                monster.die(playerChat, 500);
+                monster.setDie(playerChat, 500);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã xóa mob: " + mobId, false);
                 return;
             }

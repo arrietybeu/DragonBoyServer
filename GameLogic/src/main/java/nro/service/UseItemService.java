@@ -61,7 +61,7 @@ public class UseItemService {
                     player.getPlayerInventory().equipItemFromBag(index);
                     break;
                 }
-                case ConstUseItem.UNEQUIP_ITEM_TO_BAG:{
+                case ConstUseItem.UNEQUIP_ITEM_TO_BAG: {
                     player.getPlayerInventory().unequipItemToBag(index);
                     break;
                 }

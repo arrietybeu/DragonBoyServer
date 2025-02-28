@@ -6,7 +6,7 @@ public class ConstTypeObject {
 
     public static final byte TYPE_BOSS = 1;
 
-    public static final byte TYPE_BOT = 2;
+    public static final byte TYPE_MONSTER = 2;
 
     public static final byte TYPE_NPC = 3;
 

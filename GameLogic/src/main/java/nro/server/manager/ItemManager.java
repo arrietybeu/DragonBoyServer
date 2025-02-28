@@ -1,14 +1,13 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.model.item.ItemOption;
-import nro.model.item.ItemOptionTemplate;
+import nro.model.item.*;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
-import nro.model.item.ItemTemplate;
 import nro.server.LogServer;
+import nro.service.core.ItemFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 
@@ -34,8 +33,10 @@ public class ItemManager implements IManager {
 
     private final Map<Short, ItemTemplate> itemTemplates = new HashMap<>();
     private final Map<Short, ItemOptionTemplate> itemOptionTemplates = new HashMap<>();
+
     private final List<ItemTemplate.HeadAvatar> itemHeadAvatars = new ArrayList<>();
     private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
+    private final List<FlagBag> flagBags = new ArrayList<>();
 
     private byte[] dataItemTemplate;
     private byte[] dataItemOption;
@@ -48,6 +49,7 @@ public class ItemManager implements IManager {
         this.loadItemArrHead2Fr();
         this.loadItemOptionTemplate();
         this.loadHeadAvatar();
+        this.loadFlagBag();
     }
 
     @Override
@@ -149,6 +151,26 @@ public class ItemManager implements IManager {
             e.printStackTrace();
         }
         LogServer.LogInit("Item loadHeadAvatar initialized size: " + itemHeadAvatars.size());
+    }
+
+    private void loadFlagBag() {
+        String query = "SELECT * FROM item_flag_bag_pk";
+        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            if (connection == null) throw new SQLException("Connect connection select flag_bag = null");
+            try (var preparedStatement = connection.prepareStatement(query); var resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("id");
+                    int itemId = resultSet.getInt("item_id");
+
+                    Item itemFlagBag = ItemFactory.getInstance().createItemOptionsBase(itemId);
+                    FlagBag flagBag = new FlagBag(id, itemId, itemFlagBag);
+                    this.flagBags.add(flagBag);
+                }
+            }
+        } catch (SQLException e) {
+            LogServer.LogException("Error loadFlagBag: " + e.getMessage());
+        }
+        LogServer.LogInit("Item FlagBag initialized size: " + flagBags.size());
     }
 
     private void loadItemArrHead2Fr() {

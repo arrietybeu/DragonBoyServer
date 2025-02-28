@@ -117,7 +117,10 @@ public class ResourceService {
             String path = "resources/x" + session.getClientInfo().getZoomLevel() + "/icon/" + id + ".png";
             byte[] data = FileNio.loadDataFile(path);
             message.writer().writeInt(id);
-            assert data != null : "Data Image is null: " + id;
+            if (data == null) {
+                LogServer.LogException("Error sendImageRes: Data is null: " + path);
+                return;
+            }
             message.writer().writeInt(data.length);
             message.writer().write(data);
             session.doSendMessage(message);
@@ -142,7 +145,11 @@ public class ResourceService {
             DataOutputStream ds = mss.writer();
             ds.writeByte(2);
             ds.writeUTF(strPath);
-            byte[] ab = Files.readAllBytes(file.toPath());
+            byte[] ab = FileNio.loadDataFile(file.getPath());
+            if (ab == null) {
+                LogServer.LogException("Error fileTransfer: Data is null: " + file.getPath());
+                return;
+            }
             ds.writeInt(ab.length);
             ds.write(ab);
             ds.flush();

@@ -52,7 +52,7 @@ public class MonsterService {
         int mobIb = monster.getId();
         try (Message message = new Message(-11)) {
             DataOutputStream data = message.writer();
-            data.writeByte(monster.getId());
+            data.writeByte(mobIb);
             data.writeLong(HPShow);
             if (MpShow > 0) {
                 data.writeLong(MpShow);

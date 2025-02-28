@@ -53,7 +53,7 @@ public class Player extends LiveObject {
         this.playerStatus = new PlayerStatus(this);
     }
 
-    public void sendMessage(Message message) {
+    public void sendMessage(Message message) throws Exception {
         this.session.sendMessage(message);
     }
 
@@ -72,6 +72,21 @@ public class Player extends LiveObject {
         if (this.playerMagicTree != null) {
             this.playerMagicTree.update();
         }
+    }
+
+    @Override
+    public long handleAttack(Player player, long damage) {
+
+        System.out.println("Player{" + this.getId() + "} attack Player{" + player.getId() + "} with damage: " + damage);
+        if (this.playerPoints.isDead()) return 0;
+
+        this.playerPoints.subCurrentHp(damage);
+
+        if (this.playerPoints.isDead()) {
+            this.playerPoints.setDie();
+        }
+
+        return damage;
     }
 
     @Override

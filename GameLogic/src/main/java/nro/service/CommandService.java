@@ -15,6 +15,7 @@ import nro.server.Maintenance;
 import nro.server.LogServer;
 import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SpeacialSkillManager;
+import nro.service.core.ItemFactory;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -112,7 +113,7 @@ public class CommandService {
 //                        DataSkill.SendDataSkill();
                         break;
                     case "create_item":
-                        List<Item> items = ItemService.initializePlayerItems((byte) 0);
+                        List<Item> items = ItemFactory.getInstance().initializePlayerItems((byte) 0);
                         for (var item : items) {
 //                            System.out.println(item.getJsonOptions());
                         }

@@ -234,7 +234,6 @@ public class AreaService {
             playerService.sendStamina(player);
             playerService.sendCurrencyHpMp(player);
             MapService.getInstance().sendMapInfo(player);// -24
-
         } catch (Exception ex) {
             LogServer.LogException("Error send Message Changer Map: " + ex.getMessage());
             ex.printStackTrace();

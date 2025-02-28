@@ -15,7 +15,7 @@ import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
 import nro.server.manager.skill.SkillManager;
-import nro.service.ItemService;
+import nro.service.core.ItemFactory;
 
 import java.sql.*;
 import java.time.Instant;
@@ -129,7 +129,7 @@ public class PlayerLoader {
                     long createTime = (timestamp != null) ? timestamp.getTime() : 0;
                     String optionsText = resultSet.getString("options");
 
-                    Item item = (tempId != -1) ? ItemService.getInstance().createItem(tempId, quantity) : ItemService.getInstance().createItemNull();
+                    Item item = (tempId != -1) ? ItemFactory.getInstance().createItemNotOptionsBase(tempId, quantity) : ItemFactory.getInstance().createItemNull();
                     if (tempId != -1) {
                         item.setCreateTime(createTime);
                         item.setJsonOptions(optionsText);
@@ -219,7 +219,8 @@ public class PlayerLoader {
                     short x = resultSet.getShort("pos_x");
                     short y = resultSet.getShort("pos_y");
                     short mapID = resultSet.getShort("map_id");
-                    if (x < 0 || y < 0) {
+                    if (x < 0 || y < 0 || player.getPlayerPoints().getCurrentHP() <= 0) {
+                        player.getPlayerPoints().setCurrentHp(1);
                         x = 200;
                         y = 336;
                         mapID = (short) (21 + player.getGender());

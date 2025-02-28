@@ -33,6 +33,8 @@ public class PlayerService {
     @Getter
     private static final PlayerService instance = new PlayerService();
 
+    private static final Message MESSAGE_REVIVE = new Message(-16);
+
     public void finishUpdateHandler(Session session) {
         try {
             Player player = PlayerLoader.getInstance().loadPlayer(session);
@@ -59,7 +61,6 @@ public class PlayerService {
         this.sendPointForMe(player);// -42
         TaskService.getInstance().sendTaskMain(player);// 40
         MapService.clearMap(player);// -22
-        this.sendPointForMe(player);// -42
         this.sendInfoPlayer(player);// -30
         ClanService.getInstance().sendClanInfo(player);// -53
         InventoryService.getInstance().sendFlagBag(player);// -64
@@ -145,8 +146,7 @@ public class PlayerService {
 
     private void sendPlayerRank(Player player) {
         try (Message message = new Message(-119)) {
-            DataOutputStream out = message.writer();
-            out.writeInt(player.getRank());
+            message.writer().writeInt(player.getRank());
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendRank: " + e.getMessage());
@@ -374,6 +374,58 @@ public class PlayerService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void sendPlayerDie(Player player) {
+        try (Message message = new Message(-17)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(player.getTypePk());
+            out.writeShort(player.getX());
+            out.writeShort(player.getY());
+            out.writeLong(player.getPlayerPoints().getPower());
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendPlayerDie: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void sendPlayerDeathToArea(Player player) {
+        try (Message message = new Message(-8)) {
+            DataOutputStream out = message.writer();
+            out.writeInt(player.getId());
+            out.writeByte(player.getTypePk());
+            out.writeShort(player.getX());
+            out.writeShort(player.getY());
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendPlayerDeathToArea: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    public void sendPlayerRevive(Player player) {
+        try {
+            player.sendMessage(MESSAGE_REVIVE);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendPlayerRevive: " + e.getMessage());
+        }
+    }
+
+    public void sendPlayerReviveToArea(Player player) {
+        try (Message message = new Message(-30)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(ConstMsgSubCommand.CHAR_REVIVE);
+            out.writeInt(player.getId());
+            out.writeLong(player.getPlayerPoints().getCurrentHP());
+            out.writeLong(player.getPlayerPoints().getMaxHP());
+            out.writeShort(player.getX());
+            out.writeShort(player.getY());
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendPLayerReviveToArea: " + ex.getMessage());
             ex.printStackTrace();
         }
     }

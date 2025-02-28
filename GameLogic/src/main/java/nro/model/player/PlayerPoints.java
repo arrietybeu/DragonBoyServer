@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.service.PlayerService;
 
 @Getter
 @Setter
@@ -63,6 +64,37 @@ public class PlayerPoints {
         if (mp < 0) {
             this.currentMP = 0;
         } else this.currentMP = Math.min(mp, this.maxMP);
+    }
+
+    public void subCurrentHp(long hp) {
+        this.currentHP -= hp;
+        if (this.currentHP < 0) {
+            this.currentHP = 0;
+        }
+    }
+
+    public void setDie() {
+        // TODO xử lý khi chết
+        // set lai location
+        // lock move,
+        // cancel trade
+        // huy skill
+        this.currentHP = 0;
+
+        this.player.getPlayerStatus().setLockMove(true);
+        PlayerService playerService = PlayerService.getInstance();
+        playerService.sendCurrencyHpMp(this.player);
+        playerService.sendPlayerDie(this.player);
+        playerService.sendPlayerDeathToArea(this.player);
+    }
+
+    public void setLive() {
+        this.currentHP = this.maxHP;
+        this.player.getPlayerStatus().setLockMove(false);
+        PlayerService playerService = PlayerService.getInstance();
+        playerService.sendCurrencyHpMp(this.player);
+        playerService.sendPlayerRevive(this.player);
+        playerService.sendPlayerReviveToArea(this.player);
     }
 
     @Override

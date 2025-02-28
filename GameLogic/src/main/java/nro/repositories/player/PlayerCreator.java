@@ -3,7 +3,7 @@ package nro.repositories.player;
 import lombok.Getter;
 import nro.model.item.Item;
 import nro.server.LogServer;
-import nro.service.ItemService;
+import nro.service.core.ItemFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -202,9 +202,9 @@ public class PlayerCreator {
     }
 
     private void createPlayerInventory(Connection connection, int playerId, byte gender) throws SQLException {
-        List<Item> itemsBody = ItemService.initializePlayerItems(gender);
+        List<Item> itemsBody = ItemFactory.getInstance().initializePlayerItems(gender);
         List<Item> itemsBag = createEmptyItems(20);
-        List<Item> itemsBox = ItemService.initItemBox();
+        List<Item> itemsBox = ItemFactory.getInstance().initItemBox();
         ensureItemSlots(itemsBody, 11);
         ensureItemSlots(itemsBag, 20);
         ensureItemSlots(itemsBox, 20);
@@ -215,14 +215,14 @@ public class PlayerCreator {
 
     private void ensureItemSlots(List<Item> items, int requiredSize) {
         while (items.size() < requiredSize) {
-            items.add(ItemService.getInstance().createItemNull());
+            items.add(ItemFactory.getInstance().createItemNull());
         }
     }
 
     private List<Item> createEmptyItems(int count) {
         List<Item> items = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            items.add(ItemService.getInstance().createItemNull());
+            items.add(ItemFactory.getInstance().createItemNull());
         }
         return items;
     }

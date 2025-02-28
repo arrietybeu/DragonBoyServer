@@ -5,6 +5,7 @@ import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.model.template.entity.SkillInfo;
+import nro.server.LogServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,14 +45,16 @@ public class PlayerSkill {
     }
 
     public void selectSkill(int skillId) {
-        for (SkillInfo skillInfo : this.skills) {
-            if (skillInfo.getTemplate().getId() == -1) {
-                continue;
+        try {
+            for (SkillInfo skillInfo : this.skills) {
+                if (skillInfo.getTemplate().getId() == -1) continue;
+                if (skillInfo.getTemplate().getId() == skillId) {
+                    this.skillSelect = skillInfo;
+                    break;
+                }
             }
-            if (skillInfo.getTemplate().getId() == skillId) {
-                this.skillSelect = skillInfo;
-                break;
-            }
+        } catch (Exception ex) {
+            LogServer.LogException("selectSkill player name:" + player.getName() + " error: " + ex.getMessage());
         }
     }
 

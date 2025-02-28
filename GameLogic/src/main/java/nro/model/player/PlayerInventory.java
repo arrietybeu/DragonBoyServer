@@ -6,7 +6,7 @@ import nro.consts.ConstItem;
 import nro.model.item.Item;
 import nro.server.LogServer;
 import nro.service.InventoryService;
-import nro.service.ItemService;
+import nro.service.core.ItemFactory;
 import nro.service.PlayerService;
 import nro.service.Service;
 
@@ -75,7 +75,7 @@ public class PlayerInventory {
 
             for (int i = 0; i < items.size(); i++) {
                 if (items.get(i).getTemplate() == null) {
-                    items.set(i, ItemService.getInstance().clone(item));
+                    items.set(i, ItemFactory.getInstance().clone(item));
                     item.setQuantity(0);
                     return;
                 }
@@ -112,11 +112,11 @@ public class PlayerInventory {
             LogServer.LogWarning("removeItem: Index " + index + " không hợp lệ.");
             return;
         }
-        items.set(index, ItemService.getInstance().createItemNull());
+        items.set(index, ItemFactory.getInstance().createItemNull());
     }
 
     private void removeItem(List<Item> items, Item item) {
-        Item itemNull = ItemService.getInstance().createItemNull();
+        Item itemNull = ItemFactory.getInstance().createItemNull();
         for (int i = 0; i < items.size(); i++) {
             if (items.get(i) == item) {
                 items.set(i, itemNull);
@@ -202,7 +202,7 @@ public class PlayerInventory {
             }
             this.addItemBag(itemBox);
             if (itemBox.getQuantity() == 0) {
-                Item itemNull = ItemService.getInstance().createItemNull();
+                Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBox.set(index, itemNull);
             }
             InventoryService.getInstance().sendItemsBox(this.player, 0);
@@ -217,7 +217,7 @@ public class PlayerInventory {
         if (itemBag != null && itemBag.getTemplate() != null) {
             this.addItemBox(itemBag);
             if (itemBag.getQuantity() == 0) {
-                Item itemNull = ItemService.getInstance().createItemNull();
+                Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBag.set(index, itemNull);
             }
             InventoryService.getInstance().sendItemToBags(this.player, 0);
@@ -232,7 +232,7 @@ public class PlayerInventory {
         if (itemBody != null && itemBody.getTemplate() != null) {
             this.addItemBox(itemBody);
             if (itemBody.getQuantity() == 0) {
-                Item itemNull = ItemService.getInstance().createItemNull();
+                Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBody.set(index, itemNull);
             }
             InventoryService.getInstance().sendItemToBodys(this.player);
@@ -266,7 +266,7 @@ public class PlayerInventory {
             Item itemBag = itemsBag.get(i);
             if (itemBag == null || itemBag.getTemplate() == null) {
                 itemsBag.set(i, item);
-                return ItemService.getInstance().createItemNull();
+                return ItemFactory.getInstance().createItemNull();
             }
         }
         return item;

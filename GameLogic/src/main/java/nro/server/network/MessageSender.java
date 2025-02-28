@@ -69,7 +69,6 @@ public final class MessageSender {
                                 }
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
                             LogServer.LogException("Error in send thread: " + e.getMessage());
                             SessionManager.getInstance().kickSession(this.session);
                         }

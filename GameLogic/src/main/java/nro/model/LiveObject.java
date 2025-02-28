@@ -3,6 +3,7 @@ package nro.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nro.model.player.Player;
 
 @Getter
 @Setter
@@ -60,6 +61,8 @@ public abstract class LiveObject {
     }
 
     public abstract void update();
+
+    public abstract long handleAttack(Player player, long damage);
 
     public abstract void dispose();
 
