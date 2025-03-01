@@ -4,8 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
+import nro.model.LiveObject;
+import nro.model.monster.Monster;
 import nro.model.template.entity.SkillInfo;
 import nro.server.LogServer;
+import nro.service.SkillService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +30,53 @@ public class PlayerSkill {
         this.skills = new ArrayList<>();
     }
 
+    public void playerAttackMonster(Monster monster) {
+        try {
+            if (monster == null) return;
+            if (monster.getPoint().isDead()) return;
+            this.useSkill(monster);
+        } catch (RuntimeException e) {
+            LogServer.LogException("playerAttackMonster player name:" + player.getName() + " error: " + e.getMessage());
+        }
+    }
+
+    private void useSkill(LiveObject target) {
+        try {
+            switch (this.skillSelect.getTemplate().getType()) {
+                case ConstSkill.SKILL_FORCUS -> {
+                    this.useSkillTarget(target);
+                }
+                case ConstSkill.SKILL_SUPPORT -> {
+                }
+                case ConstSkill.SKILL_NOT_FORCUS -> {
+                }
+            }
+        } catch (RuntimeException ex) {
+            LogServer.LogException("useSkill player name:" + player.getName() + " error: " + ex.getMessage());
+        }
+    }
+
+    private void useSkillTarget(LiveObject target) {
+        switch (this.skillSelect.getTemplate().getId()) {
+            case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> {
+                switch (target) {
+                    case Player plTarget -> {
+                    }
+                    case Monster monster -> {
+                        SkillService.getInstance().sendPlayerAttackMonster(this.player, monster.getId());
+                        monster.handleAttack(this.player, 10);
+                    }
+                    default ->
+                            LogServer.LogException("useSkillTarget player name:" + player.getName() + " error: target not monster");
+                }
+            }
+        }
+    }
+
+    private boolean checkUseSkill() {
+        return true;
+    }
+
     public void addSkill(SkillInfo skill) {
         this.skills.add(skill);
     }
@@ -45,6 +95,7 @@ public class PlayerSkill {
     }
 
     public void selectSkill(int skillId) {
+        System.out.println("selectSkill: " + skillId);
         try {
             for (SkillInfo skillInfo : this.skills) {
                 if (skillInfo.getTemplate().getId() == -1) continue;

@@ -3,10 +3,8 @@ package nro.model.monster;
 import lombok.Data;
 import nro.utils.Util;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 @Data
-public class MonsterStats {
+public class MonsterPoint {
 
     private final Monster monster;
     private long hp;
@@ -14,7 +12,7 @@ public class MonsterStats {
     private byte level;
     private boolean isDead;
 
-    public MonsterStats(Monster monster, long maxHp, byte level) {
+    public MonsterPoint(Monster monster, long maxHp, byte level) {
         this.monster = monster;
         this.maxHp = maxHp;
         this.level = level;

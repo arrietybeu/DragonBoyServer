@@ -110,7 +110,7 @@ public class PlayerPoints {
             this.player.getPlayerStatus().setLockMove(false);
 
             short x = 400;
-            short y = 336;
+            short y = 5;
             short mapID = (short) (21 + this.player.getGender());
 
             PlayerService playerService = PlayerService.getInstance();
@@ -120,6 +120,7 @@ public class PlayerPoints {
                 Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID, false);
                 return;
             }
+            player.setTeleport(1);
             AreaService.getInstance().gotoMap(this.player, newMap, x, y);
         } catch (Exception ex) {
             LogServer.LogException("returnTownFromDead: " + ex.getMessage());

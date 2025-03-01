@@ -7,8 +7,6 @@ import nro.model.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.server.LogServer;
-import nro.service.MonsterService;
-import nro.service.UseSkillService;
 
 @APacketHandler(54)
 public class PlayerAttackMonsterHandler implements IMessageProcessor {
@@ -21,9 +19,10 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
             var mobId = message.reader().readByte();
 
             Monster monster = player.getArea().getMonsterInAreaById(mobId);
+            if(monster == null) return;
 
             if (mobId != -1) {
-                UseSkillService.getInstance().useSkillToAttackMonster(player, monster);
+                player.getPlayerSkill().playerAttackMonster(monster);
             } else {
                 var monsterID = message.reader().readInt();
                 LogServer.LogWarning("monsterId:" + monsterID);

@@ -40,7 +40,7 @@ public class MonsterService {
             data.writeByte(monster.getId());
             data.writeByte(monster.getStatus().getSys());
             data.writeByte(monster.getInfo().getLevelBoss());
-            data.writeLong(monster.getStats().getHp());
+            data.writeLong(monster.getPoint().getHp());
             monster.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendMonsterRevice: " + ex.getMessage());
@@ -79,4 +79,20 @@ public class MonsterService {
             ex.printStackTrace();
         }
     }
+
+    public void sendHpMonster(Player player, Monster monster, long dame, boolean isCrit) {
+        try (Message message = new Message(-9)) {
+            DataOutputStream writer = message.writer();
+            writer.writeByte(monster.getId());
+            writer.writeLong(monster.getPoint().getHp());
+            writer.writeLong(dame);
+            writer.writeBoolean(isCrit);
+            writer.writeByte(37);// effect
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendHpMonster: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
 }

@@ -62,6 +62,9 @@ public class Area {
     private void updateNpc() {
         this.lock.readLock().lock();
         try {
+            for (Npc npc : this.npcList) {
+                npc.update();
+            }
         } finally {
             this.lock.readLock().unlock();
         }

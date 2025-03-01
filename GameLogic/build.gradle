@@ -27,28 +27,21 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
 
-    compileOnly 'org.projectlombok:lombok:1.18.28'
-    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 jar {
     manifest {
         attributes(
-            'Main-Class': 'nro.server.MainServer'
+                'Main-Class': 'nro.server.MainServer'
         )
     }
 }
 
-
-// Apply a specific Java toolchain to ease working on different environments.
 java {
-    manifest {
-        attributes(
-                'Main-Class': 'nro.server.MainServer'
-        )
-    }
     toolchain {
-        languageVersion = JavaLanguageVersion.of(19)
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -57,12 +50,17 @@ application {
     mainClass = 'nro.server.MainServer'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ["--enable-preview", "-Xlint:-preview"]
     options.encoding = 'UTF-8'
 }
 
-tasks.withType(Test) {
-    systemProperty 'file.encoding', 'UTF-8'
+tasks.withType(JavaExec).configureEach {
+    jvmArgs += "--enable-preview"
+}
+
+tasks.withType(Test).configureEach {
+    jvmArgs += "--enable-preview"
 }
 
 tasks.named('test') {

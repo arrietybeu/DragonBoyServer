@@ -177,6 +177,7 @@ public class AreaService {
         try {
             Area area = player.getArea();
             if (area.getAllPlayerInZone().containsKey(player.getId())) {
+                this.sendTeleport(player);
                 this.sendRemovePlayerExitArea(player);
                 area.removePlayer(player);
             }
@@ -228,7 +229,7 @@ public class AreaService {
     public void sendMessageChangerMap(Player player) {
         try {
             var playerService = PlayerService.getInstance();
-            this.sendTeleport(player);
+
             MapService.clearMap(player);
             playerService.sendStamina(player);
             playerService.sendCurrencyHpMp(player);

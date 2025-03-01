@@ -52,4 +52,7 @@ public class Npc implements INpcAction {
     public void openUIConFirm(Player player, int select) {
     }
 
+    public void update() {
+    }
+
 }

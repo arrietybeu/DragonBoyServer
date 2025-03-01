@@ -6,7 +6,6 @@ import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.service.UseSkillService;
 
 @APacketHandler(-45)
 public class SkillNotFocusHandler implements IMessageProcessor {
@@ -17,7 +16,6 @@ public class SkillNotFocusHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             byte status = message.reader().readByte();
-            UseSkillService useSkill = UseSkillService.getInstance();
             if (status == 20) {
                 byte skillId = message.reader().readByte();
                 short cx = message.reader().readShort();
@@ -25,9 +23,9 @@ public class SkillNotFocusHandler implements IMessageProcessor {
                 byte dir = message.reader().readByte();
                 short x = message.reader().readShort();
                 short y = message.reader().readShort();
-                useSkill.useSkillNotForcusNew(player, skillId, cx, cy, dir, x, y);
+//                useSkill.useSkillNotForcusNew(player, skillId, cx, cy, dir, x, y);
             } else {
-                useSkill.useSkillNotForcus(player, status);
+//                useSkill.useSkillNotForcus(player, status);
             }
         } catch (Exception ex) {
             LogServer.LogException("SkillNotFocusHandler: " + ex.getMessage());

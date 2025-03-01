@@ -1,7 +1,6 @@
 package nro.service;
 
 import nro.consts.ConstMsgNotMap;
-import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.model.map.GameMap;
 import nro.model.map.ItemMap;
@@ -135,9 +134,9 @@ public class MapService {
             output.writeBoolean(monster.getStatus().isWind());
             output.writeShort(monster.getTemplateId());
             output.writeByte(monster.getStatus().getSys());
-            output.writeLong(monster.getStats().getHp());
-            output.writeByte(monster.getStats().getLevel());
-            output.writeLong(monster.getStats().getMaxHp());
+            output.writeLong(monster.getPoint().getHp());
+            output.writeByte(monster.getPoint().getLevel());
+            output.writeLong(monster.getPoint().getMaxHp());
             output.writeShort(monster.getX());
             output.writeShort(monster.getY());
             output.writeByte(monster.getStatus().getStatus());
