@@ -25,7 +25,8 @@ public class UseItem {
         PlayerInventory playerInventory = player.getPlayerInventory();
         Item item = playerInventory.getItemsBag().get(index);
         if (item == null || item.getTemplate() == null) {
-            NpcService.getInstance().sendNpcTalkUI(player, 5, "Có lỗi xảy ra vui lòng thử lại sau.", -1);
+            NpcService.getInstance().sendNpcTalkUI(player, 5,
+                    "Có lỗi xảy ra vui lòng thử lại sau.", -1);
             return;
         }
         switch (item.getTemplate().type()) {

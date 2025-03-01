@@ -4,7 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstMap;
 import nro.consts.ConstMenu;
+
+import nro.consts.ConstMonster;
 import nro.consts.ConstNpc;
+import nro.model.monster.Monster;
 import nro.model.npc.Npc;
 import nro.model.npc.NpcFactory;
 import nro.model.task.TaskMain;
@@ -12,6 +15,7 @@ import nro.server.LogServer;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
 import nro.service.NpcService;
+import nro.service.Service;
 import nro.service.TaskService;
 
 @Setter
@@ -50,47 +54,56 @@ public class PlayerTask {
     }
 
     public boolean checkDoneTaskTalkNpc(Npc npc) {
-        switch (npc.getTempId()) {
-            case ConstNpc.ONG_GOHAN:
-            case ConstNpc.ONG_MOORI:
-            case ConstNpc.ONG_PARAGUS: {
-                return this.doneTask(0, 2) || this.doneTask(0, 5);
-            }
-        }
-        return false;
+        return switch (npc.getTempId()) {
+            case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
+                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1);
+            default -> false;
+        };
     }
+
+    public void checkDoneTaskKKillMonster(Monster monster) {
+        System.out.println("Check done task kill monster");
+        try {
+            switch (monster.getTemplateId()) {
+                case ConstMonster.MOC_NHAN: {
+                    this.doneTask(1, 0);
+                    break;
+                }
+                case ConstMonster.KHUNG_LONG: {
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask checkDoneTaskKKillMonster - " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
 
     public void checkDoneTaskGetItemBox() {
         doneTask(0, 3);
     }
 
     public void checkDoneTaskConfirmMenuNpc(int npcId) {
-        switch (npcId) {
-            case ConstNpc.DAU_THAN: {
-                if (player.getPlayerStatus().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
-                    this.doneTask(0, 4);
-                }
-                break;
+        if (npcId == ConstNpc.DAU_THAN) {
+            if (player.getPlayerStatus().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
+                this.doneTask(0, 4);
             }
         }
     }
 
     public boolean doneTask(int taskId, int index) {
         try {
-//            System.out.printf("Check task: %d %d %s%n", taskId, index, this.taskMain);
-            if (!checkTaskInfo(taskId, index)) {
-                return false;
-            }
-            addDoneSubTask();
+            if (!checkTaskInfo(taskId, index)) return false;
 
+            this.addDoneSubTask();
             NpcService npcService = NpcService.getInstance();
             String npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
             String mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
             String mapNameVillage = MapManager.getInstance().getNameMapVillageByGender(player.getGender());
             switch (taskId) {
                 case 0 -> handleTaskZero(index, npcService, npcName, mapName, mapNameVillage);
-                case 1 -> {
-                }
+                case 1 -> handleTaskOne(index, npcService, npcName, mapName);
             }
 
         } catch (Exception ex) {
@@ -115,15 +128,50 @@ public class PlayerTask {
                     npcService.sendNpcTalkUI(player, 5, String.format("%s đang chờ. Bạn hãy đi đến gần và click đôi vào ông để trò chuyện", npcName), -1);
             case 2, 5 -> {
                 Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                String content = (index == 2)
-                        ? "Con mới đi đâu về thế ? Con hãy đến rương đồ để lấy rađa, sau đó lại thu hoạch những hạt đậu trên cây đậu thần đằng kia!"
-                        : String.format(
-                        "Tốt lắm, Rađa sẽ giúp con biết được HP và KI của mình ở góc trên màn hình\n" +
-                                "Đậu thần sẽ giúp con phục hồi HP và KI khi con yếu đi\n" +
-                                "Bây giờ, con hãy đi ra %s để tập luyện, hãy đánh ngã 5 mộc nhân, rồi trở về gặp ta, ta sẽ dạy con bay\n" +
-                                "Đi đi, và về sớm con nhé!", mapNameVillage);
+                String content = (index == 2) ? "Con mới đi đâu về thế ? Con hãy đến rương đồ để lấy rađa, sau đó lại thu hoạch những hạt đậu trên cây đậu thần đằng kia!"
+                        : String.format("Tốt lắm, Rađa sẽ giúp con biết được HP và KI của mình ở góc trên màn hình\n"
+                        + "Đậu thần sẽ giúp con phục hồi HP và KI khi con yếu đi\n"
+                        + "Bây giờ, con hãy đi ra %s để tập luyện, hãy đánh ngã 5 mộc nhân, rồi trở về gặp ta, ta sẽ dạy con bay\n"
+                        + "Đi đi, và về sớm con nhé!", mapNameVillage);
                 npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
             }
+        }
+    }
+
+    private void handleTaskOne(int index, NpcService npcService, String npcName, String mapName) {
+        try {
+            Service service = Service.getInstance();
+            switch (index) {
+                case 0 -> {
+                    var count = this.taskMain.getSubNameList().get(index).getCount();
+                    var maxCount = this.taskMain.getSubNameList().get(index).getMaxCount();
+                    service.sendChatGlobal(player.getSession(), null, String.format("Bạn đánh được %d/%d", count, maxCount), false);
+                }
+                case 1 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n" +
+                            "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n" +
+                            "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n" +
+                            "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n" +
+                            "Nhanh lên, ta đói lắm rồi!\n" +
+                            "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n" +
+                            "Vị trí đang chớp sáng là nđi bạn làm nhiệm vụ, hãy tìm đường đến đó";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+
+                    player.getPlayerPoints().addExp(2, 3000);
+
+                    service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
+                    service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k tiềm năng nữa", false);
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskOne - " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleTaskTwo(int index, NpcService npcService, String npcName, String mapName) {
+        switch (index) {
         }
     }
 
@@ -163,11 +211,7 @@ public class PlayerTask {
 
         if (taskMain.getId() == 0 && taskMain.getIndex() == 0) {
             String birdNameNpc = player.getPlayerBirdNames()[0];
-            String content = String.format(
-                    "Chào mừng %s đến với thế giới Ngọc Rồng!\nMình là %s sẽ đồng hành cùng bạn ở thế giới này\n" +
-                            "Để di chuyển, hãy click chuột vào nơi muốn đến",
-                    player.getName(), birdNameNpc
-            );
+            String content = String.format("Chào mừng %s đến với thế giới Ngọc Rồng!\nMình là %s sẽ đồng hành cùng bạn ở thế giới này\n" + "Để di chuyển, hãy click chuột vào nơi muốn đến", player.getName(), birdNameNpc);
 
             NpcService.getInstance().sendNpcTalkUI(player, 5, content, -1);
         }

@@ -329,12 +329,4 @@ public class PlayerInventory {
     private void _______________FIND_ITEM______________() {
     }
 
-    private void _______________SORT_ITEM______________() {
-    }
-
-    public void sortItemsBag(List<Item> items) {
-        for (int i = 0; i < items.size(); i++) {
-        }
-    }
-
 }

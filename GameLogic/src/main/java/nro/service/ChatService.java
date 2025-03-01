@@ -82,7 +82,8 @@ public class ChatService {
             } else if (text.startsWith("rm ")) {
                 int mobId = this.getNumber(text);
                 if (mobId == -1) {
-                    service.sendChatGlobal(playerChat.getSession(), null, "Mob không hợp lệ: " + text, false);
+                    service.sendChatGlobal(playerChat.getSession(), null,
+                            "Mob không hợp lệ: " + text, false);
                     return;
                 }
                 Monster monster = playerChat.getArea().getMonsterInAreaById(mobId);
@@ -95,7 +96,10 @@ public class ChatService {
                 return;
             }
             switch (text) {
-
+                case "send_exp": {
+                    PlayerService.getInstance().sendPlayerUpExp(playerChat, 2, 100);
+                    break;
+                }
                 case "send_task": {
                     playerChat.getPlayerTask().sendTaskInfo();
                     service.sendChatGlobal(playerChat.getSession(), null, "Send Task Thành Công", false);

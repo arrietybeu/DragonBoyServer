@@ -2,10 +2,8 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.player.Player;
-import nro.model.task.TaskMain;
 import nro.server.network.Message;
 import nro.server.LogServer;
-import nro.server.manager.TaskManager;
 
 import java.io.DataOutputStream;
 
@@ -34,7 +32,7 @@ public class TaskService {
                 String nameToSend = (i <= index) ? sub.getName() : "...";
                 output.writeUTF(nameToSend);
                 output.writeByte(sub.getNpcIdByGender(player.getGender()));
-                output.writeShort(sub.getMapId());
+                output.writeShort(sub.getMapIdByGender(player.getGender()));
                 output.writeUTF(sub.getContentInfo());
             }
 

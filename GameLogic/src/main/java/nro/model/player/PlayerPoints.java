@@ -102,6 +102,19 @@ public class PlayerPoints {
         playerService.sendPlayerReviveToArea(this.player);
     }
 
+    public void addExp(int type, int exp) {
+        switch (type) {
+            case 0 -> this.power += exp;
+            case 1 -> this.potentialPoints += exp;
+            case 2 -> {
+                this.power += exp;
+                this.potentialPoints += exp;
+            }
+        }
+        PlayerService playerService = PlayerService.getInstance();
+        playerService.sendPlayerUpExp(this.player, type, exp);
+    }
+
     public void returnTownFromDead() {
         try {
             if (!this.isDead()) return;

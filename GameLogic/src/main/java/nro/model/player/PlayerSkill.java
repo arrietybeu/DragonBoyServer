@@ -16,6 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@SuppressWarnings("ALL")
 public class PlayerSkill {
 
     private final List<SkillInfo> skills;
@@ -63,7 +64,7 @@ public class PlayerSkill {
                     case Player plTarget -> {
                     }
                     case Monster monster -> {
-                        SkillService.getInstance().sendPlayerAttackMonster(this.player, monster.getId());
+
                         monster.handleAttack(this.player, 10);
                     }
                     default ->
@@ -95,7 +96,6 @@ public class PlayerSkill {
     }
 
     public void selectSkill(int skillId) {
-        System.out.println("selectSkill: " + skillId);
         try {
             for (SkillInfo skillInfo : this.skills) {
                 if (skillInfo.getTemplate().getId() == -1) continue;

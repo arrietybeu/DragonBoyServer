@@ -66,7 +66,7 @@ public class TaskManager implements IManager {
     private List<TaskMain.SubName> loadListSubNameTask(Connection connection, int taskId) {
         List<TaskMain.SubName> subNameList = new ArrayList<>();
 
-        String query = "SELECT name, max_count, content, npc_list, map_id FROM task_sub WHERE task_main_id = ?";
+        String query = "SELECT name, max_count, content, npc_list, map_list FROM task_sub WHERE task_main_id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setInt(1, taskId);
@@ -77,14 +77,20 @@ public class TaskManager implements IManager {
                     subName.setMaxCount(rs.getInt("max_count"));
                     subName.setContentInfo(rs.getString("content"));
                     var npcJson = rs.getString("npc_list");
+                    var mapJson = rs.getString("map_list");
 
-                    JSONArray dataArray = (JSONArray) JSONValue.parse(npcJson);
+                    JSONArray npcArray = (JSONArray) JSONValue.parse(npcJson);
+                    JSONArray mapArray = (JSONArray) JSONValue.parse(mapJson);
 
-                    subName.npcList = new short[dataArray.size()];
-                    for (int i = 0; i < dataArray.size(); i++) {
-                        subName.npcList[i] = Short.parseShort(dataArray.get(i).toString());
+                    subName.npcList = new short[npcArray.size()];
+                    for (int i = 0; i < npcArray.size(); i++) {
+                        subName.npcList[i] = Short.parseShort(npcArray.get(i).toString());
                     }
-                    subName.setMapId(rs.getShort("map_id"));
+
+                    subName.mapList = new short[mapArray.size()];
+                    for(int i = 0; i < mapArray.size(); i++) {
+                        subName.mapList[i] = Short.parseShort(mapArray.get(i).toString());
+                    }
 
                     subNameList.add(subName);
                 }

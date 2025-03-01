@@ -98,7 +98,6 @@ public class Service {
 
     public void sendChatGlobal(Session session, Player player, String text, boolean isChatServer) {
         final int MESSAGE_CHAT_GLOBAL = 92;
-
         try (Message message = new Message(MESSAGE_CHAT_GLOBAL)) {
             DataOutputStream out = message.writer();
 

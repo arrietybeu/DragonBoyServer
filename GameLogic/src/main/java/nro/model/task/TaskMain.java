@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -33,8 +32,9 @@ public class TaskMain {
     public static class SubName {
 
         public short[] npcList;
+        public short[] mapList;
+
         private short count;
-        private short mapId;
         private int maxCount;
 
         private String name;
@@ -54,9 +54,19 @@ public class TaskMain {
             return npcList[gender];
         }
 
+        public short getMapIdByGender(int gender) {
+            if (mapList.length == 0) {
+                return -1;
+            }
+            if (mapList.length == 1) {
+                return mapList[0];
+            }
+            return mapList[gender];
+        }
+
         @Override
         public String toString() {
-            return "SubName{" + "npcList=" + npcList.length + ", count=" + count + ", mapId=" + mapId + ", maxCount=" + maxCount + ", name='" + name + '\'' + ", contentInfo='" + contentInfo + '\'' + '}';
+            return "SubName{" + "npcList=" + npcList.length + ", count=" + count + ", mapId=" + mapList + ", maxCount=" + maxCount + ", name='" + name + '\'' + ", contentInfo='" + contentInfo + '\'' + '}';
         }
     }
 

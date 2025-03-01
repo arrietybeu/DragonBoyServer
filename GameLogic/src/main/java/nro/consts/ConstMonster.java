@@ -12,4 +12,9 @@ public class ConstMonster {
     public static final byte STATUS_FALL = 6;         // Rơi xuống
     public static final byte STATUS_INJURE = 7;       // Bị thương
 
+
+    // ============= Monster =============//
+
+    public static final byte MOC_NHAN = 0;
+    public static final byte KHUNG_LONG = 1;
 }

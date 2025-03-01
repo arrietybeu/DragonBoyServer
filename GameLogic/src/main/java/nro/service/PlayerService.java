@@ -203,6 +203,17 @@ public class PlayerService {
         }
     }
 
+    public void sendPlayerUpExp(Player player, int type, int quantity) {
+        try (Message message = new Message(-3)) {
+            DataOutputStream out = message.writer();
+            out.writeByte(type); // 0 = power, 1 = tiem nang, 2 = all
+            out.writeInt(quantity);
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendPlayerUpExp: " + ex.getMessage());
+        }
+    }
+
     public void sendStamina(Player player) {
         try (Message msg = new Message(-68)) {
             DataOutputStream out = msg.writer();

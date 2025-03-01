@@ -77,7 +77,6 @@ public final class MessageSender {
             }
         } catch (Exception e) {
             LogServer.LogException("Error createSendThread: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
