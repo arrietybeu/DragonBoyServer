@@ -16,4 +16,7 @@ public class ConstItem {
     public static final int MOUNT_VIP = 24;
     public static final int GIAP_LUYEN_TAP = 32;
     public static final int SACH_TUYET_KY = 35;
+
+    // Item Options
+
 }

@@ -80,18 +80,17 @@ public class MonsterService {
         }
     }
 
-    public void sendHpMonster(Player player, Monster monster, long dame, boolean isCrit) {
+    public void sendHpMonster(Player player, Monster monster, long dame, boolean isCrit, boolean isHut) {
         try (Message message = new Message(-9)) {
             DataOutputStream writer = message.writer();
             writer.writeByte(monster.getId());
             writer.writeLong(monster.getPoint().getHp());
             writer.writeLong(dame);
             writer.writeBoolean(isCrit);
-            writer.writeByte(37);// effect
+            writer.writeByte(isHut ? 37 : -1);
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendHpMonster: " + ex.getMessage());
-            ex.printStackTrace();
         }
     }
 

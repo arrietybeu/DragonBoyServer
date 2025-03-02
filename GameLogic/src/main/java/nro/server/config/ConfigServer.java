@@ -36,9 +36,8 @@ public final class ConfigServer {
 
     static {
         try {
-//            IP = InetAddress.getLocalHost().getHostAddress();
-            IP = "206.189.150.19";
-            System.out.println("IP may: " + IP);
+            IP = InetAddress.getLocalHost().getHostAddress();
+//            IP = "206.189.150.19";
         } catch (Exception e) {
             IP = "127.0.0.1";
             System.err.println("khong tim thay ip may chuyen ip default: " + IP);

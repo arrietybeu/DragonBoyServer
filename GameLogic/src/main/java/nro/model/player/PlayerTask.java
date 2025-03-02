@@ -62,7 +62,6 @@ public class PlayerTask {
     }
 
     public void checkDoneTaskKKillMonster(Monster monster) {
-        System.out.println("Check done task kill monster");
         try {
             switch (monster.getTemplateId()) {
                 case ConstMonster.MOC_NHAN: {

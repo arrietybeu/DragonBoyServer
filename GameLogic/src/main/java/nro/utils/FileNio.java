@@ -38,7 +38,7 @@ public class FileNio {
         if (count >= CACHE_THRESHOLD) {
             lock.writeLock().lock();
             try {
-                LogServer.LogWarning("ADD cache: " + url + " const: " + count);
+//                LogServer.LogWarning("ADD cache: " + url + " const: " + count);
                 CACHE.put(url, fileData);
             } finally {
                 lock.writeLock().unlock();

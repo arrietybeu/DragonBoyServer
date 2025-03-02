@@ -32,7 +32,8 @@ public class MonsterPoint {
     }
 
     public void subHp(long damage) {
-        this.hp = Math.max(0, this.hp - damage);
+        damage = Math.min(damage, this.hp);
+        this.hp -= damage;
     }
 
     public long getDameGoc() {

@@ -140,7 +140,7 @@ public class PlayerUpdate {
             statement.setLong(4, stats.getBaseMP());
             statement.setLong(5, stats.getMaxMP());
             statement.setLong(6, stats.getCurrentMP());
-            statement.setLong(7, stats.getTotalDamage());
+            statement.setLong(7, stats.getCurrentDamage());
             statement.setLong(8, stats.getBaseDamage());
             statement.setByte(9, stats.getBaseCriticalChance());
             statement.setInt(10, stats.getTotalCriticalChance());

@@ -56,7 +56,7 @@ public class CaptionManager implements IManager {
                 CaptionTemplate caption = new CaptionTemplate(id, exp);
                 CAPTIONS.add(caption);
             }
-            LogServer.LogInit("Loaded " + CAPTIONS.size() + " captions");
+//            LogServer.LogInit("Loaded " + CAPTIONS.size() + " captions");
 
         } catch (Exception e) {
             LogServer.LogException("Error loading caption: " + e.getMessage());
@@ -74,7 +74,7 @@ public class CaptionManager implements IManager {
                 var captionLevel = new CaptionTemplate.CaptionLevel(id, gender, name);
                 CAPTION_LEVELS.add(captionLevel);
             }
-            LogServer.LogInit("Loaded " + CAPTION_LEVELS.size() + " caption levels");
+//            LogServer.LogInit("Loaded " + CAPTION_LEVELS.size() + " caption levels");
 
         } catch (Exception e) {
             LogServer.LogException("Error loading caption level: " + e.getMessage());

@@ -55,7 +55,7 @@ public class GameNotifyManager implements IManager {
                     GameInfo gameInfo = new GameInfo(id, textMain, content);
                     this.notifyList.add(gameInfo);
                 }
-                LogServer.LogInit("GameInfo initialized size: " + this.notifyList.size());
+//                LogServer.LogInit("GameInfo initialized size: " + this.notifyList.size());
             }
         } catch (SQLException ex) {
             LogServer.LogException("Error loadNotify: " + ex.getMessage());

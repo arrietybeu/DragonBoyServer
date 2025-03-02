@@ -107,7 +107,7 @@ public class ItemManager implements IManager {
                     this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
-                LogServer.LogInit("ItemManager initialized size: " + itemTemplates.size());
+//                LogServer.LogInit("ItemManager initialized size: " + itemTemplates.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadItem: " + e.getMessage());
@@ -127,7 +127,7 @@ public class ItemManager implements IManager {
                 this.itemOptionTemplates.put((short) id, itemOptionManager);
             }
             this.setItemOption();
-            LogServer.LogInit("ItemOptionManager initialized size: " + this.itemOptionTemplates.size());
+//            LogServer.LogInit("ItemOptionManager initialized size: " + this.itemOptionTemplates.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadItemOptionTemplate: " + e.getMessage());
         }
@@ -150,7 +150,7 @@ public class ItemManager implements IManager {
             LogServer.LogException("Error loadHeadAvatar: " + e.getMessage());
             e.printStackTrace();
         }
-        LogServer.LogInit("Item loadHeadAvatar initialized size: " + itemHeadAvatars.size());
+//        LogServer.LogInit("Item loadHeadAvatar initialized size: " + itemHeadAvatars.size());
     }
 
     private void loadFlagBag() {
@@ -171,7 +171,7 @@ public class ItemManager implements IManager {
         } catch (SQLException e) {
             LogServer.LogException("Error loadFlagBag: " + e.getMessage());
         }
-        LogServer.LogInit("Item Flag initialized size: " + flags.size());
+//        LogServer.LogInit("Item Flag initialized size: " + flags.size());
     }
 
     private void loadItemArrHead2Fr() {
@@ -195,7 +195,7 @@ public class ItemManager implements IManager {
         } catch (Exception e) {
             LogServer.LogException("Error loadItemArr_Head_2Fr: " + e.getMessage());
         }
-        LogServer.LogInit("Item ArrHead2Frames initialized size: " + arrHead2Frames.size());
+//        LogServer.LogInit("Item ArrHead2Frames initialized size: " + arrHead2Frames.size());
     }
 
     private void setDataItemTemplate() {

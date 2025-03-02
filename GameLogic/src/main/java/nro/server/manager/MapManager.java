@@ -128,7 +128,7 @@ public class MapManager implements IManager {
                 this.gameMaps.put(id, mapTemplate);
             }
 
-            LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
+//            LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException("Error loadMap: " + e.getMessage());
@@ -152,7 +152,7 @@ public class MapManager implements IManager {
                 tileMaps.put(mapId, new TileMap(tmw, tmh, maps));
             }
 
-            LogServer.LogInit("Loaded " + tileMaps.size() + " map tiles.");
+//            LogServer.LogInit("Loaded " + tileMaps.size() + " map tiles.");
 
         } catch (SQLException e) {
             LogServer.LogException("Error loading map tiles: " + e.getMessage());
@@ -255,7 +255,7 @@ public class MapManager implements IManager {
                 this.backgroundMapTemplates.add(bg);
             }
             this.setDataBackgroundMap();
-            LogServer.LogInit("LoadItemBackgroundMap initialized size: " + this.backgroundMapTemplates.size());
+//            LogServer.LogInit("LoadItemBackgroundMap initialized size: " + this.backgroundMapTemplates.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadItemBackgroundMap: " + e.getMessage());
         }
@@ -293,7 +293,7 @@ public class MapManager implements IManager {
                 tileSet.setTileTypes(tileTypes);
                 this.tileSetTemplates.add(tileSet);
             }
-            LogServer.LogInit("LoadTileSetInfo initialized size: " + this.tileSetTemplates.size());
+//            LogServer.LogInit("LoadTileSetInfo initialized size: " + this.tileSetTemplates.size());
             this.setTileSetData();
         } catch (SQLException e) {
             LogServer.LogException("Error loadTileSetInfo: " + e.getMessage());

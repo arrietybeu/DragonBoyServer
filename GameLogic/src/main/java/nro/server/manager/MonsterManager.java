@@ -56,7 +56,7 @@ public class MonsterManager implements IManager {
                 MonsterTemplate template = new MonsterTemplate(id, type, name, hp, rangeMove, speed, dartType);
                 this.MONSTERS.add(template);
             }
-            LogServer.LogInit("MonsterManager initialized size: " + MONSTERS.size());
+//            LogServer.LogInit("MonsterManager initialized size: " + MONSTERS.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadMonsterTemplates: " + e.getMessage());
         }

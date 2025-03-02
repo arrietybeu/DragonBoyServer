@@ -8,7 +8,6 @@ import nro.model.LiveObject;
 import nro.model.monster.Monster;
 import nro.model.template.entity.SkillInfo;
 import nro.server.LogServer;
-import nro.service.SkillService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,8 +63,7 @@ public class PlayerSkill {
                     case Player plTarget -> {
                     }
                     case Monster monster -> {
-
-                        monster.handleAttack(this.player, 10);
+                        monster.handleAttack(this.player, this.player.getPlayerPoints().getDameAttack());
                     }
                     default ->
                             LogServer.LogException("useSkillTarget player name:" + player.getName() + " error: target not monster");

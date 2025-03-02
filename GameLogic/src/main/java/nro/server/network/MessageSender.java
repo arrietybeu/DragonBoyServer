@@ -69,7 +69,7 @@ public final class MessageSender {
                                 }
                             }
                         } catch (Exception e) {
-                            LogServer.LogException("Error in send thread: " + e.getMessage());
+//                            LogServer.LogException("Error in send thread: " + e.getMessage());
                             SessionManager.getInstance().kickSession(this.session);
                         }
                     }
@@ -77,6 +77,7 @@ public final class MessageSender {
             }
         } catch (Exception e) {
             LogServer.LogException("Error createSendThread: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -90,9 +91,9 @@ public final class MessageSender {
         }
         if (data != null) {
             int size = data.length;
-//            if (size >= 65_535) {
-//                LogServer.DebugLogic("BigData: " + msg.getCommand() + " size: " + size + " bytes");
-//            }
+            if (size >= 65_535) {
+                LogServer.DebugLogic("BigData: " + msg.getCommand() + " size: " + size + " bytes");
+            }
             if (msg.getCommand() == ConstsCmd.BACKGROUND_TEMPLATE || msg.getCommand() == ConstsCmd.GET_EFFDATA
                     || msg.getCommand() == ConstsCmd.REQUEST_MOB_TEMPLATE || msg.getCommand() == ConstsCmd.REQUEST_ICON
                     || msg.getCommand() == ConstsCmd.GET_IMAGE_SOURCE || msg.getCommand() == ConstsCmd.UPDATE_DATA

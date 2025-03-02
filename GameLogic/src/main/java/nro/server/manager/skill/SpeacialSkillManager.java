@@ -76,7 +76,7 @@ public class SpeacialSkillManager implements IManager {
                     this.specialSkills.add(specialSkill);
                 }
             }
-            LogServer.LogInit("SpecialSkill initialized size: " + this.specialSkills.size());
+//            LogServer.LogInit("SpecialSkill initialized size: " + this.specialSkills.size());
 
         } catch (Exception e) {
             LogServer.LogException("Error loadSpecialSkill: " + e.getMessage());

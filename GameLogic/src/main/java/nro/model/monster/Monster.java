@@ -6,6 +6,7 @@ import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
+import nro.model.player.PlayerPoints;
 import nro.server.LogServer;
 import nro.service.MonsterService;
 import nro.service.SkillService;
@@ -57,13 +58,15 @@ public class Monster extends LiveObject {
         this.lock.writeLock().lock();
         try {
             if (this.point.isDead()) return 0;
+            if (this.templateId == 0 && damage >= 10) damage = 10;
             SkillService.getInstance().sendPlayerAttackMonster(plAttack, this.getId());
             this.point.subHp(damage);
             if (this.point.isDead()) {
                 this.setDie(plAttack, damage);
                 plAttack.getPlayerTask().checkDoneTaskKKillMonster(this);
             } else {
-                MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true);
+                boolean isHutHp = plAttack.getPlayerPoints().getTlHutHpMob() > 0;
+                MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
             }
             return damage;
         } finally {

@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -261,7 +262,7 @@ public class PlayerService {
             out.writeByte(stats.getHpPer1000Potential());
             out.writeByte(stats.getMpPer1000Potential());
             out.writeByte(stats.getDamagePer1000Potential());
-            out.writeLong(stats.getTotalDamage());
+            out.writeLong(stats.getCurrentDamage());
             out.writeLong(stats.getTotalDefense());
             out.writeByte(stats.getTotalCriticalChance());
             out.writeLong(stats.getPotentialPoints());
@@ -270,7 +271,7 @@ public class PlayerService {
             out.writeByte(stats.getBaseCriticalChance());
             player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendPointForMe: " + e.getMessage());
+            LogServer.LogException("Error sendPointForMe: " + Arrays.toString(e.getStackTrace()));
         }
     }
 

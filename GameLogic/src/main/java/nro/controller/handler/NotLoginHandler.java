@@ -89,7 +89,6 @@ public class NotLoginHandler implements IMessageProcessor {
             session.getSessionInfo().setLogin(true);
             ResourceService.getInstance().sendResourcesLogin(session);
         } catch (Exception e) {
-            e.printStackTrace();
             LogServer.LogException("Error login: " + e.getMessage());
             SessionManager.getInstance().kickSession(session);
         }

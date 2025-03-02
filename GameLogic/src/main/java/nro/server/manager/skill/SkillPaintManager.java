@@ -109,7 +109,7 @@ public class SkillPaintManager implements IManager {
                 this.skillPaintList.add(skillPaint);
             }
             this.setData();
-            LogServer.LogInit("SkillPaintManager initialized size: " + this.skillPaintList.size() + " data size: " + this.skillPaintsData.length);
+//            LogServer.LogInit("SkillPaintManager initialized size: " + this.skillPaintList.size() + " data size: " + this.skillPaintsData.length);
         } catch (SQLException e) {
 //            e.printStackTrace();
             LogServer.LogException("Error loading skill paint: " + e.getMessage());

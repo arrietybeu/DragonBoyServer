@@ -87,6 +87,10 @@ public class PlayerLoader {
 
         // Load player inventory
         this.loadPlayerInventory(player, connection);
+
+        // Load Point
+        player.getPlayerPoints().setPoint();
+
         return player;
     }
 
@@ -157,13 +161,20 @@ public class PlayerLoader {
     }
 
     private void loadPlayerPoint(Player player, Connection connection) throws SQLException {
-        String query = "SELECT hp, hp_max, hp_current, " + "mp, mp_max, mp_current, " + "dame_max, dame_default, " + "crit, crit_default, " + "defense, def_default, " + "stamina, max_stamina, " + "power, limit_power, " + "tiem_nang, nang_dong " + "FROM player_point WHERE player_id = ?";
+        String query = "SELECT hp, hp_max, hp_current, "
+                + "mp, mp_max, mp_current, "
+                + "dame_max, dame_default, "
+                + "crit, crit_default, "
+                + "defense, def_default, "
+                + "stamina, max_stamina, "
+                + "power, limit_power, "
+                + "tiem_nang, nang_dong "
+                + "FROM player_point WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
                     PlayerPoints stats = player.getPlayerPoints();
-
                     // --- HP
                     stats.setBaseHP((int) rs.getLong("hp"));           // cHPGoc
                     stats.setMaxHP(rs.getLong("hp_max"));                // cHPFull
@@ -176,7 +187,7 @@ public class PlayerLoader {
 
                     // --- Damage
                     stats.setBaseDamage((int) rs.getLong("dame_default")); // cDamGoc
-                    stats.setTotalDamage(rs.getLong("dame_max"));          // cDamFull
+//                    stats.setTotalDamage(rs.getLong("dame_max"));          // cDamFull
 
                     // --- Critical Chance
                     stats.setBaseCriticalChance(rs.getByte("crit"));

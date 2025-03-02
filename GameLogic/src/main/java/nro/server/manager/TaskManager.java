@@ -56,7 +56,7 @@ public class TaskManager implements IManager {
                     TaskMain task = new TaskMain(id, name, detail, loadListSubNameTask(connection, id));
                     TASKS.put(task.getId(), task);
                 }
-                LogServer.LogInit("Load task thành công (" + TASKS.size() + ")");
+//                LogServer.LogInit("Load task thành công (" + TASKS.size() + ")");
             }
         } catch (SQLException e) {
             LogServer.LogException("Error in TaskManager.loadTask(): " + e.getMessage());

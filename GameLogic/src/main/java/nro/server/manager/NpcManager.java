@@ -53,7 +53,7 @@ public class NpcManager implements IManager {
                     NpcTemplate template = new NpcTemplate(id, name, head, body, leg, avatar, chat);
                     this.NPC_TEMPLATE.add(template);
                 }
-                LogServer.LogInit("NpcManager initialized size: " + NPC_TEMPLATE.size());
+//                LogServer.LogInit("NpcManager initialized size: " + NPC_TEMPLATE.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadNpcTemplates: " + e.getMessage());

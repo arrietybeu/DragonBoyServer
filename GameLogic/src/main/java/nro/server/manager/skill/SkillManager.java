@@ -51,7 +51,7 @@ public class SkillManager implements IManager {
                     NClass nClass = new NClass(nClassId, name, this.loadSkillTemplate(connection, nClassId));
                     this.nClasses.add(nClass);
                 }
-                LogServer.LogInit("Skill Class initialized size: " + this.nClasses.size());
+//                LogServer.LogInit("Skill Class initialized size: " + this.nClasses.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadSkill: " + e.getMessage());
@@ -134,7 +134,7 @@ public class SkillManager implements IManager {
         } catch (Exception e) {
             LogServer.LogException("Error loadSkillOption: " + e.getMessage());
         } finally {
-            LogServer.LogInit("SkillOption initialized size: " + this.skillOptions.size());
+//            LogServer.LogInit("SkillOption initialized size: " + this.skillOptions.size());
         }
     }
 

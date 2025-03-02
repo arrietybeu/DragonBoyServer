@@ -31,14 +31,23 @@ public class ManagerRegistry {
     }
 
     public static void initAll() {
+        long totalStart = System.currentTimeMillis();
+
         for (IManager manager : MANAGERS) {
+            long startTime = System.currentTimeMillis();
             try {
                 manager.init();
+                long elapsedTime = System.currentTimeMillis() - startTime;
+                LogServer.LogInit("Initialized manager class: [" + manager.getClass().getSimpleName() + "] in " + elapsedTime + " ms");
             } catch (Exception e) {
                 LogServer.LogException("Error initializing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
             }
         }
+
+        long totalElapsedTime = System.currentTimeMillis() - totalStart;
+        LogServer.DebugLogic("All managers initialized in " + totalElapsedTime + " ms");
     }
+
 
     public static void reloadAll() {
         for (IManager manager : MANAGERS) {

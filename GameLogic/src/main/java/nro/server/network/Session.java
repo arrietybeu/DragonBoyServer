@@ -59,7 +59,7 @@ public final class Session {
             this.handleInitializationError();
             LogServer.LogException("Error Session: " + e.getMessage());
         }
-        LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession());
+//        LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession());
     }
 
     private void initCommunication() throws IOException {
@@ -160,12 +160,9 @@ public final class Session {
 
     public void doSendMessage(Message message) {
         try {
-            if (this.messageSender == null || this.isClosed()) {
-                LogServer.LogWarning("Không thể gửi tin nhắn: Session đã đóng.");
-                return;
-            }
             this.messageSender.doSendMessage(message);
         } catch (Exception e) {
+            LogServer.LogException("Error doSendMessage: " + e.getMessage());
         }
     }
 

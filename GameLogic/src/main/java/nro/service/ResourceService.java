@@ -165,11 +165,10 @@ public class ResourceService {
         if (zoomLevel < 1 || zoomLevel > 4) {
             throw new IllegalArgumentException("Invalid zoom level: " + zoomLevel);
         }
-        byte[][] smallVersion = res.getSmallVersion();
-        byte[] data = smallVersion[zoomLevel - 1];
+        byte[] smallVersion = res.getDataSmallVersion().get((byte) zoomLevel);
         try (Message message = new Message(-77)) {
-            message.writer().writeShort(data.length);
-            message.writer().write(data);
+            message.writer().writeShort(smallVersion.length);
+            message.writer().write(smallVersion);
             session.doSendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendSmallVersion: " + e.getMessage());
@@ -391,18 +390,14 @@ public class ResourceService {
     }
 
     public void sendResourcesLogin(Session session) {
-        try {
-            var zoomLevel = session.getClientInfo().getZoomLevel();
-            if (zoomLevel < 1 || zoomLevel > 4) {
-                LogServer.LogException("Error sendResourcesLogin: Invalid zoom level: " + zoomLevel);
-                return;
-            }
-            this.sendSmallVersion(session);// -77
-            this.sendBackgroundVersion(session);// -93
-            this.sendVersionDataGame(session);
-        } catch (Exception exception) {
-            LogServer.LogException("Error sendResourcesLogin: " + exception.getMessage());
+        var zoomLevel = session.getClientInfo().getZoomLevel();
+        if (zoomLevel < 1 || zoomLevel > 4) {
+            LogServer.LogException("Error sendResourcesLogin: Invalid zoom level: " + zoomLevel);
+            return;
         }
+        this.sendSmallVersion(session);// -77
+        this.sendBackgroundVersion(session);// -93
+        this.sendVersionDataGame(session);
     }
 
 }
