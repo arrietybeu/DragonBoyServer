@@ -45,7 +45,7 @@ public final class MessageReceiver {
                                 this.session.sendSessionKey();
                                 break;
                             default:
-                                this.session.getController().onMessage(this.session, message);
+                                this.session.getController().handleMessage(this.session, message);
                                 this.session.getClientInfo().updateLastActiveTime();
                                 break;
                         }

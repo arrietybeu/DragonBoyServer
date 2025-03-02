@@ -2,6 +2,8 @@ package nro.model.template.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.server.manager.SessionManager;
+import nro.server.network.Session;
 import nro.utils.Util;
 
 /**

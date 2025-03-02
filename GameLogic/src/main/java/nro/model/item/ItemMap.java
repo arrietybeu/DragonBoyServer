@@ -1,7 +1,6 @@
-package nro.model.map;
+package nro.model.item;
 
 import lombok.Getter;
-import nro.model.item.ItemTemplate;
 
 @Getter
 public class ItemMap {
@@ -14,6 +13,5 @@ public class ItemMap {
     private ItemTemplate itemTemplate;
 
     public void update() {
-
     }
 }

@@ -1,15 +1,18 @@
 package nro.model.template.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class SessionInfo {
 
     private int id;
     private String ip;
     private final byte[] keys = {0};
 
-    private boolean connected;
+    private volatile boolean connected;
     private boolean isUpdateItem;
     private boolean isClientOk;
     private boolean isLogin;

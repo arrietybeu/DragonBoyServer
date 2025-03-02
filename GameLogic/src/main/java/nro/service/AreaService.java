@@ -31,8 +31,7 @@ public class AreaService {
             }
             this.sendPlayerInfoToAllInArea(player);
         } catch (Exception ex) {
-            LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage(), ex);
         }
     }
 
@@ -45,8 +44,7 @@ public class AreaService {
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("sendPlayerInfoToAllInArea: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendPlayerInfoToAllInArea: " + ex.getMessage(), ex);
         }
     }
 
@@ -69,7 +67,7 @@ public class AreaService {
             data.writeShort(playerInfo.getIdHat());
             isMe.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("addPlayer: " + ex.getMessage());
+            LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -105,8 +103,7 @@ public class AreaService {
             data.writeShort(player.getY());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + player.getId());
-            ex.printStackTrace();
+            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 
@@ -133,8 +130,7 @@ public class AreaService {
             this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY());
 
         } catch (Exception ex) {
-            LogServer.LogException("playerChangerMap: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("playerChangerMap: " + ex.getMessage(), ex);
         }
     }
 
@@ -182,8 +178,7 @@ public class AreaService {
                 area.removePlayer(player);
             }
         } catch (Exception ex) {
-            LogServer.LogException("playerExitArea: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("playerExitArea: " + ex.getMessage(), ex);
         }
     }
 
@@ -192,8 +187,7 @@ public class AreaService {
             message.writer().writeInt(player.getId());
             player.getArea().sendMessageToPlayersInArea(message, player);
         } catch (Exception ex) {
-            LogServer.LogException("sendRemovePlayerExitArea: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendRemovePlayerExitArea: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 
@@ -221,8 +215,7 @@ public class AreaService {
             message.writer().writeShort(player.getY());
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendResetPoint: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendResetPoint: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 
@@ -235,8 +228,7 @@ public class AreaService {
             playerService.sendCurrencyHpMp(player);
             MapService.getInstance().sendMapInfo(player);// -24
         } catch (Exception ex) {
-            LogServer.LogException("Error send Message Changer Map: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error send Message Changer Map: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 
@@ -247,8 +239,7 @@ public class AreaService {
             data.writeByte(player.getTeleport());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendTeleport: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendTeleport: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 

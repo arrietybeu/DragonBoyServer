@@ -12,6 +12,9 @@ import nro.service.MonsterService;
 import nro.service.SkillService;
 import nro.utils.Util;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Getter
@@ -25,6 +28,8 @@ public class Monster extends LiveObject {
     private final MonsterStatus status;
     private final MonsterInfo info;
     private final Area area;
+
+    private final Set<Player> attackers = new LinkedHashSet<>();
 
     public Monster(int templateId, int id, long maxHp, byte level, short x, short y, Area area) {
         this.setTypeObject(ConstTypeObject.TYPE_MONSTER);
@@ -45,19 +50,20 @@ public class Monster extends LiveObject {
                 this.setLive();
             }
         } else {
-            if (this.isMonsterAttack()) {
-                if (Util.canDoWithTime(this.info.getLastTimeAttack(), 2000)) {
-                    this.attackPlayer();
-                }
+            if (Util.canDoWithTime(this.info.getLastTimeAttack(), 2000)) {
+                this.attackPlayer();
             }
         }
     }
 
     @Override
-    public long handleAttack(Player plAttack, long damage) throws RuntimeException {
+    public long handleAttack(final Player plAttack, long damage) {
         this.lock.writeLock().lock();
         try {
             if (this.point.isDead()) return 0;
+
+            this.attackers.add(plAttack);
+
             if (this.templateId == 0 && damage >= 10) damage = 10;
             SkillService.getInstance().sendPlayerAttackMonster(plAttack, this.getId());
             this.point.subHp(damage);
@@ -69,14 +75,12 @@ public class Monster extends LiveObject {
                 MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
             }
             return damage;
+        } catch (Exception exception) {
+            LogServer.LogException("Monster handleAttack: " + exception.getMessage());
+            return 0;
         } finally {
             this.lock.writeLock().unlock();
         }
-    }
-
-    private boolean isMonsterAttack() {
-        return this.status.getStatus() != 0 && this.status.getStatus() != 1 && !this.point.isDead()
-                && this.templateId != 0 && this.templateId != 76 && this.templateId != 94;
     }
 
     public void setLive() throws RuntimeException {
@@ -104,26 +108,39 @@ public class Monster extends LiveObject {
     }
 
     private void attackPlayer() {
-        try {
-            Player player = this.playerCanAttack();
-            if (player != null) {
-                long dame = this.constDame(player);
-                MonsterService monsterService = MonsterService.getInstance();
-                monsterService.sendMonsterAttackMe(this, player, dame, -1);
-                monsterService.sendMonsterAttackPlayer(this, player, -1);
+        if (this.isMonsterAttack()) {
+            try {
+                Player player = this.playerCanAttack();
+                this.attack(player);
+            } catch (Exception exception) {
+                LogServer.LogException("Monster attackPlayer: " + exception.getMessage());
+                exception.printStackTrace();
             }
-            this.info.setLastTimeAttack(System.currentTimeMillis());
-        } catch (Exception exception) {
-            LogServer.LogException("Monster attackPlayer: " + exception.getMessage());
-            exception.printStackTrace();
         }
+    }
+
+    private void attack(Player player) {
+        if (player != null) {
+            long dame = this.constDame(player);
+            MonsterService monsterService = MonsterService.getInstance();
+            monsterService.sendMonsterAttackMe(this, player, dame, -1);
+            monsterService.sendMonsterAttackPlayer(this, player, -1);
+        }
+        this.info.setLastTimeAttack(System.currentTimeMillis());
     }
 
     private long constDame(Player player) {
         // TODO bù trừ dame
         long dame = this.point.getDameGoc();
-
         return player.handleAttack(player, dame);
+    }
+
+    private boolean isMonsterAttack() {
+        return this.info.getType() != 0 && this.status.getStatus() != 0 && !this.point.isDead();
+    }
+
+    private boolean isMonsterAgg() {
+        return this.point.getLevel() >= 5;
     }
 
     private Player playerCanAttack() {
@@ -131,6 +148,17 @@ public class Monster extends LiveObject {
             if (player == null) continue;
             if (player.getPlayerPoints().isDead()) continue;
             if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 80) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    private Player getPlayerAttackMonster() {
+        for (Player player : this.getAttackers()) {
+            if (player == null) continue;
+            if (player.getPlayerPoints().isDead()) continue;
+            if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 240) {
                 return player;
             }
         }

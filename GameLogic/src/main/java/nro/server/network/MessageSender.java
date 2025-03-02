@@ -24,7 +24,7 @@ public final class MessageSender {
 
     public MessageSender(Session session, OutputStream os) {
         this.session = session;
-        this.session.list_msg = new ConcurrentLinkedQueue<>();
+        this.session.listMessage = new ConcurrentLinkedQueue<>();
         this.dos = new DataOutputStream(os);
     }
 

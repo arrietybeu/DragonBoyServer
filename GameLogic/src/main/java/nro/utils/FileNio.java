@@ -16,9 +16,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class FileNio {
 
-    public static final Map<String, byte[]> CACHE = new ConcurrentHashMap<>();
-
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    public static final Map<String, byte[]> CACHE = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Integer> FILE_ACCESS_COUNT = new ConcurrentHashMap<>();
     private static final int CACHE_THRESHOLD = 2;
 
@@ -68,7 +67,7 @@ public class FileNio {
             }
             return ab;
         } catch (Exception e) {
-            LogServer.LogException("Error occurred while reading file at URL: " + url + " - " + e.getMessage());
+            LogServer.LogException("Error occurred while reading file at URL: " + url + " - " + e.getMessage(), e);
         }
         return null;
     }
@@ -82,7 +81,7 @@ public class FileNio {
             buffer.get(data);
             return data;
         } catch (IOException e) {
-            LogServer.LogException("Lỗi đọc file: " + url + " - " + e.getMessage());
+            LogServer.LogException("Lỗi đọc file: " + url + " - " + e.getMessage(), e);
         }
         return null;
     }

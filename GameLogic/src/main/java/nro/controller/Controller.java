@@ -18,22 +18,22 @@ public class Controller {
         this.factory.init("nro.controller.handler");
     }
 
-    public void onMessage(Session session, Message msg) {
+    public void handleMessage(Session session, Message message) {
         long st = System.currentTimeMillis();
-        byte cmd = msg.getCommand();
+        byte command = message.getCommand();
         try {
-            IMessageProcessor processor = this.factory.getProcessor(cmd);
+            IMessageProcessor processor = this.factory.getProcessor(command);
             if (processor != null) {
-                processor.process(session, msg);
+                processor.process(session, message);
             } else {
-                var info = "Unknow command: [" + cmd + "] " + ConstsCmd.getMessageName(cmd);
+                var info = "Unknow command: [" + command + "] " + ConstsCmd.getMessageName(command);
                 Service.dialogMessage(session, info);
                 LogServer.LogException(info);
             }
         } catch (Exception e) {
-            LogServer.LogException("Error Message Processor: [" + cmd + "] " + e.getMessage());
+            LogServer.LogException("Error Message Processor: [" + command + "] " + e.getMessage(), e);
         } finally {
-            this.checkTimeDelay(session, cmd, st);
+            this.checkTimeDelay(session, command, st);
         }
     }
 

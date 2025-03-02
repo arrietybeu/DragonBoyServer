@@ -150,6 +150,7 @@ public class SessionManager {
     public void kickSession(Session session) {
         this.lock.writeLock().lock();
         try {
+            session.getSessionInfo().setConnected(false);
             this.dispose(session);// save data player
             this.remove(session);// remove key session
             session.close();// close du lieu session khi da vao game
@@ -185,7 +186,6 @@ public class SessionManager {
     public int getSizeSession() {
         return this.sessions.size();
     }
-
 
 
 }

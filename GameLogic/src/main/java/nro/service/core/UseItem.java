@@ -99,7 +99,7 @@ public class UseItem {
             player.getPlayerInventory().subQuantityItemsBag(pea, 1);
             player.getPlayerMagicTree().setLastUsePea(time);
         } catch (Exception ex) {
-            LogServer.LogException("eatPea: " + ex.getMessage());
+            LogServer.LogException("eatPea: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }

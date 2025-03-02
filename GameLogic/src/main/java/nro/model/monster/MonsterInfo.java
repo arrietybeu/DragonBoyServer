@@ -22,4 +22,9 @@ public class MonsterInfo {
         MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.monster.getTemplateId());
         return template.name();
     }
+
+    public int getType() {
+        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.monster.getTemplateId());
+        return template.type();
+    }
 }

@@ -3,7 +3,7 @@ package nro.service;
 import nro.consts.ConstMsgNotMap;
 import nro.consts.ConstTypeObject;
 import nro.model.map.GameMap;
-import nro.model.map.ItemMap;
+import nro.model.item.ItemMap;
 import nro.model.map.Waypoint;
 import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
@@ -106,7 +106,7 @@ public class MapService {
 
         Map<Integer, Monster> monsters = area.getMonsters();
         List<Npc> npcs = area.getNpcList();
-        List<ItemMap> itemMaps = area.getItems();
+        List<ItemMap> itemMaps = area.getItemsMap();
 
         // send location
         output.writeShort(player.getX());

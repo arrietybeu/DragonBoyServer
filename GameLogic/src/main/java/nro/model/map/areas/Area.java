@@ -4,7 +4,7 @@ import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.map.GameMap;
-import nro.model.map.ItemMap;
+import nro.model.item.ItemMap;
 import nro.model.monster.Monster;
 import nro.model.npc.Npc;
 import nro.model.player.Player;
@@ -29,14 +29,14 @@ public class Area {
 
     private final Map<Integer, Player> players;
     private final List<Npc> npcList;
-    private final List<ItemMap> items;
+    private final List<ItemMap> itemsMap;
 
     public Area(GameMap map, int zoneId, int maxPlayers) {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
         this.players = new HashMap<>();
-        this.items = new ArrayList<>();
+        this.itemsMap = new ArrayList<>();
         this.npcList = new ArrayList<>();
     }
 
@@ -47,13 +47,11 @@ public class Area {
                 try {
                     obj.update();
                 } catch (Exception e) {
-                    LogServer.LogException("Error updating object ID: " + obj.getId() + " in zone " + this.id + " - " + e.getMessage());
-                    e.printStackTrace();
+                    LogServer.LogException("Error updating object ID: " + obj.getId() + " in zone " + this.id + " - " + e.getMessage(), e);
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("updateLiveObjects: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("updateLiveObjects: " + ex.getMessage(), ex);
         } finally {
             this.lock.readLock().unlock();
         }
@@ -73,7 +71,7 @@ public class Area {
     private void updateItemMap() {
         this.lock.readLock().lock();
         try {
-            for (ItemMap itemMap : this.items) {
+            for (ItemMap itemMap : this.itemsMap) {
                 itemMap.update();
             }
         } finally {
@@ -88,8 +86,7 @@ public class Area {
             this.updateItemMap();
             this.updateNpc();
         } catch (Exception ex) {
-            LogServer.LogException("update zone: " + this.id + " message: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("update zone: " + this.id + " message: " + ex.getMessage(), ex);
         }
     }
 
@@ -98,7 +95,7 @@ public class Area {
         try {
             this.players.put(player.getId(), player);
         } catch (Exception ex) {
-            LogServer.LogException("addPlayer: " + ex.getMessage());
+            LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
             ex.printStackTrace();
         } finally {
             this.lock.writeLock().unlock();
@@ -110,7 +107,7 @@ public class Area {
         try {
             this.players.remove(player.getId());
         } catch (Exception ex) {
-            LogServer.LogException("removePlayer: " + ex.getMessage());
+            LogServer.LogException("removePlayer: " + ex.getMessage() + " playerID: " + player.getId() + " zone id: " + this.id, ex);
             ex.printStackTrace();
         } finally {
             this.lock.writeLock().unlock();
@@ -149,7 +146,7 @@ public class Area {
                     try {
                         player.sendMessage(message);
                     } catch (Exception e) {
-                        LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone " + this.id + " - " + e.getMessage());
+                        LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone " + this.id + " - " + e.getMessage(), e);
                     }
                 }
             });
@@ -167,8 +164,7 @@ public class Area {
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("getNpcById: " + npcId + " message: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("getNpcById: " + npcId + " message: " + ex.getMessage() + " zoneID: " + this.id, ex);
         } finally {
             this.lock.readLock().unlock();
         }
@@ -180,8 +176,7 @@ public class Area {
         try {
             return this.monsters.get(monsterId);
         } catch (Exception ex) {
-            LogServer.LogException("getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage() + " zoneID: " + this.id, ex);
         } finally {
             this.lock.readLock().unlock();
         }
@@ -193,8 +188,7 @@ public class Area {
         try {
             this.monsters.put(monster.getId(), monster);
         } catch (Exception ex) {
-            LogServer.LogException("addMonster: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("addMonster: " + ex.getMessage() + " monsterID: " + monster.getId(), ex);
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -205,11 +199,31 @@ public class Area {
         try {
             this.monsters.remove(id);
         } catch (Exception ex) {
-            LogServer.LogException("removeMonster: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("removeMonster: " + ex.getMessage() + " monsterID: " + id, ex);
         } finally {
             this.lock.writeLock().unlock();
         }
     }
 
+    public void addItemMap(ItemMap itemMap) {
+        this.lock.writeLock().lock();
+        try {
+            this.itemsMap.add(itemMap);
+        } catch (Exception ex) {
+            LogServer.LogException("addItemMap: " + ex.getMessage() + " itemMapID: " + itemMap.getItemMapID(), ex);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+    }
+
+    public void removeItemMap(ItemMap itemMap) {
+        this.lock.writeLock().lock();
+        try {
+            this.itemsMap.remove(itemMap);
+        } catch (Exception ex) {
+            LogServer.LogException("removeItemMap: " + ex.getMessage() + " itemMapID: " + itemMap.getItemMapID(), ex);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+    }
 }

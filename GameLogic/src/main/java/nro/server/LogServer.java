@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * @author Arriety
@@ -65,8 +66,12 @@ public class LogServer {
         }
     }
 
-    public static void LogException(String message) {
-        log("Error", "\033[1;31m", message);
+    public static void LogException(String message, Exception... e) {
+        if (e.length > 0) {
+            log("Error", "\033[1;31m", message + " => " + Arrays.toString(e[0].getStackTrace()));
+        } else {
+            log("Error", "\033[1;31m", message);
+        }
     }
 
     public static void LogWarning(String message) {

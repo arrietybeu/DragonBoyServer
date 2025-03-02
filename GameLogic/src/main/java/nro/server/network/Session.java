@@ -33,7 +33,7 @@ public final class Session {
     private final ClientInfo clientInfo;
     private final SessionInfo sessionInfo;
 
-    public ConcurrentLinkedQueue<Message> list_msg;// new Message(tat)
+    public ConcurrentLinkedQueue<Message> listMessage;// new Message(tat)
     public ExecutorService executorService;
     private Socket socket;
     private MessageSender messageSender;
@@ -86,7 +86,7 @@ public final class Session {
      */
 
     public Message getListMessage() {
-        return this.list_msg.isEmpty() ? null : this.list_msg.poll();
+        return this.listMessage.isEmpty() ? null : this.listMessage.poll();
     }
 
     public boolean isExecutorServiceRunning() {
@@ -145,7 +145,7 @@ public final class Session {
         }
         try {
             if (this.sessionInfo.getConnect()) {
-                this.list_msg.offer(m);
+                this.listMessage.offer(m);
                 this.getClientInfo().updateLastActiveTime();
             }
         } catch (Exception e) {
@@ -222,8 +222,8 @@ public final class Session {
                 messageReceiver = null;
             }
 
-            if (list_msg != null) {
-                list_msg.clear();
+            if (listMessage != null) {
+                listMessage.clear();
             }
 
             if (this.userInfo != null) {
