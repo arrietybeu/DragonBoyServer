@@ -329,4 +329,19 @@ public class PlayerInventory {
     private void _______________FIND_ITEM______________() {
     }
 
+    private void _______________CHECK_SIZE_INVENTORY______________() {
+    }
+
+    public boolean isBagFull() {
+        return this.itemsBag.size() >= MAX_ITEM_BAG;
+    }
+
+    public boolean isBodyFull() {
+        return this.itemsBody.size() >= MAX_ITEM_BODY;
+    }
+
+    public boolean isBoxFull() {
+        return this.itemsBox.size() >= MAX_ITEM_BOX;
+    }
+
 }

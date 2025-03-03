@@ -2,6 +2,7 @@ package nro.service;
 
 import lombok.Getter;
 import nro.model.item.Flag;
+import nro.model.item.ItemMap;
 import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.manager.ItemManager;
@@ -10,6 +11,7 @@ import nro.server.network.Message;
 import java.io.DataOutputStream;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class ItemService {
 
     @Getter
@@ -36,8 +38,7 @@ public class ItemService {
 
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendShowListFlagBag: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendShowListFlagBag: " + ex.getMessage(), ex);
         }
     }
 
@@ -49,8 +50,7 @@ public class ItemService {
             writer.writeByte(index);
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendChangeFlag: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendChangeFlag: " + ex.getMessage(), ex);
         }
     }
 
@@ -62,9 +62,27 @@ public class ItemService {
             writer.writeShort(icon);
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendChangeFlag: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendChangeFlag: " + ex.getMessage(), ex);
         }
     }
+
+    public void sendDropItemMap(Player player, ItemMap itemMap) {
+        try (Message message = new Message(68)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(itemMap.getItemMapID());
+            writer.writeShort(itemMap.getItem().getTemplate().id());
+            writer.writeShort(itemMap.getX());
+            writer.writeShort(itemMap.getY());
+            writer.writeInt(player.getId());
+            if (player.getId() != -2) {
+                writer.writeShort(itemMap.getRange());
+            }
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendDropItemMap: " + ex.getMessage(), ex);
+        }
+    }
+
+
 
 }

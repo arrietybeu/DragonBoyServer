@@ -2,8 +2,10 @@ package nro.service;
 
 import lombok.Getter;
 import nro.consts.ConstError;
+import nro.consts.ConstItem;
 import nro.consts.ConstMsgSubCommand;
 import nro.model.item.Item;
+import nro.model.item.ItemMap;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
 import nro.model.player.PlayerPoints;
@@ -48,7 +50,8 @@ public class PlayerService {
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException(e.getMessage());
-            Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]", ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
+            Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
+                    ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
         }
     }
 
@@ -97,7 +100,7 @@ public class PlayerService {
             message.writer().write(dataToSend);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage());
+            LogServer.LogException("Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -114,7 +117,7 @@ public class PlayerService {
             message.writer().writeByte(player.getDisciple() == null ? 0 : 1);
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendDisciple: " + e.getMessage());
+            LogServer.LogException("Error sendDisciple: " + e.getMessage(), e);
         }
     }
 
@@ -127,7 +130,7 @@ public class PlayerService {
             }
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendSkillShortCut: " + e.getMessage());
+            LogServer.LogException("Error sendSkillShortCut: " + e.getMessage(), e);
         }
     }
 
@@ -140,8 +143,7 @@ public class PlayerService {
             data.write(player.getPlayerSkill().getSkillShortCut());
             player.sendMessage(message);
         } catch (Exception exception) {
-            LogServer.LogException("Error sendSelectSkillShortCut: " + exception.getMessage());
-            exception.printStackTrace();
+            LogServer.LogException("Error sendSelectSkillShortCut: " + exception.getMessage(), exception);
         }
     }
 
@@ -150,7 +152,7 @@ public class PlayerService {
             message.writer().writeInt(player.getRank());
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendRank: " + e.getMessage());
+            LogServer.LogException("Error sendRank: " + e.getMessage(), e);
         }
     }
 
@@ -165,7 +167,7 @@ public class PlayerService {
             out.writeByte(player.getPlayerSkill().isMonkey() ? 1 : 0);
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendPlayerBody: " + e.getMessage());
+            LogServer.LogException("Error sendPlayerBody: " + e.getMessage(), e);
         }
     }
 
@@ -180,7 +182,7 @@ public class PlayerService {
             out.writeInt(player.getPlayerCurrencies().getRuby());
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendCurrencyHpMp: " + e.getMessage());
+            LogServer.LogException("Error sendCurrencyHpMp: " + e.getMessage(), e);
         }
     }
 
@@ -190,7 +192,7 @@ public class PlayerService {
             out.writeShort(player.getPlayerPoints().getMaxStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendMaxStamina: " + e.getMessage());
+            LogServer.LogException("Error sendMaxStamina: " + e.getMessage(), e);
         }
     }
 
@@ -200,7 +202,7 @@ public class PlayerService {
             out.writeInt(player.getActivePoint());
             player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendUpdateActivePoint: " + e.getMessage());
+            LogServer.LogException("Error sendUpdateActivePoint: " + e.getMessage(), e);
         }
     }
 
@@ -211,7 +213,7 @@ public class PlayerService {
             out.writeInt(quantity);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendPlayerUpExp: " + ex.getMessage());
+            LogServer.LogException("sendPlayerUpExp: " + ex.getMessage(), ex);
         }
     }
 
@@ -221,7 +223,7 @@ public class PlayerService {
             out.writeShort(player.getPlayerPoints().getStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendStamina: " + e.getMessage());
+            LogServer.LogException("Error sendStamina: " + e.getMessage(), e);
         }
     }
 
@@ -232,7 +234,7 @@ public class PlayerService {
             out.writeLong(player.getPlayerPoints().getCurrentHP());
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendHpForPlayer: " + e.getMessage());
+            LogServer.LogException("Error sendHpForPlayer: " + e.getMessage(), e);
         }
     }
 
@@ -243,7 +245,7 @@ public class PlayerService {
             out.writeLong(player.getPlayerPoints().getCurrentMP());
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendHpForPlayer: " + e.getMessage());
+            LogServer.LogException("Error sendHpForPlayer: " + e.getMessage(), e);
         }
     }
 
@@ -271,7 +273,7 @@ public class PlayerService {
             out.writeByte(stats.getBaseCriticalChance());
             player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendPointForMe: " + Arrays.toString(e.getStackTrace()));
+            LogServer.LogException("Error sendPointForMe: " + Arrays.toString(e.getStackTrace()), e);
         }
     }
 
@@ -335,7 +337,7 @@ public class PlayerService {
             out.writeShort(player.getIdHat());
             player.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendInfoPlayer: " + e.getMessage());
+            LogServer.LogException("Error sendInfoPlayer: " + e.getMessage(), e);
         }
     }
 
@@ -385,7 +387,7 @@ public class PlayerService {
             message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage());
+            LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -399,7 +401,7 @@ public class PlayerService {
             out.writeLong(player.getPlayerPoints().getPower());
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendPlayerDie: " + ex.getMessage());
+            LogServer.LogException("sendPlayerDie: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -413,7 +415,7 @@ public class PlayerService {
             out.writeShort(player.getY());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendPlayerDeathToArea: " + ex.getMessage());
+            LogServer.LogException("sendPlayerDeathToArea: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -422,7 +424,7 @@ public class PlayerService {
         try {
             player.sendMessage(MESSAGE_REVIVE);
         } catch (Exception e) {
-            LogServer.LogException("Error sendPlayerRevive: " + e.getMessage());
+            LogServer.LogException("Error sendPlayerRevive: " + e.getMessage(), e);
         }
     }
 
@@ -437,8 +439,84 @@ public class PlayerService {
             out.writeShort(player.getY());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendPLayerReviveToArea: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendPLayerReviveToArea: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void pickItem(Player player, int itemMapID, int type) {
+        try {
+            ItemMap itemMap = player.getArea().getItemsMapById(itemMapID);
+            if (itemMap == null) return;
+            if (itemMap.getItemMapID() == itemMapID) {
+                if (itemMap.getItem().getTemplate().type() == 22) return;
+
+                // TODO check inventory full
+                if (!player.getPlayerInventory().isBagFull()) {
+                    Service.getInstance().sendChatGlobal(player.getSession(), null, "Hành trang đã đầy.", false);
+                    return;
+                }
+
+                final Item item = itemMap.getItem();
+
+                var idItem = item.getTemplate().id();
+                var quantity = item.getQuantity();
+                var itemType = item.getTemplate().type();
+                switch (itemType) {
+                    case ConstItem.GOLD -> player.getPlayerCurrencies().addGold(quantity);
+                    case ConstItem.GEM -> player.getPlayerCurrencies().addGem(quantity);
+                    case ConstItem.RUBY -> player.getPlayerCurrencies().addRuby(quantity);
+                    default -> {
+                        switch (idItem) {
+                            case ConstItem.DUI_GA -> {
+                                PlayerPoints playerPoints = player.getPlayerPoints();
+                                playerPoints.setCurrentHp(playerPoints.getMaxHP());
+                                playerPoints.setCurrentMp(playerPoints.getMaxMP());
+                                this.sendHpForPlayer(player);
+                                this.sendMpForPlayer(player);
+                            }
+                            case ConstItem.QUA_TRUNG -> {
+                                // TODO logic nhặt quả trứng
+                            }
+                            default -> player.getPlayerInventory().addItemBag(item);
+                        }
+                        var notify = idItem == 74 || idItem == 516 ? String.format("Bạn vừa ăn %s", item.getTemplate().name()) : "";
+                        this.sendPickItemMap(
+                                player, itemMap.getItemMapID(), itemType, quantity, notify
+                        );
+                        this.sendPLayerPickItemMap(player, itemMap.getItemMapID());
+                        player.getArea().removeItemMap(itemMap);
+                    }
+                }
+
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("pickItem: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendPickItemMap(Player player, int itemMapID, int type, int quantity, String notify) {
+        try (Message message = new Message(-20)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(itemMapID);
+            writer.writeUTF(notify);
+            writer.writeShort(quantity);
+            if (type == ConstItem.GOLD || type == ConstItem.GEM || type == ConstItem.RUBY) {
+                writer.writeShort(quantity);
+            }
+            player.sendMessage(message);
+        } catch (Exception exception) {
+            LogServer.LogException("sendPickItemMap: " + exception.getMessage(), exception);
+        }
+    }
+
+    public void sendPLayerPickItemMap(Player player, int itemMapId) {
+        try (Message message = new Message(-19)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(itemMapId);
+            writer.writeInt(player.getId());
+            player.getArea().sendMessageToPlayersInArea(message, player);
+        } catch (Exception ex) {
+            LogServer.LogException("sendPLayerPickItemMap: " + ex.getMessage(), ex);
         }
     }
 
@@ -478,7 +556,7 @@ public class PlayerService {
                 return isCreated;
             }
         } catch (SQLException e) {
-            LogServer.LogException(String.format("Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s", session.getUserInfo().getId(), name, gender, hair, e.getMessage()));
+            LogServer.LogException(String.format("Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s", session.getUserInfo().getId(), name, gender, hair, e.getMessage(), e));
             Service.dialogMessage(session, "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
             throw e;
         }

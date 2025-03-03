@@ -14,6 +14,7 @@ public class PlayerStatus {
     private long lastTimeLive;
     private long lastTimeChangeFlag;
     private long lastTimeChangeMap;
+    private long lastTimePickItem;
 
     public PlayerStatus(Player player) {
         this.player = player;

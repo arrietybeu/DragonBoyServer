@@ -28,6 +28,7 @@ public class ManagerRegistry {
         MANAGERS.add(TaskManager.getInstance());
         MANAGERS.add(GameNotifyManager.getInstance());
         MANAGERS.add(MagicTreeManager.getInstance());
+        MANAGERS.add(ItemMapManager.getInstance());
     }
 
     public static void initAll() {

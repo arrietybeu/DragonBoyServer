@@ -26,6 +26,10 @@ public final class ConfigServer {
 
     public static String VERSION_CLIENT = "2.4.3";
 
+    public static boolean DEBUG = false;
+
+    public static boolean IS_OPEN_UI_LOGBUG = true;
+
     /**
      * nếu client gửi quá số lượng msg quy định thì sẽ kick session
      */

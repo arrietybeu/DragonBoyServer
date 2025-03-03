@@ -25,7 +25,6 @@ public class Manager {
     private Manager() {
         try {
             this.LoadData();
-
         } catch (Exception e) {
             LogServer.LogException("Error loadDataBase: " + e.getMessage());
             System.exit(0);

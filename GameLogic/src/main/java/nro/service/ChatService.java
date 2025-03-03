@@ -3,6 +3,7 @@ package nro.service;
 import lombok.Getter;
 import nro.consts.ConstTypeObject;
 import nro.model.item.Item;
+import nro.model.item.ItemMap;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.monster.Monster;
@@ -12,8 +13,8 @@ import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.service.core.ItemFactory;
 import nro.utils.FileNio;
-import nro.utils.Util;
 
+@SuppressWarnings("ALL")
 public class ChatService {
 
     @Getter
@@ -25,8 +26,7 @@ public class ChatService {
             message.writer().writeUTF(text);
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("Error Service Chat Map: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error Service Chat Map: " + ex.getMessage(), ex);
         }
     }
 
@@ -94,8 +94,44 @@ public class ChatService {
                 monster.setDie(playerChat, 500);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã xóa mob: " + mobId, false);
                 return;
+            } else if (text.startsWith("im ")) {
+                int itemIdMap = this.getNumber(text);
+                if (itemIdMap == -1) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
+                    return;
+                }
+                Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap);
+                ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getId(), item, playerChat.getX(), playerChat.getY(), -1);
+                ItemService.getInstance().sendDropItemMap(playerChat, itemMap);
+                service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
+                return;
+            } else if (text.startsWith("sd ")) {
+                int damage = this.getNumber(text);
+                if (damage == -1) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Damage không hợp lệ: " + text, false);
+                    return;
+                }
+                playerChat.getPlayerPoints().setBaseDamage(damage);
+                service.sendChatGlobal(playerChat.getSession(), null, "Set Damage: " + damage, false);
+                return;
             }
             switch (text) {
+                case "log_exception":
+                    try {
+                        int[] arr = new int[1];
+                        System.out.println(arr[2]);
+                    } catch (Exception ex) {
+                        LogServer.LogException("Lỗi khi xử lý lệnh admin: " + ex.getMessage(), ex);
+                    }
+                    break;
+                case "buff_item":
+                    var idMax = ItemManager.getInstance().getItemTemplates().size();
+                    for (int itemId = idMax - 10; itemId < idMax; itemId++) {
+                        Item item = ItemFactory.getInstance().createItemOptionsBase(itemId);
+                        playerChat.getPlayerInventory().addItemBag(item);
+                        service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
+                    }
+                    break;
                 case "send_exp": {
                     PlayerService.getInstance().sendPlayerUpExp(playerChat, 2, 100);
                     break;
@@ -107,14 +143,12 @@ public class ChatService {
                 }
                 case "npc_size":
                     int sizeNpcAllArea = 0;
-
                     for (GameMap map : MapManager.getInstance().getGameMaps().values()) {
                         for (Area area : map.getAreas()) {
                             System.out.println("map id: " + map.getId() + " area id: " + area.getId() + " npc size: " + area.getNpcList().size());
                             sizeNpcAllArea += area.getNpcList().size();
                         }
                     }
-
                     String infoNpcSize = "Npc Size: " + sizeNpcAllArea;
                     Service.dialogMessage(playerChat.getSession(), infoNpcSize);
                     break;
@@ -152,8 +186,7 @@ public class ChatService {
         } catch (NumberFormatException e) {
             service.sendChatGlobal(playerChat.getSession(), null, "Command không hợp lệ: " + text, false);
         } catch (Exception ex) {
-            LogServer.LogException("Lỗi khi xử lý lệnh admin: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Lỗi khi xử lý lệnh admin: " + ex.getMessage(), ex);
         }
     }
 

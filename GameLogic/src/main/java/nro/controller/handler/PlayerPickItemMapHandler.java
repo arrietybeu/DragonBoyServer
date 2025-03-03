@@ -1,0 +1,25 @@
+package nro.controller.handler;
+
+import nro.controller.APacketHandler;
+import nro.controller.IMessageProcessor;
+import nro.model.player.Player;
+import nro.server.LogServer;
+import nro.server.network.Message;
+import nro.server.network.Session;
+import nro.service.PlayerService;
+
+@APacketHandler(-20)
+public class PlayerPickItemMapHandler implements IMessageProcessor {
+
+    @Override
+    public void process(Session session, Message message) {
+        Player player = session.getPlayer();
+        if (player == null) return;
+        try {
+            var idItemMap = message.reader().readShort();
+            PlayerService.getInstance().pickItem(player, idItemMap, 0);
+        } catch (Exception e) {
+            LogServer.LogException("PlayerPickItemMapHandler: " + e.getMessage(), e);
+        }
+    }
+}

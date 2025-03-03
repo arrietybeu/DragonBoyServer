@@ -1,6 +1,5 @@
 package nro.model.player;
 
-
 import lombok.Getter;
 import lombok.Setter;
 import nro.service.PlayerService;
@@ -12,6 +11,8 @@ public class PlayerCurrencies {
 
     private final Player player;
 
+    private int gem;
+    private int ruby;
     private long gold;
 
     public PlayerCurrencies(Player player) {
@@ -23,6 +24,7 @@ public class PlayerCurrencies {
         if (this.gold >= 100_000_000_000L) {
             this.gold = Long.MAX_VALUE;
         }
+        PlayerService.getInstance().sendCurrencyHpMp(player);
     }
 
     public void subGold(long num) {
@@ -30,31 +32,15 @@ public class PlayerCurrencies {
         if (this.gold < 0L) {
             this.gold = 0L;
         }
+        PlayerService.getInstance().sendCurrencyHpMp(player);
     }
-
-    private int gem;
-    private int ruby;
 
     public void addGem(int num) {
         this.gem += num;
         if (this.gem >= 1000000000) {
             this.gem = 1000000000;
         }
-    }
-
-    public void subGem(int num) {
-        this.gem -= num;
-        if (this.gem < 0) {
-            this.gem = 0;
-        }
-    }
-
-    public boolean subGemIfPossible(int num) {
-        if (this.gem < num) {
-            return false;
-        }
-        this.gem -= num;
-        return true;
+        PlayerService.getInstance().sendCurrencyHpMp(player);
     }
 
     public void addRuby(int num) {
@@ -62,16 +48,10 @@ public class PlayerCurrencies {
         if (this.ruby >= 1000000000) {
             this.ruby = 1000000000;
         }
+        PlayerService.getInstance().sendCurrencyHpMp(player);
     }
 
-    public void subRuby(int num) {
-        this.ruby -= num;
-        if (this.ruby < 0) {
-            this.ruby = 0;
-        }
-    }
-
-    public int getTotalCurrency() {
+    private int getTotalCurrency() {
         return this.ruby + this.gem;
     }
 
@@ -95,11 +75,19 @@ public class PlayerCurrencies {
         return true;
     }
 
-    public Player getPlayer() {
-        if (player == null) {
-            throw new NullPointerException("Player is null");
+    private void subRuby(int num) {
+        this.ruby -= num;
+        if (this.ruby < 0) {
+            this.ruby = 0;
         }
-        return player;
+    }
+
+    private void subGem(int num) {
+        this.gem -= num;
+        if (this.gem < 0) {
+            this.gem = 0;
+        }
+        PlayerService.getInstance().sendCurrencyHpMp(player);
     }
 
     @Override

@@ -10,26 +10,29 @@ import nro.model.npc.Npc;
 import nro.model.player.Player;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.LogServer;
 
 @Getter
+@Setter
+@SuppressWarnings("ALL")
 public class Area {
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final int id;
     private final int maxPlayers;
+    private final AtomicInteger idItemMap = new AtomicInteger(0);
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final GameMap map;
-
-    @Setter
     private Map<Integer, Monster> monsters;
-
     private final Map<Integer, Player> players;
-    private final List<Npc> npcList;
     private final List<ItemMap> itemsMap;
+    private final List<Npc> npcList;
 
     public Area(GameMap map, int zoneId, int maxPlayers) {
         this.map = map;
@@ -72,7 +75,7 @@ public class Area {
         this.lock.readLock().lock();
         try {
             for (ItemMap itemMap : this.itemsMap) {
-                itemMap.update();
+//                itemMap.update();
             }
         } finally {
             this.lock.readLock().unlock();
@@ -205,12 +208,21 @@ public class Area {
         }
     }
 
+    public short increaseItemMapID() {
+        int newId = this.idItemMap.incrementAndGet();
+        if (newId >= Short.MAX_VALUE - 1) {
+            this.idItemMap.set(0);
+        }
+        return (short) (newId % Short.MAX_VALUE);
+    }
+
     public void addItemMap(ItemMap itemMap) {
         this.lock.writeLock().lock();
         try {
             this.itemsMap.add(itemMap);
         } catch (Exception ex) {
-            LogServer.LogException("addItemMap: " + ex.getMessage() + " itemMapID: " + itemMap.getItemMapID(), ex);
+            LogServer.LogException("addItemMap: " + ex.getMessage()
+                    + " itemMapID: " + itemMap.getItemMapID(), ex);
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -226,4 +238,17 @@ public class Area {
             this.lock.writeLock().unlock();
         }
     }
+
+    public ItemMap getItemsMapById(int itemMapId) {
+        this.lock.readLock().lock();
+        try {
+            return this.itemsMap.stream().filter(itemMap -> itemMap.getItemMapID() == itemMapId).findFirst().orElse(null);
+        } catch (Exception ex) {
+            LogServer.LogException("getItemsMap: " + ex.getMessage() + " itemMapID: " + itemMapId, ex);
+            return null;
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
 }

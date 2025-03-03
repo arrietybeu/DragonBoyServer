@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
+import nro.model.item.ItemMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
-import nro.model.player.PlayerPoints;
 import nro.server.LogServer;
 import nro.service.MonsterService;
 import nro.service.SkillService;
+import nro.service.core.DropItemMap;
 import nro.utils.Util;
 
 import java.util.LinkedHashSet;
@@ -76,7 +77,7 @@ public class Monster extends LiveObject {
             }
             return damage;
         } catch (Exception exception) {
-            LogServer.LogException("Monster handleAttack: " + exception.getMessage());
+            LogServer.LogException("Monster handleAttack: " + exception.getMessage(), exception);
             return 0;
         } finally {
             this.lock.writeLock().unlock();
@@ -91,7 +92,7 @@ public class Monster extends LiveObject {
             this.point.setHp(this.point.getMaxHp());
             MonsterService.getInstance().sendMonsterRevice(this);
         } catch (RuntimeException e) {
-            LogServer.LogException("Monster setLive: " + e.getMessage());
+            LogServer.LogException("Monster setLive: " + e.getMessage(), e);
         }
     }
 
@@ -101,9 +102,11 @@ public class Monster extends LiveObject {
             this.point.setDead(true);
             this.status.setStatus((byte) 0);
             this.info.setLastTimeDie(System.currentTimeMillis());
-            MonsterService.getInstance().sendMonsterDie(plAttack, this, damage);
+            final List<ItemMap> itemMaps = DropItemMap.getInstance().dropItemMapForMonster(plAttack, this);
+            boolean isCritical = plAttack.getPlayerPoints().getTotalCriticalChance() == 1;
+            MonsterService.getInstance().sendMonsterDie(this, damage, isCritical, itemMaps);
         } catch (RuntimeException ex) {
-            LogServer.LogException("Monster setDie: " + ex.getMessage());
+            LogServer.LogException("Monster setDie: " + ex.getMessage(), ex);
         }
     }
 
@@ -113,8 +116,7 @@ public class Monster extends LiveObject {
                 Player player = this.playerCanAttack();
                 this.attack(player);
             } catch (Exception exception) {
-                LogServer.LogException("Monster attackPlayer: " + exception.getMessage());
-                exception.printStackTrace();
+                LogServer.LogException("Monster attackPlayer: " + exception.getMessage(), exception);
             }
         }
     }

@@ -160,7 +160,7 @@ public class MapService {
         output.writeByte(itemMaps.size());
         for (ItemMap item : itemMaps) {
             output.writeShort(item.getItemMapID());
-            output.writeShort(item.getItemTemplate().id());
+            output.writeShort(item.getItem().getTemplate().id());
             output.writeShort(item.getX());
             output.writeShort(item.getY());
             output.writeInt(item.getPlayerId());

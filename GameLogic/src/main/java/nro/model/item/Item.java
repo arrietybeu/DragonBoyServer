@@ -1,22 +1,17 @@
 package nro.model.item;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nro.utils.Util;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
-@SuppressWarnings("unchecked")
+@SuppressWarnings("ALL")
 public class Item implements AutoCloseable {
 
     private int quantity;

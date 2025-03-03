@@ -1,36 +1,37 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.model.item.ItemMap;
 import nro.model.monster.Monster;
 import nro.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 
 import java.io.DataOutputStream;
+import java.util.List;
 
 public class MonsterService {
 
     @Getter
     private static final MonsterService instance = new MonsterService();
 
-    public void sendMonsterDie(Player playerKill, Monster monster, long dame) {
+    public void sendMonsterDie(Monster monster, long dame, boolean crit, List<ItemMap> itemMaps) {
         try (Message message = new Message(-12)) {
             DataOutputStream data = message.writer();
             data.writeByte(monster.getId());
             data.writeLong(dame);
-            data.writeBoolean(true);// true = hiển thị chí mạng
-            data.writeByte(0);
-//            for (int i = 0; i <= 100; i++) {
-//                data.writeShort(i);
-//                data.writeShort(Util.nextInt(0, 100));
-//                data.writeShort(playerKill.getX() + Util.nextInt(-10, 1000));
-//                data.writeShort(playerKill.getY());
-//                data.writeInt(playerKill.getId());
-//            }
+            data.writeBoolean(crit);
+            data.writeByte(itemMaps.size());
+            for (ItemMap itemMap : itemMaps) {
+                data.writeShort(itemMap.getItemMapID());
+                data.writeShort(itemMap.getItem().getTemplate().id());
+                data.writeShort(itemMap.getX());
+                data.writeShort(itemMap.getY());
+                data.writeInt(itemMap.getPlayerId());
+            }
             monster.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendMonsterDie: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendMonsterDie: " + ex.getMessage(), ex);
         }
     }
 
