@@ -41,7 +41,7 @@ public class ManagerRegistry {
                 long elapsedTime = System.currentTimeMillis() - startTime;
                 LogServer.LogInit("Initialized manager class: [" + manager.getClass().getSimpleName() + "] in " + elapsedTime + " ms");
             } catch (Exception e) {
-                LogServer.LogException("Error initializing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
+                LogServer.LogException("Error initializing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage(), e);
             }
         }
 
@@ -55,7 +55,7 @@ public class ManagerRegistry {
             try {
                 manager.reload();
             } catch (Exception e) {
-                LogServer.LogException("Error reloading manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
+                LogServer.LogException("Error reloading manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage(), e);
             }
         }
     }
@@ -67,7 +67,7 @@ public class ManagerRegistry {
                 manager.clear();
                 LogServer.DebugLogic("  - After clear: " + manager.getClass().getSimpleName() + " is cleared");
             } catch (Exception e) {
-                LogServer.LogException("Error clearing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage());
+                LogServer.LogException("Error clearing manager: " + manager.getClass().getSimpleName() + " - " + e.getMessage(), e);
             }
         }
     }
@@ -79,7 +79,7 @@ public class ManagerRegistry {
                     manager.reload();
                     LogServer.DebugLogic("Reloaded manager: " + managerClass.getSimpleName());
                 } catch (Exception e) {
-                    LogServer.LogException("Error reloading manager: " + managerClass.getSimpleName() + " - " + e.getMessage());
+                    LogServer.LogException("Error reloading manager: " + managerClass.getSimpleName() + " - " + e.getMessage(), e);
                 }
                 return;
             }

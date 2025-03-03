@@ -26,7 +26,7 @@ public class Manager {
         try {
             this.LoadData();
         } catch (Exception e) {
-            LogServer.LogException("Error loadDataBase: " + e.getMessage());
+            LogServer.LogException("Error loadDataBase: " + e.getMessage(), e);
             System.exit(0);
         }
     }
@@ -35,7 +35,7 @@ public class Manager {
         try {
             ManagerRegistry.initAll();
         } catch (Exception e) {
-            LogServer.LogException("Error loadDataBase: " + e.getMessage());
+            LogServer.LogException("Error loadDataBase: " + e.getMessage(), e);
             System.exit(0);
             MainServer.getInstance().shutdown();
         } finally {
@@ -47,7 +47,7 @@ public class Manager {
         try {
             ManagerRegistry.clearAll();
         } catch (Exception e) {
-            LogServer.LogException("Error Clear All Data Manager: " + e.getMessage());
+            LogServer.LogException("Error Clear All Data Manager: " + e.getMessage(), e);
             System.exit(0);
             MainServer.getInstance().shutdown();
         } finally {

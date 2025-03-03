@@ -102,12 +102,14 @@ public class LogServer {
 
     public static void LogException(String message, Exception... e) {
         if (e.length > 0) {
-            log("Error", "\033[1;31m", message + " => " + Arrays.toString(e[0].getStackTrace()));
+            log("Error", "\033[1;31m", message);
+            e[0].printStackTrace();
             OpenUIChatBug(message, e);
         } else {
             log("Error", "\033[1;31m", message);
         }
     }
+
 
     private static void OpenUIChatBug(String message, Exception... e) {
         if (ConfigServer.IS_OPEN_UI_LOGBUG) {

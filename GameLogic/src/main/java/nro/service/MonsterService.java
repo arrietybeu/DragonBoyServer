@@ -44,7 +44,7 @@ public class MonsterService {
             data.writeLong(monster.getPoint().getHp());
             monster.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendMonsterRevice: " + ex.getMessage());
+            LogServer.LogException("sendMonsterRevice: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -60,7 +60,7 @@ public class MonsterService {
             }
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendMonsterAttackMe: " + ex.getMessage());
+            LogServer.LogException("sendMonsterAttackMe: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -76,7 +76,7 @@ public class MonsterService {
             }
             monster.getArea().sendMessageToPlayersInArea(message, player);
         } catch (Exception ex) {
-            LogServer.LogException("sendMonsterAttackPlayer: " + ex.getMessage());
+            LogServer.LogException("sendMonsterAttackPlayer: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -91,7 +91,7 @@ public class MonsterService {
             writer.writeByte(isHut ? 37 : -1);
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendHpMonster: " + ex.getMessage());
+            LogServer.LogException("sendHpMonster: " + ex.getMessage(), ex);
         }
     }
 

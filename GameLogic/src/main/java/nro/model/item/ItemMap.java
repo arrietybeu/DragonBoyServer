@@ -2,18 +2,21 @@ package nro.model.item;
 
 import lombok.Getter;
 import nro.model.map.areas.Area;
+import nro.server.LogServer;
+import nro.service.ItemService;
 
 @Getter
 @SuppressWarnings("ALL")
 public class ItemMap {
+
+    private Item item;
+    private Area area;
 
     private final int playerId;
     private final short itemMapID;
     private final int x;
     private final int y;
     private final short range;
-    private final Item item;
-    private final Area area;
     private final long lastTimeRemoveItem;
 
     public ItemMap(Area area, int playerId, Item item, int x, int y, int range) {

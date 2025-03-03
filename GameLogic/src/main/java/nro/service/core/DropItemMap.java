@@ -17,7 +17,6 @@ public class DropItemMap {
 
     public List<ItemMap> dropItemMapForMonster(Player player, Monster monster) {
         List<ItemMap> itemMaps = new ArrayList<>();
-
         this.dropItemMapToTask(player, monster, itemMaps);
         return itemMaps;
     }

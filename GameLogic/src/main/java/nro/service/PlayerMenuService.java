@@ -15,7 +15,7 @@ public class PlayerMenuService {
             message.writer().writeByte(ConstMsgSubCommand.PLAYER_MENU_LIST);
 
         } catch (Exception ex) {
-            LogServer.LogException("showListMenuPlayer: " + ex.getMessage());
+            LogServer.LogException("showListMenuPlayer: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }

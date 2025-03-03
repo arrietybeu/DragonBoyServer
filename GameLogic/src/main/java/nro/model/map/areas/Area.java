@@ -1,5 +1,6 @@
 package nro.model.map.areas;
 
+import com.mysql.cj.log.Log;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
@@ -12,11 +13,11 @@ import nro.model.player.Player;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.LogServer;
+import nro.service.ItemService;
 
 @Getter
 @Setter
@@ -72,13 +73,21 @@ public class Area {
     }
 
     private void updateItemMap() {
-        this.lock.readLock().lock();
+        this.lock.writeLock().lock();
         try {
-            for (ItemMap itemMap : this.itemsMap) {
-//                itemMap.update();
-            }
+            long currentTime = System.currentTimeMillis();
+            this.itemsMap.removeIf(itemMap -> {
+                if (itemMap == null || itemMap.getItem() == null) return true;
+                boolean shouldRemove = (currentTime - itemMap.getItem().getCreateTime() > 10_000);
+                if (shouldRemove) {
+                    ItemService.getInstance().sendRemoveItemMap(itemMap);
+                }
+                return shouldRemove;
+            });
+        } catch (Exception ex) {
+            LogServer.LogException("updateItemMap: " + ex.getMessage(), ex);
         } finally {
-            this.lock.readLock().unlock();
+            this.lock.writeLock().unlock();
         }
     }
 

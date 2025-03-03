@@ -51,8 +51,7 @@ public class MapService {
             }
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendListUIArea: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendListUIArea: " + ex.getMessage(), ex);
         }
     }
 

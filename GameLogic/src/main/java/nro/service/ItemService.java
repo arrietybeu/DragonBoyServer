@@ -83,6 +83,13 @@ public class ItemService {
         }
     }
 
-
+    public void sendRemoveItemMap(ItemMap itemMap) {
+        try (Message message = new Message(-21)) {
+            message.writer().writeShort(itemMap.getItemMapID());
+            itemMap.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendRemoveItemMap: " + ex.getMessage(), ex);
+        }
+    }
 
 }
