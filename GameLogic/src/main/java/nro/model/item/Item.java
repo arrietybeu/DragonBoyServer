@@ -32,6 +32,8 @@ public class Item implements AutoCloseable {
         JSONArray options = new JSONArray();
         for (ItemOption io : this.itemOptions) {
             JSONArray option = new JSONArray();
+            if (io == null) continue;
+            if (io.getId() == 73) continue;
             option.add(io.getId());
             option.add(io.getParam());
             options.add(option);

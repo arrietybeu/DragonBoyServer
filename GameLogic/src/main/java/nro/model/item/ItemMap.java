@@ -1,19 +1,20 @@
 package nro.model.item;
 
 import lombok.Getter;
+import lombok.Setter;
 import nro.model.map.areas.Area;
-import nro.server.LogServer;
-import nro.service.ItemService;
 
 @Getter
+
 @SuppressWarnings("ALL")
 public class ItemMap {
 
     private Item item;
     private Area area;
 
-    private final int playerId;
-    private final short itemMapID;
+    @Setter
+    private int playerId;
+    private final int itemMapID;
     private final int x;
     private final int y;
     private final short range;
@@ -30,6 +31,7 @@ public class ItemMap {
         this.range = (short) range;
         area.addItemMap(this);
     }
+
 
     @Override
     public String toString() {

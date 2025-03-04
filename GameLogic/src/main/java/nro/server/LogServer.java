@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * @author Arriety
  */
-@SuppressWarnings("ALL")
 public class LogServer {
 
     private static final Logger logger = LogManager.getLogger(LogServer.class);
@@ -102,14 +101,12 @@ public class LogServer {
 
     public static void LogException(String message, Exception... e) {
         if (e.length > 0) {
-            log("Error", "\033[1;31m", message);
-            e[0].printStackTrace();
+            log("Error", "\033[1;31m", message + "\n=> " + Arrays.toString(e[0].getStackTrace()));
             OpenUIChatBug(message, e);
         } else {
             log("Error", "\033[1;31m", message);
         }
     }
-
 
     private static void OpenUIChatBug(String message, Exception... e) {
         if (ConfigServer.IS_OPEN_UI_LOGBUG) {

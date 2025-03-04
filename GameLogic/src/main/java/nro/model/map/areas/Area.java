@@ -1,6 +1,5 @@
 package nro.model.map.areas;
 
-import com.mysql.cj.log.Log;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
@@ -32,7 +31,7 @@ public class Area {
     private final GameMap map;
     private Map<Integer, Monster> monsters;
     private final Map<Integer, Player> players;
-    private final List<ItemMap> itemsMap;
+    private final Map<Integer, ItemMap> itemsMap;
     private final List<Npc> npcList;
 
     public Area(GameMap map, int zoneId, int maxPlayers) {
@@ -40,7 +39,7 @@ public class Area {
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
         this.players = new HashMap<>();
-        this.itemsMap = new ArrayList<>();
+        this.itemsMap = new HashMap<>();
         this.npcList = new ArrayList<>();
     }
 
@@ -76,20 +75,29 @@ public class Area {
         this.lock.writeLock().lock();
         try {
             long currentTime = System.currentTimeMillis();
-            this.itemsMap.removeIf(itemMap -> {
-                if (itemMap == null || itemMap.getItem() == null) return true;
-                boolean shouldRemove = (currentTime - itemMap.getItem().getCreateTime() > 10_000);
-                if (shouldRemove) {
-                    ItemService.getInstance().sendRemoveItemMap(itemMap);
+            Set<Integer> itemsToRemove = new HashSet<>();
+
+            for (ItemMap itemMap : itemsMap.values()) {
+                if (itemMap == null || itemMap.getItem() == null) {
+                    itemsToRemove.add(itemMap.getItemMapID());
+                    continue;
                 }
-                return shouldRemove;
-            });
-        } catch (Exception ex) {
-            LogServer.LogException("updateItemMap: " + ex.getMessage(), ex);
+
+                long elapsedTime = currentTime - itemMap.getItem().getCreateTime();
+                if (elapsedTime > 60_000) {
+                    ItemService.getInstance().sendRemoveItemMap(itemMap);
+                    itemsToRemove.add(itemMap.getItemMapID());
+                } else if (itemMap.getPlayerId() != -1 && elapsedTime > 30_000) {
+                    itemMap.setPlayerId(-1);
+                }
+            }
+
+            itemsToRemove.forEach(itemsMap::remove);
         } finally {
             this.lock.writeLock().unlock();
         }
     }
+
 
     public final void update() {
         try {
@@ -228,7 +236,7 @@ public class Area {
     public void addItemMap(ItemMap itemMap) {
         this.lock.writeLock().lock();
         try {
-            this.itemsMap.add(itemMap);
+            this.itemsMap.put(itemMap.getItemMapID(), itemMap);
         } catch (Exception ex) {
             LogServer.LogException("addItemMap: " + ex.getMessage()
                     + " itemMapID: " + itemMap.getItemMapID(), ex);
@@ -237,12 +245,10 @@ public class Area {
         }
     }
 
-    public void removeItemMap(ItemMap itemMap) {
+    public void removeItemMap(int itemMapID) {
         this.lock.writeLock().lock();
         try {
-            this.itemsMap.remove(itemMap);
-        } catch (Exception ex) {
-            LogServer.LogException("removeItemMap: " + ex.getMessage() + " itemMapID: " + itemMap.getItemMapID(), ex);
+            this.itemsMap.remove(itemMapID);
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -251,9 +257,8 @@ public class Area {
     public ItemMap getItemsMapById(int itemMapId) {
         this.lock.readLock().lock();
         try {
-            return this.itemsMap.stream().filter(itemMap -> itemMap.getItemMapID() == itemMapId).findFirst().orElse(null);
+            return this.itemsMap.get(itemMapId);
         } catch (Exception ex) {
-            LogServer.LogException("getItemsMap: " + ex.getMessage() + " itemMapID: " + itemMapId, ex);
             return null;
         } finally {
             this.lock.readLock().unlock();

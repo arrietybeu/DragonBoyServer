@@ -20,6 +20,7 @@ import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
+import nro.utils.Util;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -451,13 +452,25 @@ public class PlayerService {
                 if (itemMap.getItem().getTemplate().type() == 22) return;
 
                 // TODO check inventory full
+                Service service = Service.getInstance();
                 if (!player.getPlayerInventory().isBagFull()) {
-                    Service.getInstance().sendChatGlobal(player.getSession(), null, "Hành trang đã đầy.", false);
+                    service.sendChatGlobal(player.getSession(), null, "Hành trang đã đầy.", false);
+                    return;
+                }
+
+                if (Util.getDistance(itemMap.getX(), itemMap.getY(), player.getX(), player.getY()) > 100) {
+                    String notify = "Không thể nhặt vật phẩm ở khoảng cách quá xa";
+                    service.sendChatGlobal(player.getSession(), null, notify, false);
+                    return;
+                }
+
+                if (itemMap.getPlayerId() != -1 && itemMap.getPlayerId() != player.getId()) {
+                    var notify = "Không thể nhặt vật phẩm của người khác";
+                    service.sendChatGlobal(player.getSession(), null, notify, false);
                     return;
                 }
 
                 final Item item = itemMap.getItem();
-
                 var idItem = item.getTemplate().id();
                 var quantity = item.getQuantity();
                 var itemType = item.getTemplate().type();
@@ -484,7 +497,7 @@ public class PlayerService {
                                 player, itemMap.getItemMapID(), itemType, quantity, notify
                         );
                         this.sendPLayerPickItemMap(player, itemMap.getItemMapID());
-                        player.getArea().removeItemMap(itemMap);
+                        player.getArea().removeItemMap(itemMap.getItemMapID());
                     }
                 }
 
@@ -533,7 +546,6 @@ public class PlayerService {
 
     public boolean handleCharacterCreation(Session session, String name, byte gender, byte hair) throws SQLException {
         final String QUERY_CHECK = "SELECT 1 FROM player WHERE name = ? OR account_id = ?";
-
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             assert connection != null : "Connection is null";
             try (PreparedStatement psCheck = connection.prepareStatement(QUERY_CHECK)) {

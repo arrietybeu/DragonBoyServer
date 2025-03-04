@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.model.item.Item;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
+import nro.model.player.PlayerInventory;
 import nro.model.player.PlayerMagicTree;
 import nro.model.player.PlayerPoints;
 import nro.model.task.TaskMain;
@@ -55,15 +56,20 @@ public class PlayerLoader {
 
     // Utility method to map ResultSet data to a Player object
     private Player mapResultSetToPlayer(Session session, ResultSet resultSet, Connection connection) throws SQLException {
-        Timestamp createdAtTimestamp = resultSet.getTimestamp("created_at");
-        Instant createdAt = createdAtTimestamp.toInstant();
         Player player = new Player();
         player.setSession(session);
-        player.setCreatedAt(createdAt);
+
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));
-        player.getPlayerFashion().setHead(resultSet.getShort("head"));// 31
+        player.getPlayerFashion().setHead(resultSet.getShort("head"));
+        player.getPlayerInventory().setItemBagSize(resultSet.getByte("max_bag_size"));
+        player.getPlayerInventory().setItemBoxSize(resultSet.getByte("max_box_size"));
+
+        // load time create player
+        Timestamp createdAtTimestamp = resultSet.getTimestamp("created_at");
+        Instant createdAt = createdAtTimestamp.toInstant();
+        player.setCreatedAt(createdAt);
 
         // Load player currencies
         this.loadPlayerCurrencies(player, connection);
@@ -113,14 +119,16 @@ public class PlayerLoader {
     }
 
     private void loadPlayerInventory(Player player, Connection connection) throws SQLException {
-        loadInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
-        loadInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
-        loadInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
+        PlayerInventory playerInventory = player.getPlayerInventory();
+        playerInventory.setItemBodySize(this.loadInventoryItems(player, connection, "player_items_body", playerInventory.getItemsBody()));
+        playerInventory.setItemBagSize(this.loadInventoryItems(player, connection, "player_items_bag", playerInventory.getItemsBag()));
+        playerInventory.setItemBoxSize(this.loadInventoryItems(player, connection, "player_items_box", playerInventory.getItemsBox()));
     }
 
-
-    private void loadInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
-        String query = "SELECT temp_id, quantity, create_time, options FROM " + tableName + " WHERE player_id = ?";
+    private int loadInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
+        int maxRowIndex = 0;
+        String query = "SELECT temp_id, quantity, create_time, options, row_index FROM " + tableName +
+                " WHERE player_id = ? ORDER BY row_index ASC";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
@@ -132,16 +140,27 @@ public class PlayerLoader {
                     Timestamp timestamp = resultSet.getTimestamp("create_time");
                     long createTime = (timestamp != null) ? timestamp.getTime() : 0;
                     String optionsText = resultSet.getString("options");
+                    int rowIndex = resultSet.getInt("row_index");
 
+                    if (rowIndex > maxRowIndex) {
+                        maxRowIndex = rowIndex + 1;
+                    }
                     Item item = (tempId != -1) ? ItemFactory.getInstance().createItemNotOptionsBase(tempId, quantity) : ItemFactory.getInstance().createItemNull();
                     if (tempId != -1) {
                         item.setCreateTime(createTime);
                         item.setJsonOptions(optionsText);
                     }
-                    inventory.add(item);
+
+                    while (inventory.size() <= rowIndex) {
+                        inventory.add(ItemFactory.getInstance().createItemNull());
+                    }
+
+                    inventory.set(rowIndex, item);
                 }
             }
         }
+
+        return Math.max(maxRowIndex, inventory.size());
     }
 
     private void loadPlayerCurrencies(Player player, Connection connection) throws SQLException {

@@ -105,7 +105,7 @@ public class MapService {
 
         Map<Integer, Monster> monsters = area.getMonsters();
         List<Npc> npcs = area.getNpcList();
-        List<ItemMap> itemMaps = area.getItemsMap();
+        var itemMaps = area.getItemsMap().values();
 
         // send location
         output.writeShort(player.getX());

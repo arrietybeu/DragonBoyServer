@@ -13,9 +13,13 @@ import nro.server.config.ConfigDB;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
+@SuppressWarnings("ALL")
 public class PlayerUpdate {
 
     @Getter
@@ -77,7 +81,6 @@ public class PlayerUpdate {
         }
     }
 
-
     private void savePlayerInfo(Player player, Connection connection) throws SQLException {
         String query = "UPDATE player SET name = ?, gender = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -89,9 +92,72 @@ public class PlayerUpdate {
     }
 
     private void savePlayerInventory(Player player, Connection connection) throws SQLException {
-        saveInventoryItems(player, connection, "player_items_body", player.getPlayerInventory().getItemsBody());
-        saveInventoryItems(player, connection, "player_items_bag", player.getPlayerInventory().getItemsBag());
-        saveInventoryItems(player, connection, "player_items_box", player.getPlayerInventory().getItemsBox());
+        var inventory = player.getPlayerInventory();
+        updateInventorySize(connection, player.getId(), "max_bag_size", inventory.getItemBagSize(), inventory.getItemsBag().size(), size -> inventory.setItemBagSize(size), "player_items_bag");
+        updateInventorySize(connection, player.getId(), "max_box_size", inventory.getItemBoxSize(), inventory.getItemsBox().size(), size -> inventory.setItemBoxSize(size), "player_items_box");
+        saveInventoryItems(player, connection, "player_items_body", inventory.getItemsBody());
+        saveInventoryItems(player, connection, "player_items_bag", inventory.getItemsBag());
+        saveInventoryItems(player, connection, "player_items_box", inventory.getItemsBox());
+    }
+
+    private void updateInventorySize(Connection connection, int playerId, String column, int oldSize, int newSize, Consumer<Integer> updateSize, String tableName) throws SQLException {
+        if (oldSize < newSize) {
+            try (PreparedStatement statement = connection.prepareStatement("UPDATE player SET " + column + " = ? WHERE id = ?")) {
+                statement.setInt(1, newSize);
+                statement.setInt(2, playerId);
+                statement.executeUpdate();
+            }
+            updateSize.accept(newSize);
+            insertIndexInventory(connection, playerId, tableName, oldSize, newSize);
+        }
+    }
+
+    private void insertIndexInventory(Connection connection, int playerId, String tableName, int oldSize, int newSize) throws SQLException {
+        oldSize = Math.max(oldSize, getMaxRowIndex(connection, playerId, tableName) + 1);
+
+        if (oldSize >= newSize) return;
+
+        String query = "INSERT INTO " + tableName + " (player_id, row_index, temp_id, quantity, options) " +
+                "VALUES (?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE temp_id = VALUES(temp_id), quantity = VALUES(quantity), options = VALUES(options)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            boolean hasBatch = false;
+
+            for (int index = oldSize; index < newSize; index++) {
+                statement.setInt(1, playerId);
+                statement.setInt(2, index);
+                statement.setInt(3, -1);
+                statement.setInt(4, 0);
+                statement.setString(5, "[]");
+                statement.addBatch();
+                hasBatch = true;
+            }
+
+            if (hasBatch) {
+                int[] rowsAffected = statement.executeBatch();
+                if (Arrays.stream(rowsAffected).sum() == 0) {
+                    throw new SQLException("Failed to insert items into " + tableName);
+                }
+            }
+        } catch (SQLException ex) {
+            LogServer.LogException("Lỗi khi insert index inventory: " + ex.getMessage(), ex);
+        }
+    }
+
+    private int getMaxRowIndex(Connection connection, int playerId, String tableName) throws SQLException {
+        String query = "SELECT COALESCE(MAX(row_index), -1) FROM " + tableName + " WHERE player_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, playerId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        }
+        return -1;
     }
 
     private void saveInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
@@ -123,15 +189,7 @@ public class PlayerUpdate {
     }
 
     private void savePlayerStats(Player player, Connection connection) throws SQLException {
-        String query = "UPDATE player_point SET hp = ?, hp_max = ?, hp_current = ?, " +
-                "mp = ?, mp_max = ?, mp_current = ?, " +
-                "dame_max = ?, dame_default = ?, " +
-                "crit = ?, crit_default = ?, " +
-                "defense = ?, def_default = ?, " +
-                "stamina = ?, max_stamina = ?, " +
-                "power = ?, limit_power = ?, " +
-                "tiem_nang = ?, nang_dong = ? " +
-                "WHERE player_id = ?";
+        String query = "UPDATE player_point SET hp = ?, hp_max = ?, hp_current = ?, " + "mp = ?, mp_max = ?, mp_current = ?, " + "dame_max = ?, dame_default = ?, " + "crit = ?, crit_default = ?, " + "defense = ?, def_default = ?, " + "stamina = ?, max_stamina = ?, " + "power = ?, limit_power = ?, " + "tiem_nang = ?, nang_dong = ? " + "WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             PlayerPoints stats = player.getPlayerPoints();
             statement.setLong(1, stats.getBaseHP());
@@ -177,9 +235,7 @@ public class PlayerUpdate {
     }
 
     private void savePlayerSkillsShortCut(Player player, Connection connection) throws SQLException {
-        String query = "UPDATE player_skills_shortcut SET slot_1 = ?, slot_2 = ?, slot_3 = ?, " +
-                "slot_4 = ?, slot_5 = ?, slot_6 = ?, slot_7 = ?, slot_8 = ?, slot_9 = ?, slot_10 = ? " +
-                "WHERE player_id = ?";
+        String query = "UPDATE player_skills_shortcut SET slot_1 = ?, slot_2 = ?, slot_3 = ?, " + "slot_4 = ?, slot_5 = ?, slot_6 = ?, slot_7 = ?, slot_8 = ?, slot_9 = ?, slot_10 = ? " + "WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             byte[] skillShortCut = player.getPlayerSkill().getSkillShortCut();
             for (int i = 0; i < 10; i++) {

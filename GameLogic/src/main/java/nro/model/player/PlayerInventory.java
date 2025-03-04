@@ -22,24 +22,30 @@ public class PlayerInventory {
     private final List<Item> itemsBag;
     private final List<Item> itemsBox;
 
-    private static final int MAX_ITEM_BODY = 11;
-    private static final int MAX_ITEM_BAG = 20;
-    private static final int MAX_ITEM_BOX = 20;
+    private int itemBodySize;
+    private int itemBagSize;
+    private int itemBoxSize;
 
     public PlayerInventory(Player player) {
         this.player = player;
-        this.itemsBody = new ArrayList<>(MAX_ITEM_BODY);
-        this.itemsBag = new ArrayList<>(MAX_ITEM_BAG);
-        this.itemsBox = new ArrayList<>(MAX_ITEM_BOX);
+        this.itemsBody = new ArrayList<>();
+        this.itemsBag = new ArrayList<>();
+        this.itemsBox = new ArrayList<>();
     }
 
     private void ______________ADD_ITEM______________() {
         // Xử lý người chơi nhận hoặc thêm item
     }
 
-    public void addItemBag(Item item) {
+    public boolean addItemBag(Item item) {
+        if (this.isBagFull()) {
+            Service.dialogMessage(player.getSession(), "Hành trang đã đầy.");
+            return false;
+        }
+        System.out.println("Add item bag: " + item.getTemplate().name());
         addItem(this.getItemsBag(), item);
         InventoryService.getInstance().sendItemToBags(player, 0);
+        return true;
     }
 
     public void addItemBody(Item item) {
@@ -48,6 +54,10 @@ public class PlayerInventory {
     }
 
     public void addItemBox(Item item) {
+        if (this.isBoxFull()) {
+            Service.dialogMessage(player.getSession(), "Rương đồ đã đầy.");
+            return;
+        }
         addItem(this.getItemsBox(), item);
         InventoryService.getInstance().sendItemsBox(player, 0);
     }
@@ -83,8 +93,7 @@ public class PlayerInventory {
 
             item.dispose();
         } catch (Exception e) {
-            LogServer.LogException("Error addItem: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error addItem: " + e.getMessage(), e);
         }
     }
 
@@ -311,8 +320,7 @@ public class PlayerInventory {
                 return itemBody;
             }
         } catch (Exception ex) {
-            LogServer.LogException("Error putItemBodyForIndex: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error putItemBodyForIndex: " + ex.getMessage(), ex);
         }
         return itemBody;
     }
@@ -332,16 +340,31 @@ public class PlayerInventory {
     private void _______________CHECK_SIZE_INVENTORY______________() {
     }
 
-    public boolean isBagFull() {
-        return this.itemsBag.size() >= MAX_ITEM_BAG;
+    public boolean isBodyFull() {
+        return this.itemsBody.stream().filter(item -> item.getTemplate() != null).count() >= itemBodySize;
     }
 
-    public boolean isBodyFull() {
-        return this.itemsBody.size() >= MAX_ITEM_BODY;
+    public boolean isBagFull() {
+        long constBag = (int) this.itemsBag.stream().filter(item -> item.getTemplate() != null).count();
+        return constBag >= itemBagSize;
     }
 
     public boolean isBoxFull() {
-        return this.itemsBox.size() >= MAX_ITEM_BOX;
+        long constBox = (int) this.itemsBox.stream().filter(item -> item.getTemplate() != null).count();
+        return constBox >= itemBoxSize;
     }
 
+    public byte getCountEmptyBag() {
+        return getCountEmptyListItem(this.itemsBag);
+    }
+
+    public byte getCountEmptyListItem(List<Item> list) {
+        byte count = 0;
+        for (Item item : list) {
+            if (item.getTemplate() != null) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

@@ -54,19 +54,21 @@ public class PlayerCreator {
     private int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head) throws SQLException {
         var ms = System.currentTimeMillis();
         int playerId;
-        try (CallableStatement stmt = connection.prepareCall("{CALL `CreatePlayerBase`(?, ?, ?, ?, ?)}")) {
+        try (CallableStatement stmt = connection.prepareCall("{CALL `CreatePlayerBase`(?, ?, ?, ?, ?, ?, ?)}")) {
             stmt.setInt(1, accountId);
             stmt.setString(2, name);
             stmt.setByte(3, gender);
             stmt.setInt(4, head);
-            stmt.registerOutParameter(5, java.sql.Types.INTEGER);
+            stmt.setInt(5, 20);// item bag size
+            stmt.setInt(6, 20);// item box size
+            stmt.registerOutParameter(7, java.sql.Types.INTEGER);
             stmt.execute();
-            playerId = stmt.getInt(5);
+            playerId = stmt.getInt(7);
         }
+
         if (playerId == 0) {
             throw new SQLException("Failed to create player.");
         }
-
         return playerId;
     }
 
@@ -201,6 +203,14 @@ public class PlayerCreator {
         }
     }
 
+    private List<Item> createEmptyItems(int count) {
+        List<Item> items = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            items.add(ItemFactory.getInstance().createItemNull());
+        }
+        return items;
+    }
+
     private void createPlayerInventory(Connection connection, int playerId, byte gender) throws SQLException {
         List<Item> itemsBody = ItemFactory.getInstance().initializePlayerItems(gender);
         List<Item> itemsBag = createEmptyItems(20);
@@ -217,14 +227,6 @@ public class PlayerCreator {
         while (items.size() < requiredSize) {
             items.add(ItemFactory.getInstance().createItemNull());
         }
-    }
-
-    private List<Item> createEmptyItems(int count) {
-        List<Item> items = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            items.add(ItemFactory.getInstance().createItemNull());
-        }
-        return items;
     }
 
     private void insertItemsToDatabase(Connection connection, int playerId, String tableName, List<Item> items) throws SQLException {

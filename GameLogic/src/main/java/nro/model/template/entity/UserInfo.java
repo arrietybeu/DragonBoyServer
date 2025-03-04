@@ -11,6 +11,7 @@ public class UserInfo {
     private final Session session;
 
     private int id;
+
     private boolean admin;
     private boolean ban;
     private boolean active;

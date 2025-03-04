@@ -116,6 +116,12 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "bag": {
+                    playerChat.getPlayerInventory().getItemsBag().add(ItemFactory.getInstance().createItemNull());
+                    InventoryService.getInstance().sendItemToBags(playerChat, 0);
+                    service.getInstance().sendChatGlobal(playerChat.getSession(), null, "Đã thêm item vào bag", false);
+                    break;
+                }
                 case "log_exception":
                     try {
                         int[] arr = new int[1];
@@ -126,10 +132,13 @@ public class ChatService {
                     break;
                 case "buff_item":
                     var idMax = ItemManager.getInstance().getItemTemplates().size();
-                    for (int itemId = idMax - 10; itemId < idMax; itemId++) {
+//                    for (int itemId = idMax - 10; itemId < idMax; itemId++) {
+                    System.out.println("slot: " + playerChat.getPlayerInventory().getCountEmptyBag());
+                    for (int itemId = 0; itemId < playerChat.getPlayerInventory().getCountEmptyBag(); itemId++) {
                         Item item = ItemFactory.getInstance().createItemOptionsBase(itemId);
-                        playerChat.getPlayerInventory().addItemBag(item);
-                        service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
+                        if (playerChat.getPlayerInventory().addItemBag(item)) {
+                            service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
+                        }
                     }
                     break;
                 case "send_exp": {
