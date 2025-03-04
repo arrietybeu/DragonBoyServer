@@ -8,8 +8,6 @@ import nro.model.map.areas.Area;
 import nro.model.map.decorates.BackgroudEffect;
 import nro.model.map.decorates.BgItem;
 import nro.model.monster.Monster;
-import nro.model.npc.Npc;
-import nro.model.npc.NpcFactory;
 import nro.model.template.NpcTemplate;
 import nro.model.template.map.TileSetTemplate;
 import nro.server.network.Message;

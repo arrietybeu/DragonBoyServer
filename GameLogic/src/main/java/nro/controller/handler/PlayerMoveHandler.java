@@ -15,9 +15,11 @@ public class PlayerMoveHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         try {
             Player player = session.getPlayer();
-            if (player == null) return;
+            if (player == null)
+                return;
 
-            if (player.getPlayerStatus().isLockMove()) return;
+            if (player.getPlayerStatus().isLockMove())
+                return;
 
             byte isOnGround = message.reader().readByte();
 
@@ -29,8 +31,9 @@ public class PlayerMoveHandler implements IMessageProcessor {
             }
 
             if (Math.abs(newX - player.getX()) > 50 || Math.abs(newY - player.getY()) > 100) {
-//                LogServer.LogWarning("Player " + player.getName() + " có di chuyển bất thường!");
-//                return;
+                // LogServer.LogWarning("Player " + player.getName() + " có di chuyển bất
+                // thường!");
+                // return;
             }
 
             player.setX(newX);

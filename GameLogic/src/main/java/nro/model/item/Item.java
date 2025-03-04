@@ -28,12 +28,15 @@ public class Item implements AutoCloseable {
         this.itemOptions.add(new ItemOption(id, param));
     }
 
+    @SuppressWarnings("unchecked")
     public String getJsonOptions() {
         JSONArray options = new JSONArray();
         for (ItemOption io : this.itemOptions) {
             JSONArray option = new JSONArray();
-            if (io == null) continue;
-            if (io.getId() == 73) continue;
+            if (io == null)
+                continue;
+            if (io.getId() == 73)
+                continue;
             option.add(io.getId());
             option.add(io.getParam());
             options.add(option);
@@ -42,11 +45,13 @@ public class Item implements AutoCloseable {
     }
 
     public void setJsonOptions(String jsonOptions) {
-        if (jsonOptions == null || jsonOptions.isEmpty()) return;
+        if (jsonOptions == null || jsonOptions.isEmpty())
+            return;
         try {
             JSONArray jsonArray = (JSONArray) new JSONParser().parse(jsonOptions);
             for (Object obj : jsonArray) {
-                if (!(obj instanceof JSONArray optionArray)) continue;
+                if (!(obj instanceof JSONArray optionArray))
+                    continue;
 
                 if (optionArray.size() == 2) {
                     Number optionId = (Number) optionArray.get(0);
@@ -68,7 +73,7 @@ public class Item implements AutoCloseable {
     }
 
     public void addQuantity(int quantity) {
-//        System.out.println("addQuantity: " + quantity);
+        // System.out.println("addQuantity: " + quantity);
         this.quantity += quantity;
     }
 

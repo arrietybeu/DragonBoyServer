@@ -1,9 +1,8 @@
-package nro.server;
+﻿package nro.server;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -101,7 +100,7 @@ public class MainServer {
         try {
             SessionManager.getInstance().startSessionChecker();
         } catch (Exception e) {
-            LogServer.LogException("Error startGame: " + e.getMessage());
+            LogServer.LogException("Error startGame: " + e.getMessage(), e);
         }
     }
 

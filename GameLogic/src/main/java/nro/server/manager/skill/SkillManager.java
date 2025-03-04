@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import nro.consts.ConstPlayer;
 import nro.model.template.skill.SkillOptionTemplate;
-import nro.model.template.skill.SpeacialSkillTemplate;
 import nro.server.config.ConfigDB;
 import nro.repositories.DatabaseConnectionPool;
 import nro.model.template.entity.SkillInfo;

@@ -29,7 +29,6 @@ public class ItemManager implements IManager {
     private static final byte ITEM_OPTION = 0;
     private static final byte ITEM_NORMAL = 1;
     private static final byte ITEM_ARR_HEAD_2FR = 100;
-    private static final byte ITEM_ARR_HEAD_FLYMOVE = 101;
 
     private final Map<Short, ItemTemplate> itemTemplates = new HashMap<>();
     private final Map<Short, ItemOptionTemplate> itemOptionTemplates = new HashMap<>();

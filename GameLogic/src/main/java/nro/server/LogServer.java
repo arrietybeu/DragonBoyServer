@@ -1,9 +1,6 @@
 package nro.server;
 
 import nro.server.config.ConfigServer;
-import nro.utils.OpenAIChatClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +16,6 @@ import java.util.List;
  */
 public class LogServer {
 
-    private static final Logger logger = LogManager.getLogger(LogServer.class);
     private static LogWindow logWindow;
     private static final List<JSONObject> errorLogList = new ArrayList<>();
 

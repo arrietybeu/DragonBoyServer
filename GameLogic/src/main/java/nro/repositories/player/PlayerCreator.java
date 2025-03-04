@@ -52,7 +52,7 @@ public class PlayerCreator {
     }
 
     private int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head) throws SQLException {
-        var ms = System.currentTimeMillis();
+        // var ms = System.currentTimeMillis();
         int playerId;
         try (CallableStatement stmt = connection.prepareCall("{CALL `CreatePlayerBase`(?, ?, ?, ?, ?, ?, ?)}")) {
             stmt.setInt(1, accountId);
@@ -118,13 +118,6 @@ public class PlayerCreator {
                 throw new SQLException("Failed to insert player currencies.");
             }
         }
-    }
-
-
-    private void createPlayerPoint(Connection connection, int playerId) throws SQLException {
-        executeInsert(connection, "INSERT INTO player_point (player_id, hp, mp, dame, stamina, crit, defense, power, limit_power, tiem_nang, nang_dong) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                playerId, 120, 100, 15, 1000, 0, 0, 2000, 100, 1200, 0);
     }
 
     private void createPlayerPoint(Connection connection, int playerId, byte gender) throws SQLException {
@@ -287,17 +280,6 @@ public class PlayerCreator {
         } catch (SQLException e) {
             LogServer.LogException("Lỗi khi tạo shortcut skill: " + e.getMessage());
             throw e;
-        }
-    }
-
-    private void executeInsert(Connection connection, String query, Object... params) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int i = 0; i < params.length; i++) {
-                statement.setObject(i + 1, params[i]);
-            }
-            if (statement.executeUpdate() == 0) {
-                throw new SQLException("Insert operation failed for query: " + query);
-            }
         }
     }
 

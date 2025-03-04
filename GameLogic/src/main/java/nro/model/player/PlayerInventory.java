@@ -15,6 +15,8 @@ import java.util.List;
 
 @Getter
 @Setter
+
+@SuppressWarnings("unused")
 public class PlayerInventory {
 
     private final Player player;
@@ -69,14 +71,13 @@ public class PlayerInventory {
             if (item.getTemplate() == null) {
                 return;
             }
-
             if (item.getTemplate().isUpToUp()) {
                 for (Item it : items) {
                     if (it.getTemplate() == null) {
                         continue;
                     }
                     if (it.getTemplate().id() == item.getTemplate().id()) {
-                        int combinedQuantity = it.getQuantity() + item.getQuantity();
+                        // int combinedQuantity = it.getQuantity() + item.getQuantity();
                         it.addQuantity(item.getQuantity());
                         return;
                     }

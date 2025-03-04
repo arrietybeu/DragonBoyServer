@@ -169,10 +169,10 @@ public class PlayerTask {
         }
     }
 
-    private void handleTaskTwo(int index, NpcService npcService, String npcName, String mapName) {
-        switch (index) {
-        }
-    }
+    // private void handleTaskTwo(int index, NpcService npcService, String npcName, String mapName) {
+    //     switch (index) {
+    //     }
+    // }
 
     private void addDoneSubTask() {
         var subList = this.taskMain.getSubNameList();

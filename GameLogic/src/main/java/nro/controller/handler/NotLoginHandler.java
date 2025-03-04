@@ -14,6 +14,7 @@ import nro.server.manager.SessionManager;
 import nro.server.LogServer;
 
 @APacketHandler(-29)
+@SuppressWarnings("unused")
 public class NotLoginHandler implements IMessageProcessor {
 
     @Override

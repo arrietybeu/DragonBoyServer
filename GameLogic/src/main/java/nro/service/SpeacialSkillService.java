@@ -4,7 +4,6 @@ import lombok.Getter;
 import nro.model.player.Player;
 import nro.server.network.Message;
 import nro.server.LogServer;
-import nro.server.manager.skill.SkillManager;
 
 public class SpeacialSkillService {
 
@@ -12,7 +11,7 @@ public class SpeacialSkillService {
     private static SpeacialSkillService instance = new SpeacialSkillService();
 
     public void sendSpeacialSkill(Player player) {
-        SkillManager skillManager = SkillManager.getInstance();
+        // SkillManager skillManager = SkillManager.getInstance();
 
         try (Message message = new Message(112)) {
             message.writer().writeByte(0);
@@ -25,7 +24,7 @@ public class SpeacialSkillService {
     }
 
     public void showInfoSpecialSkill(Player player) {
-        SkillManager skillManager = SkillManager.getInstance();
+        // SkillManager skillManager = SkillManager.getInstance();
 
         try (Message message = new Message(112)) {
             message.writer().writeByte(1);

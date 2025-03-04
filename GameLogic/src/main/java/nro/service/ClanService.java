@@ -18,7 +18,7 @@ public class ClanService {
     public void sendListClan(Player player) {
         try (Message message = new Message(-47)) {
 
-            DataOutputStream data = message.writer();
+            // DataOutputStream data = message.writer();
 
         } catch (Exception ex) {
             LogServer.LogException("Error send list Clan: " + ex.getMessage());

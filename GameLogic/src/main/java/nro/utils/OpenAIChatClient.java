@@ -40,6 +40,7 @@ public class OpenAIChatClient {
     private static String sendMessage(List<Map<String, String>> messages) throws Exception {
         String jsonInputString = "{\"model\": \"vistral-7b-chat\", \"messages\": " + new com.google.gson.Gson().toJson(messages) + ", \"temperature\": 0.7, \"max_tokens\": 2000}";
 
+        @SuppressWarnings("deprecation")
         HttpURLConnection connection = (HttpURLConnection) new java.net.URL(OPEN_AI_ENDPOINT).openConnection();
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "application/json");

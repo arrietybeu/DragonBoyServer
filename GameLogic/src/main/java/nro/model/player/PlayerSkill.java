@@ -72,9 +72,9 @@ public class PlayerSkill {
         }
     }
 
-    private boolean checkUseSkill() {
-        return true;
-    }
+    // private boolean checkUseSkill() {
+    //     return true;
+    // }
 
     public void addSkill(SkillInfo skill) {
         this.skills.add(skill);

@@ -1,7 +1,9 @@
 package nro.model.player;
 
+import lombok.Getter;
 import nro.model.template.skill.SpeacialSkillTemplate;
 
+@Getter
 public class SpeacialSkill {
 
     private Player player;

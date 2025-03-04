@@ -2,7 +2,6 @@ package nro.model.bot;
 
 import lombok.Getter;
 import lombok.Setter;
-import nro.model.LiveObject;
 import nro.model.player.Player;
 
 @Getter

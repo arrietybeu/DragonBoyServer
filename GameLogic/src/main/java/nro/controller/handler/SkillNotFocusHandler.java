@@ -13,7 +13,8 @@ public class SkillNotFocusHandler implements IMessageProcessor {
     @Override
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
-        if (player == null) return;
+        if (player == null)
+            return;
         try {
             byte status = message.reader().readByte();
             if (status == 20) {
@@ -23,9 +24,9 @@ public class SkillNotFocusHandler implements IMessageProcessor {
                 byte dir = message.reader().readByte();
                 short x = message.reader().readShort();
                 short y = message.reader().readShort();
-//                useSkill.useSkillNotForcusNew(player, skillId, cx, cy, dir, x, y);
+                // useSkill.useSkillNotForcusNew(player, skillId, cx, cy, dir, x, y);
             } else {
-//                useSkill.useSkillNotForcus(player, status);
+                // useSkill.useSkillNotForcus(player, status);
             }
         } catch (Exception ex) {
             LogServer.LogException("SkillNotFocusHandler: " + ex.getMessage());

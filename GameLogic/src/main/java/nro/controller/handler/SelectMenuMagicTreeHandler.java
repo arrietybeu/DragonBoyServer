@@ -19,7 +19,7 @@ public class SelectMenuMagicTreeHandler implements IMessageProcessor {
         try {
             var npcId = message.reader().readByte();
             var select = message.reader().readByte();
-            var option = message.reader().readByte();
+            // var option = message.reader().readByte();
 
             if (npcId == 4) {
                 Npc npc = player.getArea().getNpcById(npcId);

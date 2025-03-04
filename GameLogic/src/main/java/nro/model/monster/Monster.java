@@ -141,9 +141,9 @@ public class Monster extends LiveObject {
         return this.info.getType() != 0 && this.status.getStatus() != 0 && !this.point.isDead();
     }
 
-    private boolean isMonsterAgg() {
-        return this.point.getLevel() >= 5;
-    }
+    // private boolean isMonsterAgg() {
+    //     return this.point.getLevel() >= 5;
+    // }
 
     private Player playerCanAttack() {
         for (Player player : this.area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
@@ -156,16 +156,17 @@ public class Monster extends LiveObject {
         return null;
     }
 
-    private Player getPlayerAttackMonster() {
-        for (Player player : this.getAttackers()) {
-            if (player == null) continue;
-            if (player.getPlayerPoints().isDead()) continue;
-            if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 240) {
-                return player;
-            }
-        }
-        return null;
-    }
+    // private Player getPlayerAttackMonster() {
+    // for (Player player : this.getAttackers()) {
+    // if (player == null) continue;
+    // if (player.getPlayerPoints().isDead()) continue;
+    // if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY())
+    // < 240) {
+    // return player;
+    // }
+    // }
+    // return null;
+    // }
 
     @Override
     public void dispose() {

@@ -93,7 +93,7 @@ public class SessionManager {
             long currentTime = System.currentTimeMillis();
             sessions.forEach((userId, session) -> {
                 try {
-                    var lastActiveTime = currentTime - session.getClientInfo().getLastActiveTime();
+                    // var lastActiveTime = currentTime - session.getClientInfo().getLastActiveTime();
 //                    System.out.println("LastActiveTime: " + lastActiveTime + " | Timeout: " + timeout);
                     if (currentTime - session.getClientInfo().getLastActiveTime() > timeout) {
 //                        this.kickSession(session); // TODO command code

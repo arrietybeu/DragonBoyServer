@@ -108,7 +108,7 @@ public class PlayerLoader {
                 while (resultSet.next()) {
                     short skillId = resultSet.getShort("skill_id");
                     short currentLevel = resultSet.getShort("current_level");
-                    long lastTimeUseSkill = resultSet.getLong("last_time_use_skill");
+                    // long lastTimeUseSkill = resultSet.getLong("last_time_use_skill");
                     if (currentLevel == 0) continue;
                     SkillInfo skillInfo = SkillManager.getInstance().getSkillInfo(skillId, player.getGender(), currentLevel);
                     if (skillInfo == null) continue;

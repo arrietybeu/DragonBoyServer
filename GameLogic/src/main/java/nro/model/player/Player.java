@@ -5,7 +5,6 @@ import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.clan.Clan;
-import nro.model.item.Flag;
 import nro.model.map.areas.Area;
 import nro.model.discpile.Disciple;
 import nro.server.LogServer;

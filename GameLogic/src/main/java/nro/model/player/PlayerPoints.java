@@ -2,7 +2,6 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
-import nro.consts.ConstItem;
 import nro.consts.ConstSkill;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;

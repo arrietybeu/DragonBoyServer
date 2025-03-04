@@ -2,7 +2,6 @@ package nro.model.template.map;
 
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,4 +22,5 @@ public class TileSetTemplate {
         private int index;
         private int[] index_value;
     }
+    
 }

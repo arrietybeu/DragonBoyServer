@@ -133,7 +133,7 @@ public class PlayerMagicTree {
     }
 
     public void upgradeMagicTree() {
-        long gold = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
+        // long gold = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
         this.isUpgrade = true;
         this.lastTimeUpgrade = System.currentTimeMillis() + getTimeUpgrade();
         NpcService.getInstance().loadMagicTree(this.player, 0, null);

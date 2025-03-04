@@ -4,7 +4,6 @@
  */
 package nro.server.manager;
 
-import nro.model.npc.NpcFactory;
 import nro.server.MainServer;
 import nro.server.LogServer;
 

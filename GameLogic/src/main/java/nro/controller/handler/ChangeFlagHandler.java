@@ -2,14 +2,10 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.item.Flag;
 import nro.model.player.Player;
-import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.server.LogServer;
-import nro.service.ItemService;
-import nro.service.Service;
 
 @APacketHandler(-103)
 public class ChangeFlagHandler implements IMessageProcessor {
