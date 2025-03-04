@@ -8,10 +8,6 @@ public class ConstTypeObject {
 
     public static final byte TYPE_MONSTER = 2;
 
-    public static final byte TYPE_NPC = 3;
-
-    public static final byte TYPE_MOB = 4;
-
-    public static final byte TYPE_ITEM = 5;
+    public static final byte TYPE_MINI_PET = 3;
 
 }

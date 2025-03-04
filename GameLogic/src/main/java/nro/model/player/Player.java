@@ -63,7 +63,8 @@ public class Player extends LiveObject {
 
     public boolean isNewPlayer() {
         long days = this.getDaysSinceCreation();
-//        System.out.println("Player name: " + this.getName() + " create " + days + " day.");
+        // System.out.println("Player name: " + this.getName() + " create " + days + "
+        // day.");
         return days < 30;
     }
 
@@ -120,7 +121,6 @@ public class Player extends LiveObject {
         }
     }
 
-
     @Override
     public void update() {
         if (this.playerMagicTree != null) {
@@ -131,7 +131,8 @@ public class Player extends LiveObject {
     @Override
     public long handleAttack(Player player, long damage) {
         System.out.println("Player{" + this.getId() + "} attack Player{" + player.getId() + "} with damage: " + damage);
-        if (this.playerPoints.isDead()) return 0;
+        if (this.playerPoints.isDead())
+            return 0;
 
         this.playerPoints.subCurrentHp(damage);
 
@@ -148,6 +149,10 @@ public class Player extends LiveObject {
 
     @Override
     public String toString() {
-        return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerPoints=" + playerPoints + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill=" + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + ", teleport=" + teleport + '}';
+        return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerPoints="
+                + playerPoints + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill="
+                + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion
+                + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple
+                + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + ", teleport=" + teleport + '}';
     }
 }

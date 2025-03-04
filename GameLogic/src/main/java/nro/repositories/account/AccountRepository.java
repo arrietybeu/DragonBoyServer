@@ -159,8 +159,7 @@ public class AccountRepository {
                 ps.executeUpdate();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException("Error updateAccountLogout: " + e.getMessage());
+            LogServer.LogException("Error updateAccountLogout: " + e.getMessage(), e);
         }
     }
 

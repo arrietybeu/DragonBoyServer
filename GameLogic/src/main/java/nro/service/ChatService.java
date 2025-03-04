@@ -51,7 +51,8 @@ public class ChatService {
 
                 Area newArea = newMap.getArea();
                 if (newArea == null) {
-                    service.sendChatGlobal(playerChat.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
+                    service.sendChatGlobal(playerChat.getSession(), null, "Không có khu vực trống trong map: " + mapId,
+                            false);
                     return;
                 }
 
@@ -101,7 +102,8 @@ public class ChatService {
                     return;
                 }
                 Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap);
-                ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getId(), item, playerChat.getX(), playerChat.getY(), -1);
+                ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getId(), item, playerChat.getX(),
+                        playerChat.getY(), -1);
                 ItemService.getInstance().sendDropItemMap(playerChat, itemMap);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
                 return;
@@ -113,6 +115,15 @@ public class ChatService {
                 }
                 playerChat.getPlayerPoints().setBaseDamage(damage);
                 service.sendChatGlobal(playerChat.getSession(), null, "Set Damage: " + damage, false);
+                return;
+            } else if (text.startsWith("c ")) {
+                int type = this.getNumber(text);
+                if (type == -1) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Type không hợp lệ: " + text, false);
+                    return;
+                }
+                service.sendPetFollow(playerChat, type, -1);
+                service.sendChatGlobal(playerChat.getSession(), null, "Call Pet: " + type, false);
                 return;
             }
             switch (text) {
@@ -132,7 +143,7 @@ public class ChatService {
                     break;
                 case "buff_item":
                     // var idMax = ItemManager.getInstance().getItemTemplates().size();
-//                    for (int itemId = idMax - 10; itemId < idMax; itemId++) {
+                    // for (int itemId = idMax - 10; itemId < idMax; itemId++) {
                     System.out.println("slot: " + playerChat.getPlayerInventory().getCountEmptyBag());
                     for (int itemId = 0; itemId < playerChat.getPlayerInventory().getCountEmptyBag(); itemId++) {
                         Item item = ItemFactory.getInstance().createItemOptionsBase(itemId);
@@ -154,7 +165,8 @@ public class ChatService {
                     int sizeNpcAllArea = 0;
                     for (GameMap map : MapManager.getInstance().getGameMaps().values()) {
                         for (Area area : map.getAreas()) {
-                            System.out.println("map id: " + map.getId() + " area id: " + area.getId() + " npc size: " + area.getNpcList().size());
+                            System.out.println("map id: " + map.getId() + " area id: " + area.getId() + " npc size: "
+                                    + area.getNpcList().size());
                             sizeNpcAllArea += area.getNpcList().size();
                         }
                     }
@@ -165,7 +177,8 @@ public class ChatService {
                     Service.dialogMessage(playerChat.getSession(), "Cache size: " + FileNio.CACHE.size());
                     break;
                 case "info":
-                    String threadInfo = "Thread const: " + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession();
+                    String threadInfo = "Thread const: " + Thread.activeCount() + " session size: "
+                            + SessionManager.getInstance().getSizeSession();
                     String playerLocation = "\nPlayer Location mapId: "
                             + playerChat.getArea().getMap().getId() + " zone id: " + playerChat.getArea().getId()
                             + " x: " + playerChat.getX() + " y: " + playerChat.getY();
@@ -178,14 +191,16 @@ public class ChatService {
                     break;
                 case "reload_item":
                     ManagerRegistry.reloadManager(ItemManager.class);
-                    service.sendChatGlobal(playerChat.getSession(), null, "Load Item Manager Thành Công: " + ItemManager.getInstance().getItemOptionTemplates().size(), false);
+                    service.sendChatGlobal(playerChat.getSession(), null, "Load Item Manager Thành Công: "
+                            + ItemManager.getInstance().getItemOptionTemplates().size(), false);
                     break;
                 case "reload_task":
                     ManagerRegistry.reloadManager(TaskManager.class);
                     service.sendChatGlobal(playerChat.getSession(), null, "Load Task Manager Thành Công", false);
                     break;
                 case "area_check":
-                    var info = "Area Size PLayer: " + playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
+                    var info = "Area Size PLayer: "
+                            + playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
                     service.sendChatGlobal(playerChat.getSession(), null, info, false);
                     break;
                 default:

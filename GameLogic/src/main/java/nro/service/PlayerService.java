@@ -51,8 +51,9 @@ public class PlayerService {
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException(e.getMessage());
-            Service.dialogMessage(session, String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
-                    ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
+            Service.dialogMessage(session,
+                    String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
+                            ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
         }
     }
 
@@ -101,7 +102,8 @@ public class PlayerService {
             message.writer().write(dataToSend);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage(), ex);
+            LogServer.LogException(
+                    "Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -385,11 +387,11 @@ public class PlayerService {
             Player playerInArea = player.getArea().getPlayer(playerId);
             message.writer().writeInt(playerInArea.getId());
             message.writer().writeLong(playerInArea.getPlayerPoints().getPower());
-            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
+            message.writer().writeUTF(CaptionManager.getInstance()
+                    .getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
@@ -403,7 +405,6 @@ public class PlayerService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendPlayerDie: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
@@ -447,9 +448,11 @@ public class PlayerService {
     public void pickItem(Player player, int itemMapID, int type) {
         try {
             ItemMap itemMap = player.getArea().getItemsMapById(itemMapID);
-            if (itemMap == null) return;
+            if (itemMap == null)
+                return;
             if (itemMap.getItemMapID() == itemMapID) {
-                if (itemMap.getItem().getTemplate().type() == 22) return;
+                if (itemMap.getItem().getTemplate().type() == 22)
+                    return;
 
                 // TODO check inventory full
                 Service service = Service.getInstance();
@@ -492,10 +495,11 @@ public class PlayerService {
                             }
                             default -> player.getPlayerInventory().addItemBag(item);
                         }
-                        var notify = idItem == 74 || idItem == 516 ? String.format("Bạn vừa ăn %s", item.getTemplate().name()) : "";
+                        var notify = idItem == 74 || idItem == 516
+                                ? String.format("Bạn vừa ăn %s", item.getTemplate().name())
+                                : "";
                         this.sendPickItemMap(
-                                player, itemMap.getItemMapID(), itemType, quantity, notify
-                        );
+                                player, itemMap.getItemMapID(), itemType, quantity, notify);
                         this.sendPLayerPickItemMap(player, itemMap.getItemMapID());
                         player.getArea().removeItemMap(itemMap.getItemMapID());
                     }
@@ -560,7 +564,8 @@ public class PlayerService {
                     }
                 }
 
-                boolean isCreated = PlayerCreator.getInstance().createPlayer(connection, session.getUserInfo().getId(), name, gender, hair);
+                boolean isCreated = PlayerCreator.getInstance().createPlayer(connection, session.getUserInfo().getId(),
+                        name, gender, hair);
 
                 if (!isCreated) {
                     Service.dialogMessage(session, "Tạo nhân vật thất bại.");
@@ -568,8 +573,11 @@ public class PlayerService {
                 return isCreated;
             }
         } catch (SQLException e) {
-            LogServer.LogException(String.format("Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s", session.getUserInfo().getId(), name, gender, hair, e.getMessage(), e));
-            Service.dialogMessage(session, "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
+            LogServer.LogException(String.format(
+                    "Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s",
+                    session.getUserInfo().getId(), name, gender, hair, e.getMessage(), e));
+            Service.dialogMessage(session,
+                    "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
             throw e;
         }
     }

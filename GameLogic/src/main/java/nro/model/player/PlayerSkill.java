@@ -32,8 +32,10 @@ public class PlayerSkill {
 
     public void playerAttackMonster(Monster monster) {
         try {
-            if (monster == null) return;
-            if (monster.getPoint().isDead()) return;
+            if (monster == null)
+                return;
+            if (monster.getPoint().isDead())
+                return;
             this.useSkill(monster);
         } catch (RuntimeException e) {
             LogServer.LogException("playerAttackMonster player name:" + player.getName() + " error: " + e.getMessage());
@@ -66,14 +68,15 @@ public class PlayerSkill {
                         monster.handleAttack(this.player, this.player.getPlayerPoints().getDameAttack());
                     }
                     default ->
-                            LogServer.LogException("useSkillTarget player name:" + player.getName() + " error: target not monster");
+                        LogServer.LogException(
+                                "useSkillTarget player name:" + player.getName() + " error: target not monster");
                 }
             }
         }
     }
 
     // private boolean checkUseSkill() {
-    //     return true;
+    // return true;
     // }
 
     public void addSkill(SkillInfo skill) {
@@ -96,7 +99,8 @@ public class PlayerSkill {
     public void selectSkill(int skillId) {
         try {
             for (SkillInfo skillInfo : this.skills) {
-                if (skillInfo.getTemplate().getId() == -1) continue;
+                if (skillInfo.getTemplate().getId() == -1)
+                    continue;
                 if (skillInfo.getTemplate().getId() == skillId) {
                     this.skillSelect = skillInfo;
                     break;

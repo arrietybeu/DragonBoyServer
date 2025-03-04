@@ -37,7 +37,7 @@ public class Service {
             msg.writer().writeByte(1);
             session.doSendMessage(msg);
         } catch (Exception e) {
-            LogServer.DebugLogic("Error sending NotLogin response: " + e.getMessage());
+            LogServer.LogException("Error sending NotLogin response: " + e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -47,7 +47,7 @@ public class Service {
             message.writer().writeUTF(info);
             session.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error dialogMessage: " + e.getMessage() + " - " + info);
+            LogServer.LogException("Error dialogMessage: " + e.getMessage() + " - " + info, e);
             e.printStackTrace();
         }
     }
@@ -66,7 +66,7 @@ public class Service {
             message.writer().writeByte(0);
             session.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendLoginFail: " + e.getMessage());
+            LogServer.LogException("Error sendLoginFail: " + e.getMessage(), e);
         }
     }
 
@@ -74,7 +74,7 @@ public class Service {
         try (Message msg = new Message(2)) {
             session.sendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error initSelectChar: " + e.getMessage());
+            LogServer.LogException("Error initSelectChar: " + e.getMessage(), e);
         }
     }
 
@@ -83,7 +83,7 @@ public class Service {
             // TODO load database id user
 
         } catch (Exception e) {
-            LogServer.LogException("Error create User Ao: " + e.getMessage());
+            LogServer.LogException("Error create User Ao: " + e.getMessage(), e);
         }
     }
 
@@ -92,7 +92,7 @@ public class Service {
             message.writer().writeByte(0);
             session.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error switchToRegisterScr: " + e.getMessage());
+            LogServer.LogException("Error switchToRegisterScr: " + e.getMessage(), e);
         }
     }
 
@@ -119,7 +119,7 @@ public class Service {
             }
             session.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error in sendChatGlobal: " + e.getMessage());
+            LogServer.LogException("Error in sendChatGlobal: " + e.getMessage(), e);
             e.printStackTrace();
         }
     }
@@ -130,7 +130,7 @@ public class Service {
             message.writer().write(data);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error in sendGameNotify: " + ex.getMessage());
+            LogServer.LogException("Error in sendGameNotify: " + ex.getMessage(), ex);
             ex.printStackTrace();
         }
     }
@@ -140,8 +140,32 @@ public class Service {
             message.writer().writeByte(-1);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error in sendHideWaitDialog: " + ex.getMessage());
+            LogServer.LogException("Error in sendHideWaitDialog: " + ex.getMessage(), ex);
             ex.printStackTrace();
+        }
+    }
+
+    public void sendPetFollow(Player player, int type, int typeSend) {
+        try (Message message = new Message(31)) {
+            DataOutputStream write = message.writer();
+            write.writeInt(player.getId());
+            switch (type) {
+                case 0 -> {// Stop follow
+                    write.writeByte(type);
+                }
+                case 1 -> {
+                    write.writeByte(type);
+                    write.writeShort(5000);// smallId
+                    write.writeByte(0);// fimg
+                }
+            }
+            if (typeSend == 0) {
+                player.getArea().sendMessageToPlayersInArea(message, null);
+            } else {
+                player.sendMessage(message);
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("Error in sendStatusPet: " + ex.getMessage(), ex);
         }
     }
 
