@@ -15,7 +15,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
 import nro.server.network.Message;
+import nro.server.network.Session;
 import nro.server.LogServer;
+import nro.server.manager.SessionManager;
 import nro.service.ItemService;
 
 @Getter
@@ -25,6 +27,8 @@ public class Area {
 
     private final int id;
     private final int maxPlayers;
+
+    private final short MAX_ID = Short.MAX_VALUE - 1;
     private final AtomicInteger idItemMap = new AtomicInteger(0);
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -50,7 +54,9 @@ public class Area {
                 try {
                     obj.update();
                 } catch (Exception e) {
-                    LogServer.LogException("Error updating object ID: " + obj.getId() + " in zone " + this.id + " - " + e.getMessage(), e);
+                    LogServer.LogException(
+                            "Error updating object ID: " + obj.getId() + " in zone " + this.id + " - " + e.getMessage(),
+                            e);
                 }
             }
         } catch (Exception ex) {
@@ -98,7 +104,6 @@ public class Area {
         }
     }
 
-
     public final void update() {
         try {
             updateLiveObjects(this.players.values());
@@ -113,6 +118,17 @@ public class Area {
     public void addPlayer(Player player) {
         this.lock.writeLock().lock();
         try {
+            if (this.players.size() >= this.maxPlayers) {
+                LogServer.LogException("Zone is full: " + this.id);
+                return;
+            }
+
+            if (this.players.containsKey(player.getId())) {
+                LogServer.LogException("Player already in zone: " + player.getId());
+                SessionManager.getInstance().kickSession(player.getSession());
+                return;
+            }
+            System.out.println("Add player: " + player.getId() + " player name: " + player.getName());
             this.players.put(player.getId(), player);
         } catch (Exception ex) {
             LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
@@ -127,7 +143,8 @@ public class Area {
         try {
             this.players.remove(player.getId());
         } catch (Exception ex) {
-            LogServer.LogException("removePlayer: " + ex.getMessage() + " playerID: " + player.getId() + " zone id: " + this.id, ex);
+            LogServer.LogException(
+                    "removePlayer: " + ex.getMessage() + " playerID: " + player.getId() + " zone id: " + this.id, ex);
             ex.printStackTrace();
         } finally {
             this.lock.writeLock().unlock();
@@ -158,7 +175,8 @@ public class Area {
     }
 
     public void sendMessageToPlayersInArea(Message message, Player exclude) {
-        if (message == null) return;
+        if (message == null)
+            return;
         this.lock.readLock().lock();
         try {
             this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(player -> {
@@ -166,7 +184,8 @@ public class Area {
                     try {
                         player.sendMessage(message);
                     } catch (Exception e) {
-                        LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone " + this.id + " - " + e.getMessage(), e);
+                        LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone "
+                                + this.id + " - " + e.getMessage(), e);
                     }
                 }
             });
@@ -196,7 +215,8 @@ public class Area {
         try {
             return this.monsters.get(monsterId);
         } catch (Exception ex) {
-            LogServer.LogException("getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage() + " zoneID: " + this.id, ex);
+            LogServer.LogException(
+                    "getMonsterInAreaById: " + monsterId + " message: " + ex.getMessage() + " zoneID: " + this.id, ex);
         } finally {
             this.lock.readLock().unlock();
         }
@@ -226,11 +246,7 @@ public class Area {
     }
 
     public short increaseItemMapID() {
-        int newId = this.idItemMap.incrementAndGet();
-        if (newId >= Short.MAX_VALUE - 1) {
-            this.idItemMap.set(0);
-        }
-        return (short) (newId % Short.MAX_VALUE);
+        return (short) idItemMap.updateAndGet(id -> (id >= MAX_ID) ? 0 : id + 1);
     }
 
     public void addItemMap(ItemMap itemMap) {

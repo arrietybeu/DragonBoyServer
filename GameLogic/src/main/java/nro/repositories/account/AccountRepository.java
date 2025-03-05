@@ -32,12 +32,13 @@ public class AccountRepository {
             }
 
             String query = "SELECT * FROM `account` WHERE `username` = ? AND `password` = ? LIMIT 1;";
-            try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login"); PreparedStatement ps = conn.prepareStatement(query)) {
+            try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login");
+                    PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, username);
                 ps.setString(2, password);
 
                 try (ResultSet rs = ps.executeQuery()) {
-//                    System.out.println("Query: " + ps.toString());
+                    // System.out.println("Query: " + ps.toString());
                     if (!rs.next()) {
                         Service.dialogMessage(userInfo.getSession(), "Thông tin đăng nhập không chính xác");
                         return false;
@@ -73,45 +74,69 @@ public class AccountRepository {
             Service.dialogMessage(userInfo.getSession(), "Tài khoản đã bị khóa vì có hành vi xấu ảnh hưởng server");
             return true;
         }
-        this.handleCheckTimeLogout(userInfo);
+        // this.handleCheckTimeLogout(userInfo);
         return false;
     }
 
     private boolean checkConstLogin(UserInfo userInfo) {
         if (userInfo.getSession().getSessionInfo().constLogin > 10) {
             userInfo.getSession().getSessionInfo().setBanUntil(System.currentTimeMillis() + 3 * 60 * 1000);
-            Service.dialogMessage(userInfo.getSession(), "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi 3 phút để thử lại.");
+            Service.dialogMessage(userInfo.getSession(),
+                    "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi 3 phút để thử lại.");
             return true;
         }
         return false;
     }
 
-    private void handleCheckTimeLogout(UserInfo userInfo) {
-        long lastTimeLogin = userInfo.getLastTimeLogin();
-        long lastTimeLogout = userInfo.getLastTimeLogout();
-        long currentTime = System.currentTimeMillis();
-        if ((lastTimeLogin - lastTimeLogout) <= 5000 && (currentTime - lastTimeLogout) < 10000) {
-            long waitTime = 10000 - (currentTime - lastTimeLogout);
-            long time = (waitTime / 1000);
-            Service.sendLoginDe(userInfo.getSession(), (short) time);
-            try {
-                Thread.sleep(time * 1000L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public void handleCheckTimeLogout(UserInfo userInfo, Runnable callback) {
+        try {
+            long lastTimeLogin = userInfo.getLastTimeLogin();
+            long lastTimeLogout = userInfo.getLastTimeLogout();
+            long currentTime = System.currentTimeMillis();
+
+            if ((lastTimeLogin - lastTimeLogout) <= 5000 && (currentTime - lastTimeLogout) < 10000) {
+                long waitTime = 10000 - (currentTime - lastTimeLogout);
+                long time = waitTime / 1000;
+
+                Service.sendLoginDe(userInfo.getSession(), (short) time);
+
+                Util.delay((int) time, () -> {
+                    if (userInfo.getSession().isClosed())
+                        return;
+                    if (handleCheckUserNameOnline(userInfo)) {
+                        return;
+                    }
+                    callback.run();
+                });
+
+            } else {
+                if (handleCheckUserNameOnline(userInfo)) {
+                    return;
+                }
+                callback.run();
             }
+        } catch (Exception e) {
+            LogServer.LogException("Error handleCheckTimeLogout: " + e.getMessage(), e);
         }
     }
 
     public boolean handleCheckUserNameOnline(UserInfo userInfo) {
-        UserInfo pl = UserManager.getInstance().checkUserLogin(userInfo.getUsername());
-        if (pl != null) {
-            String text = "Tài khoản đã có người đăng nhập xin quay lại sau vài phút";
-            Service.dialogMessage(pl.getSession(), text);
-            Service.dialogMessage(userInfo.getSession(), text);
-            Util.delay(2000);
-            SessionManager.getInstance().kickSession(userInfo.getSession());
-            SessionManager.getInstance().kickSession(pl.getSession());
-            return true;
+        try {
+            UserInfo pl = UserManager.getInstance().checkUserLogin(userInfo.getUsername());
+            if (pl != null) {
+                String text = "Tài khoản đã có người đăng nhập xin quay lại sau vài phút";
+                Service.dialogMessage(pl.getSession(), text);
+                Service.dialogMessage(userInfo.getSession(), text);
+
+                Util.delay(2, () -> {
+                    SessionManager.getInstance().kickSession(userInfo.getSession());
+                    SessionManager.getInstance().kickSession(pl.getSession());
+                });
+
+                return true;
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error handleCheckUserNameOnline: " + e.getMessage(), e);
         }
         return false;
     }

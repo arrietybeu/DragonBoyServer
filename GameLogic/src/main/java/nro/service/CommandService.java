@@ -61,7 +61,7 @@ public class CommandService {
                     case "database":
                         break;
                     case "skill":
-//                        CommandService.getSkill();
+                        // CommandService.getSkill();
                         break;
                     case "kick_all":
                         SessionManager.getInstance().kickAllPlayer("Thích thì kick");
@@ -70,20 +70,21 @@ public class CommandService {
                         DatabaseConnectionPool.closeConnections();
                         break;
                     case "version_image":
-//                        System.out.println("Version image: " + ResourcesManager.getInstance().getDatas().size());
+                        // System.out.println("Version image: " +
+                        // ResourcesManager.getInstance().getDatas().size());
                         break;
                     case "send":
-//                        Session session = Client.gI().getSessionById(0);
-//                        Resources.getInstance().sendDataImageVersion(session);
+                        // Session session = Client.gI().getSessionById(0);
+                        // Resources.getInstance().sendDataImageVersion(session);
                         break;
                     case "part":
-//                        for (PartInfo partInfo : PartManager.getInstance().getPartMap().values()) {
-//                            LogServer.DebugLogic("Part: " + partInfo.toString());
-//                        }
+                        // for (PartInfo partInfo : PartManager.getInstance().getPartMap().values()) {
+                        // LogServer.DebugLogic("Part: " + partInfo.toString());
+                        // }
                         PartManager.getInstance().reload();
                         break;
                     case "skill_template":
-//                        SkillManager.getInstance().logAllSkills();
+                        // SkillManager.getInstance().logAllSkills();
                         break;
                     case "item_template":
                         ItemManager.getInstance().logItemTemplate();
@@ -108,17 +109,18 @@ public class CommandService {
                         }
                         break;
                     case "data_skill":
-//                        DataSkill.SendDataSkill();
+                        // DataSkill.SendDataSkill();
                         break;
                     case "create_item":
                         // List<Item> items = ItemFactory.getInstance().initializePlayerItems((byte) 0);
-//                         for (var item : items) {
-//                            System.out.println(item.getJsonOptions());
-//                         }
+                        // for (var item : items) {
+                        // System.out.println(item.getJsonOptions());
+                        // }
                         break;
                     case "item_bg":
                         for (int i = 0; i < 100; i++) {
-                            String filePath = "C:\\Users\\Win Val\\Desktop\\ProjectServer\\resources\\louisgoku\\map\\item_bg_map_data\\" + i;
+                            String filePath = "C:\\Users\\Win Val\\Desktop\\ProjectServer\\resources\\louisgoku\\map\\item_bg_map_data\\"
+                                    + i;
                             try (DataInputStream reader = new DataInputStream(new FileInputStream(filePath))) {
                                 short num6 = reader.readShort();
                                 GameMap map = MapManager.getInstance().findMapById((short) i);
@@ -141,14 +143,14 @@ public class CommandService {
                         for (var zone : map.getAreas()) {
                             System.out.println("Zone id: " + zone.getId());
                             System.out.println("Npc size: " + zone.getNpcList().size());
-//                            for (Npc npc : zone.getNpcs()) {
-//                                System.out.println("Npc: " + npc.toString());
-//                                System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
-//                            }
-//                            for (var monster : zone.getMonsters().values()) {
-//                                System.out.println("Monster: " + monster.toString());
-//                                System.out.println("Monster Name: " + monster.findNameMonsterByTemplate());
-//                            }
+                            // for (Npc npc : zone.getNpcs()) {
+                            // System.out.println("Npc: " + npc.toString());
+                            // System.out.println("Npc Name: " + npc.findNameNpcByTemplate());
+                            // }
+                            // for (var monster : zone.getMonsters().values()) {
+                            // System.out.println("Monster: " + monster.toString());
+                            // System.out.println("Monster Name: " + monster.findNameMonsterByTemplate());
+                            // }
                         }
                         break;
                     case "task":
@@ -156,7 +158,8 @@ public class CommandService {
                         System.out.println(taskManager.getTaskMainById(0).getSubNameList().get(0).toString());
                         break;
                     case "caption":
-                        List<CaptionTemplate.CaptionLevel> captionLevels = CaptionManager.getInstance().getCaptionLevelsByGender((byte) 2);
+                        List<CaptionTemplate.CaptionLevel> captionLevels = CaptionManager.getInstance()
+                                .getCaptionLevelsByGender((byte) 2);
                         for (var captionLevel : captionLevels) {
                             System.out.println(captionLevel.name());
                         }
@@ -174,7 +177,6 @@ public class CommandService {
                         }
                         break;
                     case "addPlayerInZone":
-
                         break;
                     case "eff":
                         ResourcesManager manager = ResourcesManager.getInstance();
@@ -198,4 +200,3 @@ public class CommandService {
         }
     }
 }
-

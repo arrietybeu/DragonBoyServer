@@ -66,7 +66,7 @@ public class SessionManager {
             }
             if (this.sessions.containsKey(user.getSessionInfo().getId())) {// id session da ton tai = remove
                 LogServer.DebugLogic("Session da ton tai: " + user.getSessionInfo().getId());
-                this.remove(user);
+                this.kickSession(user);
             }
             this.sessions.put(user.getSessionInfo().getId(), user);
         } catch (Exception e) {
@@ -93,11 +93,13 @@ public class SessionManager {
             long currentTime = System.currentTimeMillis();
             sessions.forEach((userId, session) -> {
                 try {
-                    // var lastActiveTime = currentTime - session.getClientInfo().getLastActiveTime();
-//                    System.out.println("LastActiveTime: " + lastActiveTime + " | Timeout: " + timeout);
+                    // var lastActiveTime = currentTime -
+                    // session.getClientInfo().getLastActiveTime();
+                    // System.out.println("LastActiveTime: " + lastActiveTime + " | Timeout: " +
+                    // timeout);
                     if (currentTime - session.getClientInfo().getLastActiveTime() > timeout) {
-//                        this.kickSession(session); // TODO command code
-//                        LogServer.DebugLogic("Remove session id: " + userId);
+                        this.kickSession(session); // TODO command code
+                        // LogServer.DebugLogic("Remove session id: " + userId);
                     }
                 } catch (Exception e) {
                     LogServer.LogException("Error khi check session time out: " + e.getMessage());
@@ -133,8 +135,7 @@ public class SessionManager {
                         "KICK SESSION | [UserId: %d] | [LastActiveTime: %d] | [Lý do: %s]",
                         userId,
                         session.getClientInfo().getLastActiveTime(),
-                        status
-                ));
+                        status));
                 this.kickSession(session);
             });
 
@@ -165,7 +166,7 @@ public class SessionManager {
     private void dispose(Session session) {
         Player player = session.getPlayer();
         if (player != null) {
-            // save data player va giai phong du lieu  khi player da vao game
+            // save data player va giai phong du lieu khi player da vao game
             player.dispose();
             PlayerUpdate.getInstance().savePlayer(player);
             AccountRepository.updateAccountLogout(session.getUserInfo());
@@ -178,7 +179,7 @@ public class SessionManager {
 
     public void startSessionChecker() {
         this.executor.scheduleAtFixedRate(() -> {
-//            this.checkInactiveSessions(300_000); // 5 phút 300_000
+            // this.checkInactiveSessions(300_000); // 5 phút 300_000
             this.checkInactiveSessions(100_000);
         }, 1, 1, TimeUnit.MINUTES);
     }
@@ -186,6 +187,5 @@ public class SessionManager {
     public int getSizeSession() {
         return this.sessions.size();
     }
-
 
 }

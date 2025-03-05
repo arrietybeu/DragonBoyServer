@@ -17,9 +17,20 @@ public class UserManager {
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public void add(UserInfo user) {
-        if (user == null) throw new NullPointerException("User is null");
+        if (user == null)
+            throw new NullPointerException("User is null");
         this.lock.writeLock().lock();
         try {
+            if (this.userMap.containsKey(user.getId())) {
+                LogServer.LogWarning("User already exists: " + user.getId());
+                SessionManager.getInstance().kickSession(user.getSession());
+                return;
+            }
+            if (this.userMap.values().stream().anyMatch(u -> u.getUsername().equals(user.getUsername()))) {
+                LogServer.LogWarning("User name already exists: " + user.getUsername());
+                SessionManager.getInstance().kickSession(user.getSession());
+                return;
+            }
             this.userMap.put(user.getId(), user);
         } finally {
             this.lock.writeLock().unlock();
@@ -27,10 +38,12 @@ public class UserManager {
     }
 
     public void remove(UserInfo user) {
-        if (user == null) throw new NullPointerException("User is null");
+        if (user == null)
+            throw new NullPointerException("User is null");
         this.lock.writeLock().lock();
         try {
             if (!this.userMap.containsKey(user.getId())) {
+                LogServer.LogWarning("User not found: " + user.getId());
                 return;
             }
             this.userMap.remove(user.getId());
@@ -86,6 +99,15 @@ public class UserManager {
         }
     }
 
+    public boolean checkUserName(String userName) {
+        this.lock.readLock().lock();
+        try {
+            return this.userMap.values().stream().anyMatch(user -> user.getUsername().equals(userName));
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
     public boolean checkUserNameLogin(String userName) {
         this.lock.readLock().lock();
         try {
@@ -98,7 +120,8 @@ public class UserManager {
     public UserInfo checkUserLogin(String userName) {
         this.lock.readLock().lock();
         try {
-            return this.userMap.values().stream().filter(user -> user.getUsername().equals(userName)).findFirst().orElse(null);
+            return this.userMap.values().stream().filter(user -> user.getUsername().equals(userName)).findFirst()
+                    .orElse(null);
         } finally {
             this.lock.readLock().unlock();
         }

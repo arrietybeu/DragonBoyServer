@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,12 +23,14 @@ import nro.server.LogServer;
 /**
  * @author {@code Arriety}
  */
-//@SuppressWarnings("ALL")
+// @SuppressWarnings("ALL")
 @Getter
 @Setter
 public final class Session {
 
-    private static int baseId = 0;// trường dữ liệu duy nhất của session
+    private static AtomicInteger baseId = new AtomicInteger(0);
+
+    private static final int MAX_ID = Integer.MAX_VALUE - 1;
 
     private final Controller controller;
     private final ClientInfo clientInfo;
@@ -59,7 +62,9 @@ public final class Session {
             this.handleInitializationError();
             LogServer.LogException("Error Session: " + e.getMessage());
         }
-//        LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession());
+        // LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" +
+        // Thread.activeCount() + " session size: " +
+        // SessionManager.getInstance().getSizeSession());
     }
 
     private void initCommunication() throws IOException {
@@ -97,26 +102,34 @@ public final class Session {
      * * Server có 2 kiểu gửi dữ liệu cho client:
      *
      * <ul>
-     * <li>1. Gửi trực tiếp thông qua socket (phương thức {@link #doSendMessage}).</li>
+     * <li>1. Gửi trực tiếp thông qua socket (phương thức
+     * {@link #doSendMessage}).</li>
      * <li>2. Gửi thông qua list_msg (phương thức {@link #sendMessage}).</li>
      * </ul>
      *
      * <p>
-     *  * Phương thức {@code doSendMessage} sẽ gửi trực tiếp ngay lập tức cho client, phù hợp với
+     * * Phương thức {@code doSendMessage} sẽ gửi trực tiếp ngay lập tức cho client,
+     * phù hợp với
      * các tin nhắn quan trọng như thông báo gửi dữ liệu ảnh hoặc byte data.
      * </p>
      *
      * <p>
-     *  * Trong khi đó, phương thức {@code sendMessage} sẽ nạp dữ liệu message vào list
+     * * Trong khi đó, phương thức {@code sendMessage} sẽ nạp dữ liệu message vào
+     * list
      * và được một thread send message tự động duyệt qua lít để gửi.
-     * Cách này phù hợp với các tin nhắn sử dụng nhiều lần, giúp tránh việc gửi liên tục quá nhanh.
+     * Cách này phù hợp với các tin nhắn sử dụng nhiều lần, giúp tránh việc gửi liên
+     * tục quá nhanh.
      * </p>
      *
      * <p>
-     *  * Phương thức {@code this.getClientInfo().updateLastActiveTime()}
-     *  sau khi connect thành công thì server sẽ quét tất cả các message trong hash map {@code Session}
-     *  chỉ khi server và client giao tiếp với nhau và cập nhập lại {@code lastActiveTime} thì sẽ không bị
-     *  disconnect khỏi server nếu client và server vẫn duy trì giao típ thì sẽ không bị disconnect
+     * * Phương thức {@code this.getClientInfo().updateLastActiveTime()}
+     * sau khi connect thành công thì server sẽ quét tất cả các message trong hash
+     * map {@code Session}
+     * chỉ khi server và client giao tiếp với nhau và cập nhập lại
+     * {@code lastActiveTime} thì sẽ không bị
+     * disconnect khỏi server nếu client và server vẫn duy trì giao típ thì sẽ không
+     * bị disconnect
+     * 
      * <pre>
      * {@code
      * this.getClientInfo().updateLastActiveTime();
@@ -125,15 +138,17 @@ public final class Session {
      * </p>
      *
      * <p>
+     * 
      * <pre>
      *  * VÍ DỤ:
      *  <pre>
      * {@code
-     *  public void sendMessage() {
-     *      Message m = new Message(1);
-     *      this.list_msg.offer(m);// list msg được nạp thêm 1 dữ liệu msg
-     *      this.getClientInfo().updateLastActiveTime();// cập nhật thời gian gửi tin nhắn
-     *  }}
+     * public void sendMessage() {
+     *     Message m = new Message(1);
+     *     this.list_msg.offer(m);// list msg được nạp thêm 1 dữ liệu msg
+     *     this.getClientInfo().updateLastActiveTime();// cập nhật thời gian gửi tin nhắn
+     * }
+     * }
      *  </pre>
      * </pre>
      * </p>
@@ -150,7 +165,8 @@ public final class Session {
             }
         } catch (Exception e) {
             LogServer.LogException("Error sendMessage: " + e.getMessage());
-            LogServer.DebugLogic("Socket State: isClosed=" + this.socket.isClosed() + ", isConnected=" + this.socket.isConnected());
+            LogServer.DebugLogic(
+                    "Socket State: isClosed=" + this.socket.isClosed() + ", isConnected=" + this.socket.isConnected());
         }
     }
 
@@ -171,24 +187,32 @@ public final class Session {
     }
 
     /**
-     * Phương thức {@code disconnect} thực hiện việc đóng kết nối giữa server và client.
+     * Phương thức {@code disconnect} thực hiện việc đóng kết nối giữa server và
+     * client.
      *
      * <p>
      * Khi được gọi, phương thức này sẽ:
      * <ul>
      * <li>Đặt trạng thái kết nối của {@link SessionInfo} là không còn kết nối.</li>
-     * <li>Đặt các thông số send key vị trí send key hiện tại liên quan đến đọc và ghi dữ liệu về 0.</li>
+     * <li>Đặt các thông số send key vị trí send key hiện tại liên quan đến đọc và
+     * ghi dữ liệu về 0.</li>
      * <li>Đóng các tài nguyên quan trọng như:
-     *   <ul>
-     *   <li>{@link ExecutorService}: Ngừng thực hiện các tác vụ đa luồng.</li>
-     *   <li>{@link Socket}: Đóng socket hiện tại nếu còn mở.</li>
-     *   <li>{@link MessageReceiver} và {@link MessageSender}: Giải phóng các luồng đọc/ghi message.</li>
-     *   <li>{@code list_msg}: Xóa tất cả tin nhắn trong hàng đợi và giải phóng bộ nhớ.</li>
-     *   <li>{@link Controller} và {@link ClientInfo}: Đặt về {@code null} để giải phóng tài nguyên.</li>
-     *   <li>{@link UserInfo}: Loại bỏ người dùng khỏi {@link UserManager} và giải phóng tài nguyên.</li>
-     *   </ul>
+     * <ul>
+     * <li>{@link ExecutorService}: Ngừng thực hiện các tác vụ đa luồng.</li>
+     * <li>{@link Socket}: Đóng socket hiện tại nếu còn mở.</li>
+     * <li>{@link MessageReceiver} và {@link MessageSender}: Giải phóng các luồng
+     * đọc/ghi message.</li>
+     * <li>{@code list_msg}: Xóa tất cả tin nhắn trong hàng đợi và giải phóng bộ
+     * nhớ.</li>
+     * <li>{@link Controller} và {@link ClientInfo}: Đặt về {@code null} để giải
+     * phóng tài nguyên.</li>
+     * <li>{@link UserInfo}: Loại bỏ người dùng khỏi {@link UserManager} và giải
+     * phóng tài nguyên.</li>
+     * </ul>
      * </li>
-     * <li>Gọi {@code System.gc()} để kích hoạt việc thu gom rác (Garbage Collection) nhằm giải phóng bộ nhớ không còn sử dụng (Giờ không gọi nữa rồi).</li>
+     * <li>Gọi {@code System.gc()} để kích hoạt việc thu gom rác (Garbage
+     * Collection) nhằm giải phóng bộ nhớ không còn sử dụng (Giờ không gọi nữa
+     * rồi).</li>
      * </ul>
      * </p>
      *
@@ -197,7 +221,8 @@ public final class Session {
      * thông qua {@link LogServer}.
      * </p>
      *
-     * @throws Exception nếu có lỗi trong quá trình ngắt kết nối hoặc giải phóng tài nguyên.
+     * @throws Exception nếu có lỗi trong quá trình ngắt kết nối hoặc giải phóng tài
+     *                   nguyên.
      */
 
     private void disconnect() {
@@ -239,12 +264,9 @@ public final class Session {
         this.disconnect();
     }
 
-    public static synchronized int getBaseId() {
-        if (baseId == 0x7fffffff) {
-            LogServer.DebugLogic("baseId is max value, reset to 0");
-            baseId = 0;
-        }
-        return baseId++;
+    public static int getBaseId() {
+        int newId = baseId.updateAndGet(id -> (id >= MAX_ID) ? 0 : id + 1);
+        return newId;
     }
 
     private void handleInitializationError() {

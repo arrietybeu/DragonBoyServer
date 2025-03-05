@@ -4,10 +4,18 @@ import nro.model.monster.Monster;
 import nro.model.player.Player;
 
 import java.util.SplittableRandom;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Util {
 
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private static final SplittableRandom random = new SplittableRandom();
+
+    public static void delay(int delayTime, Runnable callback) {
+        scheduler.schedule(callback, delayTime, TimeUnit.SECONDS);
+    }
 
     public static void getMethodCaller() {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();

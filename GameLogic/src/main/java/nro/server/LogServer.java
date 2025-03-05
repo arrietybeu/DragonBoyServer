@@ -23,7 +23,8 @@ public class LogServer {
         try {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             StackTraceElement caller = stackTrace[3];
-            String strBuild = caller.getClassName() + "." + caller.getMethodName() + "(" + caller.getFileName() + ":" + caller.getLineNumber() + ")";
+            String strBuild = caller.getClassName() + "." + caller.getMethodName() + "(" + caller.getFileName() + ":"
+                    + caller.getLineNumber() + ")";
             message += " => [from: " + strBuild + "]";
         } catch (Exception e) {
 
@@ -60,7 +61,7 @@ public class LogServer {
                 }
             });
 
-            String[] columnNames = {"File", "Method", "Line", "Class"};
+            String[] columnNames = { "File", "Method", "Line", "Class" };
             tableModel = new DefaultTableModel(columnNames, 0);
             stackTraceTable = new JTable(tableModel);
             JScrollPane scrollPaneTable = new JScrollPane(stackTraceTable);
@@ -89,7 +90,8 @@ public class LogServer {
                 JSONArray stackTraceArray = errorJson.getJSONArray("stackTrace");
                 for (int i = 0; i < stackTraceArray.length(); i++) {
                     JSONObject trace = stackTraceArray.getJSONObject(i);
-                    tableModel.addRow(new Object[]{trace.getString("file"), trace.getString("method"), trace.getInt("line"), trace.getString("class")});
+                    tableModel.addRow(new Object[] { trace.getString("file"), trace.getString("method"),
+                            trace.getInt("line"), trace.getString("class") });
                 }
             }
         }
@@ -97,6 +99,7 @@ public class LogServer {
 
     public static void LogException(String message, Exception... e) {
         if (e.length > 0) {
+            e[0].printStackTrace();
             log("Error", "\033[1;31m", message + "\n=> " + Arrays.toString(e[0].getStackTrace()));
             OpenUIChatBug(message, e);
         } else {

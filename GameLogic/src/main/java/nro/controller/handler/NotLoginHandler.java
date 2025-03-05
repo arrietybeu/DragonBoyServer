@@ -66,6 +66,7 @@ public class NotLoginHandler implements IMessageProcessor {
             if (UserManager.getInstance().checkUserNameLogin(username)) {
                 userInfo.getSession().getSessionInfo().constLogin++;
                 Service.sendLoginFail(userInfo.getSession());
+                SessionManager.getInstance().kickSession(session);
                 return;
             }
 
@@ -81,14 +82,13 @@ public class NotLoginHandler implements IMessageProcessor {
                 return;
             }
 
-            if (accountRepository.handleCheckUserNameOnline(userInfo)) {
-                return;
-            }
+            accountRepository.handleCheckTimeLogout(userInfo, () -> {
+                session.getSessionInfo().constLogin = 0;
+                UserManager.getInstance().add(userInfo);
+                session.getSessionInfo().setLogin(true);
+                ResourceService.getInstance().sendResourcesLogin(session);
+            });
 
-            session.getSessionInfo().constLogin = 0;
-            UserManager.getInstance().add(userInfo);
-            session.getSessionInfo().setLogin(true);
-            ResourceService.getInstance().sendResourcesLogin(session);
         } catch (Exception e) {
             LogServer.LogException("Error login: " + e.getMessage());
             SessionManager.getInstance().kickSession(session);
@@ -162,7 +162,8 @@ public class NotLoginHandler implements IMessageProcessor {
         long currentTime = System.currentTimeMillis();
         if (session.getSessionInfo().getBanUntil() > currentTime) {
             long remainingSeconds = (session.getSessionInfo().getBanUntil() - currentTime) / 1000;
-            Service.dialogMessage(session, "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi " + remainingSeconds + " giây để thử lại.");
+            Service.dialogMessage(session,
+                    "Bạn đã đăng nhập sai quá nhiều lần. Vui lòng đợi " + remainingSeconds + " giây để thử lại.");
             return false;
         }
 
