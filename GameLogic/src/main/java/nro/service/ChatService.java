@@ -2,6 +2,7 @@ package nro.service;
 
 import lombok.Getter;
 import nro.consts.ConstTypeObject;
+import nro.consts.ConstsCmd;
 import nro.model.item.Item;
 import nro.model.item.ItemMap;
 import nro.model.map.GameMap;
@@ -21,7 +22,7 @@ public class ChatService {
     private static final ChatService instance = new ChatService();
 
     public void chatMap(Player player, String text) {
-        try (Message message = new Message(44)) {
+        try (Message message = new Message(ConstsCmd.CHAT_MAP)) {
             message.writer().writeInt(player.getId());
             message.writer().writeUTF(text);
             player.getArea().sendMessageToPlayersInArea(message, null);
@@ -36,6 +37,10 @@ public class ChatService {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    private String[] getArrayString(String text) {
+        return text.split(" ");
     }
 
     public void commandForAdmins(Player playerChat, String text) {
@@ -59,7 +64,7 @@ public class ChatService {
                 short x = 500;
                 short y = 5;
 
-                playerChat.setTeleport(1);
+                playerChat.getPlayerStatus().setTeleport(1);
                 AreaService.getInstance().gotoMap(playerChat, newMap, x, y);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
@@ -71,14 +76,20 @@ public class ChatService {
                 service.sendChatGlobal(playerChat.getSession(), null, "Set HP: " + hp, false);
                 return;
             } else if (text.startsWith("it ")) {
-                int itemId = this.getNumber(text);
-                if (itemId == -1) {
-                    service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
-                    return;
+                var parse = this.getArrayString(text);
+                if (parse.length >= 3) {
+                    var itemId = Integer.parseInt(parse[1]);
+                    var quantity = Integer.parseInt(parse[2]);
+                    if (itemId == -1) {
+                        service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
+                        return;
+                    }
+                    Item item = ItemFactory.getInstance().createItemOptionsBase(itemId, quantity);
+                    playerChat.getPlayerInventory().addItemBag(item);
+                    service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
+                } else {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Lệnh không hợp lệ: " + text, false);
                 }
-                Item item = ItemFactory.getInstance().createItemOptionsBase(itemId);
-                playerChat.getPlayerInventory().addItemBag(item);
-                service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
                 return;
             } else if (text.startsWith("rm ")) {
                 int mobId = this.getNumber(text);

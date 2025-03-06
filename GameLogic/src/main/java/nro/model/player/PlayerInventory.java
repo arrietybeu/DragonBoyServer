@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstError;
 import nro.consts.ConstItem;
 import nro.model.item.Item;
 import nro.server.LogServer;
@@ -15,7 +16,6 @@ import java.util.List;
 
 @Getter
 @Setter
-
 @SuppressWarnings("unused")
 public class PlayerInventory {
 
@@ -40,59 +40,131 @@ public class PlayerInventory {
     }
 
     public boolean addItemBag(Item item) {
-        if (this.isBagFull()) {
-            Service.dialogMessage(player.getSession(), "Hành trang đã đầy.");
+        try {
+            if (this.isBagFull()) {
+                Service.dialogMessage(player.getSession(), "Hành trang đã đầy.");
+                return false;
+            }
+            this.addItem(this.getItemsBag(), item);
+            InventoryService.getInstance().sendItemToBags(player, 0);
+        } catch (Exception e) {
+            LogServer.LogException("Error addItemBag: " + e.getMessage(), e);
             return false;
         }
-        System.out.println("Add item bag: " + item.getTemplate().name());
-        addItem(this.getItemsBag(), item);
-        InventoryService.getInstance().sendItemToBags(player, 0);
         return true;
     }
 
     public void addItemBody(Item item) {
-        addItem(this.getItemsBody(), item);
-        InventoryService.getInstance().sendItemToBodys(player);
-    }
-
-    public void addItemBox(Item item) {
-        if (this.isBoxFull()) {
-            Service.dialogMessage(player.getSession(), "Rương đồ đã đầy.");
-            return;
+        try {
+            addItem(this.getItemsBody(), item);
+            InventoryService.getInstance().sendItemToBodys(player);
+        } catch (Exception e) {
+            LogServer.LogException("Error addItemBody: " + e.getMessage(), e);
         }
-        addItem(this.getItemsBox(), item);
-        InventoryService.getInstance().sendItemsBox(player, 0);
     }
 
-    private void addItem(List<Item> items, Item item) {
+    public boolean addItemBox(Item item) {
+        try {
+            if (this.isBoxFull()) {
+                Service.dialogMessage(player.getSession(), "Rương đồ đã đầy.");
+                return false;
+            }
+            addItem(this.getItemsBox(), item);
+            InventoryService.getInstance().sendItemsBox(player, 0);
+        } catch (Exception e) {
+            LogServer.LogException("Error addItemBox: " + e.getMessage(), e);
+            return false;
+        }
+        return true;
+    }
+
+    private void addItem(List<Item> items, Item itemNew) {
+        try {
+            // neu item add co options thi add options mac dinh
+            this.addOptionsDefault(itemNew);
+
+            // check item add co dat chuan dieu kien chua
+            if (itemNew.getTemplate() == null) {
+                throw new RuntimeException("add item không có template. " + ConstError.ERROR_INVALID_ITEM);
+            }
+
+            if (itemNew.getTemplate().maxQuantity() > 1) {
+                for (int i = 0; i < items.size(); i++) {
+                    Item itemInventory = items.get(i);
+                    if (itemInventory.getTemplate() == null)
+                        continue;
+                    if (itemInventory.getTemplate().id() == itemNew.getTemplate().id()) {
+                        int combinedQuantity = itemInventory.getQuantity() + itemNew.getQuantity();
+                        if (combinedQuantity > itemNew.getTemplate().maxQuantity()) {
+
+                        }
+                    }
+                }
+
+            } else {
+                short index = this.findIndexItemNullInventory(items);
+                if (index == -1) {
+                    throw new RuntimeException("Không có vị trí trống để thêm item mới.");
+                }
+
+                items.set(index, ItemFactory.getInstance().clone(itemNew));
+                this.disposeItem(itemNew);
+            }
+
+        } catch (Exception e) {
+            LogServer.LogException("Error addItem: " + e.getMessage(), e);
+        }
+    }
+
+    private void addItemOld(List<Item> items, Item item) {
         try {
             this.addOptionsDefault(item);
 
-            if (item.getTemplate() == null) {
+            if (item.getTemplate() == null)
                 return;
-            }
-            if (item.getTemplate().isUpToUp()) {
-                for (Item it : items) {
-                    if (it.getTemplate() == null) {
-                        continue;
-                    }
-                    if (it.getTemplate().id() == item.getTemplate().id()) {
-                        // int combinedQuantity = it.getQuantity() + item.getQuantity();
-                        it.addQuantity(item.getQuantity());
+
+            short index = this.findIndexItemNullInventory(items);
+
+            for (Item it : items) {
+                if (it.getTemplate() == null)
+                    continue;
+
+                if (it.getTemplate().id() == item.getTemplate().id()) {
+                    int combinedQuantity = it.getQuantity() + item.getQuantity();
+
+                    if (combinedQuantity > item.getTemplate().maxQuantity()) {
+                        it.setQuantity(item.getTemplate().maxQuantity());
+
+                        int remainingQuantity = combinedQuantity - item.getTemplate().maxQuantity();
+
+                        if (index == -1) {
+                            throw new RuntimeException("Không có vị trí trống để chứa item dư.");
+                        }
+
+                        Item newItem = ItemFactory.getInstance().clone(item);
+
+                        newItem.setQuantity(remainingQuantity);
+                        it.setQuantity(remainingQuantity);
+                        this.disposeItem(item);
                         return;
                     }
-                }
-            }
 
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).getTemplate() == null) {
-                    items.set(i, ItemFactory.getInstance().clone(item));
-                    item.setQuantity(0);
+                    it.setQuantity(combinedQuantity);
+                    this.disposeItem(item);
                     return;
                 }
             }
 
-            item.dispose();
+            if (item.getQuantity() > 0) {
+                if (index == -1) {
+                    throw new RuntimeException("Không có vị trí trống để thêm item mới.");
+                }
+
+                items.set(index, ItemFactory.getInstance().clone(item));
+                item.setQuantity(0);
+            } else {
+                this.disposeItem(item);
+            }
         } catch (Exception e) {
             LogServer.LogException("Error addItem: " + e.getMessage(), e);
         }
@@ -159,7 +231,8 @@ public class PlayerInventory {
                 break;
             }
             default: {
-                LogServer.LogWarning("Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
+                LogServer.LogWarning(
+                        "Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
                 break;
             }
         }
@@ -225,7 +298,8 @@ public class PlayerInventory {
         }
         Item itemBag = this.itemsBag.get(index);
         if (itemBag != null && itemBag.getTemplate() != null) {
-            this.addItemBox(itemBag);
+            if (!this.addItemBox(itemBag))
+                return;
             if (itemBag.getQuantity() == 0) {
                 Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBag.set(index, itemNull);
@@ -240,7 +314,8 @@ public class PlayerInventory {
         }
         Item itemBody = this.itemsBody.get(index);
         if (itemBody != null && itemBody.getTemplate() != null) {
-            this.addItemBox(itemBody);
+            if (!this.addItemBox(itemBody))
+                return;
             if (itemBody.getQuantity() == 0) {
                 Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBody.set(index, itemNull);
@@ -311,7 +386,8 @@ public class PlayerInventory {
                         break;
                     // TODO mini pet index = 10
                     default: {
-                        Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Trang bị không phù hợp.", false);
+                        Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Trang bị không phù hợp.",
+                                false);
                         return itemBody;
                     }
                 }
@@ -338,21 +414,49 @@ public class PlayerInventory {
     private void _______________FIND_ITEM______________() {
     }
 
+    public Item findItemInBag(int templateId) {
+        return this.itemsBag.stream()
+                .filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId)
+                .findFirst().orElse(null);
+    }
+
+    public Item findItemInBody(int templateId) {
+        return this.itemsBody.stream()
+                .filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId)
+                .findFirst().orElse(null);
+    }
+
+    public Item findItemInBox(int templateId) {
+        return this.itemsBox.stream()
+                .filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId)
+                .findFirst().orElse(null);
+    }
+
+    public short findIndexItemNullInventory(List<Item> items) {
+        for (short i = 0; i < items.size(); i++) {
+            if (items.get(i).getTemplate() == null) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private void _______________CHECK_SIZE_INVENTORY______________() {
     }
 
     public boolean isBodyFull() {
-        return this.itemsBody.stream().filter(item -> item.getTemplate() != null).count() >= itemBodySize;
+        var constBody = this.itemsBody.stream().filter(item -> item.getTemplate() != null).count();
+        return constBody >= this.itemsBody.size();
     }
 
     public boolean isBagFull() {
         long constBag = (int) this.itemsBag.stream().filter(item -> item.getTemplate() != null).count();
-        return constBag >= itemBagSize;
+        return constBag >= this.itemsBag.size();
     }
 
     public boolean isBoxFull() {
         long constBox = (int) this.itemsBox.stream().filter(item -> item.getTemplate() != null).count();
-        return constBox >= itemBoxSize;
+        return constBox >= this.itemsBox.size();
     }
 
     public byte getCountEmptyBag() {
@@ -367,5 +471,35 @@ public class PlayerInventory {
             }
         }
         return count;
+    }
+
+    private void _______________DISPOSE______________() {
+    }
+
+    public void dispose() {
+        for (Item item : this.itemsBody) {
+            if (item != null) {
+                item.dispose();
+            }
+        }
+        for (Item item : this.itemsBag) {
+            if (item != null) {
+                item.dispose();
+            }
+        }
+        for (Item item : this.itemsBox) {
+            if (item != null) {
+                item.dispose();
+            }
+        }
+    }
+
+    public void disposeItem(Item item) {
+        nro.utils.Util.getMethodCaller();
+
+        if (item != null) {
+            item.dispose();
+            item = null;
+        }
     }
 }

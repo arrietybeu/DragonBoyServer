@@ -57,22 +57,20 @@ public class PlayerMagicTree {
 
     public String getTextUpgrade() {
         var magicTreeTimeUpgrade = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level);
-        String text = "Nâng cấp\n";
+        StringBuilder text = new StringBuilder("Nâng cấp\n");
         int day = magicTreeTimeUpgrade.day();
         int hour = magicTreeTimeUpgrade.hour();
         int minute = magicTreeTimeUpgrade.minute();
 
-        if (day > 0) {
-            text += day + "d";
-        }
-        if (hour > 0) {
-            text += hour + "h";
-        }
-        if (minute > 0) {
-            text += minute + "'";
-        }
-        text += "\n" + this.getGold();
-        return text;
+        if (day > 0)
+            text.append(day).append("d");
+        if (hour > 0)
+            text.append(hour).append("h");
+        if (minute > 0)
+            text.append(minute).append("'");
+
+        text.append("\n").append(this.getGold());
+        return text.toString();
     }
 
     public String getGold() {
@@ -133,7 +131,8 @@ public class PlayerMagicTree {
     }
 
     public void upgradeMagicTree() {
-        // long gold = MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
+        // long gold =
+        // MagicTreeManager.getInstance().getMagicTreeTimeUpgrade(this.level).gold();
         this.isUpgrade = true;
         this.lastTimeUpgrade = System.currentTimeMillis() + getTimeUpgrade();
         NpcService.getInstance().loadMagicTree(this.player, 0, null);
@@ -151,12 +150,15 @@ public class PlayerMagicTree {
             Item pea = ItemFactory.getInstance().createItemNotOptionsBase(magicTreeLevel.itemId(), quantity);
             pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
 
-            player.getPlayerInventory().addItemBag(pea);
-            String text = "Bạn vừa thu hoạch được " + quantity + " hạt " + pea.getTemplate().name();
-            Service.getInstance().sendChatGlobal(this.player.getSession(), null, text, false);
+            String name = pea.getTemplate().name();
+
+            if (player.getPlayerInventory().addItemBag(pea)) {
+                String text = "Bạn vừa thu hoạch được " + quantity + " hạt " + name;
+                Service.getInstance().sendChatGlobal(this.player.getSession(), null, text, false);
+            }
+
         } catch (Exception ex) {
-            LogServer.LogException("PlayerMagicTree.addPeaHarvenst" + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("PlayerMagicTree.addPeaHarvenst" + ex.getMessage(), ex);
         }
     }
 }

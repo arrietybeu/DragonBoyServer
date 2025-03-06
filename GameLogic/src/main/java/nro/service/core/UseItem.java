@@ -10,6 +10,7 @@ import nro.model.player.PlayerPoints;
 import nro.server.LogServer;
 import nro.service.NpcService;
 import nro.service.PlayerService;
+import nro.service.Service;
 
 public class UseItem {
 
@@ -44,16 +45,17 @@ public class UseItem {
         long time = System.currentTimeMillis();
 
         if (player.getPlayerMagicTree().getLastUsePea() + 10000 > time) {
-//            System.out.println("Còn thời gian chờ:
-//            " + (player.getPlayerMagicTree().getLastUsePea() + 10000 - time) + "ms");
+            // System.out.println("Còn thời gian chờ:
+            // " + (player.getPlayerMagicTree().getLastUsePea() + 10000 - time) + "ms");
             return;
         }
 
         try {
-            Item pea = getItem(player, item, itemId);
-            PlayerService playerService = PlayerService.getInstance();
+            Item pea = this.getItem(player, item, itemId);
 
+            PlayerService playerService = PlayerService.getInstance();
             if (pea == null) {
+                Service.getInstance().sendChatGlobal(player.getSession(), null, "Đã xảy ra lỗi!", false);
                 return;
             }
 
@@ -107,25 +109,14 @@ public class UseItem {
         Item pea = null;
         if (item != null) {
             pea = item;
-        } else {
-            for (Item it : player.getPlayerInventory().getItemsBag()) {
-                if (it.getTemplate() == null) {
-                    continue;
-                }
-                if (itemId != null && itemId.length > 0) {
-                    for (int id : itemId) {
-                        if (it.getTemplate().id() == id) {
-                            pea = it;
-                            break;
-                        }
-                    }
-                    if (pea != null) {
-                        break;
-                    }
-                    break;
-                } else if (it.getTemplate().type() == 6) {
+            return pea;
+        }
+        if (itemId != null && itemId.length > 0) {
+            for (int id : itemId) {
+                Item it = player.getPlayerInventory().findItemInBag(id);
+                if (it.getTemplate().id() == id) {
                     pea = it;
-                    break;
+                    return pea;
                 }
             }
         }

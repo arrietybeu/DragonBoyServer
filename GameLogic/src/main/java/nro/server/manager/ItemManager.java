@@ -73,7 +73,8 @@ public class ItemManager implements IManager {
         String sql = "SELECT * FROM `item_template`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getShort("id");
                     var type = resultSet.getByte("type");
@@ -84,7 +85,7 @@ public class ItemManager implements IManager {
                     var powerRequire = resultSet.getInt("power_require");
                     var iconID = resultSet.getShort("icon_id");
                     var part = resultSet.getShort("part");
-                    var isUpToUp = resultSet.getByte("is_up_top") == 1;
+                    var maxQuantity = resultSet.getByte("max_quantity");
                     var head = resultSet.getShort("head");
                     var body = resultSet.getShort("body");
                     var leg = resultSet.getShort("leg");
@@ -102,11 +103,12 @@ public class ItemManager implements IManager {
                         itemOptions.add(new ItemOption(idOption, param));
                     }
 
-                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, isUpToUp, powerRequire, head, body, leg, itemOptions);
+                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part,
+                            maxQuantity, powerRequire, head, body, leg, itemOptions);
                     this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
-//                LogServer.LogInit("ItemManager initialized size: " + itemTemplates.size());
+                // LogServer.LogInit("ItemManager initialized size: " + itemTemplates.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadItem: " + e.getMessage());
@@ -117,7 +119,9 @@ public class ItemManager implements IManager {
     private void loadItemOptionTemplate() {
         String query = "SELECT * FROM item_option_template";
 
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+                PreparedStatement ps = connection.prepareStatement(query);
+                ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
@@ -126,7 +130,8 @@ public class ItemManager implements IManager {
                 this.itemOptionTemplates.put((short) id, itemOptionManager);
             }
             this.setItemOption();
-//            LogServer.LogInit("ItemOptionManager initialized size: " + this.itemOptionTemplates.size());
+            // LogServer.LogInit("ItemOptionManager initialized size: " +
+            // this.itemOptionTemplates.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadItemOptionTemplate: " + e.getMessage());
         }
@@ -135,8 +140,10 @@ public class ItemManager implements IManager {
     private void loadHeadAvatar() {
         String sql = "SELECT * FROM  item_head";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-            if (connection == null) throw new SQLException("Connect connection select item_head = null");
-            try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
+            if (connection == null)
+                throw new SQLException("Connect connection select item_head = null");
+            try (var preparedStatement = connection.prepareStatement(sql);
+                    var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int headId = resultSet.getInt("head_id");
                     int avatarId = resultSet.getInt("avatar_id");
@@ -149,14 +156,17 @@ public class ItemManager implements IManager {
             LogServer.LogException("Error loadHeadAvatar: " + e.getMessage());
             e.printStackTrace();
         }
-//        LogServer.LogInit("Item loadHeadAvatar initialized size: " + itemHeadAvatars.size());
+        // LogServer.LogInit("Item loadHeadAvatar initialized size: " +
+        // itemHeadAvatars.size());
     }
 
     private void loadFlagBag() {
         String query = "SELECT * FROM item_flag_bag_pk";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-            if (connection == null) throw new SQLException("Connect connection select flag_bag = null");
-            try (var preparedStatement = connection.prepareStatement(query); var resultSet = preparedStatement.executeQuery()) {
+            if (connection == null)
+                throw new SQLException("Connect connection select flag_bag = null");
+            try (var preparedStatement = connection.prepareStatement(query);
+                    var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     int itemId = resultSet.getInt("item_id");
@@ -170,14 +180,15 @@ public class ItemManager implements IManager {
         } catch (SQLException e) {
             LogServer.LogException("Error loadFlagBag: " + e.getMessage());
         }
-//        LogServer.LogInit("Item Flag initialized size: " + flags.size());
+        // LogServer.LogInit("Item Flag initialized size: " + flags.size());
     }
 
     private void loadItemArrHead2Fr() {
         String sql = "SELECT id, head_one, head_two FROM `item_arr_head_2frame`";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
-            try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
+            try (var preparedStatement = connection.prepareStatement(sql);
+                    var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getInt("id");
                     var head_one = resultSet.getInt("head_one");
@@ -194,7 +205,8 @@ public class ItemManager implements IManager {
         } catch (Exception e) {
             LogServer.LogException("Error loadItemArr_Head_2Fr: " + e.getMessage());
         }
-//        LogServer.LogInit("Item ArrHead2Frames initialized size: " + arrHead2Frames.size());
+        // LogServer.LogInit("Item ArrHead2Frames initialized size: " +
+        // arrHead2Frames.size());
     }
 
     private void setDataItemTemplate() {
@@ -206,13 +218,15 @@ public class ItemManager implements IManager {
             for (ItemTemplate itemTemplate : this.itemTemplates.values()) {
                 message.writer().writeByte(itemTemplate.type());
                 message.writer().writeByte(itemTemplate.gender());
-                message.writer().writeUTF(itemTemplate.name());
+                // message.writer().writeUTF(itemTemplate.name());
+                message.writer().writeUTF("[ID: " + itemTemplate.id() + "] " + itemTemplate.name());// test
                 message.writer().writeUTF(itemTemplate.description());
                 message.writer().writeByte(itemTemplate.level());
                 message.writer().writeInt(itemTemplate.strRequire());
                 message.writer().writeShort(itemTemplate.iconID());
                 message.writer().writeShort(itemTemplate.part());
-                message.writer().writeBoolean(itemTemplate.isUpToUp());
+                // message.writer().writeBoolean(itemTemplate.isUpToUp());
+                message.writer().writeBoolean(false);// is up to up
             }
             this.dataItemTemplate = message.getData();
         } catch (Exception e) {
@@ -222,7 +236,7 @@ public class ItemManager implements IManager {
 
     private void setItemOption() {
         try (Message message = new Message()) {
-            message.writer().writeByte(ITEM_OPTION); //update option
+            message.writer().writeByte(ITEM_OPTION); // update option
             message.writer().writeShort(itemOptionTemplates.size());// dis true
             for (ItemOptionTemplate itemOptionTemplate : itemOptionTemplates.values()) {
                 message.writer().writeUTF(itemOptionTemplate.name());

@@ -34,7 +34,7 @@ public final class MessageSender {
     }
 
     public void sendKeys() {
-        try (Message msg = new Message(-27)) {
+        try (Message msg = new Message(ConstsCmd.GET_SESSION_ID)) {
             final byte[] keys = this.session.getSessionInfo().getKeys();
 
             msg.writer().writeByte(keys.length);
@@ -44,13 +44,13 @@ public final class MessageSender {
 
             msg.writer().writeUTF(ConfigServer.IP);// write ip
             msg.writer().writeInt(ConfigServer.PORT);// write port
-//            msg.writer().writeBoolean(false);// cai này vô cùng quan trọng nếu gửi true thì sẽ không vô được game =))
+            // msg.writer().writeBoolean(false);// cai này vô cùng quan trọng nếu gửi true
+            // thì sẽ không vô được game =))
             msg.writer().writeByte(0);
             this.session.getClientInfo().setSendKeyComplete(true);
             this.doSendMessage(msg);
         } catch (Exception e) {
-            LogServer.LogException("Error sendKeys: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error sendKeys: " + e.getMessage(), e);
         }
     }
 
@@ -61,7 +61,8 @@ public final class MessageSender {
                     while (this.session.getSessionInfo().getConnect()) {
                         try (Message message = this.session.getListMessage()) {
                             if (message != null) {
-//                                System.out.println("send msg: " + message.getCommand() + " " + message.getData().length);
+                                // System.out.println("send msg: " + message.getCommand() + " " +
+                                // message.getData().length);
                                 this.doSendMessage(message);
                             } else {
                                 try {
@@ -70,15 +71,13 @@ public final class MessageSender {
                                 }
                             }
                         } catch (Exception e) {
-//                            LogServer.LogException("Error in send thread: " + e.getMessage());
                             SessionManager.getInstance().kickSession(this.session);
                         }
                     }
                 });
             }
         } catch (Exception e) {
-            LogServer.LogException("Error createSendThread: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error createSendThread: " + e.getMessage(), e);
         }
     }
 
@@ -92,9 +91,10 @@ public final class MessageSender {
         }
         if (data != null) {
             int size = data.length;
-//            if (size >= 65_535) {
-//                LogServer.DebugLogic("BigData: " + msg.getCommand() + " size: " + size + " bytes");
-//            }
+            // if (size >= 65_535) {
+            // LogServer.DebugLogic("BigData: " + msg.getCommand() + " size: " + size + "
+            // bytes");
+            // }
             if (msg.getCommand() == ConstsCmd.BACKGROUND_TEMPLATE || msg.getCommand() == ConstsCmd.GET_EFFDATA
                     || msg.getCommand() == ConstsCmd.REQUEST_MOB_TEMPLATE || msg.getCommand() == ConstsCmd.REQUEST_ICON
                     || msg.getCommand() == ConstsCmd.GET_IMAGE_SOURCE || msg.getCommand() == ConstsCmd.UPDATE_DATA
@@ -126,11 +126,15 @@ public final class MessageSender {
     }
 
     private byte writeKey(byte b) {
-//        byte i = (byte) ((this.session.getSessionInfo().getKeys()[session.getSessionInfo().curW++] & 255) ^ (b & 255));
-//        if (session.getSessionInfo().curW >= this.session.getSessionInfo().getKeys().length) {
-//            session.getSessionInfo().curW %= (byte) this.session.getSessionInfo().getKeys().length;
-//        }
-//        return i;
+        // byte i = (byte)
+        // ((this.session.getSessionInfo().getKeys()[session.getSessionInfo().curW++] &
+        // 255) ^ (b & 255));
+        // if (session.getSessionInfo().curW >=
+        // this.session.getSessionInfo().getKeys().length) {
+        // session.getSessionInfo().curW %= (byte)
+        // this.session.getSessionInfo().getKeys().length;
+        // }
+        // return i;
         var curW = session.getSessionInfo().curW;
         var keys = session.getSessionInfo().getKeys();
         final byte i = (byte) ((keys[curW++] & 0xFF) ^ (b & 0xFF));
@@ -152,62 +156,60 @@ public final class MessageSender {
         }
     }
 
-
     // phương thức này dùng để gửi dữ liệu cho client
-//    public void doSendMessage(Message msg) throws Exception {
-//        byte[] data = msg.getData();
-//        if (this.session.getSendKey()) {
-//            byte value = this.writeKey(msg.getCommand());
-//            this.dos.write(value);
-//        } else {
-//            this.dos.write(msg.getCommand());
-//        }
-//        if (data != null) {
-//            int num = data.length;
-//            if (msg.getCommand() == -32
-//                    || msg.getCommand() == -66
-//                    || msg.getCommand() == 11
-//                    || msg.getCommand() == -67
-//                    || msg.getCommand() == -74
-//                    || msg.getCommand() == -87
-//                    || msg.getCommand() == 66
-//                    || msg.getCommand() == 12) {
-//                this.dos.writeByte(this.writeKey((byte) (num)) - 128);
-//                this.dos.writeByte(writeKey((byte) (num >> 8)) - 128);
-//                this.dos.writeByte(writeKey((byte) (num >> 16)) - 128);
-//            }
-//
-//            if (this.session.getSendKey()) {
-//                int num2 = writeKey((byte) (num >> 8));
-//                this.dos.write((byte) num2);
-//                int num3 = writeKey((byte) (num & 0xFF));// 0xFF = 255
-//                this.dos.write((byte) num3);
-//            } else {
-//                this.dos.write((short) num);
-//            }
-//            if (this.session.getSendKey()) {
-//                for (int i = 0; i < data.length; i++) {
-//                    byte value2 = writeKey(data[i]);
-//                    this.dos.write(value2);
-//                }
-//            } else {
-//                this.dos.write((short) 0);
-//            }
-//        } else {
-//            if (this.session.getSendKey()) {
-//                int num4 = 0;
-//                int num5 = writeKey((byte) (num4 >> 8));
-//                dos.write((byte) num5);
-//                int num6 = writeKey((byte) (num4 & 0xFF));
-//                dos.write((byte) num6);
-//            } else {
-//                dos.write((short) 0);
-//            }
-//        }
-//        System.out.println("send msg: " + msg.getCommand() + " " + data.length);
-//        this.dos.write(data);
-//        this.dos.flush();
-//    }
-
+    // public void doSendMessage(Message msg) throws Exception {
+    // byte[] data = msg.getData();
+    // if (this.session.getSendKey()) {
+    // byte value = this.writeKey(msg.getCommand());
+    // this.dos.write(value);
+    // } else {
+    // this.dos.write(msg.getCommand());
+    // }
+    // if (data != null) {
+    // int num = data.length;
+    // if (msg.getCommand() == -32
+    // || msg.getCommand() == -66
+    // || msg.getCommand() == 11
+    // || msg.getCommand() == -67
+    // || msg.getCommand() == -74
+    // || msg.getCommand() == -87
+    // || msg.getCommand() == 66
+    // || msg.getCommand() == 12) {
+    // this.dos.writeByte(this.writeKey((byte) (num)) - 128);
+    // this.dos.writeByte(writeKey((byte) (num >> 8)) - 128);
+    // this.dos.writeByte(writeKey((byte) (num >> 16)) - 128);
+    // }
+    //
+    // if (this.session.getSendKey()) {
+    // int num2 = writeKey((byte) (num >> 8));
+    // this.dos.write((byte) num2);
+    // int num3 = writeKey((byte) (num & 0xFF));// 0xFF = 255
+    // this.dos.write((byte) num3);
+    // } else {
+    // this.dos.write((short) num);
+    // }
+    // if (this.session.getSendKey()) {
+    // for (int i = 0; i < data.length; i++) {
+    // byte value2 = writeKey(data[i]);
+    // this.dos.write(value2);
+    // }
+    // } else {
+    // this.dos.write((short) 0);
+    // }
+    // } else {
+    // if (this.session.getSendKey()) {
+    // int num4 = 0;
+    // int num5 = writeKey((byte) (num4 >> 8));
+    // dos.write((byte) num5);
+    // int num6 = writeKey((byte) (num4 & 0xFF));
+    // dos.write((byte) num6);
+    // } else {
+    // dos.write((short) 0);
+    // }
+    // }
+    // System.out.println("send msg: " + msg.getCommand() + " " + data.length);
+    // this.dos.write(data);
+    // this.dos.flush();
+    // }
 
 }

@@ -47,16 +47,23 @@ public class TaskManager implements IManager {
             }
 
             try (PreparedStatement ps = connection.prepareStatement(mainTaskQuery);
-                 ResultSet rs = ps.executeQuery()) {
+                    ResultSet rs = ps.executeQuery()) {
 
                 while (rs.next()) {
                     var id = rs.getInt("id");
                     var name = rs.getString("name");
                     var detail = rs.getString("detail");
-                    TaskMain task = new TaskMain(id, name, detail, loadListSubNameTask(connection, id));
+
+                    JSONArray detailArray = (JSONArray) JSONValue.parse(detail);
+                    String[] detailList = new String[detailArray.size()];
+                    for (int i = 0; i < detailArray.size(); i++) {
+                        detailList[i] = detailArray.get(i).toString();
+                    }
+
+                    TaskMain task = new TaskMain(id, name, detailList, loadListSubNameTask(connection, id));
                     TASKS.put(task.getId(), task);
                 }
-//                LogServer.LogInit("Load task thành công (" + TASKS.size() + ")");
+                // LogServer.LogInit("Load task thành công (" + TASKS.size() + ")");
             }
         } catch (SQLException e) {
             LogServer.LogException("Error in TaskManager.loadTask(): " + e.getMessage());
@@ -73,14 +80,27 @@ public class TaskManager implements IManager {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     TaskMain.SubName subName = new TaskMain.SubName();
-                    subName.setName(rs.getString("name"));
-                    subName.setMaxCount(rs.getInt("max_count"));
-                    subName.setContentInfo(rs.getString("content"));
+
+                    var nameJson = rs.getString("name");
                     var npcJson = rs.getString("npc_list");
                     var mapJson = rs.getString("map_list");
+                    var contentJson = rs.getString("content");
+                    subName.setMaxCount(rs.getInt("max_count"));
 
                     JSONArray npcArray = (JSONArray) JSONValue.parse(npcJson);
                     JSONArray mapArray = (JSONArray) JSONValue.parse(mapJson);
+                    JSONArray nameArray = (JSONArray) JSONValue.parse(nameJson);
+                    JSONArray contentArray = (JSONArray) JSONValue.parse(contentJson);
+
+                    subName.nameList = new String[nameArray.size()];
+                    for (int i = 0; i < nameArray.size(); i++) {
+                        subName.nameList[i] = nameArray.get(i).toString();
+                    }
+
+                    subName.contentInfo = new String[contentArray.size()];
+                    for (int i = 0; i < contentArray.size(); i++) {
+                        subName.contentInfo[i] = contentArray.get(i).toString();
+                    }
 
                     subName.npcList = new short[npcArray.size()];
                     for (int i = 0; i < npcArray.size(); i++) {
@@ -88,15 +108,16 @@ public class TaskManager implements IManager {
                     }
 
                     subName.mapList = new short[mapArray.size()];
-                    for(int i = 0; i < mapArray.size(); i++) {
+                    for (int i = 0; i < mapArray.size(); i++) {
                         subName.mapList[i] = Short.parseShort(mapArray.get(i).toString());
                     }
 
                     subNameList.add(subName);
                 }
             }
-        } catch (SQLException e) {
-            LogServer.LogException("Error in TaskManager.loadListSubNameTask(): " + e.getMessage());
+        } catch (Exception e) {
+            LogServer.LogException(
+                    "Error in TaskManager.loadListSubNameTask(): " + e.getMessage() + " - taskId: " + taskId, e);
             return Collections.emptyList();
         }
         return subNameList;

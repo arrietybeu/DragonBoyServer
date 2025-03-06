@@ -17,8 +17,8 @@ import java.util.*;
 @Data
 public class GameMap implements Runnable {
 
-    private static final Set<Integer> TILE_TOP_SET = new HashSet<>(Set.of(2, 3, 5, 7)); //vi tri co the dung duoc
-    private static final int SIZE = 24;//  size của 1 cục đất
+    private static final Set<Integer> TILE_TOP_SET = new HashSet<>(Set.of(2, 3, 5, 7)); // vi tri co the dung duoc
+    private static final int SIZE = 24;// size của 1 cục đất
 
     private final int id;
     private final String name;
@@ -38,9 +38,12 @@ public class GameMap implements Runnable {
 
     private List<Area> areas;
 
-    //id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems, effects, waypoints, tileMap
-    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType, byte typeMap,
-                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap, List<NpcTemplate.NpcInfo> npcs) {
+    // id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems,
+    // effects, waypoints, tileMap
+    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType,
+            byte typeMap,
+            List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap,
+            List<NpcTemplate.NpcInfo> npcs) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;
@@ -64,7 +67,8 @@ public class GameMap implements Runnable {
         for (Area area : this.areas) {
             for (var npc : this.npcs) {
                 Npc npcArea = NpcFactory.createNpc(npc.npcId(), npc.status(), this.id, npc.x(), npc.y(), npc.avatar());
-                if (npcArea == null) continue;
+                if (npcArea == null)
+                    continue;
                 area.getNpcList().add(npcArea);
             }
         }
@@ -77,7 +81,8 @@ public class GameMap implements Runnable {
 
             if (this.id == 46) {
                 int deltaX = 1000;
-                NavigableMap<Integer, List<Waypoint>> subMap = waypointMap.subMap((int) x - deltaX, true, (int) x + deltaX, true);
+                NavigableMap<Integer, List<Waypoint>> subMap = waypointMap.subMap((int) x - deltaX, true,
+                        (int) x + deltaX, true);
                 for (List<Waypoint> waypoints : subMap.values()) {
                     for (Waypoint wp : waypoints) {
                         if (x >= wp.getMinX() - deltaX && x <= wp.getMaxX() + deltaX &&

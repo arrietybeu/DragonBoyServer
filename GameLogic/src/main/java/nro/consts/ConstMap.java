@@ -22,8 +22,12 @@ public class ConstMap {
     public static final short NHA_MOORI = 22;
     public static final short NHA_BROLY = 23;
 
-    public static final short VACH_NUI_ARU = 39;
-    public static final short VACH_NUI_MOORI = 40;
+    public static final short VACH_NUI_ARU_BASE = 39;
+    public static final short VACH_NUI_MOORI_BASE = 40;
     public static final short VUC_PLANT = 41;
+
+    public static final short VACH_NUI_ARU = 42;
+    public static final short VACH_NUI_MOORI = 43;
+    public static final short VAC_NUI_KAKAROT = 44;
 
 }

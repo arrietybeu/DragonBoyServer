@@ -302,11 +302,9 @@ public class PlayerLoader {
                     var taskId = resultSet.getInt("task_id");
                     var taskIndex = resultSet.getInt("task_index");
                     var taskCount = resultSet.getShort("task_count");
-//                    LogServer.LogWarning("get data task for database: " + taskId + ", " + taskIndex + ", " + taskCount);
                     TaskMain taskMain = TaskManager.getInstance().getTaskMainById(taskId);
                     taskMain.getSubNameList().get(taskIndex).setCount(taskCount);
                     taskMain.setIndex(taskIndex);
-//                    LogServer.LogWarning("data task return  : " + taskMain.getId() + ", " + taskMain.getIndex() + ", " + taskMain.getSubNameList().get(taskIndex).getCount());
                     player.getPlayerTask().setTaskMain(taskMain);
                 } else {
                     throw new SQLException("Khong tim thay task for player id: " + player.getId());

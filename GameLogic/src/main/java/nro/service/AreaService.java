@@ -54,7 +54,7 @@ public class AreaService {
             data.writeInt(playerInfo.getId());
             data.writeInt(playerInfo.getClan() != null ? playerInfo.getClan().getId() : -1);
             if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
-                data.writeByte(playerInfo.getTeleport());
+                data.writeByte(playerInfo.getPlayerStatus().getTeleport());
                 data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
                 data.writeShort(playerFashion.getMount());
             }
@@ -71,7 +71,8 @@ public class AreaService {
         }
     }
 
-    private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
+    private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion)
+            throws Exception {
         byte level = (byte) CaptionManager.getInstance().getLevel(player);
         data.writeByte(level);
         data.writeBoolean(false);// write isInvisiblez
@@ -114,15 +115,22 @@ public class AreaService {
             Service service = Service.getInstance();
 
             if (waypoint == null) {
-                this.keepPlayerInSafeZone(player);
+                this.keepPlayerInSafeZone(player, null);
                 service.sendChatGlobal(player.getSession(), null, "Không tìm thấy Waypoint", false);
                 return;
             }
 
             GameMap newMap = MapManager.getInstance().findMapById(waypoint.getGoMap());
+
             if (newMap == null) {
-                this.keepPlayerInSafeZone(player);
+                this.keepPlayerInSafeZone(player, waypoint);
                 service.sendChatGlobal(player.getSession(), null, "Map không tồn tại", false);
+                return;
+            }
+
+            if (player.getPlayerTask().checkMapCanJoinToTask(newMap.getId())) {
+                this.keepPlayerInSafeZone(player, waypoint);
+                service.sendChatGlobal(player.getSession(), null, "Bạn chưa thể đến khu vực này", false);
                 return;
             }
 
@@ -144,15 +152,17 @@ public class AreaService {
     }
 
     private void transferPlayer(Player player, Area newArea, short x, short y) {
+        Service service = Service.getInstance();
+
         if (newArea == null) {
-            this.keepPlayerInSafeZone(player);
-            Service.getInstance().sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
+            this.keepPlayerInSafeZone(player, null);
+            service.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
             return;
         }
 
         if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
-            this.keepPlayerInSafeZone(player);
-            Service.getInstance().sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
+            this.keepPlayerInSafeZone(player, null);
+            service.sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
             return;
         }
 
@@ -165,7 +175,7 @@ public class AreaService {
         this.sendMessageChangerMap(player);
         this.sendInfoAllPlayerInArea(player);
         this.sendPlayerInfoToAllInArea(player);
-        player.setTeleport(0);
+        player.getPlayerStatus().setTeleport(0);
     }
 
     public void playerExitArea(Player player) {
@@ -190,20 +200,27 @@ public class AreaService {
         }
     }
 
-    private void keepPlayerInSafeZone(Player player) {
+    private void keepPlayerInSafeZone(Player player, Waypoint waypoint) {
         try {
-            GameMap map = player.getArea().getMap();
-            int safeX = player.getX();
+            short safeX = player.getX();
+            short safeY = player.getY();
 
-            if (safeX >= map.getTileMap().tmh() - 60) {
-                safeX = map.getTileMap().tmw() - 60;
-            } else if (safeX <= 60) {
-                safeX = 60;
+            if (waypoint == null) {
+                safeX = 120;
+                System.out.println("khong tim thay waypoint");
+                safeY = 336;
+            } else {
+                safeX = (short) (waypoint.getMinX() - 40);
+                if (safeX < 0)
+                    safeX = (short) (waypoint.getMinX() + 50);
+                System.out.println("safeX: " + safeX + " safeY: " + safeY);
             }
-            player.setX((short) safeX);
+
+            player.setX(safeX);
+            player.setY(safeY);
             this.sendResetPoint(player);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LogServer.LogException("keepPlayerInSafeZone: " + ex.getMessage(), ex);
         }
     }
 
@@ -227,7 +244,8 @@ public class AreaService {
             playerService.sendCurrencyHpMp(player);
             MapService.getInstance().sendMapInfo(player);// -24
         } catch (Exception ex) {
-            LogServer.LogException("Error send Message Changer Map: " + ex.getMessage() + " player:  " + player.getId(), ex);
+            LogServer.LogException("Error send Message Changer Map: " + ex.getMessage() + " player:  " + player.getId(),
+                    ex);
         }
     }
 
@@ -235,7 +253,7 @@ public class AreaService {
         try (Message message = new Message(-65)) {
             DataOutputStream data = message.writer();
             data.writeInt(player.getId());
-            data.writeByte(player.getTeleport());
+            data.writeByte(player.getPlayerStatus().getTeleport());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendTeleport: " + ex.getMessage() + " player:  " + player.getId(), ex);

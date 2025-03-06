@@ -6,6 +6,7 @@ import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.clan.Clan;
 import nro.model.map.areas.Area;
+import nro.model.pet.PetFollow;
 import nro.model.discpile.Disciple;
 import nro.server.LogServer;
 import nro.server.manager.ItemManager;
@@ -35,6 +36,7 @@ public class Player extends LiveObject {
     private Area area;
     private Clan clan;
     private Disciple disciple;
+    private PetFollow petFollow;
 
     private Instant createdAt;
     private Session session;
@@ -42,7 +44,6 @@ public class Player extends LiveObject {
     private int role;
     private int activePoint;
     private int rank;
-    private int teleport = 0;
 
     public Player() {
         this.setTypeObject(ConstTypeObject.TYPE_PLAYER);
@@ -63,8 +64,6 @@ public class Player extends LiveObject {
 
     public boolean isNewPlayer() {
         long days = this.getDaysSinceCreation();
-        // System.out.println("Player name: " + this.getName() + " create " + days + "
-        // day.");
         return days < 30;
     }
 
@@ -153,6 +152,6 @@ public class Player extends LiveObject {
                 + playerPoints + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill="
                 + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion
                 + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple
-                + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + ", teleport=" + teleport + '}';
+                + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
     }
 }

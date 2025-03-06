@@ -45,8 +45,7 @@ public class MessageProcessorRegistry {
                 }
             }
         } catch (Exception e) {
-            LogServer.LogException("Loi ham initialize" + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Loi ham initialize" + e.getMessage(), e);
         }
     }
 

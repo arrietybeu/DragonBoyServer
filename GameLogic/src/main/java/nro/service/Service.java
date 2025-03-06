@@ -108,7 +108,6 @@ public class Service {
             if (player != null) {
                 PlayerFashion fashion = player.getPlayerFashion();
                 PartInfo part = PartManager.getInstance().findPartById(fashion.getHead());
-
                 out.writeInt(player.getId());
                 out.writeShort(fashion.getHead());
                 out.writeShort(part.getIcon(0));

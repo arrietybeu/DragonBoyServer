@@ -184,7 +184,7 @@ public class MapService {
         }
 
         output.writeByte(map.getBgType());
-        output.writeByte(player.getTeleport()); // is teleport
+        output.writeByte(player.getPlayerStatus().getTeleport()); // is teleport
     }
 
     /**

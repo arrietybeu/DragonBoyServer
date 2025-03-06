@@ -111,7 +111,8 @@ public class PlayerService {
     private void sendThongBaoInfoTask(Player player, Service service) {
         TaskMain taskMain = player.getPlayerTask().getTaskMain();
         List<TaskMain.SubName> subNames = taskMain.getSubNameList();
-        String subNameTask = "Nhiệm vụ của bạn là " + subNames.get(taskMain.getIndex()).getName();
+        String subNameTask = "Nhiệm vụ của bạn là "
+                + subNames.get(taskMain.getIndex()).getNameMapByGender(player.getGender());
         service.sendChatGlobal(player.getSession(), null, subNameTask, false);
     }
 
@@ -354,10 +355,12 @@ public class PlayerService {
     public void sendInventoryForPlayer(DataOutputStream data, List<Item> items) throws IOException {
         data.writeByte(items.size());
         for (Item item : items) {
+
             if (item.getTemplate() == null) {
                 data.writeShort(-1);
                 continue;
             }
+
             data.writeShort(item.getTemplate().id());
             data.writeInt(item.getQuantity());
             data.writeUTF("");
@@ -456,7 +459,7 @@ public class PlayerService {
 
                 // TODO check inventory full
                 Service service = Service.getInstance();
-                if (!player.getPlayerInventory().isBagFull()) {
+                if (player.getPlayerInventory().isBagFull()) {
                     service.sendChatGlobal(player.getSession(), null, "Hành trang đã đầy.", false);
                     return;
                 }
@@ -477,6 +480,7 @@ public class PlayerService {
                 var idItem = item.getTemplate().id();
                 var quantity = item.getQuantity();
                 var itemType = item.getTemplate().type();
+                var nameItem = item.getTemplate().name();
                 switch (itemType) {
                     case ConstItem.GOLD -> player.getPlayerCurrencies().addGold(quantity);
                     case ConstItem.GEM -> player.getPlayerCurrencies().addGem(quantity);
@@ -493,10 +497,15 @@ public class PlayerService {
                             case ConstItem.QUA_TRUNG -> {
                                 // TODO logic nhặt quả trứng
                             }
-                            default -> player.getPlayerInventory().addItemBag(item);
+                            default -> {
+                                if (!player.getPlayerInventory().addItemBag(item)) {
+                                    // service.sendChatGlobal(player.getSession(), null, "", false);
+                                    return;
+                                }
+                            }
                         }
                         var notify = idItem == 74 || idItem == 516
-                                ? String.format("Bạn vừa ăn %s", item.getTemplate().name())
+                                ? String.format("Bạn vừa ăn %s", nameItem)
                                 : "";
                         this.sendPickItemMap(
                                 player, itemMap.getItemMapID(), itemType, quantity, notify);

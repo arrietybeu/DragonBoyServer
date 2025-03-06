@@ -7,4 +7,8 @@ public class ConstPlayer {
     public static final byte NAMEC = 1;
     public static final byte XAYDA = 2;
 
+    // =================== Teleport ===================//
+
+    public static final byte TELEPORT_DEFAULT = 0;
+
 }

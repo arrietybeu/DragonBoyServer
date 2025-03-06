@@ -1,30 +1,41 @@
 package nro.model.task;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class TaskMain {
 
     private int id;
     private final String name;
-    private final String detail;
+    private final String[] detail;
     private List<SubName> subNameList;
     private int index;
 
-    public TaskMain(int id, String name, String detail, List<SubName> subNameList) {
+    public TaskMain(int id, String name, String[] detail, List<SubName> subNameList) {
         this.id = id;
         this.name = name;
         this.detail = detail;
         this.subNameList = subNameList;
     }
 
+    public String getDetailByGender(int gender) {
+        if (detail.length == 0) {
+            return "";
+        }
+        if (detail.length == 1) {
+            return detail[0];
+        }
+        return detail[gender];
+    }
+
     @Override
     public String toString() {
-        return "TaskMain{" + "id=" + id + ", name='" + name + '\'' + ", detail='" + detail + '\'' + ", subNameList=" + subNameList.size() + ", index=" + index + '}';
+        return "TaskMain{" + "id=" + id + ", name='" + name + '\'' + ", detail='" + detail + '\'' + ", subNameList="
+                + subNameList.size() + ", index=" + index + '}';
     }
 
     @Getter
@@ -37,8 +48,8 @@ public class TaskMain {
         private short count;
         private int maxCount;
 
-        private String name;
-        private String contentInfo;
+        public String[] nameList;
+        public String[] contentInfo;
 
         public void addCount(int count) {
             this.count += (short) count;
@@ -64,9 +75,30 @@ public class TaskMain {
             return mapList[gender];
         }
 
+        public String getNameMapByGender(int gender) {
+            if (nameList.length == 0) {
+                return "";
+            }
+            if (nameList.length == 1) {
+                return nameList[0];
+            }
+            return nameList[gender];
+        }
+
+        public String getContentInfo(int gender) {
+            if (contentInfo.length == 0) {
+                return "";
+            }
+            if (contentInfo.length == 1) {
+                return contentInfo[0];
+            }
+            return contentInfo[gender];
+        }
+
         @Override
         public String toString() {
-            return "SubName{" + "npcList=" + npcList.length + ", count=" + count + ", mapId=" + mapList + ", maxCount=" + maxCount + ", name='" + name + '\'' + ", contentInfo='" + contentInfo + '\'' + '}';
+            return "SubName{" + "npcList=" + npcList + ", mapList=" + mapList + ", count=" + count + ", maxCount="
+                    + maxCount + ", nameList=" + nameList + ", contentInfo='" + contentInfo + '\'' + '}';
         }
     }
 

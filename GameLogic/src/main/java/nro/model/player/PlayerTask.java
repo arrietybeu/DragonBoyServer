@@ -36,8 +36,8 @@ public class PlayerTask {
 
     public void checkDoneTaskGoMap() {
         switch (this.player.getArea().getMap().getId()) {
-            case ConstMap.VACH_NUI_ARU:
-            case ConstMap.VACH_NUI_MOORI:
+            case ConstMap.VACH_NUI_ARU_BASE:
+            case ConstMap.VACH_NUI_MOORI_BASE:
             case ConstMap.VUC_PLANT: {
                 if (this.player.getX() >= 635) {
                     this.doneTask(0, 0);
@@ -47,6 +47,7 @@ public class PlayerTask {
             case ConstMap.NHA_GOHAN:
             case ConstMap.NHA_MOORI:
             case ConstMap.NHA_BROLY: {
+                this.doneTask(0, 0);
                 this.doneTask(0, 1);
                 break;
             }
@@ -56,7 +57,7 @@ public class PlayerTask {
     public boolean checkDoneTaskTalkNpc(Npc npc) {
         return switch (npc.getTempId()) {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
-                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1);
+                this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1);
             default -> false;
         };
     }
@@ -78,7 +79,6 @@ public class PlayerTask {
         }
     }
 
-
     public void checkDoneTaskGetItemBox() {
         doneTask(0, 3);
     }
@@ -93,7 +93,8 @@ public class PlayerTask {
 
     public boolean doneTask(int taskId, int index) {
         try {
-            if (!checkTaskInfo(taskId, index)) return false;
+            if (!checkTaskInfo(taskId, index))
+                return false;
 
             this.addDoneSubTask();
             NpcService npcService = NpcService.getInstance();
@@ -104,34 +105,31 @@ public class PlayerTask {
                 case 0 -> handleTaskZero(index, npcService, npcName, mapName, mapNameVillage);
                 case 1 -> handleTaskOne(index, npcService, npcName, mapName);
             }
-
         } catch (Exception ex) {
-            LogServer.LogException("PlayerTask doneTask - " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
             return false;
         }
         return true;
     }
 
-    public void sendTaskInfo() {
-        TaskService taskService = TaskService.getInstance();
-        taskService.sendTaskMain(player);
-        taskService.sendTaskMainUpdate(player);
-    }
-
-    private void handleTaskZero(int index, NpcService npcService, String npcName, String mapName, String mapNameVillage) {
+    private void handleTaskZero(int index, NpcService npcService, String npcName, String mapName,
+            String mapNameVillage) {
         switch (index) {
             case 0 ->
-                    npcService.sendNpcTalkUI(player, 5, String.format("Hãy di chuyển đến %s, %s đang chờ bạn ở đằng kia!", mapName, npcName), -1);
+                npcService.sendNpcTalkUI(player, 5,
+                        String.format("Hãy di chuyển đến %s, %s đang chờ bạn ở đằng kia!", mapName, npcName), -1);
             case 1 ->
-                    npcService.sendNpcTalkUI(player, 5, String.format("%s đang chờ. Bạn hãy đi đến gần và click đôi vào ông để trò chuyện", npcName), -1);
+                npcService.sendNpcTalkUI(player, 5,
+                        String.format("%s đang chờ. Bạn hãy đi đến gần và click đôi vào ông để trò chuyện", npcName),
+                        -1);
             case 2, 5 -> {
                 Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                String content = (index == 2) ? "Con mới đi đâu về thế ? Con hãy đến rương đồ để lấy rađa, sau đó lại thu hoạch những hạt đậu trên cây đậu thần đằng kia!"
+                String content = (index == 2)
+                        ? "Con mới đi đâu về thế ? Con hãy đến rương đồ để lấy rađa, sau đó lại thu hoạch những hạt đậu trên cây đậu thần đằng kia!"
                         : String.format("Tốt lắm, Rađa sẽ giúp con biết được HP và KI của mình ở góc trên màn hình\n"
-                        + "Đậu thần sẽ giúp con phục hồi HP và KI khi con yếu đi\n"
-                        + "Bây giờ, con hãy đi ra %s để tập luyện, hãy đánh ngã 5 mộc nhân, rồi trở về gặp ta, ta sẽ dạy con bay\n"
-                        + "Đi đi, và về sớm con nhé!", mapNameVillage);
+                                + "Đậu thần sẽ giúp con phục hồi HP và KI khi con yếu đi\n"
+                                + "Bây giờ, con hãy đi ra %s để tập luyện, hãy đánh ngã 5 mộc nhân, rồi trở về gặp ta, ta sẽ dạy con bay\n"
+                                + "Đi đi, và về sớm con nhé!", mapNameVillage);
                 npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
             }
         }
@@ -144,14 +142,17 @@ public class PlayerTask {
                 case 0 -> {
                     var count = this.taskMain.getSubNameList().get(index).getCount();
                     var maxCount = this.taskMain.getSubNameList().get(index).getMaxCount();
-                    service.sendChatGlobal(player.getSession(), null, String.format("Bạn đánh được %d/%d", count, maxCount), false);
+                    service.sendChatGlobal(player.getSession(), null,
+                            String.format("Bạn đánh được %d/%d", count, maxCount), false);
                 }
                 case 1 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n" +
-                            "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n" +
+                            "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n"
+                            +
                             "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n" +
-                            "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n" +
+                            "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n"
+                            +
                             "Nhanh lên, ta đói lắm rồi!\n" +
                             "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n" +
                             "Vị trí đang chớp sáng là nđi bạn làm nhiệm vụ, hãy tìm đường đến đó";
@@ -169,9 +170,10 @@ public class PlayerTask {
         }
     }
 
-    // private void handleTaskTwo(int index, NpcService npcService, String npcName, String mapName) {
-    //     switch (index) {
-    //     }
+    // private void handleTaskTwo(int index, NpcService npcService, String npcName,
+    // String mapName) {
+    // switch (index) {
+    // }
     // }
 
     private void addDoneSubTask() {
@@ -210,17 +212,34 @@ public class PlayerTask {
 
         if (taskMain.getId() == 0 && taskMain.getIndex() == 0) {
             String birdNameNpc = player.getPlayerBirdNames()[0];
-            String content = String.format("Chào mừng %s đến với thế giới Ngọc Rồng!\nMình là %s sẽ đồng hành cùng bạn ở thế giới này\n" + "Để di chuyển, hãy click chuột vào nơi muốn đến", player.getName(), birdNameNpc);
+            String content = String.format(
+                    "Chào mừng %s đến với thế giới Ngọc Rồng!\nMình là %s sẽ đồng hành cùng bạn ở thế giới này\n"
+                            + "Để di chuyển, hãy click chuột vào nơi muốn đến",
+                    player.getName(), birdNameNpc);
 
             NpcService.getInstance().sendNpcTalkUI(player, 5, content, -1);
         }
     }
 
     public boolean checkMapCanJoinToTask(int mapId) {
-//        return switch (mapId) {
-//            case ConstMap.MAP_OFFLINE ->
-//        };
+        switch (mapId) {
+            case ConstMap.DOI_HOA_CUC, ConstMap.DOI_NAM_TIM, ConstMap.DOI_HOANG,
+                    ConstMap.VACH_NUI_ARU, ConstMap.VACH_NUI_MOORI, ConstMap.VAC_NUI_KAKAROT -> {
+                if (this.taskMain.getId() < 2) {
+                    return true;
+                }
+            }
+            default -> {
+                break;
+            }
+        }
         return false;
+    }
+
+    public void sendTaskInfo() {
+        TaskService taskService = TaskService.getInstance();
+        taskService.sendTaskMain(player);
+        taskService.sendTaskMainUpdate(player);
     }
 
 }

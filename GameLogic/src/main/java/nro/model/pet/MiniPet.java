@@ -1,8 +1,10 @@
 package nro.model.pet;
 
+import lombok.Getter;
 import nro.consts.ConstTypeObject;
 import nro.model.player.Player;
 
+@Getter
 public class MiniPet extends Player {
 
     private Player subject;
@@ -16,7 +18,6 @@ public class MiniPet extends Player {
 
     @Override
     public void update() {
-
     }
 
 }

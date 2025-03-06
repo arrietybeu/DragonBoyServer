@@ -42,6 +42,7 @@ public class PlayerMoveHandler implements IMessageProcessor {
             if (player.getPlayerTask().getTaskMain().getId() == 0) {
                 player.getPlayerTask().checkDoneTaskGoMap();
             }
+
             AreaService.getInstance().playerMove(player);
 
         } catch (Exception e) {

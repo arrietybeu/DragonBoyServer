@@ -62,9 +62,9 @@ public class ItemFactory {
         // class[2] = xayda,
 
         short[][] itemIdsByClass = {
-                {0, 6},
-                {1, 7},
-                {2, 8}
+                { 0, 6 },
+                { 1, 7 },
+                { 2, 8 }
         };
 
         if (clazz < 0 || clazz > itemIdsByClass.length) {
@@ -97,8 +97,9 @@ public class ItemFactory {
         return items;
     }
 
-    public Item createItemOptionsBase(int itemId) {
-        Item item = this.createItemNotOptionsBase(itemId, 1);
+    public Item createItemOptionsBase(int itemId, int... quantitys) {
+        var quantity = quantitys.length > 0 ? quantitys[0] : 1;
+        Item item = this.createItemNotOptionsBase(itemId, quantity);
         this.initBaseOptions(item);
         return item;
     }

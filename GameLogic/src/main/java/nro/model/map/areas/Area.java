@@ -15,7 +15,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
 import nro.server.network.Message;
-import nro.server.network.Session;
 import nro.server.LogServer;
 import nro.server.manager.SessionManager;
 import nro.service.ItemService;
@@ -128,11 +127,9 @@ public class Area {
                 SessionManager.getInstance().kickSession(player.getSession());
                 return;
             }
-            System.out.println("Add player: " + player.getId() + " player name: " + player.getName());
             this.players.put(player.getId(), player);
         } catch (Exception ex) {
             LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         } finally {
             this.lock.writeLock().unlock();
         }
