@@ -73,7 +73,6 @@ public class Message implements AutoCloseable {
         }
     }
 
-
     /**
      * Cleans up all streams associated with the message.
      * Ensures that no resources are leaked by closing all streams.
@@ -94,13 +93,14 @@ public class Message implements AutoCloseable {
                 this.dis.close();
             }
         } catch (Exception e) {
-            LogServer.LogException("Error in cleanup: " + e.getMessage());
+            LogServer.LogException("Error in cleanup: " + e.getMessage(), e);
         }
     }
 
     /**
      * Ghi đè phương thức {@code close()} của interface {@code AutoCloseable}.
-     * Phương thức này được sửa dụng khi khởi tạo một {@code Message} trong một block {@code try-with-resources}.
+     * Phương thức này được sửa dụng khi khởi tạo một {@code Message} trong một
+     * block {@code try-with-resources}.
      */
 
     @Override

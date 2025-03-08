@@ -1,6 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
+import nro.consts.ConstMap;
 import nro.consts.ConstPlayer;
 import nro.model.map.TileMap;
 import nro.model.map.Waypoint;
@@ -48,7 +49,6 @@ public class MapManager implements IManager {
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
-
 
     @Override
     public void init() {
@@ -99,7 +99,9 @@ public class MapManager implements IManager {
 
     private void loadMapTemplate() {
         String query = "SELECT * FROM `map_template`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+                PreparedStatement ps = connection.prepareStatement(query);
+                var rs = ps.executeQuery()) {
 
             Map<Integer, TileMap> tileMaps = loadAllMapTiles(connection);
 
@@ -121,12 +123,13 @@ public class MapManager implements IManager {
                 TileMap tileMap = tileMaps.get(id);
                 List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(connection, id);
 
-                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
+                GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems,
+                        effects, waypoints, tileMap, npcs);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
             }
 
-//            LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
+            // LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
         } catch (Exception e) {
             e.printStackTrace();
             LogServer.LogException("Error loadMap: " + e.getMessage());
@@ -137,7 +140,8 @@ public class MapManager implements IManager {
         String query = "SELECT * FROM `map_tiles`";
         Map<Integer, TileMap> tileMaps = new HashMap<>();
 
-        try (PreparedStatement statement = connection.prepareStatement(query); ResultSet rs = statement.executeQuery()) {
+        try (PreparedStatement statement = connection.prepareStatement(query);
+                ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
                 int mapId = rs.getInt("map_id");
@@ -150,7 +154,7 @@ public class MapManager implements IManager {
                 tileMaps.put(mapId, new TileMap(tmw, tmh, maps));
             }
 
-//            LogServer.LogInit("Loaded " + tileMaps.size() + " map tiles.");
+            // LogServer.LogInit("Loaded " + tileMaps.size() + " map tiles.");
 
         } catch (SQLException e) {
             LogServer.LogException("Error loading map tiles: " + e.getMessage());
@@ -242,7 +246,9 @@ public class MapManager implements IManager {
 
     private void loadDataBackgroundMap() {
         String query = "SELECT * FROM `map_data_background`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+                PreparedStatement ps = connection.prepareStatement(query);
+                var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var bg = new BackgroundMapTemplate();
                 bg.setId(rs.getInt("id"));
@@ -253,7 +259,8 @@ public class MapManager implements IManager {
                 this.backgroundMapTemplates.add(bg);
             }
             this.setDataBackgroundMap();
-//            LogServer.LogInit("LoadItemBackgroundMap initialized size: " + this.backgroundMapTemplates.size());
+            // LogServer.LogInit("LoadItemBackgroundMap initialized size: " +
+            // this.backgroundMapTemplates.size());
         } catch (Exception e) {
             LogServer.LogException("Error loadItemBackgroundMap: " + e.getMessage());
         }
@@ -282,7 +289,9 @@ public class MapManager implements IManager {
 
     private void loadTileSetInfo() {
         String query = "SELECT * FROM `map_tile_set_info`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+                PreparedStatement ps = connection.prepareStatement(query);
+                var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var tileSet = new TileSetTemplate();
                 tileSet.setId(rs.getInt("id"));
@@ -291,7 +300,8 @@ public class MapManager implements IManager {
                 tileSet.setTileTypes(tileTypes);
                 this.tileSetTemplates.add(tileSet);
             }
-//            LogServer.LogInit("LoadTileSetInfo initialized size: " + this.tileSetTemplates.size());
+            // LogServer.LogInit("LoadTileSetInfo initialized size: " +
+            // this.tileSetTemplates.size());
             this.setTileSetData();
         } catch (SQLException e) {
             LogServer.LogException("Error loadTileSetInfo: " + e.getMessage());
@@ -450,15 +460,15 @@ public class MapManager implements IManager {
         String mapName = "Home";
         switch (gender) {
             case ConstPlayer.TRAI_DAT: {
-                mapName = this.getNameMapById(21);
+                mapName = this.getNameMapById(ConstMap.NHA_GOHAN);
                 break;
             }
             case ConstPlayer.NAMEC: {
-                mapName = this.getNameMapById(22);
+                mapName = this.getNameMapById(ConstMap.NHA_MOORI);
                 break;
             }
             case ConstPlayer.XAYDA: {
-                mapName = this.getNameMapById(23);
+                mapName = this.getNameMapById(ConstMap.NHA_BROLY);
                 break;
             }
         }
@@ -469,19 +479,39 @@ public class MapManager implements IManager {
         String mapName = "vilage";
         switch (gender) {
             case ConstPlayer.TRAI_DAT: {
-                mapName = this.getNameMapById(0);
+                mapName = this.getNameMapById(ConstMap.LANG_ARU);
                 break;
             }
             case ConstPlayer.NAMEC: {
-                mapName = this.getNameMapById(7);
+                mapName = this.getNameMapById(ConstMap.LANG_MOORI);
                 break;
             }
             case ConstPlayer.XAYDA: {
-                mapName = this.getNameMapById(14);
+                mapName = this.getNameMapById(ConstMap.LANG_KAKAROT);
                 break;
             }
         }
         return mapName;
+    }
+
+    public String getNameMapCliffByGender(int gender) {
+        String mapName = "cliff";
+        switch (gender) {
+            case ConstPlayer.TRAI_DAT: {
+                mapName = this.getNameMapById(ConstMap.VACH_NUI_ARU);
+                break;
+            }
+            case ConstPlayer.NAMEC: {
+                mapName = this.getNameMapById(ConstMap.VACH_NUI_MOORI);
+                break;
+            }
+            case ConstPlayer.XAYDA: {
+                mapName = this.getNameMapById(ConstMap.VAC_NUI_KAKAROT);
+                break;
+            }
+        }
+        return mapName;
+
     }
 
 }

@@ -57,20 +57,19 @@ public class ResourceService {
         PartManager partManager = PartManager.getInstance();
         SkillPaintManager skillPaintManager = SkillPaintManager.getInstance();
 
-        return new byte[][]{dataGame.getDart(),
+        return new byte[][] { dataGame.getDart(),
                 dataGame.getArrow(),
                 dataGame.getEffect(),
                 dataGame.getImage(),
                 partManager.getDataPart(),
-//                dataGame.getSkill()};
-                skillPaintManager.getSkillPaintsData()};
+                // dataGame.getSkill()};
+                skillPaintManager.getSkillPaintsData() };
     }
 
     private void writeData(Message message, byte[] data) throws IOException {
         message.writer().writeInt(data.length);
         message.writer().write(data);
     }
-
 
     public void downloadResources(Session session, Message ms) {
         int zoomLevel = session.getClientInfo().getZoomLevel();
@@ -263,10 +262,10 @@ public class ResourceService {
         }
         try (Message message = new Message(-28)) {
             message.writer().writeByte(ConstMsgNotMap.SEND_VERSION);// type 4
-            message.writer().writeByte(ConfigServer.VERSION_DATA);//   GameScr.vsData = msg.reader().readByte();
-            message.writer().writeByte(ConfigServer.VERSION_MAP);//    GameScr.vsMap = msg.reader().readByte();
-            message.writer().writeByte(ConfigServer.VERSION_SKILL);//  GameScr.vsSkill = msg.reader().readByte();
-            message.writer().writeByte(ConfigServer.VERSION_ITEM);//   GameScr.vsItem = msg.reader().readByte();
+            message.writer().writeByte(ConfigServer.VERSION_DATA);// GameScr.vsData = msg.reader().readByte();
+            message.writer().writeByte(ConfigServer.VERSION_MAP);// GameScr.vsMap = msg.reader().readByte();
+            message.writer().writeByte(ConfigServer.VERSION_SKILL);// GameScr.vsSkill = msg.reader().readByte();
+            message.writer().writeByte(ConfigServer.VERSION_ITEM);// GameScr.vsItem = msg.reader().readByte();
             message.writer().writeByte(0);
             List<CaptionTemplate> captionTemplates = CaptionManager.getInstance().getCAPTIONS();
             message.writer().writeByte(captionTemplates.size());
@@ -283,7 +282,8 @@ public class ResourceService {
     public void sendTileSetInfo(Session session) {
         try (Message message = new Message(-82)) {
             byte[] data = FileNio.loadDataFile("resources/data/tile_data/tile_set_info");
-            if (data == null) return;
+            if (data == null)
+                return;
             message.writer().write(data);
             session.doSendMessage(message);
         } catch (Exception e) {
@@ -301,7 +301,7 @@ public class ResourceService {
             data.writeByte(effect.getType());
 
             if (effect.getType() != 0) {
-//                data.write(effect.get());
+                // data.write(effect.get());
             } else {
                 data.writeInt(effect.getDataEffectMonster().length);
                 data.write(effect.getDataEffectMonster());
@@ -361,27 +361,28 @@ public class ResourceService {
             data.write(imageByName.data());
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendImageByName: " + ex.getMessage() + " Error Send Image By Name: " + img + " zoomLevel: " + zoomLevel);
+            LogServer.LogException("sendImageByName: " + ex.getMessage() + " Error Send Image By Name: " + img
+                    + " zoomLevel: " + zoomLevel);
             ex.printStackTrace();
         }
     }
 
-//    public void sendTileSetInfo(Session session) {
-//        try (Message message = new Message(-82)) {
-//            MapManager mapManager = MapManager.getInstance();
-//            var data = mapManager.getTileSetData();
-//            message.writer().write(data);
-//            session.sendMessage(message);
-//        } catch (Exception e) {
-//            LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
-//        }
-//    }
+    // public void sendTileSetInfo(Session session) {
+    // try (Message message = new Message(-82)) {
+    // MapManager mapManager = MapManager.getInstance();
+    // var data = mapManager.getTileSetData();
+    // message.writer().write(data);
+    // session.sendMessage(message);
+    // } catch (Exception e) {
+    // LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
+    // }
+    // }
 
     public void clientOk(Session session) {
         if (!session.getSessionInfo().isClientOk()) {
 
             this.sendDataBackgroundMapTemplate(session);// -31
-            this.sendTileSetInfo(session); //-82
+            this.sendTileSetInfo(session); // -82
             this.sendSmallVersion(session);// -77
             this.sendBackgroundVersion(session);// -93
             session.getSessionInfo().setClientOk(true);

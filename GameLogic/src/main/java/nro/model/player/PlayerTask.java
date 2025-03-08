@@ -34,63 +34,6 @@ public class PlayerTask {
         return taskManager.getTaskMainById(id);
     }
 
-    public void checkDoneTaskGoMap() {
-        switch (this.player.getArea().getMap().getId()) {
-            case ConstMap.VACH_NUI_ARU_BASE:
-            case ConstMap.VACH_NUI_MOORI_BASE:
-            case ConstMap.VUC_PLANT: {
-                if (this.player.getX() >= 635) {
-                    this.doneTask(0, 0);
-                }
-                break;
-            }
-            case ConstMap.NHA_GOHAN:
-            case ConstMap.NHA_MOORI:
-            case ConstMap.NHA_BROLY: {
-                this.doneTask(0, 0);
-                this.doneTask(0, 1);
-                break;
-            }
-        }
-    }
-
-    public boolean checkDoneTaskTalkNpc(Npc npc) {
-        return switch (npc.getTempId()) {
-            case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
-                this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1);
-            default -> false;
-        };
-    }
-
-    public void checkDoneTaskKKillMonster(Monster monster) {
-        try {
-            switch (monster.getTemplateId()) {
-                case ConstMonster.MOC_NHAN: {
-                    this.doneTask(1, 0);
-                    break;
-                }
-                case ConstMonster.KHUNG_LONG: {
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            LogServer.LogException("PlayerTask checkDoneTaskKKillMonster - " + ex.getMessage());
-            ex.printStackTrace();
-        }
-    }
-
-    public void checkDoneTaskGetItemBox() {
-        doneTask(0, 3);
-    }
-
-    public void checkDoneTaskConfirmMenuNpc(int npcId) {
-        if (npcId == ConstNpc.DAU_THAN) {
-            if (player.getPlayerStatus().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
-                this.doneTask(0, 4);
-            }
-        }
-    }
-
     public boolean doneTask(int taskId, int index) {
         try {
             if (!checkTaskInfo(taskId, index))
@@ -102,8 +45,11 @@ public class PlayerTask {
             String mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
             String mapNameVillage = MapManager.getInstance().getNameMapVillageByGender(player.getGender());
             switch (taskId) {
-                case 0 -> handleTaskZero(index, npcService, npcName, mapName, mapNameVillage);
-                case 1 -> handleTaskOne(index, npcService, npcName, mapName);
+                case 0 -> this.handleTaskZero(index, npcService, npcName, mapName, mapNameVillage);
+                case 1 -> this.handleTaskOne(index, npcService, npcName, mapName);
+                case 3 -> {
+                    this.handleTaskThree(index, npcService, npcName, mapName);
+                }
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
@@ -165,16 +111,31 @@ public class PlayerTask {
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("PlayerTask handleTaskOne - " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("PlayerTask handleTaskOne - " + ex.getMessage(), ex);
         }
     }
 
-    // private void handleTaskTwo(int index, NpcService npcService, String npcName,
-    // String mapName) {
-    // switch (index) {
-    // }
-    // }
+    private void handleTaskThree(int index, NpcService npcService, String npcName, String mapName) {
+        try {
+            switch (index) {
+                case 0 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                    var content = String.format(
+                            "Đùi gà đây rồi, tối lắm, haha. Ta sẽ nướng tại đống lửa đằng kia, con có thể ăn bất cứ lúc nào nếu muốn\n"
+                                    + "Ta vừa nghe thấy 1 tiếng động lớn, dường như có 1 ngôi sao rơi tại %s, con hãy đến kiểm tra xem\n"
+                                    + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n"
+                                    + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh\n"
+                                    + "Con đã nhận 10k Tiềm năng Sức mạnh\n"
+                                    + "Mở menu chọn mục kỹ năng, dùng điểm tiềm năng cộng vào HP, KI hoặc sức đánh",
+                            mapName);
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                    player.getPlayerPoints().addExp(2, 10000);
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskTwo - " + ex.getMessage(), ex);
+        }
+    }
 
     private void addDoneSubTask() {
         var subList = this.taskMain.getSubNameList();
@@ -203,6 +164,92 @@ public class PlayerTask {
         return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
     }
 
+    public boolean checkMapCanJoinToTask(int mapId) {
+        switch (mapId) {
+            case ConstMap.DOI_HOA_CUC, ConstMap.DOI_NAM_TIM, ConstMap.DOI_HOANG -> {
+                if (this.taskMain.getId() <= 1) {
+                    return true;
+                }
+            }
+            case ConstMap.VACH_NUI_ARU, ConstMap.VACH_NUI_MOORI, ConstMap.VAC_NUI_KAKAROT,
+                    ConstMap.THI_TRAN_MOORI, ConstMap.LANG_PLANT, ConstMap.THUNG_LUNG_TRE -> {
+                if (this.taskMain.getId() <= 2) {
+                    return true;
+                }
+            }
+
+            default -> {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public void checkDoneTaskGoMap() {
+        switch (this.player.getArea().getMap().getId()) {
+            case ConstMap.VACH_NUI_ARU_BASE:
+            case ConstMap.VACH_NUI_MOORI_BASE:
+            case ConstMap.VUC_PLANT: {
+                if (this.player.getX() >= 635) {
+                    this.doneTask(0, 0);
+                }
+                break;
+            }
+            case ConstMap.NHA_GOHAN:
+            case ConstMap.NHA_MOORI:
+            case ConstMap.NHA_BROLY: {
+                this.doneTask(0, 0);
+                this.doneTask(0, 1);
+                break;
+            }
+        }
+    }
+
+    public boolean checkDoneTaskTalkNpc(Npc npc) {
+        return switch (npc.getTempId()) {
+            case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
+                this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1);
+            default -> false;
+        };
+    }
+
+    public void checkDoneTaskKKillMonster(Monster monster) {
+        try {
+            switch (monster.getTemplateId()) {
+                case ConstMonster.MOC_NHAN: {
+                    this.doneTask(1, 0);
+                    break;
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask checkDoneTaskKKillMonster - " + ex.getMessage(), ex);
+        }
+    }
+
+    public void checkDoneTaskGetItemBox() {
+        this.doneTask(0, 3);
+    }
+
+    public void checkDoneTaskConfirmMenuNpc(int npcId) {
+        if (npcId == ConstNpc.DAU_THAN) {
+            if (player.getPlayerStatus().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
+                this.doneTask(0, 4);
+            }
+        }
+    }
+
+    public void checkDoneTaskPickItem(int itemId) {
+        if (itemId == 73) {
+            this.doneTask(2, 0);
+        }
+    }
+
+    public void sendTaskInfo() {
+        TaskService taskService = TaskService.getInstance();
+        taskService.sendTaskMain(player);
+        taskService.sendTaskMainUpdate(player);
+    }
+
     public void sendInfoTaskForNpcTalkByUI(Player player) {
         TaskMain taskMain = player.getPlayerTask().getTaskMain();
         if (taskMain == null) {
@@ -219,27 +266,6 @@ public class PlayerTask {
 
             NpcService.getInstance().sendNpcTalkUI(player, 5, content, -1);
         }
-    }
-
-    public boolean checkMapCanJoinToTask(int mapId) {
-        switch (mapId) {
-            case ConstMap.DOI_HOA_CUC, ConstMap.DOI_NAM_TIM, ConstMap.DOI_HOANG,
-                    ConstMap.VACH_NUI_ARU, ConstMap.VACH_NUI_MOORI, ConstMap.VAC_NUI_KAKAROT -> {
-                if (this.taskMain.getId() < 2) {
-                    return true;
-                }
-            }
-            default -> {
-                break;
-            }
-        }
-        return false;
-    }
-
-    public void sendTaskInfo() {
-        TaskService taskService = TaskService.getInstance();
-        taskService.sendTaskMain(player);
-        taskService.sendTaskMainUpdate(player);
     }
 
 }

@@ -81,7 +81,7 @@ public class NotMapHandler implements IMessageProcessor {
                     break;
             }
         } catch (Exception e) {
-            LogServer.LogException("Error NotMapHandler: " + e.getMessage());
+            LogServer.LogException("Error NotMapHandler: " + e.getMessage(), e);
         }
     }
 
@@ -109,8 +109,7 @@ public class NotMapHandler implements IMessageProcessor {
                         + ", hair=" + hair + ")");
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException("Error createChar: " + e.getMessage());
+            LogServer.LogException("Error createChar: " + e.getMessage(), e);
         }
     }
 

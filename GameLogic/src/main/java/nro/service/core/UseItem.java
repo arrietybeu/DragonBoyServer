@@ -30,12 +30,12 @@ public class UseItem {
             return;
         }
         switch (item.getTemplate().type()) {
-            case ConstItem.PEA: {
+            case ConstItem.TYPE_PEA: {
                 this.eatPea(player, item);
                 break;
             }
-            case ConstItem.MOUNT:
-            case ConstItem.MOUNT_VIP: {
+            case ConstItem.TYPE_MOUNT:
+            case ConstItem.TYPE_MOUNT_VIP: {
                 playerInventory.equipItemFromBag(index);
             }
         }

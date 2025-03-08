@@ -103,7 +103,8 @@ public class AreaService {
             data.writeShort(player.getY());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + player.getId(), ex);
+            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  "
+                    + player.getId(), ex);
         }
     }
 

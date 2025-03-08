@@ -19,8 +19,7 @@ public class RequestMonsterHandler implements IMessageProcessor {
             var id = message.reader().readShort();
             ResourceService.getInstance().sendMonsterData(player, id);
         } catch (Exception e) {
-            LogServer.LogException("Error RequestMonsterHandler: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error RequestMonsterHandler: " + e.getMessage(), e);
         }
     }
 }

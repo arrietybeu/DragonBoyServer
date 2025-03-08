@@ -38,7 +38,6 @@ public class Service {
             session.doSendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sending NotLogin response: " + e.getMessage(), e);
-            e.printStackTrace();
         }
     }
 
@@ -48,7 +47,6 @@ public class Service {
             session.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error dialogMessage: " + e.getMessage() + " - " + info, e);
-            e.printStackTrace();
         }
     }
 
@@ -57,7 +55,7 @@ public class Service {
             message.writer().writeShort(delay);
             session.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error sendLoginDe: " + ex.getMessage());
+            LogServer.LogException("Error sendLoginDe: " + ex.getMessage(), ex);
         }
     }
 
@@ -119,7 +117,6 @@ public class Service {
             session.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error in sendChatGlobal: " + e.getMessage(), e);
-            e.printStackTrace();
         }
     }
 
@@ -130,7 +127,6 @@ public class Service {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("Error in sendGameNotify: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
@@ -140,7 +136,6 @@ public class Service {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("Error in sendHideWaitDialog: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 

@@ -58,7 +58,7 @@ public class MonsterManager implements IManager {
             }
 //            LogServer.LogInit("MonsterManager initialized size: " + MONSTERS.size());
         } catch (Exception e) {
-            LogServer.LogException("Error loadMonsterTemplates: " + e.getMessage());
+            LogServer.LogException("Error loadMonsterTemplates: " + e.getMessage(), e);
         }
     }
 

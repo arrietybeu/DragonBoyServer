@@ -481,9 +481,9 @@ public class PlayerService {
                 var itemType = item.getTemplate().type();
                 var nameItem = item.getTemplate().name();
                 switch (itemType) {
-                    case ConstItem.GOLD -> player.getPlayerCurrencies().addGold(quantity);
-                    case ConstItem.GEM -> player.getPlayerCurrencies().addGem(quantity);
-                    case ConstItem.RUBY -> player.getPlayerCurrencies().addRuby(quantity);
+                    case ConstItem.TYPE_GOLD -> player.getPlayerCurrencies().addGold(quantity);
+                    case ConstItem.TYPE_GEM -> player.getPlayerCurrencies().addGem(quantity);
+                    case ConstItem.TYPE_RUBY -> player.getPlayerCurrencies().addRuby(quantity);
                     default -> {
                         switch (idItem) {
                             case ConstItem.DUI_GA -> {
@@ -503,7 +503,8 @@ public class PlayerService {
                                 }
                             }
                         }
-                        var notify = idItem == 74 || idItem == 516
+                        player.getPlayerTask().checkDoneTaskPickItem(idItem);
+                        var notify = idItem == ConstItem.DUI_GA || idItem == ConstItem.SOCOLA
                                 ? String.format("Bạn vừa ăn %s", nameItem)
                                 : "";
                         this.sendPickItemMap(
@@ -512,7 +513,6 @@ public class PlayerService {
                         player.getArea().removeItemMap(itemMap.getItemMapID());
                     }
                 }
-
             }
         } catch (Exception ex) {
             LogServer.LogException("pickItem: " + ex.getMessage(), ex);
@@ -525,7 +525,7 @@ public class PlayerService {
             writer.writeShort(itemMapID);
             writer.writeUTF(notify);
             writer.writeShort(quantity);
-            if (type == ConstItem.GOLD || type == ConstItem.GEM || type == ConstItem.RUBY) {
+            if (type == ConstItem.TYPE_GOLD || type == ConstItem.TYPE_GEM || type == ConstItem.TYPE_RUBY) {
                 writer.writeShort(quantity);
             }
             player.sendMessage(message);

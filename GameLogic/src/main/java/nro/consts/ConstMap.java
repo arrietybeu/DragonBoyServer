@@ -11,12 +11,16 @@ public class ConstMap {
 
     public static final short LANG_ARU = 0;
     public static final short DOI_HOA_CUC = 1;
+    public static final short THUNG_LUNG_TRE = 2;
 
     public static final short LANG_MOORI = 7;
     public static final short DOI_NAM_TIM = 8;
 
+    public static final short THI_TRAN_MOORI = 9;
+
     public static final short LANG_KAKAROT = 14;
     public static final short DOI_HOANG = 15;
+    public static final short LANG_PLANT = 16;
 
     public static final short NHA_GOHAN = 21;
     public static final short NHA_MOORI = 22;
@@ -29,5 +33,7 @@ public class ConstMap {
     public static final short VACH_NUI_ARU = 42;
     public static final short VACH_NUI_MOORI = 43;
     public static final short VAC_NUI_KAKAROT = 44;
+
+    public static final short RUNG_KARIN = 47;
 
 }

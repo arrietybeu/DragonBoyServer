@@ -91,10 +91,10 @@ public class PlayerInventory {
                 return false;
             }
 
-            switch (itemNew.getTemplate().id()) {
-                case ConstItem.GOLD -> player.getPlayerCurrencies().addGold(itemNew.getQuantity());
-                case ConstItem.GEM -> player.getPlayerCurrencies().addGem(itemNew.getQuantity());
-                case ConstItem.RUBY -> player.getPlayerCurrencies().addRuby(itemNew.getQuantity());
+            switch (itemNew.getTemplate().type()) {
+                case ConstItem.TYPE_GOLD -> player.getPlayerCurrencies().addGold(itemNew.getQuantity());
+                case ConstItem.TYPE_GEM -> player.getPlayerCurrencies().addGem(itemNew.getQuantity());
+                case ConstItem.TYPE_RUBY -> player.getPlayerCurrencies().addRuby(itemNew.getQuantity());
                 default -> {
                     if (itemNew.getTemplate().maxQuantity() > 1) {
                         for (Item itemInventory : items) {
@@ -135,7 +135,6 @@ public class PlayerInventory {
                     }
 
                     this.disposeItem(itemNew);
-                    break;
                 }
             }
             return true;
@@ -267,7 +266,7 @@ public class PlayerInventory {
         }
         Item itemBox = this.itemsBox.get(index);
         if (itemBox != null && itemBox.getTemplate() != null) {
-            if (itemBox.getTemplate().id() == 12) {
+            if (this.player.getPlayerTask().getTaskMain().getId() == 0 && itemBox.getTemplate().id() == 12) {
                 player.getPlayerTask().checkDoneTaskGetItemBox();
             }
             this.addItemBag(itemBox);
@@ -350,25 +349,25 @@ public class PlayerInventory {
             int index = -1;
             if (item != null && item.getTemplate() != null) {
                 switch (item.getTemplate().type()) {
-                    case ConstItem.AO:
-                    case ConstItem.QUAN:
-                    case ConstItem.GANG:
-                    case ConstItem.GIAY:
-                    case ConstItem.RADA_OR_NHAN:
-                    case ConstItem.CAI_TRANG_OR_AVATAR:
+                    case ConstItem.TYPE_AO:
+                    case ConstItem.TYPE_QUAN:
+                    case ConstItem.TYPE_GANG:
+                    case ConstItem.TYPE_GIAY:
+                    case ConstItem.TYPE_RADA_OR_NHAN:
+                    case ConstItem.TYPE_CAI_TRANG_OR_AVATAR:
                         index = item.getTemplate().type();
                         break;
-                    case ConstItem.GIAP_LUYEN_TAP:
+                    case ConstItem.TYPE_GIAP_LUYEN_TAP:
                         index = 6;
                         break;
-                    case ConstItem.SACH_TUYET_KY:
+                    case ConstItem.TYPE_SACH_TUYET_KY:
                         index = 7;
                         break;
-                    case ConstItem.FLAG_BAG:
+                    case ConstItem.TYPE_FLAG_BAG:
                         index = 8;
                         break;
-                    case ConstItem.MOUNT:
-                    case ConstItem.MOUNT_VIP:
+                    case ConstItem.TYPE_MOUNT:
+                    case ConstItem.TYPE_MOUNT_VIP:
                         index = 9;
                         break;
                     // TODO mini pet index = 10
