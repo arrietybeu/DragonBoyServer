@@ -5,6 +5,7 @@ import lombok.Setter;
 import nro.consts.ConstError;
 import nro.consts.ConstItem;
 import nro.model.item.Item;
+import nro.model.item.ItemOption;
 import nro.server.LogServer;
 import nro.service.InventoryService;
 import nro.service.core.ItemFactory;
@@ -78,95 +79,68 @@ public class PlayerInventory {
         return true;
     }
 
-    private void addItem(List<Item> items, Item itemNew) {
+    private boolean addItem(List<Item> items, Item itemNew) {
         try {
             // neu item add co options thi add options mac dinh
             this.addOptionsDefault(itemNew);
 
             // check item add co dat chuan dieu kien chua
-            if (itemNew.getTemplate() == null) {
-                throw new RuntimeException("add item không có template. " + ConstError.ERROR_INVALID_ITEM);
+            if (itemNew == null || itemNew.getTemplate() == null) {
+                LogServer.LogException("addItem: Item không hợp lệ. " + ConstError.ERROR_INVALID_ITEM);
+                return false;
             }
 
-            if (itemNew.getTemplate().maxQuantity() > 1) {
-                for (int i = 0; i < items.size(); i++) {
-                    Item itemInventory = items.get(i);
-                    if (itemInventory.getTemplate() == null)
-                        continue;
-                    if (itemInventory.getTemplate().id() == itemNew.getTemplate().id()) {
-                        int combinedQuantity = itemInventory.getQuantity() + itemNew.getQuantity();
-                        if (combinedQuantity > itemNew.getTemplate().maxQuantity()) {
+            switch (itemNew.getTemplate().id()) {
+                case ConstItem.GOLD -> player.getPlayerCurrencies().addGold(itemNew.getQuantity());
+                case ConstItem.GEM -> player.getPlayerCurrencies().addGem(itemNew.getQuantity());
+                case ConstItem.RUBY -> player.getPlayerCurrencies().addRuby(itemNew.getQuantity());
+                default -> {
+                    if (itemNew.getTemplate().maxQuantity() > 1) {
+                        for (Item itemInventory : items) {
+                            if (itemInventory == null || itemInventory.getTemplate() == null)
+                                continue;
 
+                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id() ||
+                                    !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
+                                continue;
+                            }
+                            int maxQuantity = itemNew.getTemplate().maxQuantity();
+
+                            int spaceLeft = maxQuantity - itemInventory.getQuantity();
+
+                            if (spaceLeft > 0) { // chi cong don khi con cho trong
+                                if (itemNew.getQuantity() <= spaceLeft) {
+                                    itemInventory.addQuantity(itemNew.getQuantity());
+                                    this.disposeItem(itemNew);
+                                    return true;
+                                } else {
+                                    itemInventory.addQuantity(spaceLeft);
+                                    itemNew.subQuantity(spaceLeft);
+                                }
+                            }
                         }
                     }
-                }
 
-            } else {
-                short index = this.findIndexItemNullInventory(items);
-                if (index == -1) {
-                    throw new RuntimeException("Không có vị trí trống để thêm item mới.");
-                }
-
-                items.set(index, ItemFactory.getInstance().clone(itemNew));
-                this.disposeItem(itemNew);
-            }
-
-        } catch (Exception e) {
-            LogServer.LogException("Error addItem: " + e.getMessage(), e);
-        }
-    }
-
-    private void addItemOld(List<Item> items, Item item) {
-        try {
-            this.addOptionsDefault(item);
-
-            if (item.getTemplate() == null)
-                return;
-
-            short index = this.findIndexItemNullInventory(items);
-
-            for (Item it : items) {
-                if (it.getTemplate() == null)
-                    continue;
-
-                if (it.getTemplate().id() == item.getTemplate().id()) {
-                    int combinedQuantity = it.getQuantity() + item.getQuantity();
-
-                    if (combinedQuantity > item.getTemplate().maxQuantity()) {
-                        it.setQuantity(item.getTemplate().maxQuantity());
-
-                        int remainingQuantity = combinedQuantity - item.getTemplate().maxQuantity();
-
+                    while (itemNew.getQuantity() > 0) {
+                        short index = this.findIndexItemNullInventory(items);
                         if (index == -1) {
-                            throw new RuntimeException("Không có vị trí trống để chứa item dư.");
+                            return false;
                         }
-
-                        Item newItem = ItemFactory.getInstance().clone(item);
-
-                        newItem.setQuantity(remainingQuantity);
-                        it.setQuantity(remainingQuantity);
-                        this.disposeItem(item);
-                        return;
+                        Item newItemStack = ItemFactory.getInstance().clone(itemNew);
+                        int addAmount = Math.min(itemNew.getQuantity(), itemNew.getTemplate().maxQuantity());
+                        newItemStack.setQuantity(addAmount);
+                        itemNew.subQuantity(addAmount);
+                        items.set(index, newItemStack);
                     }
 
-                    it.setQuantity(combinedQuantity);
-                    this.disposeItem(item);
-                    return;
+                    this.disposeItem(itemNew);
+                    break;
                 }
             }
-
-            if (item.getQuantity() > 0) {
-                if (index == -1) {
-                    throw new RuntimeException("Không có vị trí trống để thêm item mới.");
-                }
-
-                items.set(index, ItemFactory.getInstance().clone(item));
-                item.setQuantity(0);
-            } else {
-                this.disposeItem(item);
-            }
+            return true;
         } catch (Exception e) {
             LogServer.LogException("Error addItem: " + e.getMessage(), e);
+            return false;
         }
     }
 
@@ -411,7 +385,7 @@ public class PlayerInventory {
         playerService.sendPointForMe(this.player);
     }
 
-    private void _______________FIND_ITEM______________() {
+    private void _______________FIND_ITEM_____________() {
     }
 
     public Item findItemInBag(int templateId) {
@@ -441,7 +415,7 @@ public class PlayerInventory {
         return -1;
     }
 
-    private void _______________CHECK_SIZE_INVENTORY______________() {
+    private void _______________CHECK_______________() {
     }
 
     public boolean isBodyFull() {
@@ -473,10 +447,30 @@ public class PlayerInventory {
         return count;
     }
 
+    private boolean isSameOptions(List<ItemOption> options1, List<ItemOption> options2) {
+        if (options1.size() != options2.size()) {
+            return false;
+        }
+
+        for (ItemOption opt1 : options1) {
+            boolean found = false;
+            for (ItemOption opt2 : options2) {
+                if (opt1.getId() == opt2.getId() && opt1.getParam() == opt2.getParam()) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void _______________DISPOSE______________() {
     }
 
-    public void dispose() {
+    private void dispose() {
         for (Item item : this.itemsBody) {
             if (item != null) {
                 item.dispose();
@@ -495,7 +489,7 @@ public class PlayerInventory {
     }
 
     public void disposeItem(Item item) {
-        nro.utils.Util.getMethodCaller();
+        // nro.utils.Util.getMethodCaller();
 
         if (item != null) {
             item.dispose();

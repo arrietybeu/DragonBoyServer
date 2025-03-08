@@ -52,8 +52,7 @@ public class InventoryService {
             }
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("sendItemToBags: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("sendItemToBags: " + ex.getMessage(), ex);
         }
     }
 

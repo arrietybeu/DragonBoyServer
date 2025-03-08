@@ -85,7 +85,7 @@ public class ItemManager implements IManager {
                     var powerRequire = resultSet.getInt("power_require");
                     var iconID = resultSet.getShort("icon_id");
                     var part = resultSet.getShort("part");
-                    var maxQuantity = resultSet.getByte("max_quantity");
+                    var maxQuantity = resultSet.getInt("max_quantity");
                     var head = resultSet.getShort("head");
                     var body = resultSet.getShort("body");
                     var leg = resultSet.getShort("leg");
@@ -219,7 +219,8 @@ public class ItemManager implements IManager {
                 message.writer().writeByte(itemTemplate.type());
                 message.writer().writeByte(itemTemplate.gender());
                 // message.writer().writeUTF(itemTemplate.name());
-                message.writer().writeUTF("[ID: " + itemTemplate.id() + "] " + itemTemplate.name());// test
+                message.writer().writeUTF("[ID: " + itemTemplate.id() + "] "
+                 + itemTemplate.name());// test
                 message.writer().writeUTF(itemTemplate.description());
                 message.writer().writeByte(itemTemplate.level());
                 message.writer().writeInt(itemTemplate.strRequire());

@@ -15,6 +15,7 @@ public class ItemOption {
         this.param = param;
     }
 
+    // constructor Default option
     public ItemOption() {
         this.id = 73;
         this.param = 0;
