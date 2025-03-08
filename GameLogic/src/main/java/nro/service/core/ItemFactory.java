@@ -98,7 +98,7 @@ public class ItemFactory {
     }
 
     public Item createItemOptionsBase(int itemId, int... quantitys) {
-        var quantity = quantitys.length > 0 ? quantitys[0] : 1;
+        var quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
         Item item = this.createItemNotOptionsBase(itemId, quantity);
         this.initBaseOptions(item);
         return item;

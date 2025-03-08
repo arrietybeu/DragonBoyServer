@@ -104,7 +104,6 @@ public class PlayerService {
         } catch (Exception ex) {
             LogServer.LogException(
                     "Error send Caption For Player id: " + player.getName() + " info: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 

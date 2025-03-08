@@ -37,8 +37,7 @@ public class UseItemService {
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("useItem: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("useItem: " + ex.getMessage(), ex);
         }
     }
 
@@ -71,39 +70,49 @@ public class UseItemService {
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("getItem: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("getItem: " + ex.getMessage(), ex);
         }
     }
 
     public void confirmThrowItem(Player player, byte type, byte where, byte index) {
         try {
             switch (where) {
-                case 0: {
-                    // item body
+                case ConstUseItem.THROW_ITEM_BODY -> {
                     List<Item> itemsBody = player.getPlayerInventory().getItemsBody();
                     if (index < 0 || index >= itemsBody.size()) {
                         Service.dialogMessage(player.getSession(), "Đã xảy ra lỗi");
-                        return;
+                        break;
                     }
                     Item item = itemsBody.get(index);
                     if (item == null || item.getTemplate() == null) {
                         Service.dialogMessage(player.getSession(), "Không có vật phẩm này!");
-                        return;
+                        break;
                     }
-                    String info = String.format("Bạn có chắc muốn hủy bỏ (mất luôn)\n%d %s", item.getQuantity(), item.getTemplate().name());
+                    String info = String.format("Bạn có chắc muốn hủy bỏ (mất luôn)\n%dx %s", item.getQuantity(),
+                            item.getTemplate().name());
                     this.eventUseItem(player, type, where, index, info);
-                    break;
-
                 }
-                default: {
+                case ConstUseItem.THROW_ITEM_BAG -> {
+                    List<Item> itemsBag = player.getPlayerInventory().getItemsBag();
+                    if (index < 0 || index >= itemsBag.size()) {
+                        Service.dialogMessage(player.getSession(), "Đã xảy ra lỗi");
+                        break;
+                    }
+                    Item item = itemsBag.get(index);
+                    if (item == null || item.getTemplate() == null) {
+                        Service.dialogMessage(player.getSession(), "Không có vật phẩm này!");
+                        break;
+                    }
+                    var info = String.format("Bạn có chắc muốn hủy bỏ (mất luôn)\n%dx %s", item.getQuantity(),
+                            item.getTemplate().name());
+                    this.eventUseItem(player, type, where, index, info);
+                }
+                default -> {
                     LogServer.LogWarning("confirmThrowItem type: " + type + " player: " + player.getName());
-                    break;
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("confirmThrowItem: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("confirmThrowItem: " + ex.getMessage(), ex);
         }
     }
 
@@ -116,8 +125,7 @@ public class UseItemService {
             data.writeUTF(info);
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("eventUseItem: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("eventUseItem: " + ex.getMessage(), ex);
         }
     }
 }

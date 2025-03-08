@@ -111,8 +111,7 @@ public class ItemManager implements IManager {
                 // LogServer.LogInit("ItemManager initialized size: " + itemTemplates.size());
             }
         } catch (Exception e) {
-            LogServer.LogException("Error loadItem: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error loadItem: " + e.getMessage(), e);
         }
     }
 
@@ -133,7 +132,7 @@ public class ItemManager implements IManager {
             // LogServer.LogInit("ItemOptionManager initialized size: " +
             // this.itemOptionTemplates.size());
         } catch (Exception e) {
-            LogServer.LogException("Error loadItemOptionTemplate: " + e.getMessage());
+            LogServer.LogException("Error loadItemOptionTemplate: " + e.getMessage(), e);
         }
     }
 
@@ -153,8 +152,7 @@ public class ItemManager implements IManager {
             }
             this.setDataItemHead();
         } catch (SQLException e) {
-            LogServer.LogException("Error loadHeadAvatar: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error loadHeadAvatar: " + e.getMessage(), e);
         }
         // LogServer.LogInit("Item loadHeadAvatar initialized size: " +
         // itemHeadAvatars.size());
@@ -178,7 +176,7 @@ public class ItemManager implements IManager {
                 }
             }
         } catch (SQLException e) {
-            LogServer.LogException("Error loadFlagBag: " + e.getMessage());
+            LogServer.LogException("Error loadFlagBag: " + e.getMessage(), e);
         }
         // LogServer.LogInit("Item Flag initialized size: " + flags.size());
     }
@@ -203,7 +201,7 @@ public class ItemManager implements IManager {
             }
             this.setItemArrHead2fr();
         } catch (Exception e) {
-            LogServer.LogException("Error loadItemArr_Head_2Fr: " + e.getMessage());
+            LogServer.LogException("Error loadItemArr_Head_2Fr: " + e.getMessage(), e);
         }
         // LogServer.LogInit("Item ArrHead2Frames initialized size: " +
         // arrHead2Frames.size());
@@ -220,7 +218,7 @@ public class ItemManager implements IManager {
                 message.writer().writeByte(itemTemplate.gender());
                 // message.writer().writeUTF(itemTemplate.name());
                 message.writer().writeUTF("[ID: " + itemTemplate.id() + "] "
-                 + itemTemplate.name());// test
+                        + itemTemplate.name());// test
                 message.writer().writeUTF(itemTemplate.description());
                 message.writer().writeByte(itemTemplate.level());
                 message.writer().writeInt(itemTemplate.strRequire());
@@ -231,7 +229,7 @@ public class ItemManager implements IManager {
             }
             this.dataItemTemplate = message.getData();
         } catch (Exception e) {
-            LogServer.LogException("Error sending item template: " + e.getMessage());
+            LogServer.LogException("Error sending item template: " + e.getMessage(), e);
         }
     }
 
@@ -245,7 +243,7 @@ public class ItemManager implements IManager {
             }
             this.dataItemOption = message.getData();
         } catch (Exception e) {
-            LogServer.LogException("Error sending skill template: " + e.getMessage());
+            LogServer.LogException("Error sending skill template: " + e.getMessage(), e);
         }
     }
 
@@ -261,7 +259,7 @@ public class ItemManager implements IManager {
             }
             this.dataArrHead2Fr = message.getData();
         } catch (Exception e) {
-            LogServer.LogException("Error sending item arr head 2 fr: " + e.getMessage());
+            LogServer.LogException("Error sending item arr head 2 fr: " + e.getMessage(), e);
         }
     }
 
@@ -274,7 +272,7 @@ public class ItemManager implements IManager {
             }
             this.dataItemhead = message.getData();
         } catch (Exception e) {
-            LogServer.LogException("Error sending item setDataItemHead: " + e.getMessage());
+            LogServer.LogException("Error sending item setDataItemHead: " + e.getMessage(), e);
         }
     }
 

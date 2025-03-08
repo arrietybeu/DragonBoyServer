@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstError;
 import nro.consts.ConstItem;
+import nro.consts.ConstUseItem;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.server.LogServer;
@@ -189,7 +190,7 @@ public class PlayerInventory {
 
     public void throwItem(byte where, byte index) {
         switch (where) {
-            case 0: {
+            case ConstUseItem.THROW_ITEM_BODY -> {
                 List<Item> itemBodys = this.getItemsBody();
                 if (index < 0 || index >= itemBodys.size()) {
                     Service.dialogMessage(player.getSession(), "Đã xảy ra lỗi " + index);
@@ -202,12 +203,24 @@ public class PlayerInventory {
                 }
                 this.removeItemBody(index);
                 InventoryService.getInstance().sendItemToBodys(player);
-                break;
             }
-            default: {
+            case ConstUseItem.THROW_ITEM_BAG -> {
+                List<Item> itemsBag = this.getItemsBag();
+                if (index < 0 || index >= itemsBag.size()) {
+                    Service.dialogMessage(player.getSession(), "Đã xảy ra lỗi " + index);
+                    return;
+                }
+                Item item = itemsBag.get(index);
+                if (item == null) {
+                    Service.dialogMessage(player.getSession(), "Đã xảy ra lỗi " + index);
+                    return;
+                }
+                this.removeItemBag(index);
+                InventoryService.getInstance().sendItemToBags(player, 0);
+            }
+            default -> {
                 LogServer.LogWarning(
                         "Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
-                break;
             }
         }
     }

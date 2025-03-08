@@ -61,13 +61,15 @@ public class PlayerPoints {
     public void setCurrentHp(long hp) {
         if (hp < 0) {
             this.currentHP = 0;
-        } else this.currentHP = Math.min(hp, this.maxHP);
+        } else
+            this.currentHP = Math.min(hp, this.maxHP);
     }
 
     public void setCurrentMp(long mp) {
         if (mp < 0) {
             this.currentMP = 0;
-        } else this.currentMP = Math.min(mp, this.maxMP);
+        } else
+            this.currentMP = Math.min(mp, this.maxMP);
     }
 
     public void subCurrentHp(long hp) {
@@ -126,11 +128,13 @@ public class PlayerPoints {
         }
         for (int i = 0; i < this.player.getPlayerInventory().getItemsBody().size(); i++) {
             Item itemBody = this.player.getPlayerInventory().getItemsBody().get(i);
-            if (itemBody.getTemplate() == null) continue;
+            if (itemBody.getTemplate() == null)
+                continue;
             var countOption = itemBody.getItemOptions().size();
             for (int o = 0; o < countOption; o++) {
                 ItemOption itemOption = itemBody.getItemOptions().get(o);
-                if (itemOption == null) continue;
+                if (itemOption == null)
+                    continue;
                 if (itemOption.getId() == id) {
                     switch (type) {
                         case 1 -> param = param + param * itemOption.getParam() / 100;
@@ -177,7 +181,8 @@ public class PlayerPoints {
 
     public void returnTownFromDead() {
         try {
-            if (!this.isDead()) return;
+            if (!this.isDead())
+                return;
 
             this.currentHP = 1;
             this.player.getPlayerStatus().setLockMove(false);
@@ -187,10 +192,11 @@ public class PlayerPoints {
             short mapID = (short) (21 + this.player.getGender());
 
             PlayerService playerService = PlayerService.getInstance();
-            playerService.sendPlayerRevive(player);//-16
+            playerService.sendPlayerRevive(player);// -16
             GameMap newMap = MapManager.getInstance().findMapById(mapID);
             if (newMap == null) {
-                Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID, false);
+                Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID,
+                        false);
                 return;
             }
             player.getPlayerStatus().setTeleport(1);
