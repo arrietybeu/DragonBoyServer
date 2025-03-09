@@ -20,7 +20,7 @@ public class ItemMap {
     private final short range;
     private final long lastTimeRemoveItem;
 
-    public ItemMap(Area area, int playerId, Item item, int x, int y, int range) {
+    public ItemMap(Area area, int playerId, Item item, int x, int y, int range) throws IllegalArgumentException {
         this.area = area;
         this.itemMapID = area.increaseItemMapID();
         this.playerId = playerId;
@@ -30,6 +30,10 @@ public class ItemMap {
         this.lastTimeRemoveItem = System.currentTimeMillis();
         this.range = (short) range;
         area.addItemMap(this);
+
+        if (item.getTemplate() == null) {
+            throw new IllegalArgumentException("item template is null");
+        }
     }
 
 

@@ -37,7 +37,6 @@ public class Player extends LiveObject {
     private Clan clan;
     private Disciple disciple;
     private PetFollow petFollow;
-
     private Instant createdAt;
     private Session session;
 

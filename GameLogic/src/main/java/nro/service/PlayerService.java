@@ -20,6 +20,7 @@ import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
+import nro.service.core.DropItemMap;
 import nro.utils.Util;
 
 import java.io.DataOutputStream;
@@ -58,6 +59,9 @@ public class PlayerService {
     }
 
     private void onPlayerLoginSuccess(Player player) {
+        if (!player.getSession().getSessionInfo().isLogin()) {
+            return;
+        }
         player.getSession().getSessionInfo().setLoadData(true);
         player.getArea().addPlayer(player);
         Service service = Service.getInstance();
@@ -83,6 +87,7 @@ public class PlayerService {
         service.sendGameNotify(player);// 50
         this.sendCaptionForPlayer(player);// -41
         player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
+        DropItemMap.dropMissionItems(player);
     }
 
     private void sendCaptionForPlayer(Player player) {
@@ -480,23 +485,25 @@ public class PlayerService {
                 var quantity = item.getQuantity();
                 var itemType = item.getTemplate().type();
                 var nameItem = item.getTemplate().name();
+                var notify = "";
                 switch (itemType) {
                     case ConstItem.TYPE_GOLD -> player.getPlayerCurrencies().addGold(quantity);
                     case ConstItem.TYPE_GEM -> player.getPlayerCurrencies().addGem(quantity);
                     case ConstItem.TYPE_RUBY -> player.getPlayerCurrencies().addRuby(quantity);
                     default -> {
                         switch (idItem) {
-                            case ConstItem.DUI_GA -> {
+                            case ConstItem.DUI_GA_NUONG -> {
                                 PlayerPoints playerPoints = player.getPlayerPoints();
                                 playerPoints.setCurrentHp(playerPoints.getMaxHP());
                                 playerPoints.setCurrentMp(playerPoints.getMaxMP());
                                 this.sendHpForPlayer(player);
                                 this.sendMpForPlayer(player);
-                            }
-                            case ConstItem.QUA_TRUNG -> {
-                                // TODO logic nhặt quả trứng
+                                notify = String.format("Bạn vừa ăn %s", nameItem);
                             }
                             default -> {
+                                if (idItem == ConstItem.DUA_BE) {
+                                    notify = "Wow, một cậu bé dễ thương";
+                                }
                                 if (!player.getPlayerInventory().addItemBag(item)) {
                                     // service.sendChatGlobal(player.getSession(), null, "", false);
                                     return;
@@ -504,11 +511,7 @@ public class PlayerService {
                             }
                         }
                         player.getPlayerTask().checkDoneTaskPickItem(idItem);
-                        var notify = idItem == ConstItem.DUI_GA || idItem == ConstItem.SOCOLA
-                                ? String.format("Bạn vừa ăn %s", nameItem)
-                                : "";
-                        this.sendPickItemMap(
-                                player, itemMap.getItemMapID(), itemType, quantity, notify);
+                        this.sendPickItemMap(player, itemMap.getItemMapID(), itemType, quantity, notify);
                         this.sendPLayerPickItemMap(player, itemMap.getItemMapID());
                         player.getArea().removeItemMap(itemMap.getItemMapID());
                     }

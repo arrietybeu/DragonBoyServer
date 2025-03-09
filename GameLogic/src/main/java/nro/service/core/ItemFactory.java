@@ -16,11 +16,19 @@ public class ItemFactory {
 
     private final static ItemManager itemManager = ItemManager.getInstance();
 
-    public Item createItemNotOptionsBase(int tempId, int quantity) {
+    public Item createItemNotOptionsBase(int tempId, int... quantitys) {
+        var quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
         Item item = new Item();
         item.setTemplate(getTemplate(tempId));
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
+        return item;
+    }
+
+    public Item createItemOptionsBase(int itemId, int... quantitys) {
+        var quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
+        Item item = this.createItemNotOptionsBase(itemId, quantity);
+        this.initBaseOptions(item);
         return item;
     }
 
@@ -95,13 +103,6 @@ public class ItemFactory {
             throw new RuntimeException("Failed to create item id: " + itemId);
         }
         return items;
-    }
-
-    public Item createItemOptionsBase(int itemId, int... quantitys) {
-        var quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
-        Item item = this.createItemNotOptionsBase(itemId, quantity);
-        this.initBaseOptions(item);
-        return item;
     }
 
 }

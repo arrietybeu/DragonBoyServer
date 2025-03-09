@@ -11,4 +11,13 @@ public class ConstPlayer {
 
     public static final byte TELEPORT_DEFAULT = 0;
 
+
+    // =================== UP_POTENTIAL ===================//
+
+    public static final byte UP_POTENTIAL_HP = 0;
+    public static final byte UP_POTENTIAL_MP = 1;
+    public static final byte UP_POTENTIAL_DAMAGE = 2;
+    public static final byte UP_POTENTIAL_DEFENSE = 3;
+
+    public static final byte UP_POTENTIAL_CRITICAL = 4;
 }

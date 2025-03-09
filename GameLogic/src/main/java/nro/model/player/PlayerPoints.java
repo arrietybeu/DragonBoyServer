@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
@@ -12,6 +13,7 @@ import nro.server.manager.MapManager;
 import nro.service.AreaService;
 import nro.service.PlayerService;
 import nro.service.Service;
+import nro.utils.Util;
 
 @Getter
 @Setter
@@ -229,6 +231,136 @@ public class PlayerPoints {
         playerService.sendCurrencyHpMp(this.player);
         playerService.sendPlayerRevive(this.player);
         playerService.sendPlayerReviveToArea(this.player);
+    }
+
+    public void upPotentialPoint(int type, int point) {
+        try {
+            Service service = Service.getInstance();
+            PlayerService playerService = PlayerService.getInstance();
+
+            if (this.potentialPoints < point) {
+                Service.dialogMessage(this.player.getSession(),
+                        String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s",
+                                Util.numberToString(this.potentialPoints)));
+                return;
+            }
+
+            long potentiaUse = 0;
+            long currentPoint = -1;
+            switch (type) {
+                case ConstPlayer.UP_POTENTIAL_HP -> {
+                    final var currentBaseHp = this.baseHP;
+                    final long multiplier = switch (point) {
+                        case 1 -> 1;
+                        case 10 -> 10;
+                        case 100 -> 100;
+                        default -> {
+                            LogServer.LogWarning("upPotentialPoint HP: point không tồn tại: " + point);
+                            service.sendHideWaitDialog(player);
+                            yield -1;
+                        }
+                    };
+
+                    if (multiplier == -1)
+                        return;
+
+                    potentiaUse = multiplier
+                            * (2 * (currentBaseHp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980)))
+                            / 2;
+                    currentPoint = currentBaseHp;
+                }
+
+                case ConstPlayer.UP_POTENTIAL_MP -> {
+                    final var currentBaseMp = this.baseMP;
+                    final long multiplier = switch (point) {
+                        case 1 -> 1;
+                        case 10 -> 10;
+                        case 100 -> 100;
+                        default -> {
+                            LogServer.LogWarning("upPotentialPoint MP: point không tồn tại: " + point);
+                            service.sendHideWaitDialog(player);
+                            yield -1;
+                        }
+                    };
+
+                    if (multiplier == -1)
+                        return;
+
+                    potentiaUse = multiplier
+                            * (2 * (currentBaseMp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980)))
+                            / 2;
+                    currentPoint = currentBaseMp;
+                }
+                case ConstPlayer.UP_POTENTIAL_DAMAGE -> {
+                    final long currentDamage = this.baseDamage;
+
+                    final long multiplier = switch (point) {
+                        case 1 -> currentDamage * 100;
+                        case 10 -> 10 * (2 * currentDamage + 9) / 2 * 100;
+                        case 100 -> 100 * (2 * currentDamage + 99) / 2 * 100;
+                        default -> {
+                            LogServer.LogWarning("upPotentialPoint MP: point không tồn tại: " + point);
+                            service.sendHideWaitDialog(player);
+                            yield -1;
+                        }
+                    };
+
+                    if (multiplier == -1)
+                        return;
+
+                    potentiaUse = multiplier;
+                    currentPoint = currentDamage;
+                }
+                case ConstPlayer.UP_POTENTIAL_DEFENSE -> {
+                    final var currentBaseDefense = this.baseDefense;
+                    potentiaUse = 2 * (currentBaseDefense + 5) * 2 / 100000;
+                    currentPoint = currentBaseDefense;
+                }
+                case ConstPlayer.UP_POTENTIAL_CRITICAL -> {
+                    final var currentBaseCritical = this.baseCriticalChance;
+                    potentiaUse = (long) (50_000_000 * Math.pow(5, point));
+                    currentPoint = currentBaseCritical;
+                }
+                default -> {
+                    LogServer.LogWarning("upPotentialPoint: type không tồn tại: " + type);
+                    service.sendHideWaitDialog(player);
+                    return;
+                }
+            }
+
+            if (potentiaUse > 0 && this.isUpgradePotential(type, potentiaUse, currentPoint, point)) {
+                playerService.sendPointForMe(player);
+                this.player.getPlayerTask().checkDoneTaskUpgradedPotential();
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("upPotentialPoint: " + ex.getMessage(), ex);
+        }
+    }
+
+    private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point)
+            throws Exception {
+        if (this.potentialPoints < potentiaUse) {
+            Service.dialogMessage(this.player.getSession(),
+                    String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s",
+                            Util.numberToString(this.potentialPoints)));
+            return false;
+        }
+
+        switch (type) {
+            case ConstPlayer.UP_POTENTIAL_HP -> this.baseHP = (int) (currentPoint + 20L * point);
+            case ConstPlayer.UP_POTENTIAL_MP -> this.baseMP = (int) (currentPoint + 20L * point);
+            case ConstPlayer.UP_POTENTIAL_DAMAGE -> this.baseDamage = (int) (currentPoint + 1L * point);
+            case ConstPlayer.UP_POTENTIAL_DEFENSE -> this.baseDefense += 1;
+            case ConstPlayer.UP_POTENTIAL_CRITICAL -> this.baseCriticalChance += 1;
+            default -> {
+                LogServer.LogWarning("isUpgradePotential: type không tồn tại: " + type);
+                return false;
+            }
+        }
+
+        this.potentialPoints -= potentiaUse;
+        this.setPoint();
+        return true;
     }
 
     @Override

@@ -239,34 +239,53 @@ public class PlayerLoader {
         }
     }
 
-
     private void loadPlayerLocation(Player player, Connection connection) throws SQLException {
         String query = "SELECT pos_x, pos_y, map_id FROM player_location WHERE player_id = ?";
+
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, player.getId());
+
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    short x = resultSet.getShort("pos_x");
-                    short y = resultSet.getShort("pos_y");
-                    short mapID = resultSet.getShort("map_id");
-                    if (x < 0 || y < 0 || player.getPlayerPoints().getCurrentHP() <= 0) {
-                        player.getPlayerPoints().setCurrentHp(1);
-                        x = 400;
-                        y = 336;
-                        mapID = (short) (21 + player.getGender());
-                    }
-                    player.setX(x);
-                    player.setY(y);
-                    Area gameMap = MapManager.getInstance().findMapById(mapID).getArea();
-                    if (gameMap == null) {
-                        throw new SQLException("Map not found for player location: " + mapID);
-                    }
-                    player.setArea(gameMap);
-                } else {
-                    throw new SQLException("Khong tim thay location for player id: " + player.getId());
+                if (!resultSet.next()) {
+                    throw new SQLException("no location player id: " + player.getId());
                 }
+
+                short x = resultSet.getShort("pos_x");
+                short y = resultSet.getShort("pos_y");
+                short mapID = resultSet.getShort("map_id");
+
+                if (isInvalidLocation(x, y, player)) {
+                    resetPlayerLocation(player);
+                    x = player.getX();
+                    y = player.getY();
+                    mapID = (short) (21 + player.getGender());
+                }
+
+                Area gameMap = getValidArea(mapID);
+                if (gameMap == null) {
+                    resetPlayerLocation(player);
+                    gameMap = getValidArea((short) (21 + player.getGender()));
+                }
+
+                player.setX(x);
+                player.setY(y);
+                player.setArea(gameMap);
             }
         }
+    }
+
+    private boolean isInvalidLocation(short x, short y, Player player) {
+        return x < 0 || y < 0 || player.getPlayerPoints().getCurrentHP() <= 0;
+    }
+
+    private void resetPlayerLocation(Player player) {
+        player.getPlayerPoints().setCurrentHp(1);
+        player.setX((short) 400);
+        player.setY((short) 336);
+    }
+
+    private Area getValidArea(short mapID) {
+        return MapManager.getInstance().findMapById(mapID).getArea();
     }
 
     private void loadPlayerMagicTree(Player player, Connection connection) throws SQLException {

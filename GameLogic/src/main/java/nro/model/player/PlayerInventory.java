@@ -82,14 +82,14 @@ public class PlayerInventory {
 
     private boolean addItem(List<Item> items, Item itemNew) {
         try {
-            // neu item add co options thi add options mac dinh
-            this.addOptionsDefault(itemNew);
-
             // check item add co dat chuan dieu kien chua
             if (itemNew == null || itemNew.getTemplate() == null) {
                 LogServer.LogException("addItem: Item không hợp lệ. " + ConstError.ERROR_INVALID_ITEM);
                 return false;
             }
+
+            // neu item add co options thi add options mac dinh
+            this.addOptionsDefault(itemNew);
 
             switch (itemNew.getTemplate().type()) {
                 case ConstItem.TYPE_GOLD -> player.getPlayerCurrencies().addGold(itemNew.getQuantity());
@@ -98,11 +98,10 @@ public class PlayerInventory {
                 default -> {
                     if (itemNew.getTemplate().maxQuantity() > 1) {
                         for (Item itemInventory : items) {
-                            if (itemInventory == null || itemInventory.getTemplate() == null)
-                                continue;
+                            if (itemInventory == null || itemInventory.getTemplate() == null) continue;
 
-                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id() ||
-                                    !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
+                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id()
+                                    || !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
                                 continue;
                             }
                             int maxQuantity = itemNew.getTemplate().maxQuantity();
@@ -218,8 +217,7 @@ public class PlayerInventory {
                 InventoryService.getInstance().sendItemToBags(player, 0);
             }
             default -> {
-                LogServer.LogWarning(
-                        "Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
+                LogServer.LogWarning("Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
             }
         }
     }
@@ -284,8 +282,7 @@ public class PlayerInventory {
         }
         Item itemBag = this.itemsBag.get(index);
         if (itemBag != null && itemBag.getTemplate() != null) {
-            if (!this.addItemBox(itemBag))
-                return;
+            if (!this.addItemBox(itemBag)) return;
             if (itemBag.getQuantity() == 0) {
                 Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBag.set(index, itemNull);
@@ -300,8 +297,7 @@ public class PlayerInventory {
         }
         Item itemBody = this.itemsBody.get(index);
         if (itemBody != null && itemBody.getTemplate() != null) {
-            if (!this.addItemBox(itemBody))
-                return;
+            if (!this.addItemBox(itemBody)) return;
             if (itemBody.getQuantity() == 0) {
                 Item itemNull = ItemFactory.getInstance().createItemNull();
                 this.itemsBody.set(index, itemNull);
@@ -349,31 +345,15 @@ public class PlayerInventory {
             int index = -1;
             if (item != null && item.getTemplate() != null) {
                 switch (item.getTemplate().type()) {
-                    case ConstItem.TYPE_AO:
-                    case ConstItem.TYPE_QUAN:
-                    case ConstItem.TYPE_GANG:
-                    case ConstItem.TYPE_GIAY:
-                    case ConstItem.TYPE_RADA_OR_NHAN:
-                    case ConstItem.TYPE_CAI_TRANG_OR_AVATAR:
-                        index = item.getTemplate().type();
-                        break;
-                    case ConstItem.TYPE_GIAP_LUYEN_TAP:
-                        index = 6;
-                        break;
-                    case ConstItem.TYPE_SACH_TUYET_KY:
-                        index = 7;
-                        break;
-                    case ConstItem.TYPE_FLAG_BAG:
-                        index = 8;
-                        break;
-                    case ConstItem.TYPE_MOUNT:
-                    case ConstItem.TYPE_MOUNT_VIP:
-                        index = 9;
-                        break;
-                    // TODO mini pet index = 10
-                    default: {
-                        Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Trang bị không phù hợp.",
-                                false);
+                    case ConstItem.TYPE_AO, ConstItem.TYPE_QUAN, ConstItem.TYPE_GANG, ConstItem.TYPE_GIAY,
+                         ConstItem.TYPE_RADA_OR_NHAN, ConstItem.TYPE_CAI_TRANG_OR_AVATAR ->
+                            index = item.getTemplate().type();
+                    case ConstItem.TYPE_GIAP_LUYEN_TAP -> index = 6;
+                    case ConstItem.TYPE_SACH_TUYET_KY -> index = 7;
+                    case ConstItem.TYPE_FLAG_BAG -> index = 8;
+                    case ConstItem.TYPE_MOUNT, ConstItem.TYPE_MOUNT_VIP -> index = 9;
+                    default -> {
+                        Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Trang bị không phù hợp.", false);
                         return itemBody;
                     }
                 }
@@ -401,21 +381,15 @@ public class PlayerInventory {
     }
 
     public Item findItemInBag(int templateId) {
-        return this.itemsBag.stream()
-                .filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId)
-                .findFirst().orElse(null);
+        return this.itemsBag.stream().filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId).findFirst().orElse(null);
     }
 
     public Item findItemInBody(int templateId) {
-        return this.itemsBody.stream()
-                .filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId)
-                .findFirst().orElse(null);
+        return this.itemsBody.stream().filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId).findFirst().orElse(null);
     }
 
     public Item findItemInBox(int templateId) {
-        return this.itemsBox.stream()
-                .filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId)
-                .findFirst().orElse(null);
+        return this.itemsBox.stream().filter(item -> item.getTemplate() != null && item.getTemplate().id() == templateId).findFirst().orElse(null);
     }
 
     public short findIndexItemNullInventory(List<Item> items) {

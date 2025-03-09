@@ -1,4 +1,4 @@
-﻿package nro.server;
+package nro.server;
 
 import java.io.IOException;
 import java.io.PrintStream;

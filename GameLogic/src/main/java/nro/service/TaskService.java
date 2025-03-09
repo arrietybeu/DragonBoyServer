@@ -15,7 +15,7 @@ public class TaskService {
     public void sendTaskMain(Player player) {
 
         try (Message message = new Message(40);
-                DataOutputStream output = message.writer()) {
+             DataOutputStream output = message.writer()) {
 
             var taskMain = player.getPlayerTask().getTaskMain();
             var subNames = taskMain.getSubNameList();
@@ -45,14 +45,13 @@ public class TaskService {
 
             player.sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException("Error sendTaskMain: " + e.getMessage());
+            LogServer.LogException("Error sendTaskMain: " + e.getMessage(), e);
         }
     }
 
     public void sendTaskMainUpdate(Player player) {
         try (Message message = new Message(43);
-                DataOutputStream output = message.writer()) {
+             DataOutputStream output = message.writer()) {
             var taskMain = player.getPlayerTask().getTaskMain();
             var subNames = taskMain.getSubNameList();
             output.writeShort(subNames.get(taskMain.getIndex()).getCount());

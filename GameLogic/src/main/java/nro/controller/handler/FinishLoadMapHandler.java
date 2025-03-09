@@ -18,8 +18,7 @@ public class FinishLoadMapHandler implements IMessageProcessor {
             if (player == null) return;
             AreaService.getInstance().sendInfoAllPlayerInArea(player);
         } catch (Exception ex) {
-            LogServer.LogException("FinishLoadMapHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("FinishLoadMapHandler: " + ex.getMessage(), ex);
         }
     }
 }

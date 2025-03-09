@@ -36,7 +36,13 @@ public class ConstItem {
 
     // Item ID
 
-    public static final short DUI_GA = 74;
+    public static final short DUI_GA = 73;
+
+    public static final short DUI_GA_NUONG = 74;
+
+    public static final short DUI_HEO_XAYDA = 75;
+
+    public static final short DUA_BE = 78;
 
     public static final short RUBY = 861;
 

@@ -1,6 +1,7 @@
 package nro.model.map.areas;
 
 import lombok.Setter;
+import nro.consts.ConstItem;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
 import nro.model.map.GameMap;
@@ -96,8 +97,9 @@ public class Area {
                     itemMap.setPlayerId(-1);
                 }
             }
-
             itemsToRemove.forEach(itemsMap::remove);
+        } catch (Exception ex) {
+            LogServer.LogException("updateItemMap: " + ex.getMessage(), ex);
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -249,7 +251,20 @@ public class Area {
     public void addItemMap(ItemMap itemMap) {
         this.lock.writeLock().lock();
         try {
+
+            boolean removed = this.itemsMap.values().removeIf(itemMep -> {
+                boolean shouldRemove = itemMep.getItem().getTemplate().id() == ConstItem.DUI_GA_NUONG || itemMep.getItem().getTemplate().id() == ConstItem.DUA_BE;
+                if (shouldRemove) {
+                    ItemService.getInstance().sendRemoveItemMap(itemMep);
+                }
+                return shouldRemove;
+            });
             this.itemsMap.put(itemMap.getItemMapID(), itemMap);
+
+            if (removed) {
+                LogServer.DebugLogic("Removed " + this.itemsMap.size() + " items with ID DUI_GA_NUONG or DUA_BE.");
+            }
+
         } catch (Exception ex) {
             LogServer.LogException("addItemMap: " + ex.getMessage()
                     + " itemMapID: " + itemMap.getItemMapID(), ex);
@@ -257,6 +272,7 @@ public class Area {
             this.lock.writeLock().unlock();
         }
     }
+
 
     public void removeItemMap(int itemMapID) {
         this.lock.writeLock().lock();

@@ -8,6 +8,7 @@ import nro.model.map.areas.Area;
 import nro.model.player.Player;
 import nro.model.player.PlayerFashion;
 import nro.server.network.Message;
+import nro.service.core.DropItemMap;
 import nro.server.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
@@ -146,37 +147,47 @@ public class AreaService {
         this.transferPlayer(player, newArea, player.getX(), player.getY());
     }
 
-    public void gotoMap(Player player, GameMap goMap, short goX, short goY) {
+    public boolean gotoMap(Player player, GameMap goMap, short goX, short goY) {
         Area newArea = goMap.getArea();
-        this.transferPlayer(player, newArea, goX, goY);
-        player.getPlayerTask().checkDoneTaskGoMap();
+        if (this.transferPlayer(player, newArea, goX, goY)) {
+            player.getPlayerTask().checkDoneTaskGoMap();
+            DropItemMap.dropMissionItems(player);
+            return true;
+        }
+        return false;
     }
 
-    private void transferPlayer(Player player, Area newArea, short x, short y) {
-        Service service = Service.getInstance();
+    private boolean transferPlayer(Player player, Area newArea, short x, short y) {
+        try {
+            Service service = Service.getInstance();
 
-        if (newArea == null) {
-            this.keepPlayerInSafeZone(player, null);
-            service.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
-            return;
+            if (newArea == null) {
+                this.keepPlayerInSafeZone(player, null);
+                service.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
+                return false;
+            }
+
+            if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
+                this.keepPlayerInSafeZone(player, null);
+                service.sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
+                return false;
+            }
+
+            this.playerExitArea(player);
+
+            newArea.addPlayer(player);
+            player.setArea(newArea);
+            player.setX(x);
+            player.setY(y);
+            this.sendMessageChangerMap(player);
+            this.sendInfoAllPlayerInArea(player);
+            this.sendPlayerInfoToAllInArea(player);
+            player.getPlayerStatus().setTeleport(0);
+            return true;
+        } catch (Exception ex) {
+            LogServer.LogException("transferPlayer: " + ex.getMessage(), ex);
+            return false;
         }
-
-        if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
-            this.keepPlayerInSafeZone(player, null);
-            service.sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
-            return;
-        }
-
-        this.playerExitArea(player);
-
-        newArea.addPlayer(player);
-        player.setArea(newArea);
-        player.setX(x);
-        player.setY(y);
-        this.sendMessageChangerMap(player);
-        this.sendInfoAllPlayerInArea(player);
-        this.sendPlayerInfoToAllInArea(player);
-        player.getPlayerStatus().setTeleport(0);
     }
 
     public void playerExitArea(Player player) {

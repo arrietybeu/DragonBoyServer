@@ -50,4 +50,33 @@ public class Util {
             e.printStackTrace();
         }
     }
+
+    public static String numberToString(long number) {
+        if (number == 0)
+            return "0"; 
+
+        boolean isNegative = number < 0;
+        number = Math.abs(number);
+
+        String suffix = "";
+        double displayNumber = number;
+
+        if (number >= 1_000_000_000L) {
+            suffix = "Tỉ";
+            displayNumber /= 1_000_000_000.0;
+        } else if (number >= 1_000_000L) {
+            suffix = "Tr";
+            displayNumber /= 1_000_000.0;
+        } else if (number >= 1_000L) {
+            suffix = "k";
+            displayNumber /= 1_000.0;
+        } else {
+            return (isNegative ? "-" : "") + number;
+        }
+
+        String formattedNumber = String.format("%.2f", displayNumber).replaceAll("\\.?0+$", "");
+
+        return (isNegative ? "-" : "") + formattedNumber + suffix;
+    }
+
 }
