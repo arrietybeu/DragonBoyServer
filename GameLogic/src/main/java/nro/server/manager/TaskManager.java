@@ -1,5 +1,7 @@
 package nro.server.manager;
 
+import nro.model.item.Item;
+import nro.model.player.Player;
 import nro.model.task.TaskMain;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
@@ -9,6 +11,9 @@ import java.sql.*;
 import java.util.*;
 
 import lombok.Getter;
+import nro.service.PlayerService;
+import nro.service.Service;
+import nro.service.core.ItemFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 
@@ -21,20 +26,24 @@ public class TaskManager implements IManager {
     @Getter
     private static final Map<Integer, TaskMain> TASKS = new HashMap<>();
 
+    private final List<ItemTaskReward> taskRewardMap = new ArrayList<>();
+
     @Override
     public void init() {
-        loadTask();
+        this.loadTask();
+        this.loadItemTaskReward();
     }
 
     @Override
     public void reload() {
         clear();
-        loadTask();
+        init();
     }
 
     @Override
     public void clear() {
         TASKS.clear();
+        taskRewardMap.clear();
     }
 
     private void loadTask() {
@@ -46,8 +55,7 @@ public class TaskManager implements IManager {
                 return;
             }
 
-            try (PreparedStatement ps = connection.prepareStatement(mainTaskQuery);
-                    ResultSet rs = ps.executeQuery()) {
+            try (PreparedStatement ps = connection.prepareStatement(mainTaskQuery); ResultSet rs = ps.executeQuery()) {
 
                 while (rs.next()) {
                     var id = rs.getInt("id");
@@ -116,11 +124,44 @@ public class TaskManager implements IManager {
                 }
             }
         } catch (Exception e) {
-            LogServer.LogException(
-                    "Error in TaskManager.loadListSubNameTask(): " + e.getMessage() + " - taskId: " + taskId, e);
+            LogServer.LogException("Error in TaskManager.loadListSubNameTask(): " + e.getMessage() + " - taskId: " + taskId, e);
             return Collections.emptyList();
         }
         return subNameList;
+    }
+
+
+    private void loadItemTaskReward() {
+        String query = "SELECT * FROM `task_rewards`;";
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    int taskId = rs.getInt("task_id");
+                    int taskIndex = rs.getInt("task_index");
+                    int gender = rs.getInt("gender");
+                    int itemId = rs.getInt("item_id");
+                    taskRewardMap.add(new ItemTaskReward(taskId, taskIndex, gender, itemId));
+                }
+            }
+        } catch (SQLException e) {
+            LogServer.LogException("Error loadItemTaskReward: " + e.getMessage(), e);
+        }
+    }
+
+    public void rewardTask(Player player, int taskId, int taskIndex) {
+        for (ItemTaskReward reward : taskRewardMap) {
+            if (reward.taskId == taskId && reward.taskIndex == taskIndex && reward.gender == player.getGender()) {
+                Item item = ItemFactory.getInstance().createItemOptionsBase(reward.itemId());
+                String name = item.getTemplate().name();
+                player.getPlayerInventory().addItemBag(item);
+                Service.getInstance().sendChatGlobal(player.getSession(), null, String.format("Bạn nhận được %s", name), false);
+                return;
+            }
+        }
+        LogServer.LogWarning("Không tìm thấy phần thưởng cho Task ID " + taskId + ", Task Index " + taskIndex + " và giới tính " + player.getGender());
+    }
+
+    record ItemTaskReward(int taskId, int taskIndex, int gender, int itemId) {
     }
 
     public TaskMain getTaskMainById(int id) {

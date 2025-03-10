@@ -141,20 +141,6 @@ public class AccountRepository {
         return false;
     }
 
-    public boolean handleCheckUserOnline(UserInfo userInfo) {
-        UserInfo pl = UserManager.getInstance().get(userInfo.getId());
-        if (pl != null) {
-            String text = "Tài khoản đã có người đăng nhập xin quay lại sau vài phút";
-            Service.dialogMessage(pl.getSession(), text);
-            Service.dialogMessage(userInfo.getSession(), text);
-            Util.delay(2000);
-            SessionManager.getInstance().kickSession(userInfo.getSession());
-            SessionManager.getInstance().kickSession(pl.getSession());
-            return true;
-        }
-        return false;
-    }
-
     public void updateAccount(Connection con, UserInfo userInfo) throws SQLException {
         String query = "UPDATE account SET ip_address = ?, last_time_login = ? WHERE id = ?;";
 

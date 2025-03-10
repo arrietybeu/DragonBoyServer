@@ -43,14 +43,6 @@ public class Util {
         return System.currentTimeMillis() - lastTime > miniTimeTarget;
     }
 
-    public static void delay(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static String numberToString(long number) {
         if (number == 0)
             return "0"; 

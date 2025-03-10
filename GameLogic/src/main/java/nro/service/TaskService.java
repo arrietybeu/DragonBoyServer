@@ -57,8 +57,7 @@ public class TaskService {
             output.writeShort(subNames.get(taskMain.getIndex()).getCount());
             player.sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException("Error sendTaskMainUpdate: " + e.getMessage());
+            LogServer.LogException("Error sendTaskMainUpdate: " + e.getMessage(), e);
         }
     }
 }

@@ -261,9 +261,9 @@ public class Area {
             });
             this.itemsMap.put(itemMap.getItemMapID(), itemMap);
 
-            if (removed) {
-                LogServer.DebugLogic("Removed " + this.itemsMap.size() + " items with ID DUI_GA_NUONG or DUA_BE.");
-            }
+//            if (removed) {
+//                LogServer.DebugLogic("Removed " + this.itemsMap.size() + " items with ID DUI_GA_NUONG or DUA_BE.");
+//            }
 
         } catch (Exception ex) {
             LogServer.LogException("addItemMap: " + ex.getMessage()

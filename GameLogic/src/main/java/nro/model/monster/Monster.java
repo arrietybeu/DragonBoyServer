@@ -51,7 +51,7 @@ public class Monster extends LiveObject {
                 this.setLive();
             }
         } else {
-            if (Util.canDoWithTime(this.info.getLastTimeAttack(), 2000)) {
+            if (Util.canDoWithTime(this.info.getLastTimeAttack(), 1000)) {
                 this.attackPlayer();
             }
         }

@@ -50,8 +50,7 @@ public class PlayerService {
                 this.onPlayerLoginSuccess(player);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException(e.getMessage());
+            LogServer.LogException(e.getMessage(), e);
             Service.dialogMessage(session,
                     String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
                             ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
@@ -394,8 +393,7 @@ public class PlayerService {
             Player playerInArea = player.getArea().getPlayer(playerId);
             message.writer().writeInt(playerInArea.getId());
             message.writer().writeLong(playerInArea.getPlayerPoints().getPower());
-            message.writer().writeUTF(CaptionManager.getInstance()
-                    .getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
+            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage(), ex);
@@ -586,7 +584,7 @@ public class PlayerService {
         } catch (SQLException e) {
             LogServer.LogException(String.format(
                     "Error creating character for account_id: %d, name: %s, gender: %d, hair: %d. Error: %s",
-                    session.getUserInfo().getId(), name, gender, hair, e.getMessage(), e));
+                    session.getUserInfo().getId(), name, gender, hair, e.getMessage()), e);
             Service.dialogMessage(session,
                     "Đã xảy ra lỗi khi tạo nhân vật. Vui lòng thử lại, nếu vẫn không thể thao tác được vui lòng báo cáo lại Admin.");
             throw e;

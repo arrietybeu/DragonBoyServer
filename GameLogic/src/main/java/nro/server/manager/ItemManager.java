@@ -74,7 +74,7 @@ public class ItemManager implements IManager {
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                    var resultSet = preparedStatement.executeQuery()) {
+                 var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getShort("id");
                     var type = resultSet.getByte("type");
@@ -119,8 +119,8 @@ public class ItemManager implements IManager {
         String query = "SELECT * FROM item_option_template";
 
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-                PreparedStatement ps = connection.prepareStatement(query);
-                ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
@@ -142,7 +142,7 @@ public class ItemManager implements IManager {
             if (connection == null)
                 throw new SQLException("Connect connection select item_head = null");
             try (var preparedStatement = connection.prepareStatement(sql);
-                    var resultSet = preparedStatement.executeQuery()) {
+                 var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int headId = resultSet.getInt("head_id");
                     int avatarId = resultSet.getInt("avatar_id");
@@ -164,7 +164,7 @@ public class ItemManager implements IManager {
             if (connection == null)
                 throw new SQLException("Connect connection select flag_bag = null");
             try (var preparedStatement = connection.prepareStatement(query);
-                    var resultSet = preparedStatement.executeQuery()) {
+                 var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     int itemId = resultSet.getInt("item_id");
@@ -186,7 +186,7 @@ public class ItemManager implements IManager {
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
             try (var preparedStatement = connection.prepareStatement(sql);
-                    var resultSet = preparedStatement.executeQuery()) {
+                 var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getInt("id");
                     var head_one = resultSet.getInt("head_one");
@@ -238,7 +238,8 @@ public class ItemManager implements IManager {
             message.writer().writeByte(ITEM_OPTION); // update option
             message.writer().writeShort(itemOptionTemplates.size());// dis true
             for (ItemOptionTemplate itemOptionTemplate : itemOptionTemplates.values()) {
-                message.writer().writeUTF(itemOptionTemplate.name());
+                message.writer().writeUTF("id: " + itemOptionTemplate.id() + "/" + itemOptionTemplate.name());
+//                message.writer().writeUTF(itemOptionTemplate.name());
                 message.writer().writeByte(itemOptionTemplate.type());
             }
             this.dataItemOption = message.getData();

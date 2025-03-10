@@ -36,6 +36,12 @@ public class ConstItem {
 
     // Item ID
 
+    public static final short GANG_VAI_DEN = 21;
+
+    public static final short GANG_SOI_LEN = 22;
+
+    public static final short GANG_VAI_THO = 23;
+
     public static final short DUI_GA = 73;
 
     public static final short DUI_GA_NUONG = 74;

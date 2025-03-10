@@ -40,6 +40,8 @@ public class PlayerTask {
         try {
             if (!checkTaskInfo(taskId, index)) return false;
 
+            TaskManager.getInstance().rewardTask(this.player, taskId, index);
+
             this.addDoneSubTask();
             NpcService npcService = NpcService.getInstance();
             String npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
@@ -87,12 +89,7 @@ public class PlayerTask {
                 }
                 case 1 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n"
-                            + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n"
-                            + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n"
-                            + "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n"
-                            + "Nhanh lên, ta đói lắm rồi!\n" + "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n"
-                            + "Vị trí đang chớp sáng là nơi bạn làm nhiệm vụ, hãy tìm đường đến đó";
+                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n" + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n" + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n" + "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n" + "Nhanh lên, ta đói lắm rồi!\n" + "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n" + "Vị trí đang chớp sáng là nơi bạn làm nhiệm vụ, hãy tìm đường đến đó";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     player.getPlayerPoints().addExp(2, 3000);
                     service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
@@ -135,12 +132,13 @@ public class PlayerTask {
                 case 0 -> DropItemMap.dropMissionItems(player);
                 case 2 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                    var content = "Có em bé trong phi thuyền rơi xuống à, ta cứ tưởng là sao băng\n"
-                            + "Ta sẽ đặt đặt tên cho nó là Sôn Gô Ku, từ bây giờ nó s là thành viên trong gia đình ta\n"
-                            + "Ta mới nhận được tin có bầy mãnh thú xuất hiện tại Trạm phi thuyền\n"
-                            + "Bọn chúng vừa đổ bộ xuống Trái Đất để tr thù việc con cướp đùi gà của con chúng\n"
-                            + "Hãy dùng phi thuyền đến các hành tinh khác để giúp dân làng tại đó luôn nhé";
+                    var content = "Có em bé trong phi thuyền rơi xuống à, ta cứ tưởng là sao băng\n" + "Ta sẽ đặt đặt tên cho nó là Sôn Gô Ku, từ bây giờ nó s là thành viên trong gia đình ta\n" + "Ta mới nhận được tin có bầy mãnh thú xuất hiện tại Trạm phi thuyền\n" + "Bọn chúng vừa đổ bộ xuống Trái Đất để tr thù việc con cướp đùi gà của con chúng\n" + "Hãy dùng phi thuyền đến các hành tinh khác để giúp dân làng tại đó luôn nhé";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+
+                    Item duaBe = player.getPlayerInventory().findItemInBag(ConstItem.DUA_BE);
+                    if (duaBe != null && duaBe.getQuantity() >= 1) {
+                        player.getPlayerInventory().subQuantityItemsBag(duaBe, duaBe.getQuantity());
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -215,8 +213,7 @@ public class PlayerTask {
     public boolean checkDoneTaskTalkNpc(Npc npc) {
         return switch (npc.getTempId()) {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
-                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1)
-                            || this.doneTask(2, 1) || this.doneTask(3, 2);
+                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1) || this.doneTask(2, 1) || this.doneTask(3, 2);
             default -> false;
         };
     }

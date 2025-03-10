@@ -52,7 +52,6 @@ public class UseItem {
 
         try {
             Item pea = this.getItem(player, item, itemId);
-
             PlayerService playerService = PlayerService.getInstance();
             if (pea == null) {
                 Service.getInstance().sendChatGlobal(player.getSession(), null, "Đã xảy ra lỗi!", false);
@@ -101,7 +100,6 @@ public class UseItem {
             player.getPlayerMagicTree().setLastUsePea(time);
         } catch (Exception ex) {
             LogServer.LogException("eatPea: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
@@ -111,7 +109,7 @@ public class UseItem {
             pea = item;
             return pea;
         }
-        if (itemId != null && itemId.length > 0) {
+        if (itemId != null) {
             for (int id : itemId) {
                 Item it = player.getPlayerInventory().findItemInBag(id);
                 if (it.getTemplate().id() == id) {
