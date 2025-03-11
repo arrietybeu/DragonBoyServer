@@ -2,6 +2,8 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import nro.consts.ConstOption;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.model.item.Item;
@@ -17,6 +19,7 @@ import nro.utils.Util;
 
 @Getter
 @Setter
+@ToString
 public class PlayerPoints {
 
     private final Player player;
@@ -82,7 +85,7 @@ public class PlayerPoints {
     }
 
     public long getDameAttack() {
-        long dame = this.getCurrentDamage();
+        long dame = this.currentDamage;
         long dameSkill = getDameSkill();
         if (dameSkill != 0) {
             dame = dame * dameSkill / 100;
@@ -94,37 +97,62 @@ public class PlayerPoints {
         this.setHp();
         this.setMp();
         this.setDame();
+        this.setDefense();
+        this.setCritical();
     }
 
     private void setHp() {
-        long hpKi000 = this.getParamOption(2, 0, 0) * 1000;
-        long hpK = this.getParamOption(22, 0, 0) * 1000;
-        long hp = this.getParamOption(6, 0, 0);
-        long hpKi = this.getParamOption(48, 0, 0);
+        long hpKi000 = this.getParamOption(ConstOption.HP_KI_000, 0, 0) * 1000;
+        long hpK = this.getParamOption(ConstOption.HP_K, 0, 0) * 1000;
+        long hp = this.getParamOption(ConstOption.HP, 0, 0);
+        long hpKi = this.getParamOption(ConstOption.HP_KI, 0, 0);
 
         this.maxHP = this.baseHP + hpKi000 + hpK + hp + hpKi;
-        this.maxHP = this.getParamOption(77, 1, this.maxHP);
+        this.maxHP = this.getParamOption(ConstOption.HP_PERCENT, 1, this.maxHP);
     }
 
     private void setMp() {
-        long mpKi000 = this.getParamOption(2, 0, 0) * 1000;
-        long mpK = this.getParamOption(23, 0, 0) * 1000;
-        long mp = this.getParamOption(7, 0, 0);
-        long mpKi = this.getParamOption(48, 0, 0);
+        long mpKi000 = this.getParamOption(ConstOption.HP_KI_000, 0, 0) * 1000;
+        long mpK = this.getParamOption(ConstOption.KI_K, 0, 0) * 1000;
+        long mp = this.getParamOption(ConstOption.KI, 0, 0);
+        long mpKi = this.getParamOption(ConstOption.HP_KI, 0, 0);
 
         this.maxMP = this.baseMP + mpKi000 + mpK + mp + mpKi;
-        this.maxMP = this.getParamOption(103, 1, this.maxMP);
+        this.maxMP = this.getParamOption(ConstOption.KI_PERCENT, 1, this.maxMP);
     }
 
     private void setDame() {
         this.currentDamage = this.baseDamage;
-        long tanCong = this.getParamOption(0, 0, 0);
-
+        long tanCong = this.getParamOption(ConstOption.TAN_CONG, 0, 0);
         this.currentDamage = this.currentDamage + tanCong;
+    }
+
+    private void setDefense() {
+        long defense = this.getParamOption(1, 0, 0);
+        this.totalDefense = this.baseDefense + defense;
+    }
+
+    private void setCritical() {
+        long critical = this.getParamOption(3, 0, 0);
+        this.totalCriticalChance = (byte) (this.baseCriticalChance + critical);
+    }
+
+    private long getDameSkill() {
+        try {
+            SkillInfo skillSelect = this.player.getPlayerSkill().skillSelect;
+            return switch (skillSelect.getTemplate().getId()) {
+                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> skillSelect.getDamage();
+                default -> 0;
+            };
+        } catch (Exception ex) {
+            LogServer.LogException(" getSkillDamageMultiplier: " + ex.getMessage(), ex);
+            return 0;
+        }
     }
 
     private long getParamOption(int id, int type, long quantity) {
         long param = 0;
+
         if (type == 1 || type == 2) {
             param = quantity;
         }
@@ -153,19 +181,6 @@ public class PlayerPoints {
             }
         }
         return param;
-    }
-
-    private long getDameSkill() {
-        try {
-            SkillInfo skillSelect = this.player.getPlayerSkill().skillSelect;
-            return switch (skillSelect.getTemplate().getId()) {
-                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> skillSelect.getDamage();
-                default -> 0;
-            };
-        } catch (Exception ex) {
-            LogServer.LogException(" getSkillDamageMultiplier: " + ex.getStackTrace());
-            return 0;
-        }
     }
 
     public void addExp(int type, int exp) {
@@ -241,12 +256,12 @@ public class PlayerPoints {
             if (this.potentialPoints < point) {
                 Service.dialogMessage(this.player.getSession(),
                         String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s",
-                                Util.numberToString(this.potentialPoints)));
+                                Util.numberToString(this.potentialPoints), point));
                 return;
             }
 
-            long potentiaUse = 0;
-            long currentPoint = -1;
+            long potentiaUse;
+            long currentPoint;
             switch (type) {
                 case ConstPlayer.UP_POTENTIAL_HP -> {
                     final var currentBaseHp = this.baseHP;
@@ -264,9 +279,7 @@ public class PlayerPoints {
                     if (multiplier == -1)
                         return;
 
-                    potentiaUse = multiplier
-                            * (2 * (currentBaseHp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980)))
-                            / 2;
+                    potentiaUse = multiplier * (2L * (currentBaseHp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980))) / 2;
                     currentPoint = currentBaseHp;
                 }
 
@@ -286,9 +299,7 @@ public class PlayerPoints {
                     if (multiplier == -1)
                         return;
 
-                    potentiaUse = multiplier
-                            * (2 * (currentBaseMp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980)))
-                            / 2;
+                    potentiaUse = multiplier * (2L * (currentBaseMp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980))) / 2;
                     currentPoint = currentBaseMp;
                 }
                 case ConstPlayer.UP_POTENTIAL_DAMAGE -> {
@@ -313,7 +324,7 @@ public class PlayerPoints {
                 }
                 case ConstPlayer.UP_POTENTIAL_DEFENSE -> {
                     final var currentBaseDefense = this.baseDefense;
-                    potentiaUse = 2 * (currentBaseDefense + 5) * 2 / 100000;
+                    potentiaUse = 2L * (currentBaseDefense + 5) * 2 / 100000;
                     currentPoint = currentBaseDefense;
                 }
                 case ConstPlayer.UP_POTENTIAL_CRITICAL -> {
@@ -337,19 +348,26 @@ public class PlayerPoints {
         }
     }
 
-    private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point)
-            throws Exception {
+    public void healPlayer() {
+        PlayerService playerService = PlayerService.getInstance();
+        this.setCurrentHp(this.getMaxHP());
+        this.setCurrentMp(this.getMaxMP());
+        playerService.sendHpForPlayer(player);
+        playerService.sendMpForPlayer(player);
+    }
+
+    private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point) throws Exception {
         if (this.potentialPoints < potentiaUse) {
             Service.dialogMessage(this.player.getSession(),
                     String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s",
-                            Util.numberToString(this.potentialPoints)));
+                            Util.numberToString(this.potentialPoints), potentiaUse));
             return false;
         }
 
         switch (type) {
             case ConstPlayer.UP_POTENTIAL_HP -> this.baseHP = (int) (currentPoint + 20L * point);
             case ConstPlayer.UP_POTENTIAL_MP -> this.baseMP = (int) (currentPoint + 20L * point);
-            case ConstPlayer.UP_POTENTIAL_DAMAGE -> this.baseDamage = (int) (currentPoint + 1L * point);
+            case ConstPlayer.UP_POTENTIAL_DAMAGE -> this.baseDamage = (int) (currentPoint + (long) point);
             case ConstPlayer.UP_POTENTIAL_DEFENSE -> this.baseDefense += 1;
             case ConstPlayer.UP_POTENTIAL_CRITICAL -> this.baseCriticalChance += 1;
             default -> {
@@ -362,10 +380,4 @@ public class PlayerPoints {
         this.setPoint();
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "";
-    }
-
 }

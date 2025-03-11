@@ -64,12 +64,10 @@ public class PlayerSkill {
                 switch (target) {
                     case Player plTarget -> {
                     }
-                    case Monster monster -> {
-                        monster.handleAttack(this.player, this.player.getPlayerPoints().getDameAttack());
-                    }
-                    default ->
-                        LogServer.LogException(
-                                "useSkillTarget player name:" + player.getName() + " error: target not monster");
+                    case Monster monster ->
+                            monster.handleAttack(this.player, this.player.getPlayerPoints().getDameAttack());
+                    default -> LogServer.LogException(
+                            "useSkillTarget player name:" + player.getName() + " error: target not monster");
                 }
             }
         }

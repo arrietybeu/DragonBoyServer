@@ -57,13 +57,13 @@ public class ResourceService {
         PartManager partManager = PartManager.getInstance();
         SkillPaintManager skillPaintManager = SkillPaintManager.getInstance();
 
-        return new byte[][] { dataGame.getDart(),
+        return new byte[][]{dataGame.getDart(),
                 dataGame.getArrow(),
                 dataGame.getEffect(),
                 dataGame.getImage(),
                 partManager.getDataPart(),
                 // dataGame.getSkill()};
-                skillPaintManager.getSkillPaintsData() };
+                skillPaintManager.getSkillPaintsData()};
     }
 
     private void writeData(Message message, byte[] data) throws IOException {
@@ -292,7 +292,6 @@ public class ResourceService {
     }
 
     public void sendMonsterData(Player player, short id) {
-
         try (Message message = new Message(11)) {
             ResourcesManager manager = ResourcesManager.getInstance();
             Effect effect = manager.getMonsterData(id, (byte) player.getSession().getClientInfo().getZoomLevel());
@@ -317,7 +316,7 @@ public class ResourceService {
 
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error requestMobTemplate: " + e.getMessage());
+            LogServer.LogException("Error requestMobTemplate: " + e.getMessage(), e);
         }
     }
 

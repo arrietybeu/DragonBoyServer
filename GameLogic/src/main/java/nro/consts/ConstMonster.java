@@ -17,4 +17,8 @@ public class ConstMonster {
 
     public static final byte MOC_NHAN = 0;
     public static final byte KHUNG_LONG = 1;
+
+    public static final byte KHUNG_LONG_ME = 4;
+    public static final byte LON_LOI_ME = 5;
+    public static final byte QUY_DAT_ME = 6;
 }

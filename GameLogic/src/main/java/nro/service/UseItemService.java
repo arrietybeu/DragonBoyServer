@@ -79,7 +79,7 @@ public class UseItemService {
             switch (where) {
                 case ConstUseItem.THROW_ITEM_BODY -> {
                     List<Item> itemsBody = player.getPlayerInventory().getItemsBody();
-                    if (index < 0 || index >= itemsBody.size()) {
+                    if (index < 0 && index >= itemsBody.size()) {
                         Service.dialogMessage(player.getSession(), "Đã xảy ra lỗi");
                         break;
                     }

@@ -26,6 +26,7 @@ public class SelectMenuMagicTreeHandler implements IMessageProcessor {
                 npc.openUIConFirm(player, select);
                 return;
             }
+
             Service.getInstance().sendHideWaitDialog(player);
         } catch (Exception ex) {
             LogServer.LogException("SelectMenuMagicTreeHandler: " + ex.getMessage());

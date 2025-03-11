@@ -7,6 +7,7 @@ import nro.model.item.Item;
 import nro.model.item.ItemMap;
 import nro.model.monster.Monster;
 import nro.model.player.Player;
+import nro.model.player.PlayerStatus;
 import nro.model.player.PlayerTask;
 import nro.service.ItemService;
 
@@ -39,8 +40,9 @@ public class DropItemMap {
         switch (playerTask.getTaskMain().getId()) {
             case 2 -> {
                 Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.DUI_GA);
-                ItemMap itemMap = new ItemMap(monster.getArea(), player.getId(), item, monster.getX(), monster.getY(),
-                        -1);
+
+                ItemMap itemMap = new ItemMap(monster.getArea(), monster.getArea().increaseItemMapID(), player.getId(), item, monster.getX(), monster.getY(),
+                        -1, true);
                 itemMaps.add(itemMap);
             }
         }
@@ -51,7 +53,7 @@ public class DropItemMap {
         if (itemDropInfos != null) {
             for (ItemDropInfo itemDropInfo : itemDropInfos) {
                 boolean isTaskIdValid = itemDropInfo.taskId() == -1
-                        || player.getPlayerTask().getTaskMain().getId() == itemDropInfo.taskId();
+                        || player.getPlayerTask().getTaskMain().getId() >= itemDropInfo.taskId();
 
                 int playerTaskIndex = player.getPlayerTask().getTaskMain().getIndex();
                 int itemTaskIndex = itemDropInfo.indexTask();
@@ -65,9 +67,10 @@ public class DropItemMap {
                 }
 
                 Item item = ItemFactory.getInstance().createItemOptionsBase(itemDropInfo.itemId());
-                ItemMap itemMap = new ItemMap(player.getArea(), player.getId(), item, itemDropInfo.x(),
-                        itemDropInfo.y(), -1);
-                ItemService.getInstance().sendDropItemMap(player, itemMap);
+                player.getPlayerStatus().setIdItemTask(player.getArea().increaseItemMapID());
+                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerStatus().getIdItemTask(), player.getId(), item, itemDropInfo.x(),
+                        itemDropInfo.y(), -1, false);
+                ItemService.getInstance().sendDropItemMap(player, itemMap, false);
             }
         }
     }

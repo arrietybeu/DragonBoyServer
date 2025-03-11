@@ -25,13 +25,13 @@ import nro.service.ItemService;
 @SuppressWarnings("ALL")
 public class Area {
 
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
     private final int id;
     private final int maxPlayers;
 
     private final short MAX_ID = Short.MAX_VALUE - 1;
     private final AtomicInteger idItemMap = new AtomicInteger(0);
-
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final GameMap map;
     private Map<Integer, Monster> monsters;
     private final Map<Integer, Player> players;
@@ -47,17 +47,24 @@ public class Area {
         this.npcList = new ArrayList<>();
     }
 
-    private void updateLiveObjects(Collection<? extends LiveObject> objects) {
+    private void updatePlayer() {
         this.lock.readLock().lock();
         try {
-            for (LiveObject obj : objects) {
-                try {
-                    obj.update();
-                } catch (Exception e) {
-                    LogServer.LogException(
-                            "Error updating object ID: " + obj.getId() + " in zone " + this.id + " - " + e.getMessage(),
-                            e);
-                }
+            for (Player player : this.players.values()) {
+                player.update();
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("updateLiveObjects: " + ex.getMessage(), ex);
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    private void updateMonster() {
+        this.lock.readLock().lock();
+        try {
+            for (Monster monster : this.monsters.values()) {
+                monster.update();
             }
         } catch (Exception ex) {
             LogServer.LogException("updateLiveObjects: " + ex.getMessage(), ex);
@@ -82,13 +89,11 @@ public class Area {
         try {
             long currentTime = System.currentTimeMillis();
             Set<Integer> itemsToRemove = new HashSet<>();
-
             for (ItemMap itemMap : itemsMap.values()) {
                 if (itemMap == null || itemMap.getItem() == null) {
                     itemsToRemove.add(itemMap.getItemMapID());
                     continue;
                 }
-
                 long elapsedTime = currentTime - itemMap.getItem().getCreateTime();
                 if (elapsedTime > 60_000) {
                     ItemService.getInstance().sendRemoveItemMap(itemMap);
@@ -105,10 +110,10 @@ public class Area {
         }
     }
 
-    public final void update() {
+    public void update() {
         try {
-            updateLiveObjects(this.players.values());
-            updateLiveObjects(this.monsters.values());
+            this.updatePlayer();
+            this.updateMonster();
             this.updateItemMap();
             this.updateNpc();
         } catch (Exception ex) {
@@ -251,20 +256,10 @@ public class Area {
     public void addItemMap(ItemMap itemMap) {
         this.lock.writeLock().lock();
         try {
-
-            boolean removed = this.itemsMap.values().removeIf(itemMep -> {
-                boolean shouldRemove = itemMep.getItem().getTemplate().id() == ConstItem.DUI_GA_NUONG || itemMep.getItem().getTemplate().id() == ConstItem.DUA_BE;
-                if (shouldRemove) {
-                    ItemService.getInstance().sendRemoveItemMap(itemMep);
-                }
-                return shouldRemove;
-            });
+            if (itemsMap.size() >= Byte.MAX_VALUE) {
+                return;
+            }
             this.itemsMap.put(itemMap.getItemMapID(), itemMap);
-
-//            if (removed) {
-//                LogServer.DebugLogic("Removed " + this.itemsMap.size() + " items with ID DUI_GA_NUONG or DUA_BE.");
-//            }
-
         } catch (Exception ex) {
             LogServer.LogException("addItemMap: " + ex.getMessage()
                     + " itemMapID: " + itemMap.getItemMapID(), ex);

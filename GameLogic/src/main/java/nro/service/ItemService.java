@@ -1,6 +1,7 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.consts.ConstItem;
 import nro.model.item.Flag;
 import nro.model.item.ItemMap;
 import nro.model.player.Player;
@@ -66,7 +67,7 @@ public class ItemService {
         }
     }
 
-    public void sendDropItemMap(Player player, ItemMap itemMap) {
+    public void sendDropItemMap(Player player, ItemMap itemMap, boolean isSendToAll) {
         try (Message message = new Message(68)) {
             DataOutputStream writer = message.writer();
             writer.writeShort(itemMap.getItemMapID());
@@ -77,9 +78,28 @@ public class ItemService {
             if (player.getId() != -2) {
                 writer.writeShort(itemMap.getRange());
             }
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            if (isSendToAll) {
+                player.getArea().sendMessageToPlayersInArea(message, null);
+            } else {
+                player.sendMessage(message);
+            }
         } catch (Exception ex) {
             LogServer.LogException("sendDropItemMap: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendPickItemMap(Player player, int itemMapID, int type, int quantity, String notify) {
+        try (Message message = new Message(-20)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(itemMapID);
+            writer.writeUTF(notify);
+            writer.writeShort(quantity);
+            if (type == ConstItem.TYPE_GOLD || type == ConstItem.TYPE_GEM || type == ConstItem.TYPE_RUBY) {
+                writer.writeShort(quantity);
+            }
+            player.sendMessage(message);
+        } catch (Exception exception) {
+            LogServer.LogException("sendPickItemMap: " + exception.getMessage(), exception);
         }
     }
 

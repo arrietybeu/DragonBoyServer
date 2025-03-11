@@ -60,8 +60,8 @@ public class UseItem {
 
             PlayerPoints points = player.getPlayerPoints();
 
-            long currentMp = points.getCurrentMP();
             long currentHP = points.getCurrentHP();
+            long currentMp = points.getCurrentMP();
 
             if (currentHP >= points.getMaxHP() && currentMp >= points.getMaxMP()) {
                 playerService.sendCurrencyHpMp(player);
@@ -80,15 +80,15 @@ public class UseItem {
                 }
             }
 
+            long newHP = currentHP + hpKiHoiPhuc;
             long newMP = currentMp + hpKiHoiPhuc;
-            long newHP = points.getCurrentHP() + hpKiHoiPhuc;
 
-            if (currentMp >= points.getMaxMP()) {
-                points.setCurrentHp(newHP);
-                playerService.sendHpForPlayer(player);
-            } else if (currentHP >= points.getMaxHP()) {
+            if (currentMp < points.getMaxMP()) {
                 points.setCurrentMp(newMP);
                 playerService.sendMpForPlayer(player);
+            } else if (currentHP < points.getMaxHP()) {
+                points.setCurrentHp(newHP);
+                playerService.sendHpForPlayer(player);
             } else {
                 points.setCurrentMp(newMP);
                 points.setCurrentHp(newHP);

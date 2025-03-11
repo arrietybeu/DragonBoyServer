@@ -41,9 +41,9 @@ public class GameMap implements Runnable {
     // id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems,
     // effects, waypoints, tileMap
     public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType,
-            byte typeMap,
-            List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap,
-            List<NpcTemplate.NpcInfo> npcs) {
+                   byte typeMap,
+                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap,
+                   List<NpcTemplate.NpcInfo> npcs) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;
@@ -163,6 +163,10 @@ public class GameMap implements Runnable {
         return this.id == 0 || this.id == 7 || this.id == 14;
     }
 
+    public boolean isMapHouseByGender(int gender) {
+        return gender == 0 && this.id == 21 || gender == 1 && this.id == 22 || gender == 2 && this.id == 23;
+    }
+
     @Override
     public void run() {
         while (MapManager.running) {
@@ -174,8 +178,7 @@ public class GameMap implements Runnable {
                 long timeDo = System.currentTimeMillis() - st;
                 Thread.sleep(1000 - timeDo);
             } catch (Exception ex) {
-                LogServer.LogException("Error Update Map id: " + this.id + " name: " + this.name + ex.getMessage());
-                ex.printStackTrace();
+                LogServer.LogException("Error Update Map id: " + this.id + " name: " + this.name + ex.getMessage(), ex);
             }
         }
     }

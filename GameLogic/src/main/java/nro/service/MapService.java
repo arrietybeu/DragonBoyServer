@@ -13,6 +13,7 @@ import nro.model.npc.Npc;
 import nro.model.player.Player;
 import nro.server.network.Message;
 import nro.server.LogServer;
+import nro.service.core.DropItemMap;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -56,6 +57,7 @@ public class MapService {
     }
 
     public void requestMaptemplate(Player player) {
+
         try (Message message = new Message(-28)) {
             DataOutputStream data = message.writer();
             GameMap map = player.getArea().getMap();
@@ -96,6 +98,7 @@ public class MapService {
     }
 
     private void loadInfoMap(Player player, DataOutputStream output) throws IOException {
+
         Area area = player.getArea();
         GameMap map = area.getMap();
 
@@ -156,6 +159,7 @@ public class MapService {
         }
 
         // send item in Map
+
         output.writeByte(itemMaps.size());
         for (ItemMap item : itemMaps) {
             output.writeShort(item.getItemMapID());

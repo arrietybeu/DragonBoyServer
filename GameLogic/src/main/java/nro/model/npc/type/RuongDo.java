@@ -18,5 +18,4 @@ public class RuongDo extends Npc {
         InventoryService.getInstance().sendItemsBox(player, 0);
         InventoryService.getInstance().sendItemsBox(player, 1);
     }
-
 }

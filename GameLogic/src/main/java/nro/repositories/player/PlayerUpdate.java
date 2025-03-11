@@ -32,16 +32,13 @@ public class PlayerUpdate {
             return;
         }
         sessionInfo.setSaveData(true);
-
         var ms = System.currentTimeMillis();
 
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             if (connection == null) {
                 throw new SQLException("Lỗi: Không thể kết nối database để lưu dữ liệu.");
             }
-
             connection.setAutoCommit(false);
-
             try {
                 this.savePlayerInfo(player, connection);
                 this.savePlayerCurrencies(player, connection);

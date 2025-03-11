@@ -20,17 +20,18 @@ public class ItemMap {
     private final short range;
     private final long lastTimeRemoveItem;
 
-    public ItemMap(Area area, int playerId, Item item, int x, int y, int range) throws IllegalArgumentException {
+    public ItemMap(Area area, int itemMapId, int playerId, Item item, int x, int y, int range, boolean isDrop) throws IllegalArgumentException {
         this.area = area;
-        this.itemMapID = area.increaseItemMapID();
+        this.itemMapID = itemMapId;
         this.playerId = playerId;
         this.item = item;
         this.x = x;
         this.y = y;
         this.lastTimeRemoveItem = System.currentTimeMillis();
         this.range = (short) range;
-        area.addItemMap(this);
-
+        if (isDrop) {
+            area.addItemMap(this);
+        }
         if (item.getTemplate() == null) {
             throw new IllegalArgumentException("item template is null");
         }

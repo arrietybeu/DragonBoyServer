@@ -27,7 +27,6 @@ public class UseItemHandler implements IMessageProcessor {
             UseItemService.getInstance().useItem(player, type, where, index, template);
         } catch (Exception ex) {
             LogServer.LogException("UseItemHandler: " + ex.getMessage());
-            ex.printStackTrace();
         }
     }
 }

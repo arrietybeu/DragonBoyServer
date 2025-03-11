@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("ALL")
 public class MapManager implements IManager {
 
-    public static volatile boolean running = false;
+    public static volatile boolean running;
 
     @Getter
     private static final MapManager instance = new MapManager();
@@ -100,8 +100,8 @@ public class MapManager implements IManager {
     private void loadMapTemplate() {
         String query = "SELECT * FROM `map_template`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-                PreparedStatement ps = connection.prepareStatement(query);
-                var rs = ps.executeQuery()) {
+             PreparedStatement ps = connection.prepareStatement(query);
+             var rs = ps.executeQuery()) {
 
             Map<Integer, TileMap> tileMaps = loadAllMapTiles(connection);
 
@@ -141,7 +141,7 @@ public class MapManager implements IManager {
         Map<Integer, TileMap> tileMaps = new HashMap<>();
 
         try (PreparedStatement statement = connection.prepareStatement(query);
-                ResultSet rs = statement.executeQuery()) {
+             ResultSet rs = statement.executeQuery()) {
 
             while (rs.next()) {
                 int mapId = rs.getInt("map_id");
@@ -247,8 +247,8 @@ public class MapManager implements IManager {
     private void loadDataBackgroundMap() {
         String query = "SELECT * FROM `map_data_background`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-                PreparedStatement ps = connection.prepareStatement(query);
-                var rs = ps.executeQuery()) {
+             PreparedStatement ps = connection.prepareStatement(query);
+             var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var bg = new BackgroundMapTemplate();
                 bg.setId(rs.getInt("id"));
@@ -290,8 +290,8 @@ public class MapManager implements IManager {
     private void loadTileSetInfo() {
         String query = "SELECT * FROM `map_tile_set_info`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-                PreparedStatement ps = connection.prepareStatement(query);
-                var rs = ps.executeQuery()) {
+             PreparedStatement ps = connection.prepareStatement(query);
+             var rs = ps.executeQuery()) {
             while (rs.next()) {
                 var tileSet = new TileSetTemplate();
                 tileSet.setId(rs.getInt("id"));

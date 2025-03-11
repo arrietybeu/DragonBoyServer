@@ -124,7 +124,7 @@ public class ItemManager implements IManager {
             while (rs.next()) {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
-                var type = rs.getInt("type");
+                var type = rs.getByte("type");
                 ItemOptionTemplate itemOptionManager = new ItemOptionTemplate(id, name, type);
                 this.itemOptionTemplates.put((short) id, itemOptionManager);
             }
@@ -293,6 +293,15 @@ public class ItemManager implements IManager {
             }
         }
         return null;
+    }
+
+    public byte findTypeItemOption(int id) {
+        ItemOptionTemplate itemOptionTemplate = itemOptionTemplates.get((short) id);
+        if (itemOptionTemplate == null) {
+            System.out.println("ItemOptionTemplate is null to id " + id);
+            return -1;
+        }
+        return itemOptionTemplate.type();
     }
 
     public void logItemArrHead2Fr() {

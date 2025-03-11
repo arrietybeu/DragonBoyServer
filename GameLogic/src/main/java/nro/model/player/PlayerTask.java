@@ -146,27 +146,6 @@ public class PlayerTask {
         }
     }
 
-    private void addDoneSubTask() {
-        var subList = this.taskMain.getSubNameList();
-        var currentIndex = this.taskMain.getIndex();
-        subList.get(currentIndex).addCount(1);
-
-        var count = subList.get(currentIndex).getCount();
-        if (count >= subList.get(currentIndex).getMaxCount()) {
-            this.taskMain.setIndex(currentIndex + 1);
-        }
-
-        if (this.taskMain.getIndex() >= subList.size()) {
-            TaskMain nextTask = this.getTaskMainById(this.taskMain.getId() + 1);
-            if (nextTask != null) {
-                this.taskMain = nextTask;
-                this.taskMain.setIndex(0);
-            } else {
-                LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
-            }
-        }
-        this.sendTaskInfo();
-    }
 
     private boolean checkTaskInfo(int taskId, int index) {
         return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
@@ -221,10 +200,9 @@ public class PlayerTask {
     public void checkDoneTaskKKillMonster(Monster monster) {
         try {
             switch (monster.getTemplateId()) {
-                case ConstMonster.MOC_NHAN: {
-                    this.doneTask(1, 0);
-                    break;
-                }
+                case ConstMonster.MOC_NHAN -> this.doneTask(1, 0);
+                case ConstMonster.KHUNG_LONG_ME, ConstMonster.LON_LOI_ME, ConstMonster.QUY_DAT_ME ->
+                        this.doneTask(4, 0);
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask checkDoneTaskKKillMonster - " + ex.getMessage(), ex);
@@ -273,6 +251,28 @@ public class PlayerTask {
 
             NpcService.getInstance().sendNpcTalkUI(player, 5, content, -1);
         }
+    }
+
+    private void addDoneSubTask() {
+        var subList = this.taskMain.getSubNameList();
+        var currentIndex = this.taskMain.getIndex();
+        subList.get(currentIndex).addCount(1);
+
+        var count = subList.get(currentIndex).getCount();
+        if (count >= subList.get(currentIndex).getMaxCount()) {
+            this.taskMain.setIndex(currentIndex + 1);
+        }
+
+        if (this.taskMain.getIndex() >= subList.size()) {
+            TaskMain nextTask = this.getTaskMainById(this.taskMain.getId() + 1);
+            if (nextTask != null) {
+                this.taskMain = nextTask;
+                this.taskMain.setIndex(0);
+            } else {
+                LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
+            }
+        }
+        this.sendTaskInfo();
     }
 
 }

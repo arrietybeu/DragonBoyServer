@@ -1,10 +1,10 @@
 package nro.model.clan;
 
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
+@Getter
 public class Clan {
 
     private int id;

@@ -18,7 +18,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@SuppressWarnings("unused")
+@SuppressWarnings("ALL")
 public class PlayerInventory {
 
     private final Player player;
@@ -100,20 +100,25 @@ public class PlayerInventory {
                         for (Item itemInventory : items) {
                             if (itemInventory == null || itemInventory.getTemplate() == null) continue;
 
-                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id()
-                                    || !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
+                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id() || !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
                                 continue;
                             }
+                            // kiểm tra số lượng item có vượt quá giới hạn không
                             int maxQuantity = itemNew.getTemplate().maxQuantity();
 
+                            // số lượng còn lại trong hành trang
                             int spaceLeft = maxQuantity - itemInventory.getQuantity();
 
-                            if (spaceLeft > 0) { // chi cong don khi con cho trong
+                            if (spaceLeft > 0) { // chỉ cộng dồn khi còn chỗ trống
+                                // nếu số lượng item mới nhỏ hơn hoặc bằng số lượng còn trống
                                 if (itemNew.getQuantity() <= spaceLeft) {
+                                    // cộng dồn số lượng item mới vào item cũ
                                     itemInventory.addQuantity(itemNew.getQuantity());
+                                    // xóa item mới
                                     this.disposeItem(itemNew);
                                     return true;
                                 } else {
+                                    // cộng dồn số lượng item mới vào item cũ
                                     itemInventory.addQuantity(spaceLeft);
                                     itemNew.subQuantity(spaceLeft);
                                 }
@@ -121,18 +126,20 @@ public class PlayerInventory {
                         }
                     }
 
+                    // nếu item còn lại sau khi cộng dồn vẫn còn
                     while (itemNew.getQuantity() > 0) {
+                        // tìm vị trí item null trong hành trang
                         short index = this.findIndexItemNullInventory(items);
                         if (index == -1) {
                             return false;
                         }
-                        Item newItemStack = ItemFactory.getInstance().clone(itemNew);
+                        Item newItemStack = ItemFactory.getInstance().clone(itemNew);// tạo item mới
+                        // số lượng item cần thêm vào hành trang
                         int addAmount = Math.min(itemNew.getQuantity(), itemNew.getTemplate().maxQuantity());
                         newItemStack.setQuantity(addAmount);
                         itemNew.subQuantity(addAmount);
                         items.set(index, newItemStack);
                     }
-
                     this.disposeItem(itemNew);
                 }
             }
@@ -182,6 +189,13 @@ public class PlayerInventory {
         LogServer.LogWarning("removeItem: Không tìm thấy item để xóa.");
     }
 
+    public void removeAllItemBag() {
+        for (int i = 0; i < this.itemsBag.size(); i++) {
+            this.itemsBag.set(i, ItemFactory.getInstance().createItemNull());
+        }
+        InventoryService.getInstance().sendItemToBags(player, 0);
+    }
+
     private void _______________THROW_ITEM______________() {
         // Xử lý người chơi vứt bỏ item
     }
@@ -216,9 +230,8 @@ public class PlayerInventory {
                 this.removeItemBag(index);
                 InventoryService.getInstance().sendItemToBags(player, 0);
             }
-            default -> {
-                LogServer.LogWarning("Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
-            }
+            default ->
+                    LogServer.LogWarning("Chưa xử lý xong where: " + where + " index: " + index + " player: " + player.getName());
         }
     }
 
@@ -312,7 +325,8 @@ public class PlayerInventory {
         }
         Item itemBag = this.itemsBag.get(index);
         if (itemBag != null && itemBag.getTemplate() != null) {
-            this.itemsBag.set(index, this.putItemBodyForIndex(itemBag));
+            Item itemBody = this.putItemBodyForIndex(itemBag);
+            this.itemsBag.set(index, itemBody);
             this.sendInfoAfterEquipItem();
         }
     }
@@ -340,9 +354,9 @@ public class PlayerInventory {
     }
 
     private Item putItemBodyForIndex(Item item) {
-        Item itemBody = item;
+        Item itemBody = ItemFactory.getInstance().createItemNull();
         try {
-            int index = -1;
+            int index;
             if (item != null && item.getTemplate() != null) {
                 switch (item.getTemplate().type()) {
                     case ConstItem.TYPE_AO, ConstItem.TYPE_QUAN, ConstItem.TYPE_GANG, ConstItem.TYPE_GIAY,
@@ -354,11 +368,11 @@ public class PlayerInventory {
                     case ConstItem.TYPE_MOUNT, ConstItem.TYPE_MOUNT_VIP -> index = 9;
                     default -> {
                         Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Trang bị không phù hợp.", false);
-                        return itemBody;
+                        return null;
                     }
                 }
-                itemBody = this.itemsBody.get(index);// lay item o body item tai (khong co gi) set item itemBody = null
 
+                itemBody = this.itemsBody.get(index);// lay item o body item tai (khong co gi) set item itemBody = null
                 this.itemsBody.set(index, item);
                 return itemBody;
             }
@@ -369,6 +383,7 @@ public class PlayerInventory {
     }
 
     private void sendInfoAfterEquipItem() {
+        this.player.getPlayerPoints().setPoint();
         InventoryService inventoryService = InventoryService.getInstance();
         PlayerService playerService = PlayerService.getInstance();
         inventoryService.sendItemToBags(this.player, 0);
@@ -454,24 +469,6 @@ public class PlayerInventory {
     }
 
     private void _______________DISPOSE______________() {
-    }
-
-    private void dispose() {
-        for (Item item : this.itemsBody) {
-            if (item != null) {
-                item.dispose();
-            }
-        }
-        for (Item item : this.itemsBag) {
-            if (item != null) {
-                item.dispose();
-            }
-        }
-        for (Item item : this.itemsBox) {
-            if (item != null) {
-                item.dispose();
-            }
-        }
     }
 
     public void disposeItem(Item item) {

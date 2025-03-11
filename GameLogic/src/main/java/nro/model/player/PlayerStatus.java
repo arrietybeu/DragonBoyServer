@@ -3,6 +3,7 @@ package nro.model.player;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import nro.consts.ConstMenu;
 
 @Getter
 @Setter
@@ -19,9 +20,13 @@ public class PlayerStatus {
     private long lastTimePickItem;
 
     private int teleport = 0;
-
+    private int idItemTask;
 
     public PlayerStatus(Player player) {
         this.player = player;
+    }
+
+    public boolean isBaseMenu() {
+        return this.indexMenu == ConstMenu.BASE_MENU;
     }
 }

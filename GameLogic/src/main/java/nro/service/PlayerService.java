@@ -9,6 +9,7 @@ import nro.model.item.ItemMap;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
 import nro.model.player.PlayerPoints;
+import nro.model.player.PlayerTask;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
 import nro.server.network.Message;
@@ -21,6 +22,7 @@ import nro.server.config.ConfigDB;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
 import nro.service.core.DropItemMap;
+import nro.service.core.ItemFactory;
 import nro.utils.Util;
 
 import java.io.DataOutputStream;
@@ -450,11 +452,13 @@ public class PlayerService {
         }
     }
 
-    public void pickItem(Player player, int itemMapID, int type) {
+    public void pickItem(Player player, int itemMapID) {
         try {
+            if (this.pickItemTask(player, itemMapID)) return;
             ItemMap itemMap = player.getArea().getItemsMapById(itemMapID);
             if (itemMap == null)
                 return;
+
             if (itemMap.getItemMapID() == itemMapID) {
                 if (itemMap.getItem().getTemplate().type() == 22)
                     return;
@@ -482,7 +486,7 @@ public class PlayerService {
                 var idItem = item.getTemplate().id();
                 var quantity = item.getQuantity();
                 var itemType = item.getTemplate().type();
-                var nameItem = item.getTemplate().name();
+
                 var notify = "";
                 switch (itemType) {
                     case ConstItem.TYPE_GOLD -> player.getPlayerCurrencies().addGold(quantity);
@@ -490,26 +494,15 @@ public class PlayerService {
                     case ConstItem.TYPE_RUBY -> player.getPlayerCurrencies().addRuby(quantity);
                     default -> {
                         switch (idItem) {
-                            case ConstItem.DUI_GA_NUONG -> {
-                                PlayerPoints playerPoints = player.getPlayerPoints();
-                                playerPoints.setCurrentHp(playerPoints.getMaxHP());
-                                playerPoints.setCurrentMp(playerPoints.getMaxMP());
-                                this.sendHpForPlayer(player);
-                                this.sendMpForPlayer(player);
-                                notify = String.format("Bạn vừa ăn %s", nameItem);
-                            }
+                            case ConstItem.DUI_GA -> player.getPlayerTask().checkDoneTaskPickItem(idItem);
                             default -> {
-                                if (idItem == ConstItem.DUA_BE) {
-                                    notify = "Wow, một cậu bé dễ thương";
-                                }
                                 if (!player.getPlayerInventory().addItemBag(item)) {
                                     // service.sendChatGlobal(player.getSession(), null, "", false);
                                     return;
                                 }
                             }
                         }
-                        player.getPlayerTask().checkDoneTaskPickItem(idItem);
-                        this.sendPickItemMap(player, itemMap.getItemMapID(), itemType, quantity, notify);
+                        ItemService.getInstance().sendPickItemMap(player, itemMap.getItemMapID(), itemType, quantity, notify);
                         this.sendPLayerPickItemMap(player, itemMap.getItemMapID());
                         player.getArea().removeItemMap(itemMap.getItemMapID());
                     }
@@ -520,19 +513,40 @@ public class PlayerService {
         }
     }
 
-    public void sendPickItemMap(Player player, int itemMapID, int type, int quantity, String notify) {
-        try (Message message = new Message(-20)) {
-            DataOutputStream writer = message.writer();
-            writer.writeShort(itemMapID);
-            writer.writeUTF(notify);
-            writer.writeShort(quantity);
-            if (type == ConstItem.TYPE_GOLD || type == ConstItem.TYPE_GEM || type == ConstItem.TYPE_RUBY) {
-                writer.writeShort(quantity);
-            }
-            player.sendMessage(message);
-        } catch (Exception exception) {
-            LogServer.LogException("sendPickItemMap: " + exception.getMessage(), exception);
+    private boolean pickItemTask(Player player, int itemMapId) {
+        TaskMain taskMain = player.getPlayerTask().getTaskMain();
+        boolean isTask = false;
+        String notify = null;
+        var type = -1;
+
+        if (player.getArea().getMap().isMapHouseByGender(player.getGender())) {
+            player.getPlayerPoints().healPlayer();
+            notify = "Bạn vừa ăn Đùi gà nướng";
+            isTask = true;
+            type = 27;
         }
+
+        if (taskMain.getId() == 3 && taskMain.getIndex() == 1) {
+            isTask = handleTaskPickItem(player, itemMapId);
+            notify = "Wow, một cậu bé dễ thương";
+            type = 11;
+        }
+
+        if (isTask) {
+            ItemService.getInstance().sendPickItemMap(player, itemMapId, type, 1, notify);
+        }
+        return isTask;
+    }
+
+    private boolean handleTaskPickItem(Player player, int itemMapId) {
+        int idItem = ConstItem.DUA_BE;
+        if (player.getPlayerStatus().getIdItemTask() == itemMapId) {
+            Item duaBe = ItemFactory.getInstance().createItemOptionsBase(idItem);
+            if (!player.getPlayerInventory().addItemBag(duaBe)) return false;
+            player.getPlayerTask().checkDoneTaskPickItem(idItem);
+            return true;
+        }
+        return false;
     }
 
     public void sendPLayerPickItemMap(Player player, int itemMapId) {

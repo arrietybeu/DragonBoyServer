@@ -12,6 +12,7 @@ import nro.service.core.DropItemMap;
 import nro.server.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
+import nro.utils.Util;
 
 import java.io.DataOutputStream;
 import java.util.Map;
@@ -147,14 +148,12 @@ public class AreaService {
         this.transferPlayer(player, newArea, player.getX(), player.getY());
     }
 
-    public boolean gotoMap(Player player, GameMap goMap, short goX, short goY) {
+    public void gotoMap(Player player, GameMap goMap, int goX, int goY) {
         Area newArea = goMap.getArea();
-        if (this.transferPlayer(player, newArea, goX, goY)) {
+        if (this.transferPlayer(player, newArea, (short) goX, (short) goY)) {
             player.getPlayerTask().checkDoneTaskGoMap();
             DropItemMap.dropMissionItems(player);
-            return true;
         }
-        return false;
     }
 
     private boolean transferPlayer(Player player, Area newArea, short x, short y) {
@@ -250,14 +249,12 @@ public class AreaService {
     public void sendMessageChangerMap(Player player) {
         try {
             var playerService = PlayerService.getInstance();
-
             MapService.clearMap(player);
             playerService.sendStamina(player);
             playerService.sendCurrencyHpMp(player);
             MapService.getInstance().sendMapInfo(player);// -24
         } catch (Exception ex) {
-            LogServer.LogException("Error send Message Changer Map: " + ex.getMessage() + " player:  " + player.getId(),
-                    ex);
+            LogServer.LogException("Error send Message Changer Map: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 
@@ -270,6 +267,24 @@ public class AreaService {
         } catch (Exception ex) {
             LogServer.LogException("sendTeleport: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
+    }
+
+    public void changerMapByShip(Player player, int mapId, int typeTele) {
+        GameMap newMap = MapManager.getInstance().findMapById(mapId);
+        Service service = Service.getInstance();
+        if (newMap == null) {
+            service.sendChatGlobal(player.getSession(), null, "Map không tồn tại: " + mapId, false);
+            return;
+        }
+
+        Area newArea = newMap.getArea();
+        if (newArea == null) {
+            service.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId,
+                    false);
+            return;
+        }
+        player.getPlayerStatus().setTeleport(typeTele);
+        AreaService.getInstance().gotoMap(player, newMap, Util.nextInt(400, 444), 5);
     }
 
 }

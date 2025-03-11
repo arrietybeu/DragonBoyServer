@@ -1,8 +1,8 @@
 package nro.model.clan;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class ClanMember {
 
     private int id;

@@ -20,8 +20,7 @@ public class SelectMenuHandler implements IMessageProcessor {
             var select = message.reader().readByte();
             NpcService.getInstance().confirmMenu(player, npcId, select);
         } catch (Exception ex) {
-            LogServer.LogException("Error SelectMenuHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error SelectMenuHandler: " + ex.getMessage(), ex);
         }
     }
 }
