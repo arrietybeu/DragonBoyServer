@@ -22,13 +22,16 @@ shadowJar {
 }
 
 dependencies {
+    // lib folder
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // lib maven
+    implementation("org.luaj:luaj-jse:3.0.1")
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation("io.reactivex.rxjava3:rxjava:3.1.8")
 
-    implementation("io.reactivex.rxjava3:rxjava:3.1.8") 
-
+    // test
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }

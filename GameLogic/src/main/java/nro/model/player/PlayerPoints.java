@@ -11,6 +11,7 @@ import nro.model.item.ItemOption;
 import nro.model.map.GameMap;
 import nro.model.template.entity.SkillInfo;
 import nro.server.LogServer;
+import nro.server.manager.ItemManager;
 import nro.server.manager.MapManager;
 import nro.service.AreaService;
 import nro.service.PlayerService;
@@ -103,22 +104,22 @@ public class PlayerPoints {
 
     private void setHp() {
         long hpKi000 = this.getParamOption(ConstOption.HP_KI_000, 0, 0) * 1000;
-        long hpK = this.getParamOption(ConstOption.HP_K, 0, 0) * 1000;
-        long hp = this.getParamOption(ConstOption.HP, 0, 0);
-        long hpKi = this.getParamOption(ConstOption.HP_KI, 0, 0);
+        long hpK = this.getParamOption(ConstOption.HP_K, 2, 0) * 1000;
+        long hp = this.getParamOption(ConstOption.HP, 1, 0);
+        long hpKi = this.getParamOption(ConstOption.HP_KI, 2, 0);
 
         this.maxHP = this.baseHP + hpKi000 + hpK + hp + hpKi;
-        this.maxHP = this.getParamOption(ConstOption.HP_PERCENT, 1, this.maxHP);
+        this.maxHP = this.getParamOption(ConstOption.HP_PERCENT, 0, this.maxHP);
     }
 
     private void setMp() {
         long mpKi000 = this.getParamOption(ConstOption.HP_KI_000, 0, 0) * 1000;
-        long mpK = this.getParamOption(ConstOption.KI_K, 0, 0) * 1000;
-        long mp = this.getParamOption(ConstOption.KI, 0, 0);
-        long mpKi = this.getParamOption(ConstOption.HP_KI, 0, 0);
+        long mpK = this.getParamOption(ConstOption.KI_K, 2, 0) * 1000;
+        long mp = this.getParamOption(ConstOption.KI, 1, 0);
+        long mpKi = this.getParamOption(ConstOption.HP_KI, 2, 0);
 
         this.maxMP = this.baseMP + mpKi000 + mpK + mp + mpKi;
-        this.maxMP = this.getParamOption(ConstOption.KI_PERCENT, 1, this.maxMP);
+        this.maxMP = this.getParamOption(ConstOption.KI_PERCENT, 0, this.maxMP);
     }
 
     private void setDame() {
@@ -128,12 +129,12 @@ public class PlayerPoints {
     }
 
     private void setDefense() {
-        long defense = this.getParamOption(1, 0, 0);
+        long defense = this.getParamOption(ConstOption.DEFENSE, 0, 0);
         this.totalDefense = this.baseDefense + defense;
     }
 
     private void setCritical() {
-        long critical = this.getParamOption(3, 0, 0);
+        long critical = this.getParamOption(ConstOption.CRITICAL, 2, 0);
         this.totalCriticalChance = (byte) (this.baseCriticalChance + critical);
     }
 
@@ -151,36 +152,44 @@ public class PlayerPoints {
     }
 
     private long getParamOption(int id, int type, long quantity) {
-        long param = 0;
+        try {
+            long param = 0;
 
-        if (type == 1 || type == 2) {
-            param = quantity;
-        }
-        for (int i = 0; i < this.player.getPlayerInventory().getItemsBody().size(); i++) {
-            Item itemBody = this.player.getPlayerInventory().getItemsBody().get(i);
-            if (itemBody.getTemplate() == null)
-                continue;
-            var countOption = itemBody.getItemOptions().size();
-            for (int o = 0; o < countOption; o++) {
-                ItemOption itemOption = itemBody.getItemOptions().get(o);
-                if (itemOption == null)
+//            type = ItemManager.getInstance().findTypeItemOption(id);
+
+            if (type == 1 || type == 2) {
+                param = quantity;
+            }
+
+            for (int i = 0; i < this.player.getPlayerInventory().getItemsBody().size(); i++) {
+                Item itemBody = this.player.getPlayerInventory().getItemsBody().get(i);
+                if (itemBody.getTemplate() == null)
                     continue;
-                if (itemOption.getId() == id) {
-                    switch (type) {
-                        case 1 -> param = param + param * itemOption.getParam() / 100;
-                        case 2 -> param = param * itemOption.getParam() / 100;
-                        case 3 -> {
-                            return 1;
+                var countOption = itemBody.getItemOptions().size();
+                for (int o = 0; o < countOption; o++) {
+                    ItemOption itemOption = itemBody.getItemOptions().get(o);
+                    if (itemOption == null)
+                        continue;
+                    if (itemOption.getId() == id) {
+                        switch (type) {
+                            case 1 -> param = param + param * itemOption.getParam() / 100;
+                            case 0, 2 -> param = param * itemOption.getParam() / 100;
+                            case 3 -> {
+                                return 1;
+                            }
+                            case 4 -> {
+                                return itemOption.getParam();
+                            }
+                            default -> param += itemOption.getParam();
                         }
-                        case 4 -> {
-                            return itemOption.getParam();
-                        }
-                        default -> param += itemOption.getParam();
                     }
                 }
             }
+            return param;
+        } catch (Exception ex) {
+            LogServer.LogException("getParamOption: " + ex.getMessage(), ex);
+            return 1;
         }
-        return param;
     }
 
     public void addExp(int type, int exp) {

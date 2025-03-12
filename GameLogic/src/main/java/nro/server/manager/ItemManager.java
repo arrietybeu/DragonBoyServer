@@ -298,9 +298,9 @@ public class ItemManager implements IManager {
     public byte findTypeItemOption(int id) {
         ItemOptionTemplate itemOptionTemplate = itemOptionTemplates.get((short) id);
         if (itemOptionTemplate == null) {
-            System.out.println("ItemOptionTemplate is null to id " + id);
             return -1;
         }
+        System.out.println("id: " + itemOptionTemplate.id() + " type() = " + itemOptionTemplate.type() + " name = " + itemOptionTemplate.name());
         return itemOptionTemplate.type();
     }
 

@@ -9,6 +9,7 @@ import nro.model.map.areas.Area;
 import nro.model.pet.PetFollow;
 import nro.model.discpile.Disciple;
 import nro.server.LogServer;
+import nro.server.LuaManager;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
@@ -55,6 +56,7 @@ public class Player extends LiveObject {
         this.playerFusion = new PlayerFusion(this);
         this.playerMagicTree = new PlayerMagicTree(this);
         this.playerStatus = new PlayerStatus(this);
+        LuaManager.getInstance().setGlobals(this);
     }
 
     public void sendMessage(Message message) throws Exception {

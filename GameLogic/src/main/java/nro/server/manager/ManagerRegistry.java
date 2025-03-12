@@ -1,5 +1,6 @@
 package nro.server.manager;
 
+import nro.server.LuaManager;
 import nro.server.manager.resources.PartManager;
 import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SkillManager;
@@ -29,6 +30,7 @@ public class ManagerRegistry {
         MANAGERS.add(GameNotifyManager.getInstance());
         MANAGERS.add(MagicTreeManager.getInstance());
         MANAGERS.add(ItemMapManager.getInstance());
+        MANAGERS.add(LuaManager.getInstance());
     }
 
     public static void initAll() {

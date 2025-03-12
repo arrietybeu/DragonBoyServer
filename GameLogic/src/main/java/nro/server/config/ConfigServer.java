@@ -37,6 +37,8 @@ public final class ConfigServer {
     public static final String BACKUP_FOLDER_PATH = "\\backup";
     public static final String MYSQL_DUMP_PATH = "";
 
+    public static final String SCRIPT_FOLDER = "scripts/";
+
     static {
         try {
             IP = InetAddress.getLocalHost().getHostAddress();
