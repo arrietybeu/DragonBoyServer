@@ -12,6 +12,7 @@ import nro.model.player.PlayerPoints;
 import nro.model.player.PlayerTask;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
+import nro.server.manager.SessionManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.repositories.DatabaseConnectionPool;
@@ -56,6 +57,8 @@ public class PlayerService {
             Service.dialogMessage(session,
                     String.format("Đã xảy ra lỗi trong lúc tải dữ liệu vui lòng thử lại sau\n[Error %s]",
                             ConstError.ERROR_LOADING_DATABASE_FOR_PLAYER));
+
+            SessionManager.getInstance().kickSession2Second(session);
         }
     }
 
@@ -264,11 +267,15 @@ public class PlayerService {
             DataOutputStream out = msg.writer();
             out.writeInt(stats.getBaseHP());
             out.writeInt(stats.getBaseMP());
+            System.out.println("Hp " + stats.getBaseHP() + " Mp " + stats.getBaseMP());
             out.writeInt(stats.getBaseDamage());
             out.writeLong(stats.getMaxHP());
             out.writeLong(stats.getMaxMP());
             out.writeLong(stats.getCurrentHP());
             out.writeLong(stats.getCurrentMP());
+
+            System.out.println("point max hp " + stats.getMaxHP() + " point max mp " + stats.getMaxMP() + "\n" +
+                    "point current hp " + stats.getCurrentHP() + " point current mp " + stats.getCurrentMP());
             out.writeByte(stats.getMovementSpeed());
             out.writeByte(stats.getHpPer1000Potential());
             out.writeByte(stats.getMpPer1000Potential());
@@ -336,7 +343,7 @@ public class PlayerService {
             out.write(itemManager.getDataItemhead());
             sendPlayerBirdFrames(out, player);
 
-            // type fusion = 0 return 0 = false
+            // status fusion = 0 return 0 = false
             out.writeByte(player.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
             out.writeInt(19062006);
 
@@ -460,11 +467,12 @@ public class PlayerService {
                 return;
 
             if (itemMap.getItemMapID() == itemMapID) {
+                Service service = Service.getInstance();
+
                 if (itemMap.getItem().getTemplate().type() == 22)
                     return;
 
                 // TODO check inventory full
-                Service service = Service.getInstance();
                 if (player.getPlayerInventory().isBagFull()) {
                     service.sendChatGlobal(player.getSession(), null, "Hành trang đã đầy.", false);
                     return;
@@ -482,10 +490,10 @@ public class PlayerService {
                     return;
                 }
 
-                final Item item = itemMap.getItem();
-                var idItem = item.getTemplate().id();
-                var quantity = item.getQuantity();
-                var itemType = item.getTemplate().type();
+                final var item = itemMap.getItem();
+                final var idItem = item.getTemplate().id();
+                final var quantity = item.getQuantity();
+                final var itemType = item.getTemplate().type();
 
                 var notify = "";
                 switch (itemType) {

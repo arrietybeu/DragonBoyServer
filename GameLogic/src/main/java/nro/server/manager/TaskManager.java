@@ -62,13 +62,19 @@ public class TaskManager implements IManager {
                     var name = rs.getString("name");
                     var detail = rs.getString("detail");
 
+                    JSONArray nameArray = (JSONArray) JSONValue.parse(name);
+                    String[] nameList = new String[nameArray.size()];
+                    for (int i = 0; i < nameArray.size(); i++) {
+                        nameList[i] = nameArray.get(i).toString();
+                    }
+
                     JSONArray detailArray = (JSONArray) JSONValue.parse(detail);
                     String[] detailList = new String[detailArray.size()];
                     for (int i = 0; i < detailArray.size(); i++) {
                         detailList[i] = detailArray.get(i).toString();
                     }
 
-                    TaskMain task = new TaskMain(id, name, detailList, loadListSubNameTask(connection, id));
+                    TaskMain task = new TaskMain(id, nameList, detailList, loadListSubNameTask(connection, id));
                     TASKS.put(task.getId(), task);
                 }
                 // LogServer.LogInit("Load task thành công (" + TASKS.size() + ")");

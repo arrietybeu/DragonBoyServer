@@ -24,7 +24,7 @@ public class TaskService {
             output.writeShort(taskMain.getId());
             // output.writeShort(15);
             output.writeByte(index);
-            output.writeUTF(taskMain.getName());
+            output.writeUTF(taskMain.getNameByGender(gender));
             output.writeUTF(taskMain.getDetailByGender(gender));
             output.writeByte(subNames.size());
 

@@ -55,7 +55,7 @@ public class FileNio {
                     ByteBuffer buffer = ByteBuffer.allocate((int) fileChannel.size());
                     // doc du lieu tu file channel vao buffer
                     fileChannel.read(buffer);
-                    //change type byte buffer chuyen sang read mode
+                    //change status byte buffer chuyen sang read mode
                     buffer.flip();
                     // tao mang byte de chua du lieu tu buffer
                     ab = new byte[buffer.remaining()];

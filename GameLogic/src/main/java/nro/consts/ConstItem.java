@@ -2,7 +2,7 @@ package nro.consts;
 
 public class ConstItem {
 
-    // Item type
+    // Item status
 
     public static final byte TYPE_AO = 0;
 

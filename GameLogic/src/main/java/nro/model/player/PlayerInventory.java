@@ -383,7 +383,7 @@ public class PlayerInventory {
     }
 
     private void sendInfoAfterEquipItem() {
-        this.player.getPlayerPoints().setPoint();
+        this.player.getPlayerPoints().calculateStats();
         InventoryService inventoryService = InventoryService.getInstance();
         PlayerService playerService = PlayerService.getInstance();
         inventoryService.sendItemToBags(this.player, 0);

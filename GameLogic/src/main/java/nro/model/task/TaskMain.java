@@ -10,16 +10,26 @@ import java.util.List;
 public class TaskMain {
 
     private int id;
-    private final String name;
+    private final String[] name;
     private final String[] detail;
     private List<SubName> subNameList;
     private int index;
 
-    public TaskMain(int id, String name, String[] detail, List<SubName> subNameList) {
+    public TaskMain(int id, String[] name, String[] detail, List<SubName> subNameList) {
         this.id = id;
         this.name = name;
         this.detail = detail;
         this.subNameList = subNameList;
+    }
+
+    public String getNameByGender(int gender) {
+        if (name.length == 0) {
+            return "";
+        }
+        if (name.length == 1) {
+            return name[0];
+        }
+        return name[gender];
     }
 
     public String getDetailByGender(int gender) {
@@ -93,12 +103,6 @@ public class TaskMain {
                 return contentInfo[0];
             }
             return contentInfo[gender];
-        }
-
-        @Override
-        public String toString() {
-            return "SubName{" + "npcList=" + npcList + ", mapList=" + mapList + ", count=" + count + ", maxCount="
-                    + maxCount + ", nameList=" + nameList + ", contentInfo='" + contentInfo + '\'' + '}';
         }
     }
 

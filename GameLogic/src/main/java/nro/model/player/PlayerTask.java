@@ -55,6 +55,7 @@ public class PlayerTask {
                     this.handleTaskTwo(index, npcService, nameMapCliff);
                 }
                 case 3 -> this.handleTaskThree(index, npcService);
+                case 4 -> this.handleTaskFour(index, npcService);
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
@@ -89,7 +90,13 @@ public class PlayerTask {
                 }
                 case 1 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n" + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n" + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n" + "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n" + "Nhanh lên, ta đói lắm rồi!\n" + "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n" + "Vị trí đang chớp sáng là nơi bạn làm nhiệm vụ, hãy tìm đường đến đó";
+                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n"
+                            + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n"
+                            + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n"
+                            + "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n"
+                            + "Nhanh lên, ta đói lắm rồi!\n"
+                            + "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n"
+                            + "Vị trí đang chớp sáng là nơi bạn làm nhiệm vụ, hãy tìm đường đến đó";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     player.getPlayerPoints().addExp(2, 3000);
                     service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
@@ -146,6 +153,22 @@ public class PlayerTask {
         }
     }
 
+    private void handleTaskFour(int index, NpcService npcService) {
+        try {
+            if (index == 3) {
+                Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                var content = "Con đã thực sự trưởng thành\n" +
+                        "Ta cho con cuốn bí kíp này để nâng cao võ hoc.\n" +
+                        "Con hãy dùng sức mạnh của mình trừ gian diệt ác bảo vệ dân lành nhé\n" +
+                        "Ta vừa mới nhận được tin, người bán hàng của chúng ta, Bumma, vừa bị một bọn mãnh thú bắt đi\n" +
+                        "Ta nghĩ chúng cũng chưa đi được xa đâu, con hãy chạy theo cứu Bunma, đi nhanh đi con\n" +
+                        "Con phải đạt sức mạnh 78.000 mới có thể đánh lại bọn chúng, hãy siêng năng tập luyện";
+                npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskFour - " + ex.getMessage(), ex);
+        }
+    }
 
     private boolean checkTaskInfo(int taskId, int index) {
         return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
@@ -192,7 +215,8 @@ public class PlayerTask {
     public boolean checkDoneTaskTalkNpc(Npc npc) {
         return switch (npc.getTempId()) {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
-                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1) || this.doneTask(2, 1) || this.doneTask(3, 2);
+                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1)
+                            || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3);
             default -> false;
         };
     }
@@ -201,8 +225,26 @@ public class PlayerTask {
         try {
             switch (monster.getTemplateId()) {
                 case ConstMonster.MOC_NHAN -> this.doneTask(1, 0);
-                case ConstMonster.KHUNG_LONG_ME, ConstMonster.LON_LOI_ME, ConstMonster.QUY_DAT_ME ->
-                        this.doneTask(4, 0);
+
+                case ConstMonster.KHUNG_LONG_ME -> {
+                    switch (this.player.getGender()) {
+                        case ConstPlayer.TRAI_DAT -> this.doneTask(4, 0);
+                        case ConstPlayer.NAMEC, ConstPlayer.XAYDA -> this.doneTask(4, 1);
+                    }
+                }
+                case ConstMonster.LON_LOI_ME -> {
+                    switch (this.player.getGender()) {
+                        case ConstPlayer.TRAI_DAT -> this.doneTask(4, 1);
+                        case ConstPlayer.NAMEC -> this.doneTask(4, 0);
+                        case ConstPlayer.XAYDA -> this.doneTask(4, 2);
+                    }
+                }
+                case ConstMonster.QUY_DAT_ME -> {
+                    switch (this.player.getGender()) {
+                        case ConstPlayer.TRAI_DAT, ConstPlayer.NAMEC -> this.doneTask(4, 2);
+                        case ConstPlayer.XAYDA -> this.doneTask(4, 0);
+                    }
+                }
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask checkDoneTaskKKillMonster - " + ex.getMessage(), ex);
@@ -232,12 +274,6 @@ public class PlayerTask {
         }
     }
 
-    public void sendTaskInfo() {
-        TaskService taskService = TaskService.getInstance();
-        taskService.sendTaskMain(player);
-        taskService.sendTaskMainUpdate(player);
-    }
-
     public void sendInfoTaskForNpcTalkByUI(Player player) {
         TaskMain taskMain = player.getPlayerTask().getTaskMain();
         if (taskMain == null) {
@@ -254,6 +290,7 @@ public class PlayerTask {
     }
 
     private void addDoneSubTask() {
+        TaskService taskService = TaskService.getInstance();
         var subList = this.taskMain.getSubNameList();
         var currentIndex = this.taskMain.getIndex();
         subList.get(currentIndex).addCount(1);
@@ -261,18 +298,23 @@ public class PlayerTask {
         var count = subList.get(currentIndex).getCount();
         if (count >= subList.get(currentIndex).getMaxCount()) {
             this.taskMain.setIndex(currentIndex + 1);
-        }
 
-        if (this.taskMain.getIndex() >= subList.size()) {
-            TaskMain nextTask = this.getTaskMainById(this.taskMain.getId() + 1);
-            if (nextTask != null) {
-                this.taskMain = nextTask;
-                this.taskMain.setIndex(0);
+            if (this.taskMain.getIndex() >= subList.size()) {
+                int nextTaskId = (this.taskMain.getId() == 4) ? 7 : this.taskMain.getId() + 1;// nhay coc nhiem vu 4 len 7
+                TaskMain nextTask = this.getTaskMainById(nextTaskId);
+                if (nextTask != null) {
+                    this.taskMain = nextTask;
+                    this.taskMain.setIndex(0);
+                    taskService.sendTaskMain(player);
+                } else {
+                    LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
+                }
             } else {
-                LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
+                taskService.sendTaskMain(player);
             }
         }
-        this.sendTaskInfo();
+
+        taskService.sendTaskMainUpdate(player);
     }
 
 }

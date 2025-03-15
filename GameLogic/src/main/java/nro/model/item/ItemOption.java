@@ -9,6 +9,7 @@ public class ItemOption {
 
     private int id;
     private int param;
+    private short type;
 
     public ItemOption(int id, int param) {
         this.id = id;

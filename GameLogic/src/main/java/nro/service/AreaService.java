@@ -78,7 +78,7 @@ public class AreaService {
         byte level = (byte) CaptionManager.getInstance().getLevel(player);
         data.writeByte(level);
         data.writeBoolean(false);// write isInvisiblez
-        data.writeByte(player.getTypePk()); // write type Pk
+        data.writeByte(player.getTypePk()); // write status Pk
         data.writeByte(player.getGender());
         data.writeByte(player.getGender());
         data.writeShort(playerFashion.getHead());

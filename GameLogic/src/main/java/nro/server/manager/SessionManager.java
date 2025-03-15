@@ -6,6 +6,7 @@ import nro.repositories.account.AccountRepository;
 import nro.server.network.Session;
 import nro.repositories.player.PlayerUpdate;
 import nro.server.LogServer;
+import nro.utils.Util;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -131,11 +132,7 @@ public class SessionManager {
             LogServer.DebugLogic("Tổng số sessions trước khi kick: " + sessions.size());
 
             sessions.forEach((userId, session) -> {
-                LogServer.DebugLogic(String.format(
-                        "KICK SESSION | [UserId: %d] | [LastActiveTime: %d] | [Lý do: %s]",
-                        userId,
-                        session.getClientInfo().getLastActiveTime(),
-                        status));
+                LogServer.DebugLogic(String.format("KICK SESSION | [UserId: %d] | [LastActiveTime: %d] | [Lý do: %s]", userId, session.getClientInfo().getLastActiveTime(), status));
                 this.kickSession(session);
             });
 
@@ -156,11 +153,14 @@ public class SessionManager {
             this.remove(session);// remove key session
             session.close();// close du lieu session khi da vao game
         } catch (Exception e) {
-            LogServer.LogException("Error kickSession: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error kickSession: " + e.getMessage(), e);
         } finally {
             this.lock.writeLock().unlock();
         }
+    }
+
+    public void kickSession2Second(Session session) {
+        Util.delay(2, () -> this.kickSession(session));
     }
 
     private void dispose(Session session) {

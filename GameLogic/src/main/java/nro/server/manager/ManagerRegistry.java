@@ -30,7 +30,7 @@ public class ManagerRegistry {
         MANAGERS.add(GameNotifyManager.getInstance());
         MANAGERS.add(MagicTreeManager.getInstance());
         MANAGERS.add(ItemMapManager.getInstance());
-        MANAGERS.add(LuaManager.getInstance());
+//        MANAGERS.add(LuaManager.getInstance());
     }
 
     public static void initAll() {

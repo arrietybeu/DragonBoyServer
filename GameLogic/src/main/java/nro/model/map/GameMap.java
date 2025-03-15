@@ -38,7 +38,7 @@ public class GameMap implements Runnable {
 
     private List<Area> areas;
 
-    // id, name, planetId, tileId, isMapDouble, type, bgId, bgType, bgItems,
+    // id, name, planetId, tileId, isMapDouble, status, bgId, bgType, bgItems,
     // effects, waypoints, tileMap
     public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType,
                    byte typeMap,

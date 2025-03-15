@@ -2,7 +2,7 @@ package nro.consts;
 
 public class ConstSkill {
 
-    // skill type
+    // skill status
     public static final byte CAN_CHIEN = 0;
     public static final byte SKILL_FORCUS = 1;
     public static final byte SKILL_SUPPORT = 2;

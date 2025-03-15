@@ -90,7 +90,7 @@ public class ResourceService {
                     // done downloading resources
                     break;
                 default:
-                    LogServer.LogException("Error downloadResources: Unknown type " + type);
+                    LogServer.LogException("Error downloadResources: Unknown status " + type);
                     break;
             }
         } catch (Exception ex) {
@@ -261,7 +261,7 @@ public class ResourceService {
             return;
         }
         try (Message message = new Message(-28)) {
-            message.writer().writeByte(ConstMsgNotMap.SEND_VERSION);// type 4
+            message.writer().writeByte(ConstMsgNotMap.SEND_VERSION);// status 4
             message.writer().writeByte(ConfigServer.VERSION_DATA);// GameScr.vsData = msg.reader().readByte();
             message.writer().writeByte(ConfigServer.VERSION_MAP);// GameScr.vsMap = msg.reader().readByte();
             message.writer().writeByte(ConfigServer.VERSION_SKILL);// GameScr.vsSkill = msg.reader().readByte();

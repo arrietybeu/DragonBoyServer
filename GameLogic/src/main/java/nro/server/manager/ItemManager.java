@@ -125,7 +125,8 @@ public class ItemManager implements IManager {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
                 var type = rs.getByte("type");
-                ItemOptionTemplate itemOptionManager = new ItemOptionTemplate(id, name, type);
+                var status = rs.getByte("status");
+                ItemOptionTemplate itemOptionManager = new ItemOptionTemplate(id, name, type, status);
                 this.itemOptionTemplates.put((short) id, itemOptionManager);
             }
             this.setItemOption();
@@ -297,10 +298,7 @@ public class ItemManager implements IManager {
 
     public byte findTypeItemOption(int id) {
         ItemOptionTemplate itemOptionTemplate = itemOptionTemplates.get((short) id);
-        if (itemOptionTemplate == null) {
-            return -1;
-        }
-        System.out.println("id: " + itemOptionTemplate.id() + " type() = " + itemOptionTemplate.type() + " name = " + itemOptionTemplate.name());
+        if (itemOptionTemplate == null) return -1;
         return itemOptionTemplate.type();
     }
 

@@ -52,7 +52,7 @@ public class NotLoginHandler implements IMessageProcessor {
             var username = message.reader().readUTF().toLowerCase();
             var password = message.reader().readUTF().toLowerCase();
             var version = message.reader().readUTF();
-            var type = message.reader().readByte();// type login
+            var type = message.reader().readByte();// status login
 
             session.getClientInfo().setVersion(version);
             UserInfo userInfo = new UserInfo(session, username, password);

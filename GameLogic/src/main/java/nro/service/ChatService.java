@@ -167,10 +167,7 @@ public class ChatService {
                 }
 
                 case "send_exp" -> PlayerService.getInstance().sendPlayerUpExp(playerChat, 2, 100);
-                case "send_task" -> {
-                    playerChat.getPlayerTask().sendTaskInfo();
-                    service.sendChatGlobal(playerChat.getSession(), null, "Send Task Thành Công", false);
-                }
+
                 case "npc_size" -> {
                     int sizeNpcAllArea = 0;
                     for (GameMap map : MapManager.getInstance().getGameMaps().values()) {

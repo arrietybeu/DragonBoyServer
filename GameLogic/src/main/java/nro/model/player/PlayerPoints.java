@@ -18,9 +18,10 @@ import nro.service.PlayerService;
 import nro.service.Service;
 import nro.utils.Util;
 
+import java.util.List;
+
 @Getter
 @Setter
-@ToString
 public class PlayerPoints {
 
     private final Player player;
@@ -94,48 +95,60 @@ public class PlayerPoints {
         return dame;
     }
 
-    public void setPoint() {
-        this.setHp();
-        this.setMp();
-        this.setDame();
-        this.setDefense();
-        this.setCritical();
+    public void calculateStats() {
+        this.resetBaseStats();
+        this.applyItemBonuses();
     }
 
-    private void setHp() {
-        long hpKi000 = this.getParamOption(ConstOption.HP_KI_000, 0, 0) * 1000;
-        long hpK = this.getParamOption(ConstOption.HP_K, 2, 0) * 1000;
-        long hp = this.getParamOption(ConstOption.HP, 1, 0);
-        long hpKi = this.getParamOption(ConstOption.HP_KI, 2, 0);
-
-        this.maxHP = this.baseHP + hpKi000 + hpK + hp + hpKi;
-        this.maxHP = this.getParamOption(ConstOption.HP_PERCENT, 0, this.maxHP);
-    }
-
-    private void setMp() {
-        long mpKi000 = this.getParamOption(ConstOption.HP_KI_000, 0, 0) * 1000;
-        long mpK = this.getParamOption(ConstOption.KI_K, 2, 0) * 1000;
-        long mp = this.getParamOption(ConstOption.KI, 1, 0);
-        long mpKi = this.getParamOption(ConstOption.HP_KI, 2, 0);
-
-        this.maxMP = this.baseMP + mpKi000 + mpK + mp + mpKi;
-        this.maxMP = this.getParamOption(ConstOption.KI_PERCENT, 0, this.maxMP);
-    }
-
-    private void setDame() {
+    private void resetBaseStats() {
         this.currentDamage = this.baseDamage;
-        long tanCong = this.getParamOption(ConstOption.TAN_CONG, 0, 0);
-        this.currentDamage = this.currentDamage + tanCong;
+        this.maxHP = this.baseHP;
+        this.maxMP = this.baseMP;
+        this.totalDefense = this.baseDefense;
+        this.totalCriticalChance = this.baseCriticalChance;
     }
 
-    private void setDefense() {
-        long defense = this.getParamOption(ConstOption.DEFENSE, 0, 0);
-        this.totalDefense = this.baseDefense + defense;
+    private void applyItemBonuses() {
+        try {
+            List<Item> itemsBody = this.player.getPlayerInventory().getItemsBody();
+            if (itemsBody == null) return;
+
+            for (Item item : itemsBody) {
+                if (item == null || item.getTemplate() == null) continue;
+
+                for (ItemOption option : item.getItemOptions()) {
+                    if (option == null) continue;
+
+                    long param = this.getParamOption(option);
+
+                    switch (option.getId()) {
+                        case ConstOption.TAN_CONG -> this.currentDamage += param;
+                        case ConstOption.HP, ConstOption.HP_K, ConstOption.HP_PERCENT -> this.maxHP += param;
+                        case ConstOption.KI, ConstOption.KI_K, ConstOption.KI_PERCENT -> this.maxMP += param;
+                        case ConstOption.HP_KI_000, ConstOption.HP_KI -> {
+                            this.maxHP += param;
+                            this.maxMP += param;
+                        }
+                        case ConstOption.DEFENSE -> this.totalDefense += param;
+                        case ConstOption.CRITICAL -> this.totalCriticalChance += (byte) param;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("Error khi tinh toan param option: " + ex.getMessage(), ex);
+        }
     }
 
-    private void setCritical() {
-        long critical = this.getParamOption(ConstOption.CRITICAL, 2, 0);
-        this.totalCriticalChance = (byte) (this.baseCriticalChance + critical);
+    private long getParamOption(ItemOption option) {
+        if (option == null) return 0;
+
+        return switch (ItemManager.getInstance().findTypeItemOption(option.getId())) {
+            case ConstOption.CONG_PARAM, ConstOption.TRA_VE_PARAM -> option.getParam();
+            case ConstOption.CONG_PARAM_000, ConstOption.CONG_PARAM_K -> option.getParam() * 1000L;
+            case ConstOption.NHAN_PERCENT, ConstOption.CONG_PARAM_PERCENT -> option.getParam() / 100;
+            case ConstOption.TRU_PARAM_PERCENT -> -option.getParam() / 100;
+            default -> 0;
+        };
     }
 
     private long getDameSkill() {
@@ -148,47 +161,6 @@ public class PlayerPoints {
         } catch (Exception ex) {
             LogServer.LogException(" getSkillDamageMultiplier: " + ex.getMessage(), ex);
             return 0;
-        }
-    }
-
-    private long getParamOption(int id, int type, long quantity) {
-        try {
-            long param = 0;
-
-//            type = ItemManager.getInstance().findTypeItemOption(id);
-
-            if (type == 1 || type == 2) {
-                param = quantity;
-            }
-
-            for (int i = 0; i < this.player.getPlayerInventory().getItemsBody().size(); i++) {
-                Item itemBody = this.player.getPlayerInventory().getItemsBody().get(i);
-                if (itemBody.getTemplate() == null)
-                    continue;
-                var countOption = itemBody.getItemOptions().size();
-                for (int o = 0; o < countOption; o++) {
-                    ItemOption itemOption = itemBody.getItemOptions().get(o);
-                    if (itemOption == null)
-                        continue;
-                    if (itemOption.getId() == id) {
-                        switch (type) {
-                            case 1 -> param = param + param * itemOption.getParam() / 100;
-                            case 0, 2 -> param = param * itemOption.getParam() / 100;
-                            case 3 -> {
-                                return 1;
-                            }
-                            case 4 -> {
-                                return itemOption.getParam();
-                            }
-                            default -> param += itemOption.getParam();
-                        }
-                    }
-                }
-            }
-            return param;
-        } catch (Exception ex) {
-            LogServer.LogException("getParamOption: " + ex.getMessage(), ex);
-            return 1;
         }
     }
 
@@ -336,13 +308,15 @@ public class PlayerPoints {
                     potentiaUse = 2L * (currentBaseDefense + 5) * 2 / 100000;
                     currentPoint = currentBaseDefense;
                 }
+
                 case ConstPlayer.UP_POTENTIAL_CRITICAL -> {
                     final var currentBaseCritical = this.baseCriticalChance;
                     potentiaUse = (long) (50_000_000 * Math.pow(5, point));
                     currentPoint = currentBaseCritical;
                 }
+
                 default -> {
-                    LogServer.LogWarning("upPotentialPoint: type không tồn tại: " + type);
+                    LogServer.LogWarning("upPotentialPoint: status không tồn tại: " + type);
                     service.sendHideWaitDialog(player);
                     return;
                 }
@@ -355,14 +329,6 @@ public class PlayerPoints {
         } catch (Exception ex) {
             LogServer.LogException("upPotentialPoint: " + ex.getMessage(), ex);
         }
-    }
-
-    public void healPlayer() {
-        PlayerService playerService = PlayerService.getInstance();
-        this.setCurrentHp(this.getMaxHP());
-        this.setCurrentMp(this.getMaxMP());
-        playerService.sendHpForPlayer(player);
-        playerService.sendMpForPlayer(player);
     }
 
     private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point) throws Exception {
@@ -380,13 +346,21 @@ public class PlayerPoints {
             case ConstPlayer.UP_POTENTIAL_DEFENSE -> this.baseDefense += 1;
             case ConstPlayer.UP_POTENTIAL_CRITICAL -> this.baseCriticalChance += 1;
             default -> {
-                LogServer.LogWarning("isUpgradePotential: type không tồn tại: " + type);
+                LogServer.LogWarning("isUpgradePotential: status không tồn tại: " + type);
                 return false;
             }
         }
 
         this.potentialPoints -= potentiaUse;
-        this.setPoint();
+        this.calculateStats();
         return true;
+    }
+
+    public void healPlayer() {
+        PlayerService playerService = PlayerService.getInstance();
+        this.setCurrentHp(this.getMaxHP());
+        this.setCurrentMp(this.getMaxMP());
+        playerService.sendHpForPlayer(player);
+        playerService.sendMpForPlayer(player);
     }
 }

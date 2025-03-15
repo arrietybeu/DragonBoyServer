@@ -9,7 +9,6 @@ import nro.model.map.areas.Area;
 import nro.model.pet.PetFollow;
 import nro.model.discpile.Disciple;
 import nro.server.LogServer;
-import nro.server.LuaManager;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
@@ -56,7 +55,6 @@ public class Player extends LiveObject {
         this.playerFusion = new PlayerFusion(this);
         this.playerMagicTree = new PlayerMagicTree(this);
         this.playerStatus = new PlayerStatus(this);
-        LuaManager.getInstance().setGlobals(this);
     }
 
     public void sendMessage(Message message) throws Exception {
@@ -82,6 +80,7 @@ public class Player extends LiveObject {
             switch (action) {
                 case 0 -> itemService.sendShowListFlagBag(this);
                 case 1 -> {
+
                     if (index != 0 && lastChangeTime + 60000 > currentTime) {
                         long remainingTime = (lastChangeTime + 60000 - currentTime) / 1000;
                         Service.getInstance().sendChatGlobal(this.getSession(), null,
@@ -89,6 +88,7 @@ public class Player extends LiveObject {
                                 false);
                         return;
                     }
+
                     if (isInvalidIndex) {
                         Service.getInstance().sendChatGlobal(this.getSession(), null,
                                 "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
@@ -116,8 +116,7 @@ public class Player extends LiveObject {
                 }
             }
         } catch (Exception e) {
-            LogServer.LogException("Error changeFlag: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error changeFlag: " + e.getMessage(), e);
         }
     }
 

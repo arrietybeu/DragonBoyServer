@@ -32,7 +32,7 @@ public class UseItemService {
                     break;
                 }
                 default: {
-                    LogServer.LogWarning("useItem type: " + type + " player: " + player.getName());
+                    LogServer.LogWarning("useItem status: " + type + " player: " + player.getName());
                     break;
                 }
             }
@@ -65,7 +65,7 @@ public class UseItemService {
                     break;
                 }
                 default: {
-                    LogServer.LogWarning("Get Item: Chua hoan thien type: " + type);
+                    LogServer.LogWarning("Get Item: Chua hoan thien status: " + type);
                     break;
                 }
             }
@@ -108,7 +108,7 @@ public class UseItemService {
                     this.eventUseItem(player, type, where, index, info);
                 }
                 default -> {
-                    LogServer.LogWarning("confirmThrowItem type: " + type + " player: " + player.getName());
+                    LogServer.LogWarning("confirmThrowItem status: " + type + " player: " + player.getName());
                 }
             }
         } catch (Exception ex) {

@@ -10,6 +10,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface APacketHandler {
 
-    byte value();// type msg
+    byte value();// status msg
 
 }

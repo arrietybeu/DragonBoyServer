@@ -2,7 +2,7 @@ package nro.consts;
 
 public class ConstMap {
 
-    // Map type
+    // Map status
 
     public static final int MAP_TYPE_NORMAL = 0;
     public static final int MAP_OFFLINE = 1;

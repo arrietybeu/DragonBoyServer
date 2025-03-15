@@ -2,6 +2,24 @@ package nro.consts;
 
 public class ConstOption {
 
+    //=================TYPE=================//
+
+    public static final short CONG_PARAM = 0; // +#
+
+    public static final short TRA_VE_PARAM = 1;// #
+
+    public static final short CONG_PARAM_000 = 2; // +#000
+
+    public static final short NHAN_PERCENT = 3; // #%
+
+    public static final short CONG_PARAM_PERCENT = 4; // +#%
+
+    public static final short CONG_PARAM_K = 5; // +#k
+
+    public static final short TRU_PARAM_PERCENT = 6; // -#%
+
+    //=================ID=================//
+
     public static final short TAN_CONG = 0;
 
     public static final short HP_KI_000 = 2;
@@ -23,5 +41,6 @@ public class ConstOption {
     public static final short HP_PERCENT = 77;
 
     public static final short KI_PERCENT = 103;
+
 
 }

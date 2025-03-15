@@ -95,7 +95,7 @@ public class PlayerLoader {
         this.loadPlayerInventory(player, connection);
 
         // Load Point
-        player.getPlayerPoints().setPoint();
+        player.getPlayerPoints().calculateStats();
 
         return player;
     }
@@ -204,6 +204,8 @@ public class PlayerLoader {
                     stats.setMaxMP(rs.getLong("mp_max"));                // cMPFull
                     stats.setCurrentMp(rs.getLong("mp_current"));        // cMP
 
+                    System.out.println("point current hp: " + stats.getCurrentHP() + " max mp: " + stats.getMaxMP());
+
                     // --- Damage
                     stats.setBaseDamage((int) rs.getLong("dame_default")); // cDamGoc
 //                    stats.setTotalDamage(rs.getLong("dame_max"));          // cDamFull
@@ -227,7 +229,6 @@ public class PlayerLoader {
                     // --- Exp per Stat Increase (expForOneAdd)
                     stats.setExpPerStatIncrease((short) rs.getInt("limit_power"));
 
-                    // --- Các giá trị không lưu trong DB -> gán mặc định theo yêu cầu
                     stats.setMovementSpeed((byte) 5);         // cspeed = 5
                     stats.setHpPer1000Potential((byte) 20);     // hpFrom1000TiemNang = 20
                     stats.setMpPer1000Potential((byte) 20);     // mpFrom1000TiemNang = 20
@@ -322,6 +323,9 @@ public class PlayerLoader {
                     var taskIndex = resultSet.getInt("task_index");
                     var taskCount = resultSet.getShort("task_count");
                     TaskMain taskMain = TaskManager.getInstance().getTaskMainById(taskId);
+                    if (taskMain == null) {
+                        throw new SQLException("Khong tim thay task for player id: " + player.getId());
+                    }
                     taskMain.getSubNameList().get(taskIndex).setCount(taskCount);
                     taskMain.setIndex(taskIndex);
                     player.getPlayerTask().setTaskMain(taskMain);

@@ -23,7 +23,7 @@ public class UseItemHandler implements IMessageProcessor {
             if (index == -1) {
                 template = message.reader().readShort();
             }
-            LogServer.DebugLogic("player: " + player.getName() + " type: " + type + " where: " + where + " index: " + index + " template: " + template);
+            LogServer.DebugLogic("player: " + player.getName() + " status: " + type + " where: " + where + " index: " + index + " template: " + template);
             UseItemService.getInstance().useItem(player, type, where, index, template);
         } catch (Exception ex) {
             LogServer.LogException("UseItemHandler: " + ex.getMessage());

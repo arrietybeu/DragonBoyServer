@@ -34,7 +34,7 @@ public class NpcFactory {
                 }
             }
         } catch (Exception e) {
-            LogServer.LogException("Error scanning NPCs: " + e.getMessage());
+            LogServer.LogException("Error scanning NPCs: " + e.getMessage(), e);
         }
     }
 
