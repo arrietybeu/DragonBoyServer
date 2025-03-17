@@ -2,8 +2,10 @@ package nro.model.monster;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
 import nro.model.LiveObject;
+import nro.model.discpile.Disciple;
 import nro.model.item.ItemMap;
 import nro.model.map.areas.Area;
 import nro.model.player.Player;
@@ -65,9 +67,16 @@ public class Monster extends LiveObject {
 
             this.attackers.add(plAttack);
 
+            // kiem tra dame
             if (this.templateId == 0 && damage >= 10) damage = 10;
             SkillService.getInstance().sendPlayerAttackMonster(plAttack, this.getId());
+
+            // tru hp cua monster
             this.point.subHp(damage);
+
+            this.handleCreateExpEntityAttackMob(plAttack);
+
+            // kiem tra monster chet
             if (this.point.isDead()) {
                 this.setDie(plAttack, damage);
                 plAttack.getPlayerTask().checkDoneTaskKKillMonster(this);
@@ -141,10 +150,6 @@ public class Monster extends LiveObject {
         return this.info.getType() != 0 && this.status.getStatus() != 0 && !this.point.isDead();
     }
 
-    // private boolean isMonsterAgg() {
-    //     return this.point.getLevel() >= 5;
-    // }
-
     private Player playerCanAttack() {
         for (Player player : this.area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
             if (player == null) continue;
@@ -156,17 +161,21 @@ public class Monster extends LiveObject {
         return null;
     }
 
-    // private Player getPlayerAttackMonster() {
-    // for (Player player : this.getAttackers()) {
-    // if (player == null) continue;
-    // if (player.getPlayerPoints().isDead()) continue;
-    // if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY())
-    // < 240) {
-    // return player;
-    // }
-    // }
-    // return null;
-    // }
+    private void handleCreateExpEntityAttackMob(LiveObject entity) {
+        try {
+            switch (entity) {
+                case Player player -> {
+                    int exp = player.getPlayerPoints().getPotentialPoints();
+                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                }
+                case Disciple disciple -> {
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + entity.getName());
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Monster handleCreateExpEntityAttackMob: " + e.getMessage(), e);
+        }
+    }
 
     @Override
     public void dispose() {

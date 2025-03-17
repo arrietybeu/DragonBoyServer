@@ -23,7 +23,11 @@ public class NpcFactory {
                     if (annotation != null) {
                         for (int npcId : annotation.value()) {
                             try {
-                                Constructor<?> constructor = cls.getDeclaredConstructor(int.class, int.class, int.class, int.class, int.class, int.class);
+                                Constructor<?> constructor = cls.getDeclaredConstructor(
+                                        int.class, int.class, int.class,
+                                        int.class, int.class, int.class
+                                );
+
                                 Npc npcInstance = (Npc) constructor.newInstance(npcId, 0, 0, 0, 0, 0);
                                 npcMap.put(npcId, npcInstance);
                             } catch (Exception e) {
@@ -45,7 +49,7 @@ public class NpcFactory {
             }
 //            LogServer.LogWarning("Unknown NPC: [" + npcId + "]");
         } catch (Exception e) {
-            LogServer.LogException("createNpc error: " + e.getMessage());
+            LogServer.LogException("createNpc error: " + e.getMessage(), e);
         }
         return null;
     }

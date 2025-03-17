@@ -18,6 +18,7 @@ public class PlayerStatus {
     private long lastTimeChangeFlag;
     private long lastTimeChangeMap;
     private long lastTimePickItem;
+    private long lastTimeAddExp;
 
     private int teleport = 0;
     private int idItemTask;

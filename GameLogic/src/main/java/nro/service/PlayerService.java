@@ -9,7 +9,6 @@ import nro.model.item.ItemMap;
 import nro.model.item.ItemOption;
 import nro.model.player.Player;
 import nro.model.player.PlayerPoints;
-import nro.model.player.PlayerTask;
 import nro.model.task.TaskMain;
 import nro.model.template.entity.SkillInfo;
 import nro.server.manager.SessionManager;
@@ -63,9 +62,7 @@ public class PlayerService {
     }
 
     private void onPlayerLoginSuccess(Player player) {
-        if (!player.getSession().getSessionInfo().isLogin()) {
-            return;
-        }
+        if (!player.getSession().getSessionInfo().isLogin()) return;
         player.getSession().getSessionInfo().setLoadData(true);
         player.getArea().addPlayer(player);
         Service service = Service.getInstance();
@@ -117,11 +114,15 @@ public class PlayerService {
     }
 
     private void sendThongBaoInfoTask(Player player, Service service) {
-        TaskMain taskMain = player.getPlayerTask().getTaskMain();
-        List<TaskMain.SubName> subNames = taskMain.getSubNameList();
-        String subNameTask = "Nhiệm vụ của bạn là "
-                + subNames.get(taskMain.getIndex()).getNameMapByGender(player.getGender());
-        service.sendChatGlobal(player.getSession(), null, subNameTask, false);
+        try {
+            TaskMain taskMain = player.getPlayerTask().getTaskMain();
+            List<TaskMain.SubName> subNames = taskMain.getSubNameList();
+            String subNameTask = "Nhiệm vụ của bạn là "
+                    + subNames.get(taskMain.getIndex()).getNameMapByGender(player.getGender());
+            service.sendChatGlobal(player.getSession(), null, subNameTask, false);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendThongBaoInfoTask: " + e.getMessage(), e);
+        }
     }
 
     private void sendHaveDisciple(Player player) {

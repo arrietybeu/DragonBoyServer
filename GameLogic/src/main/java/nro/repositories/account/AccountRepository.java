@@ -33,7 +33,7 @@ public class AccountRepository {
 
             String query = "SELECT * FROM `account` WHERE `username` = ? AND `password` = ? LIMIT 1;";
             try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login");
-                    PreparedStatement ps = conn.prepareStatement(query)) {
+                 PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, username);
                 ps.setString(2, password);
 

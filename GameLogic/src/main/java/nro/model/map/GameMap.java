@@ -18,7 +18,8 @@ import java.util.*;
 public class GameMap implements Runnable {
 
     private static final Set<Integer> TILE_TOP_SET = new HashSet<>(Set.of(2, 3, 5, 7)); // vi tri co the dung duoc
-    private static final int SIZE = 24;// size của 1 cục đất
+
+    private static final int SIZE = 24;// size của 1 cục đất (giá trị kích thước một ô tile) 24 x 24
 
     private final int id;
     private final String name;

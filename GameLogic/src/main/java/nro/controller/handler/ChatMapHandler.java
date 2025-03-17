@@ -37,7 +37,7 @@ public class ChatMapHandler implements IMessageProcessor {
                 text = text.substring(0, MAX_MESSAGE_LENGTH);
             }
 
-            text = sanitizeMessage(text);
+            text = this.sanitizeMessage(text);
 
             Player player = session.getPlayer();
             if (player == null) {
@@ -46,10 +46,9 @@ public class ChatMapHandler implements IMessageProcessor {
             }
 
             ChatService.getInstance().chatMap(player, text);
-            ChatService.getInstance().commandForAdmins(player, text);
+
         } catch (Exception ex) {
-            LogServer.LogException("Error ChatMapHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error ChatMapHandler: " + ex.getMessage(), ex);
         }
     }
 

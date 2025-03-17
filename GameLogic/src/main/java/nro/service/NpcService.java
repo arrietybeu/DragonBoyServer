@@ -59,8 +59,7 @@ public class NpcService {
             }
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error createMenu: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error createMenu: " + ex.getMessage(), ex);
         }
     }
 

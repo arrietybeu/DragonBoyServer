@@ -11,6 +11,7 @@ import nro.model.item.ItemOption;
 import nro.model.map.GameMap;
 import nro.model.template.entity.SkillInfo;
 import nro.server.LogServer;
+import nro.server.config.ConfigServer;
 import nro.server.manager.ItemManager;
 import nro.server.manager.MapManager;
 import nro.service.AreaService;
@@ -56,6 +57,8 @@ public class PlayerPoints {
     private long power, potentialPoints;
 
     private short tlHutHp, tlHutMp, tlHutHpMob;
+
+    private int percentExpPotentia;
 
     public PlayerPoints(Player player) {
         this.player = player;
@@ -106,6 +109,7 @@ public class PlayerPoints {
         this.maxMP = this.baseMP;
         this.totalDefense = this.baseDefense;
         this.totalCriticalChance = this.baseCriticalChance;
+        this.percentExpPotentia = 0;
     }
 
     private void applyItemBonuses() {
@@ -119,7 +123,7 @@ public class PlayerPoints {
                 for (ItemOption option : item.getItemOptions()) {
                     if (option == null) continue;
 
-                    long param = this.getParamOption(option);
+                    final long param = this.getParamOption(option);
 
                     switch (option.getId()) {
                         case ConstOption.TAN_CONG -> this.currentDamage += param;
@@ -131,6 +135,7 @@ public class PlayerPoints {
                         }
                         case ConstOption.DEFENSE -> this.totalDefense += param;
                         case ConstOption.CRITICAL -> this.totalCriticalChance += (byte) param;
+                        case ConstOption.TANG_TIEM_NANG_SUC_MANH_PERCENT -> this.percentExpPotentia += (int) param;
                     }
                 }
             }
@@ -165,6 +170,8 @@ public class PlayerPoints {
     }
 
     public void addExp(int type, int exp) {
+        var ms = System.currentTimeMillis();
+        if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
         switch (type) {
             case 0 -> this.power += exp;
             case 1 -> this.potentialPoints += exp;
@@ -175,6 +182,7 @@ public class PlayerPoints {
         }
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendPlayerUpExp(this.player, type, exp);
+        player.getPlayerStatus().setLastTimeAddExp(ms);
     }
 
     public void returnTownFromDead() {
@@ -362,5 +370,22 @@ public class PlayerPoints {
         this.setCurrentMp(this.getMaxMP());
         playerService.sendHpForPlayer(player);
         playerService.sendMpForPlayer(player);
+    }
+
+    public int getPotentialPoints() {
+        int exps = 1;
+
+        // check option tang tnsm % o item body
+        if (this.percentExpPotentia > 0) {
+            exps += (exps * this.percentExpPotentia) / 100;
+        }
+
+        exps = exps * ConfigServer.EXP_RATE;
+
+        if (exps < 1) {
+            LogServer.LogException("Player name " + this.player.getName() + " Exception exps < 1: " + exps);
+            exps = 1;
+        }
+        return exps;
     }
 }

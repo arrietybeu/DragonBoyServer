@@ -179,4 +179,12 @@ public class ConstNpc {
             default -> ConstNpc.ONG_GOHAN;
         };
     }
+
+    public static int GetRescuedNpcId(int gender) {
+        return switch (gender) {
+            case ConstPlayer.NAMEC -> ConstNpc.DENDE;
+            case ConstPlayer.XAYDA -> ConstNpc.APPULE;
+            default -> ConstNpc.BUNMA;
+        };
+    }
 }

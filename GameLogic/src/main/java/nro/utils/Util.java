@@ -3,6 +3,7 @@ package nro.utils;
 import nro.model.monster.Monster;
 import nro.model.player.Player;
 
+import java.text.Normalizer;
 import java.util.SplittableRandom;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,7 +46,7 @@ public class Util {
 
     public static String numberToString(long number) {
         if (number == 0)
-            return "0"; 
+            return "0";
 
         boolean isNegative = number < 0;
         number = Math.abs(number);
@@ -69,6 +70,12 @@ public class Util {
         String formattedNumber = String.format("%.2f", displayNumber).replaceAll("\\.?0+$", "");
 
         return (isNegative ? "-" : "") + formattedNumber + suffix;
+    }
+
+    public static String removeDiacritics(String text) {
+        if (text == null) return "";
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
+        return normalized.replaceAll("\\p{M}", "");
     }
 
 }

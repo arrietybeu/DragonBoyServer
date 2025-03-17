@@ -4,6 +4,7 @@
  */
 package nro.service;
 
+import nro.consts.ConstsCmd;
 import nro.model.player.Player;
 import nro.model.player.PlayerFashion;
 import nro.model.template.entity.PartInfo;
@@ -160,6 +161,18 @@ public class Service {
             }
         } catch (Exception ex) {
             LogServer.LogException("Error in sendStatusPet: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void showListTop(Player player, boolean isThachDau) {
+        try (Message message = new Message(ConstsCmd.TOP)) {
+            DataOutputStream write = message.writer();
+
+            write.writeByte(isThachDau ? 1 : 0);
+            write.writeUTF("Top 10");
+
+        } catch (Exception ex) {
+            LogServer.LogException("Error in showListTop: " + ex.getMessage(), ex);
         }
     }
 

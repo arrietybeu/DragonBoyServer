@@ -44,18 +44,17 @@ public class PlayerTask {
 
             this.addDoneSubTask();
             NpcService npcService = NpcService.getInstance();
-            String npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
-            String mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
-            String mapNameVillage = MapManager.getInstance().getNameMapVillageByGender(player.getGender());
+            var npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
+            var mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
+            var mapNameVillage = MapManager.getInstance().getNameMapVillageByGender(player.getGender());
+            var nameMapCliff = MapManager.getInstance().getNameMapCliffByGender(player.getGender());
             switch (taskId) {
                 case 0 -> this.handleTaskZero(index, npcService, npcName, mapName, mapNameVillage);
                 case 1 -> this.handleTaskOne(index, npcService, npcName, mapName);
-                case 2 -> {
-                    var nameMapCliff = MapManager.getInstance().getNameMapCliffByGender(player.getGender());
-                    this.handleTaskTwo(index, npcService, nameMapCliff);
-                }
+                case 2 -> this.handleTaskTwo(index, npcService, nameMapCliff);
                 case 3 -> this.handleTaskThree(index, npcService);
                 case 4 -> this.handleTaskFour(index, npcService);
+                case 7 -> this.handleTaskSeven(index, npcService);
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
@@ -98,7 +97,7 @@ public class PlayerTask {
                             + "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n"
                             + "Vị trí đang chớp sáng là nơi bạn làm nhiệm vụ, hãy tìm đường đến đó";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    player.getPlayerPoints().addExp(2, 3000);
+                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 3000);
                     service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
                     service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k tiềm năng nữa", false);
                 }
@@ -120,7 +119,7 @@ public class PlayerTask {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     var content = String.format("Đùi gà đây rồi, tối lắm, haha. Ta sẽ nướng tại đống lửa đằng kia, con có thể ăn bất cứ lúc nào nếu muốn\n" + "Ta vừa nghe thấy 1 tiếng động lớn, dường như có 1 ngôi sao rơi tại %s, con hãy đến kiểm tra xem\n" + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n" + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh\n" + "Con đã nhận 10k Tiềm năng Sức mạnh\n" + "Mở menu chọn mục kỹ năng, dùng điểm tiềm năng cộng vào HP, KI hoặc sức đánh", mapName);
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    player.getPlayerPoints().addExp(2, 10000);
+                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 10000);
                     Item duiGa = player.getPlayerInventory().findItemInBag(ConstItem.DUI_GA);
                     if (duiGa != null && duiGa.getQuantity() >= 10) {
                         player.getPlayerInventory().subQuantityItemsBag(duiGa, duiGa.getQuantity());
@@ -170,6 +169,30 @@ public class PlayerTask {
         }
     }
 
+    private void handleTaskSeven(int index, NpcService npcService) {
+        try {
+            switch (index) {
+                case 2 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetRescuedNpcId(player.getGender()));
+                    var content = "Cảm ơn ngươi đã cứu ta. Ta sẽ sẵn sàng phục vụ nếu ngươi cần mua vật dụng";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
+                case 3 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                    var content = "Con đã bao giờ nghe về Rồng thần chưa?\n" +
+                            "Truyền thuyết kể rằng có 7 viên Ngọc rồng nằm rải rác khắp địa cầu\n" +
+                            "Người có 7 viên ngọc rồng này sex có thể triệu hồi Rồng thần\n" +
+                            "Khi rồng thần xuất hiện, sẽ có 3 điều ước cho người đó\n" +
+                            "Ta được biết tại rừng Karin (Trái đất) có 1 viên ngọc rồng\n" +
+                            "Con hãy tìm đem về cho ta nhé";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskSeven - " + ex.getMessage(), ex);
+        }
+    }
+
     private boolean checkTaskInfo(int taskId, int index) {
         return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
     }
@@ -216,7 +239,9 @@ public class PlayerTask {
         return switch (npc.getTempId()) {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
                     this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1)
-                            || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3);
+                            || this.doneTask(2, 1) || this.doneTask(3, 2)
+                            || this.doneTask(4, 3) || this.doneTask(7, 3);
+            case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
             default -> false;
         };
     }
@@ -298,7 +323,6 @@ public class PlayerTask {
         var count = subList.get(currentIndex).getCount();
         if (count >= subList.get(currentIndex).getMaxCount()) {
             this.taskMain.setIndex(currentIndex + 1);
-
             if (this.taskMain.getIndex() >= subList.size()) {
                 int nextTaskId = (this.taskMain.getId() == 4) ? 7 : this.taskMain.getId() + 1;// nhay coc nhiem vu 4 len 7
                 TaskMain nextTask = this.getTaskMainById(nextTaskId);

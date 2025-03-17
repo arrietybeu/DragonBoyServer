@@ -18,6 +18,7 @@ public class MrPopo extends Npc {
     public void openMenu(Player player) {
         Service.getInstance().sendHideWaitDialog(player);
         NpcService.getInstance().sendNpcChatAllPlayerInArea(player, this, "Xin chào");
+
     }
 
     @Override

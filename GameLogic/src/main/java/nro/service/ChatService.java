@@ -1,10 +1,12 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.consts.ConstShop;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
 import nro.model.item.Item;
 import nro.model.item.ItemMap;
+import nro.model.item.ItemTemplate;
 import nro.model.map.GameMap;
 import nro.model.map.areas.Area;
 import nro.model.monster.Monster;
@@ -14,7 +16,13 @@ import nro.server.network.Message;
 import nro.server.LogServer;
 import nro.service.core.ItemFactory;
 import nro.utils.FileNio;
+import nro.utils.Util;
 import org.apache.logging.log4j.core.jmx.Server;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("ALL")
 public class ChatService {
@@ -29,6 +37,8 @@ public class ChatService {
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("Error Service Chat Map: " + ex.getMessage(), ex);
+        } finally {
+            this.commandForAdmins(player, text);
         }
     }
 
@@ -44,22 +54,53 @@ public class ChatService {
         return text.split(" ");
     }
 
-    public void commandForAdmins(Player playerChat, String text) {
+    private void commandForAdmins(Player playerChat, String text) {
         Service service = Service.getInstance();
         try {
+            if (text.startsWith("find ")) {
+                String keyword = text.substring(5).trim().toLowerCase();
+                if (keyword.isEmpty()) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Vui lòng nhập từ khóa để tìm!", false);
+                    return;
+                }
+
+                List<Item> resultList = new ArrayList<>();
+                for (var entry : ItemManager.getInstance().getItemTemplates().values()) {
+                    Item item = ItemFactory.getInstance().createItemOptionsBase(entry.id());
+                    String itemName = item.getTemplate().name();
+
+                    String itemNameNoAccent = Util.removeDiacritics(itemName).toLowerCase();
+                    String keywordNoAccent = Util.removeDiacritics(keyword).toLowerCase();
+
+                    if (itemName.toLowerCase().contains(keyword) || itemNameNoAccent.contains(keywordNoAccent)) {
+                        resultList.add(item);
+                    }
+                }
+
+                if (resultList.isEmpty()) {
+                    service.sendChatGlobal(playerChat.getSession(), null, "Không tìm thấy vật phẩm nào chứa: "
+                            + keyword, false);
+                } else {
+                    ShopService.getInstance().showShop(playerChat, ConstShop.SHOP_KY_GUI, 1, "Size: "
+                            + resultList.size(), resultList);
+                }
+                return;
+            }
             if (text.startsWith("m ")) {
                 int mapId = this.getNumber(text);
                 AreaService.getInstance().changerMapByShip(playerChat, mapId, 1);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
-            } else if (text.startsWith("hp ")) {
+            }
+            if (text.startsWith("hp ")) {
                 int hp = this.getNumber(text);
                 playerChat.getPlayerPoints().setCurrentHp(hp);
                 playerChat.getPlayerPoints().setCurrentMp(hp);
                 PlayerService.getInstance().sendCurrencyHpMp(playerChat);
                 service.sendChatGlobal(playerChat.getSession(), null, "Set HP: " + hp, false);
                 return;
-            } else if (text.startsWith("it ")) {
+            }
+            if (text.startsWith("it ")) {
                 var parse = this.getArrayString(text);
                 if (parse.length >= 3) {
                     var itemId = Integer.parseInt(parse[1]);
@@ -75,7 +116,8 @@ public class ChatService {
                     service.sendChatGlobal(playerChat.getSession(), null, "Lệnh không hợp lệ: " + text, false);
                 }
                 return;
-            } else if (text.startsWith("rm ")) {
+            }
+            if (text.startsWith("rm ")) {
                 int mobId = this.getNumber(text);
                 if (mobId == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null,
@@ -90,7 +132,8 @@ public class ChatService {
                 monster.setDie(playerChat, 500);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã xóa mob: " + mobId, false);
                 return;
-            } else if (text.startsWith("im ")) {
+            }
+            if (text.startsWith("im ")) {
                 int itemIdMap = this.getNumber(text);
                 if (itemIdMap == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
@@ -102,7 +145,8 @@ public class ChatService {
                 ItemService.getInstance().sendDropItemMap(playerChat, itemMap, true);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
                 return;
-            } else if (text.startsWith("sd ")) {
+            }
+            if (text.startsWith("sd ")) {
                 int damage = this.getNumber(text);
                 if (damage == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Damage không hợp lệ: " + text, false);
@@ -111,7 +155,8 @@ public class ChatService {
                 playerChat.getPlayerPoints().setBaseDamage(damage);
                 service.sendChatGlobal(playerChat.getSession(), null, "Set Damage: " + damage, false);
                 return;
-            } else if (text.startsWith("c ")) {
+            }
+            if (text.startsWith("c ")) {
                 int type = this.getNumber(text);
                 if (type == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Type không hợp lệ: " + text, false);
@@ -165,8 +210,6 @@ public class ChatService {
                         }
                     }
                 }
-
-                case "send_exp" -> PlayerService.getInstance().sendPlayerUpExp(playerChat, 2, 100);
 
                 case "npc_size" -> {
                     int sizeNpcAllArea = 0;

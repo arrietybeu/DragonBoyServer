@@ -22,6 +22,7 @@ public final class ConfigServer {
     public static byte VERSION_MAP = 1;
     public static byte VERSION_SKILL = 1;
     public static byte VERSION_ITEM = 1;
+    public static byte EXP_RATE = 1;
 
     public static String VERSION_CLIENT = "2.4.3";
 

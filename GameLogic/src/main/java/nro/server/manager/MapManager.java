@@ -511,7 +511,6 @@ public class MapManager implements IManager {
             }
         }
         return mapName;
-
     }
 
 }
