@@ -10,6 +10,7 @@ import nro.server.LogServer;
 import nro.server.network.Message;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class ShopService {
@@ -17,21 +18,19 @@ public class ShopService {
     @Getter
     private static final ShopService instance = new ShopService();
 
-    /**
-     * Show shop
-     *
-     * @param sizeTable: số lượng tab trong shop
-     */
-    public void showShop(Player player, int type, int sizeTable, String nameTable, List<Item> items) {
+    public void showShop(Player player, String keyword, int type, List<Item> items, String... tableHeader) {
         try (Message message = new Message(ConstsCmd.SHOP)) {
             DataOutputStream writer = message.writer();
 
+            var sizeTable = tableHeader.length;
             writer.writeByte(type);
             writer.writeByte(sizeTable);
-            for (int i = 0; i < sizeTable; i++) {
-                writer.writeUTF(nameTable);
+            for (int i = 0; i < sizeTable - 1; i++) {
+                writer.writeUTF(tableHeader[i]);
                 if (type == ConstShop.SHOP_KY_GUI) {
-                    // GameCanvas.panel.maxPageShop[num70] = msg.reader().readUnsignedByte();
+                    boolean isMaxPage = items.size() / 20 > 0;
+                    int maxPageShop = (isMaxPage ? items.size() / 20 : 1);
+                    writer.writeByte(maxPageShop);
                 }
                 writer.writeByte(items.size());
 
@@ -54,9 +53,9 @@ public class ShopService {
                         writer.writeLong(1);// power require
                     }
                     if (type == ConstShop.SHOP_KY_GUI) {
-                        writer.writeShort(1);// item id
+                        writer.writeShort(item.getTemplate().id());// item id
                         writer.writeInt(1);// buy coin
-                        writer.writeInt(1);// buy gold
+                        writer.writeInt(-1);// buy gold
                         writer.writeByte(1);// buy type
                         writer.writeInt(1);// quantity
                         writer.writeByte(1);// boolean is me sell
@@ -73,7 +72,7 @@ public class ShopService {
                         writer.writeInt(itemOption.getParam());
                     }
 
-                    writer.writeByte(1);// is new Item
+                    writer.writeByte(0);// is new Item
                     writer.writeByte(0);// is show cai trang
                     /**
                      *  is show cai trang = true
@@ -84,13 +83,61 @@ public class ShopService {
                      */
 
                     if (type == ConstShop.SHOP_KY_GUI) {
-                        writer.writeUTF("arriety");// nguoi ky gui
+                        writer.writeUTF(keyword + " index: " + j);// nguoi ky gui
                     }
                 }
             }
+
+            this.writeItemBag(player, writer);
+
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("ShopService.showShop: " + e.getMessage(), e);
+        }
+    }
+
+    private void writeItemBag(Player player, DataOutputStream writer) throws IOException {
+        List<Item> itemsBag = player.getPlayerInventory().getItemsBag();
+        writer.writeUTF("");
+
+        writer.writeByte(0);
+        writer.writeByte(itemsBag.size());
+
+        for (int j = 0; j < itemsBag.size(); j++) {
+            Item item = itemsBag.get(j);
+            if (item.getTemplate() == null || item.getTemplate().id() == -1) {
+                writer.writeShort(-1);
+                continue;
+            }
+
+            System.out.println("item.getTemplate().id() = " + item.getTemplate().id());
+            writer.writeShort(item.getTemplate().id());
+            writer.writeShort(item.getTemplate().id());// item id
+            writer.writeInt(1);// buy coin
+            writer.writeInt(-1);// buy gold
+            writer.writeByte(1);// buy type
+            writer.writeInt(1);// quantity
+            writer.writeByte(1);// boolean is me sell
+
+            // write item options
+            writer.writeByte(item.getItemOptions().size());
+            for (int k = 0; k < item.getItemOptions().size(); k++) {
+                ItemOption itemOption = item.getItemOptions().get(k);
+                writer.writeShort(itemOption.getId());
+                writer.writeInt(itemOption.getParam());
+            }
+
+            writer.writeByte(0);// is new Item
+            writer.writeByte(0);// is show cai trang
+            /**
+             *  is show cai trang = true
+             *  int headTemp = msg.reader().readShort();
+             *  int bodyTemp = msg.reader().readShort();
+             *  int legTemp = msg.reader().readShort();
+             *  int bagTemp = msg.reader().readShort();
+             */
+
+            writer.writeUTF(" index: " + j);// nguoi ky gui
         }
     }
 }

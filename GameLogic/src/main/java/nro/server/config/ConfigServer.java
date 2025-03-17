@@ -33,7 +33,7 @@ public final class ConfigServer {
     /**
      * nếu client gửi quá số lượng msg quy định thì sẽ kick session
      */
-    public static int MAX_MESSAGES_PER_5_SECONDS = 120;
+    public static int MAX_MESSAGES_PER_5_SECONDS = 220;
 
     public static final String BACKUP_FOLDER_PATH = "\\backup";
     public static final String MYSQL_DUMP_PATH = "";

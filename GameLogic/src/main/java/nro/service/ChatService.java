@@ -81,8 +81,8 @@ public class ChatService {
                     service.sendChatGlobal(playerChat.getSession(), null, "Không tìm thấy vật phẩm nào chứa: "
                             + keyword, false);
                 } else {
-                    ShopService.getInstance().showShop(playerChat, ConstShop.SHOP_KY_GUI, 1, "Size: "
-                            + resultList.size(), resultList);
+                    String[] tableHeader = new String[]{"Size: " + resultList.size(), "", "", "", ""};
+                    ShopService.getInstance().showShop(playerChat, keyword, ConstShop.SHOP_KY_GUI, resultList, tableHeader);
                 }
                 return;
             }
