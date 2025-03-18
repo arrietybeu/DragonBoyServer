@@ -158,21 +158,46 @@ public class PlayerUpdate {
     }
 
     private void saveInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
-        String query = "UPDATE " + tableName + " SET temp_id = ?, quantity = ?, options = ? WHERE player_id = ? AND row_index = ?";
+        if (inventory.isEmpty()) return;
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int index = 0; index < inventory.size(); index++) {
-                Item item = inventory.get(index);
-                statement.setInt(1, item.getTemplate() == null ? -1 : item.getTemplate().id());
-                statement.setInt(2, item.getQuantity());
-                statement.setString(3, item.getJsonOptions());
-                statement.setInt(4, player.getId());
-                statement.setInt(5, index);
-                statement.addBatch();
+        StringBuilder query = new StringBuilder("UPDATE " + tableName + " SET temp_id = CASE row_index ");
+
+        for (int index = 0; index < inventory.size(); index++) {
+            query.append("WHEN ").append(index).append(" THEN ? ");
+        }
+        query.append(" END, quantity = CASE row_index ");
+
+        for (int index = 0; index < inventory.size(); index++) {
+            query.append("WHEN ").append(index).append(" THEN ? ");
+        }
+        query.append(" END, options = CASE row_index ");
+
+        for (int index = 0; index < inventory.size(); index++) {
+            query.append("WHEN ").append(index).append(" THEN ? ");
+        }
+        query.append(" END WHERE player_id = ? AND row_index IN (");
+
+        for (int index = 0; index < inventory.size(); index++) {
+            query.append(index).append(index < inventory.size() - 1 ? ", " : ")");
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
+            for (Item item : inventory) {
+                statement.setInt(paramIndex++, item.getTemplate() == null ? -1 : item.getTemplate().id());
             }
-            statement.executeBatch();
+            for (Item item : inventory) {
+                statement.setInt(paramIndex++, item.getQuantity());
+            }
+            for (Item item : inventory) {
+                statement.setString(paramIndex++, item.getJsonOptions());
+            }
+            statement.setInt(paramIndex, player.getId());
+
+            statement.executeUpdate();
         }
     }
+
 
     private void savePlayerCurrencies(Player player, Connection connection) throws SQLException {
         String query = "UPDATE player_currencies SET gold = ?, gem = ?, ruby = ? WHERE player_id = ?";

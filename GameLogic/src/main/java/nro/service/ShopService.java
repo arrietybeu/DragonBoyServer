@@ -110,7 +110,6 @@ public class ShopService {
                 continue;
             }
 
-            System.out.println("item.getTemplate().id() = " + item.getTemplate().id());
             writer.writeShort(item.getTemplate().id());
             writer.writeShort(item.getTemplate().id());// item id
             writer.writeInt(1);// buy coin
