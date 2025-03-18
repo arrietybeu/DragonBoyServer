@@ -13,14 +13,12 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
+        Player player = session.getPlayer();
+        if (player == null) return;
         try {
-            Player player = session.getPlayer();
-            if (player == null) return;
             var mobId = message.reader().readByte();
-
             Monster monster = player.getArea().getMonsterInAreaById(mobId);
             if(monster == null) return;
-
             if (mobId != -1) {
                 player.getPlayerSkill().playerAttackMonster(monster);
             } else {
@@ -28,8 +26,7 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
                 LogServer.LogWarning("monsterId:" + monsterID);
             }
         } catch (Exception ex) {
-            LogServer.LogException("PlayerAttackMonsterHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("PlayerAttackMonsterHandler: " + ex.getMessage(), ex);
         }
     }
 }

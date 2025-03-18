@@ -31,6 +31,7 @@ public class PlayerCreator {
                 this.createPlayerInventory(connection, playerId, gender);
                 this.createPlayerDataTask(connection, playerId);
                 this.createPlayerSkills(connection, playerId, gender);
+                this.createAdministratorPlayer(connection, playerId);
                 connection.commit();
 
                 LogServer.DebugLogic("Time create player name: " + name + " times: "
@@ -116,6 +117,17 @@ public class PlayerCreator {
             if (statement.executeUpdate() == 0) {
                 LogServer.LogException("No rows were inserted into player_currencies for playerId: " + playerId);
                 throw new SQLException("Failed to insert player currencies.");
+            }
+        }
+    }
+
+    private void createAdministratorPlayer(Connection connection, int playerId) throws SQLException {
+        String query = "INSERT INTO player_administrator (player_id) VALUES (?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, playerId);
+            if (statement.executeUpdate() == 0) {
+                LogServer.LogException("No rows were inserted into player_administrator for playerId: " + playerId);
+                throw new SQLException("Failed to insert player administrator.");
             }
         }
     }

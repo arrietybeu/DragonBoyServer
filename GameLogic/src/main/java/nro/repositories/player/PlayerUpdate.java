@@ -192,7 +192,7 @@ public class PlayerUpdate {
             for (Item item : inventory) {
                 statement.setString(paramIndex++, item.getJsonOptions());
             }
-            statement.setInt(paramIndex, player.getId());
+            statement.setInt(paramIndex++, player.getId());
 
             statement.executeUpdate();
         }
@@ -293,4 +293,5 @@ public class PlayerUpdate {
             statement.executeUpdate();
         }
     }
+
 }

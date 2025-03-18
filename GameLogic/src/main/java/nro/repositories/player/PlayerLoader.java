@@ -56,9 +56,7 @@ public class PlayerLoader {
 
     // Utility method to map ResultSet data to a Player object
     private Player mapResultSetToPlayer(Session session, ResultSet resultSet, Connection connection) throws SQLException {
-        Player player = new Player();
-        player.setSession(session);
-
+        Player player = new Player(session);
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));
@@ -96,7 +94,6 @@ public class PlayerLoader {
 
         // Load Point
         player.getPlayerPoints().calculateStats();
-
         return player;
     }
 

@@ -36,6 +36,7 @@ public class ItemManager implements IManager {
     private final List<ItemTemplate.HeadAvatar> itemHeadAvatars = new ArrayList<>();
     private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
     private final List<Flag> flags = new ArrayList<>();
+    private final List<FlagImage> flagImages = new ArrayList<>();
 
     private byte[] dataItemTemplate;
     private byte[] dataItemOption;
@@ -49,6 +50,7 @@ public class ItemManager implements IManager {
         this.loadItemOptionTemplate();
         this.loadHeadAvatar();
         this.loadFlagBag();
+        this.loadFlagBagImage();
     }
 
     @Override
@@ -63,6 +65,8 @@ public class ItemManager implements IManager {
         this.arrHead2Frames.clear();
         this.itemOptionTemplates.clear();
         this.itemHeadAvatars.clear();
+        this.flags.clear();
+        this.flagImages.clear();
         this.dataItemTemplate = null;
         this.dataItemOption = null;
         this.dataArrHead2Fr = null;
@@ -73,8 +77,7 @@ public class ItemManager implements IManager {
         String sql = "SELECT * FROM `item_template`";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                 var resultSet = preparedStatement.executeQuery()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getShort("id");
                     var type = resultSet.getByte("type");
@@ -103,8 +106,7 @@ public class ItemManager implements IManager {
                         itemOptions.add(new ItemOption(idOption, param));
                     }
 
-                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part,
-                            maxQuantity, powerRequire, head, body, leg, itemOptions);
+                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, maxQuantity, powerRequire, head, body, leg, itemOptions);
                     this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
@@ -118,9 +120,7 @@ public class ItemManager implements IManager {
     private void loadItemOptionTemplate() {
         String query = "SELECT * FROM item_option_template";
 
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = connection.prepareStatement(query);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
@@ -140,10 +140,8 @@ public class ItemManager implements IManager {
     private void loadHeadAvatar() {
         String sql = "SELECT * FROM  item_head";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-            if (connection == null)
-                throw new SQLException("Connect connection select item_head = null");
-            try (var preparedStatement = connection.prepareStatement(sql);
-                 var resultSet = preparedStatement.executeQuery()) {
+            if (connection == null) throw new SQLException("Connect connection select item_head = null");
+            try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int headId = resultSet.getInt("head_id");
                     int avatarId = resultSet.getInt("avatar_id");
@@ -162,10 +160,8 @@ public class ItemManager implements IManager {
     private void loadFlagBag() {
         String query = "SELECT * FROM item_flag_bag_pk";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
-            if (connection == null)
-                throw new SQLException("Connect connection select flag_bag = null");
-            try (var preparedStatement = connection.prepareStatement(query);
-                 var resultSet = preparedStatement.executeQuery()) {
+            if (connection == null) throw new SQLException("Connect connection select flag_bag = null");
+            try (var preparedStatement = connection.prepareStatement(query); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     int itemId = resultSet.getInt("item_id");
@@ -182,12 +178,38 @@ public class ItemManager implements IManager {
         // LogServer.LogInit("Item Flag initialized size: " + flags.size());
     }
 
+    private void loadFlagBagImage() {
+        String query = "SELECT * FROM item_flag_bag_image";
+        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+            if (connection == null) throw new SQLException("Connect connection select flag_bag_image = null");
+            try (var preparedStatement = connection.prepareStatement(query); var resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("id");
+                    String name = resultSet.getString("name");
+                    String jsonEffect = resultSet.getString("effect");
+                    short icon = resultSet.getShort("icon");
+                    JSONArray jsonArray = (JSONArray) JSONValue.parse(jsonEffect);
+                    if (jsonArray == null) {
+                        throw new RuntimeException("Error load effect item id: " + id);
+                    }
+                    short[] iconEffect = new short[jsonArray.size()];
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        iconEffect[i] = Short.parseShort(String.valueOf(jsonArray.get(i)));
+                    }
+                    FlagImage flagImage = new FlagImage(id, name, icon, iconEffect);
+                    this.flagImages.add(flagImage);
+                }
+            }
+        } catch (SQLException e) {
+            LogServer.LogException("Error loadFlagBagImage: " + e.getMessage(), e);
+        }
+    }
+
     private void loadItemArrHead2Fr() {
         String sql = "SELECT id, head_one, head_two FROM `item_arr_head_2frame`";
         try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
-            try (var preparedStatement = connection.prepareStatement(sql);
-                 var resultSet = preparedStatement.executeQuery()) {
+            try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     var id = resultSet.getInt("id");
                     var head_one = resultSet.getInt("head_one");
@@ -218,8 +240,7 @@ public class ItemManager implements IManager {
                 message.writer().writeByte(itemTemplate.type());
                 message.writer().writeByte(itemTemplate.gender());
                 // message.writer().writeUTF(itemTemplate.name());
-                message.writer().writeUTF("[ID: " + itemTemplate.id() + "] "
-                        + itemTemplate.name());// test
+                message.writer().writeUTF("[ID: " + itemTemplate.id() + "] " + itemTemplate.name());// test
                 message.writer().writeUTF(itemTemplate.description());
                 message.writer().writeByte(itemTemplate.level());
                 message.writer().writeInt(itemTemplate.strRequire());
@@ -291,6 +312,15 @@ public class ItemManager implements IManager {
         for (Flag flag : flags) {
             if (flag.id() == id) {
                 return flag;
+            }
+        }
+        return null;
+    }
+
+    public FlagImage findFlagImageId(int id) {
+        for (FlagImage flagImage : flagImages) {
+            if (flagImage.getId() == id) {
+                return flagImage;
             }
         }
         return null;

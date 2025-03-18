@@ -38,7 +38,9 @@ public class ChatService {
         } catch (Exception ex) {
             LogServer.LogException("Error Service Chat Map: " + ex.getMessage(), ex);
         } finally {
-            this.commandForAdmins(player, text);
+            if (player.isAdministrator()) {
+                this.commandForAdmins(player, text);
+            }
         }
     }
 

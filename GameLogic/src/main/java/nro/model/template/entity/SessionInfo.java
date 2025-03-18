@@ -2,9 +2,11 @@ package nro.model.template.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class SessionInfo {
 
     private int id;

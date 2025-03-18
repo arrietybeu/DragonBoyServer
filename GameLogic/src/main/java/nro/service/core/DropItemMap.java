@@ -39,8 +39,8 @@ public class DropItemMap {
         PlayerTask playerTask = player.getPlayerTask();
         switch (playerTask.getTaskMain().getId()) {
             case 2 -> {
+                if (playerTask.getTaskMain().getIndex() != 0) return;
                 Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.DUI_GA);
-
                 ItemMap itemMap = new ItemMap(monster.getArea(), monster.getArea().increaseItemMapID(), player.getId(), item, monster.getX(), monster.getY(),
                         -1, true);
                 itemMaps.add(itemMap);
@@ -52,24 +52,18 @@ public class DropItemMap {
         List<ItemDropInfo> itemDropInfos = MAP_ITEM_DROPS.get((short) player.getArea().getMap().getId());
         if (itemDropInfos != null) {
             for (ItemDropInfo itemDropInfo : itemDropInfos) {
-                boolean isTaskIdValid = itemDropInfo.taskId() == -1
-                        || player.getPlayerTask().getTaskMain().getId() >= itemDropInfo.taskId();
+                boolean isTaskIdValid = itemDropInfo.taskId() == -1 || player.getPlayerTask().getTaskMain().getId() >= itemDropInfo.taskId();
 
                 int playerTaskIndex = player.getPlayerTask().getTaskMain().getIndex();
                 int itemTaskIndex = itemDropInfo.indexTask();
 
-                boolean isIndexTaskValid = itemDropInfo.isTaskStrict()
-                        ? (itemTaskIndex == playerTaskIndex)
-                        : (itemTaskIndex <= playerTaskIndex);
+                boolean isIndexTaskValid = itemDropInfo.isTaskStrict() ? (itemTaskIndex == playerTaskIndex) : (itemTaskIndex <= playerTaskIndex);
 
-                if (!isTaskIdValid || !isIndexTaskValid) {
-                    continue;
-                }
+                if (!isTaskIdValid || !isIndexTaskValid) continue;
 
                 Item item = ItemFactory.getInstance().createItemOptionsBase(itemDropInfo.itemId());
                 player.getPlayerStatus().setIdItemTask(player.getArea().increaseItemMapID());
-                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerStatus().getIdItemTask(), player.getId(), item, itemDropInfo.x(),
-                        itemDropInfo.y(), -1, false);
+                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerStatus().getIdItemTask(), player.getId(), item, itemDropInfo.x(), itemDropInfo.y(), -1, false);
                 ItemService.getInstance().sendDropItemMap(player, itemMap, false);
             }
         }

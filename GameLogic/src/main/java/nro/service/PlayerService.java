@@ -268,15 +268,11 @@ public class PlayerService {
             DataOutputStream out = msg.writer();
             out.writeInt(stats.getBaseHP());
             out.writeInt(stats.getBaseMP());
-            System.out.println("Hp " + stats.getBaseHP() + " Mp " + stats.getBaseMP());
             out.writeInt(stats.getBaseDamage());
             out.writeLong(stats.getMaxHP());
             out.writeLong(stats.getMaxMP());
             out.writeLong(stats.getCurrentHP());
             out.writeLong(stats.getCurrentMP());
-
-            System.out.println("point max hp " + stats.getMaxHP() + " point max mp " + stats.getMaxMP() + "\n" +
-                    "point current hp " + stats.getCurrentHP() + " point current mp " + stats.getCurrentMP());
             out.writeByte(stats.getMovementSpeed());
             out.writeByte(stats.getHpPer1000Potential());
             out.writeByte(stats.getMpPer1000Potential());
@@ -528,7 +524,7 @@ public class PlayerService {
         String notify = null;
         var type = -1;
 
-        if (player.getArea().getMap().isMapHouseByGender(player.getGender())) {
+        if (player.getArea().getMap().isMapHouseByGender(player.getGender()) && itemMapId == player.getPlayerStatus().getIdItemTask()) {
             player.getPlayerPoints().healPlayer();
             notify = "Bạn vừa ăn Đùi gà nướng";
             isTask = true;
@@ -536,7 +532,7 @@ public class PlayerService {
         }
 
         if (taskMain.getId() == 3 && taskMain.getIndex() == 1) {
-            isTask = handleTaskPickItem(player, itemMapId);
+            isTask = this.handleTaskPickItem(player, itemMapId);
             notify = "Wow, một cậu bé dễ thương";
             type = 11;
         }
@@ -581,9 +577,14 @@ public class PlayerService {
      */
 
     public boolean handleCharacterCreation(Session session, String name, byte gender, byte hair) throws SQLException {
+        if (session.getUserInfo() == null) {
+            LogServer.LogException("Error handleCharacterCreation: UserInfo is null for session: " + session);
+            SessionManager.getInstance().kickSession2Second(session);
+            return false;
+        }
         final String QUERY_CHECK = "SELECT 1 FROM player WHERE name = ? OR account_id = ?";
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
-            assert connection != null : "Connection is null";
+            if (connection == null) return false;
             try (PreparedStatement psCheck = connection.prepareStatement(QUERY_CHECK)) {
 
                 psCheck.setString(1, name);

@@ -14,14 +14,12 @@ public class UserInfo {
     private final Session session;
 
     private int id;
-
     private boolean admin;
     private boolean ban;
     private boolean active;
 
     private long lastTimeLogin;
     private long lastTimeLogout;
-
 
     public UserInfo(Session session, String username, String password) {
         this.session = session;

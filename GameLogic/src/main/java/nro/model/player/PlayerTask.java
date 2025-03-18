@@ -12,6 +12,7 @@ import nro.model.task.TaskMain;
 import nro.server.LogServer;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
+import nro.service.ItemService;
 import nro.service.NpcService;
 import nro.service.Service;
 import nro.service.TaskService;
@@ -88,18 +89,17 @@ public class PlayerTask {
                     service.sendChatGlobal(player.getSession(), null, String.format("Bạn đánh được %d/%d", count, maxCount), false);
                 }
                 case 1 -> {
+                    // TODO can sua lai map va ten quai
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                    service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
+                    service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k tiềm năng nữa", false);
                     String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n"
                             + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n"
                             + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n"
-                            + "Con có thể sửa dụng đậu thần khi hết Hp hoặc KI, bằng cách click vào nút có hình trái tim\n"
-                            + "Nhanh lên, ta đói lắm rồi!\n"
-                            + "để sử dụng bản đồ, hãy mở menu, mục Nhiệm vụ, chọn Bản đồ\n"
-                            + "Vị trí đang chớp sáng là nơi bạn làm nhiệm vụ, hãy tìm đường đến đó";
+                            + "Con có thể sửa dụng đậu thần khi hết HP hoặc KI, bằng cách click vào nút có hình trái tim\n"
+                            + "Nhanh lên, ta đói lắm rồi!";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 3000);
-                    service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
-                    service.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k tiềm năng nữa", false);
                 }
             }
         } catch (Exception ex) {
@@ -117,9 +117,12 @@ public class PlayerTask {
                 }
                 case 1 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                    var content = String.format("Đùi gà đây rồi, tối lắm, haha. Ta sẽ nướng tại đống lửa đằng kia, con có thể ăn bất cứ lúc nào nếu muốn\n" + "Ta vừa nghe thấy 1 tiếng động lớn, dường như có 1 ngôi sao rơi tại %s, con hãy đến kiểm tra xem\n" + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n" + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh\n" + "Con đã nhận 10k Tiềm năng Sức mạnh\n" + "Mở menu chọn mục kỹ năng, dùng điểm tiềm năng cộng vào HP, KI hoặc sức đánh", mapName);
+                    var content = String.format("Đùi gà đây rồi, tối lắm, haha. Ta sẽ nướng tại đống lửa đằng kia, con có thể ăn bất cứ lúc nào nếu muốn\n"
+                            + "Ta vừa nghe thấy 1 tiếng động lớn, dường như có 1 ngôi sao rơi tại %s, con hãy đến kiểm tra xem\n"
+                            + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n"
+                            + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh", mapName);
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 10000);
+                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 10_000);
                     Item duiGa = player.getPlayerInventory().findItemInBag(ConstItem.DUI_GA);
                     if (duiGa != null && duiGa.getQuantity() >= 10) {
                         player.getPlayerInventory().subQuantityItemsBag(duiGa, duiGa.getQuantity());
@@ -136,6 +139,7 @@ public class PlayerTask {
         try {
             switch (index) {
                 case 0 -> DropItemMap.dropMissionItems(player);
+                case 1 -> ItemService.getInstance().sendFlagBag(player);
                 case 2 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     var content = "Có em bé trong phi thuyền rơi xuống à, ta cứ tưởng là sao băng\n" + "Ta sẽ đặt đặt tên cho nó là Sôn Gô Ku, từ bây giờ nó s là thành viên trong gia đình ta\n" + "Ta mới nhận được tin có bầy mãnh thú xuất hiện tại Trạm phi thuyền\n" + "Bọn chúng vừa đổ bộ xuống Trái Đất để tr thù việc con cướp đùi gà của con chúng\n" + "Hãy dùng phi thuyền đến các hành tinh khác để giúp dân làng tại đó luôn nhé";
@@ -144,6 +148,7 @@ public class PlayerTask {
                     Item duaBe = player.getPlayerInventory().findItemInBag(ConstItem.DUA_BE);
                     if (duaBe != null && duaBe.getQuantity() >= 1) {
                         player.getPlayerInventory().subQuantityItemsBag(duaBe, duaBe.getQuantity());
+                        ItemService.getInstance().sendFlagBag(player);
                     }
                 }
             }

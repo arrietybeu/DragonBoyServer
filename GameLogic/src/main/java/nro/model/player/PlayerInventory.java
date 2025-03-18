@@ -9,6 +9,7 @@ import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.server.LogServer;
 import nro.service.InventoryService;
+import nro.service.ItemService;
 import nro.service.core.ItemFactory;
 import nro.service.PlayerService;
 import nro.service.Service;
@@ -390,6 +391,7 @@ public class PlayerInventory {
         inventoryService.sendItemToBodys(this.player);
         playerService.sendPlayerBody(this.player);
         playerService.sendPointForMe(this.player);
+        ItemService.getInstance().sendFlagBag(this.player);
     }
 
     private void _______________FIND_ITEM_____________() {

@@ -268,7 +268,6 @@ public class Area {
         }
     }
 
-
     public void removeItemMap(int itemMapID) {
         this.lock.writeLock().lock();
         try {

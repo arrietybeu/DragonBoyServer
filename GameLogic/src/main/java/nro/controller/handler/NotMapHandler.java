@@ -101,13 +101,7 @@ public class NotMapHandler implements IMessageProcessor {
 
             var isCreated = playerService.handleCharacterCreation(session, name, gender, hair);
 
-            if (isCreated) {
-                PlayerService.getInstance().finishUpdateHandler(session);
-
-                LogServer.DebugLogic("Tạo nhân vật thành công: " + name
-                        + " (gender=" + gender
-                        + ", hair=" + hair + ")");
-            }
+            if (isCreated) PlayerService.getInstance().finishUpdateHandler(session);
         } catch (Exception e) {
             LogServer.LogException("Error createChar: " + e.getMessage(), e);
         }

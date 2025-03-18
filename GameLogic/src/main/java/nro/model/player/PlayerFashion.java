@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstItem;
 import nro.model.item.Item;
 import nro.server.LogServer;
 
@@ -23,14 +24,15 @@ public class PlayerFashion {
     public short getHead() {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
+            var index = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
             if (playerInventory != null) {
                 List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
-                    short head = itemsBody.get(5).getTemplate().head();
+                if (itemsBody.get(index) != null && itemsBody.get(index).getTemplate() != null) {
+                    short head = itemsBody.get(index).getTemplate().head();
                     if (head != -1) {
                         return head;
                     }
-                    short part = itemsBody.get(5).getTemplate().part();
+                    short part = itemsBody.get(index).getTemplate().part();
                     if (part != -1) {
                         return part;
                     }
@@ -47,16 +49,17 @@ public class PlayerFashion {
     public short getBody() {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
+            var index = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
             if (playerInventory != null) {
                 List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
-                    short body = itemsBody.get(5).getTemplate().body();
+                if (itemsBody.get(index) != null && itemsBody.get(index).getTemplate() != null) {
+                    short body = itemsBody.get(index).getTemplate().body();
                     if (body != -1) {
                         return body;
                     }
                 }
-                if (itemsBody.get(0) != null && itemsBody.get(0).getTemplate() != null) {
-                    return itemsBody.get(0).getTemplate().part();
+                if (itemsBody.getFirst() != null && itemsBody.getFirst().getTemplate() != null) {
+                    return itemsBody.getFirst().getTemplate().part();
                 }
             }
             return -1;
@@ -70,16 +73,18 @@ public class PlayerFashion {
     public short getLeg() {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
+            var index = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
+            var indexQuan = ConstItem.TYPE_QUAN;
             if (playerInventory != null) {
                 List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(5) != null && itemsBody.get(5).getTemplate() != null) {
-                    short leg = itemsBody.get(5).getTemplate().leg();
+                if (itemsBody.get(index) != null && itemsBody.get(index).getTemplate() != null) {
+                    short leg = itemsBody.get(index).getTemplate().leg();
                     if (leg != -1) {
                         return leg;
                     }
                 }
-                if (itemsBody.get(1) != null && itemsBody.get(1).getTemplate() != null) {
-                    return itemsBody.get(1).getTemplate().part();
+                if (itemsBody.get(indexQuan) != null && itemsBody.get(indexQuan).getTemplate() != null) {
+                    return itemsBody.get(indexQuan).getTemplate().part();
                 }
             }
             return -1;
@@ -101,14 +106,23 @@ public class PlayerFashion {
             }
             return -1;
         } catch (Exception exception) {
-            LogServer.LogException("PlayerFashion.getMount: " + exception.getMessage());
-            exception.printStackTrace();
+            LogServer.LogException("PlayerFashion.getMount: " + exception.getMessage(), exception);
             return -1;
         }
 
     }
 
     public short getFlagBag() {
+        PlayerInventory playerInventory = this.player.getPlayerInventory();
+        if (playerInventory != null) {
+            List<Item> itemsBody = playerInventory.getItemsBody();
+            if (itemsBody.get(8) != null && itemsBody.get(8).getTemplate() != null) {
+                return itemsBody.get(8).getTemplate().part();
+            }
+        }
+
+        var taskMain = this.player.getPlayerTask().getTaskMain();
+        if (taskMain.getId() == 3 && taskMain.getIndex() == 2) return 28;
         return -1;
     }
 

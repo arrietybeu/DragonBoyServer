@@ -2,7 +2,9 @@ package nro.service;
 
 import lombok.Getter;
 import nro.consts.ConstItem;
+import nro.consts.ConstsCmd;
 import nro.model.item.Flag;
+import nro.model.item.FlagImage;
 import nro.model.item.ItemMap;
 import nro.model.player.Player;
 import nro.server.LogServer;
@@ -18,7 +20,7 @@ public class ItemService {
     @Getter
     private static final ItemService instance = new ItemService();
 
-    public void sendShowListFlagBag(Player player) {
+    public void sendShowListFlag(Player player) {
         try (Message message = new Message(-103);
              DataOutputStream writer = message.writer()) {
 
@@ -64,6 +66,31 @@ public class ItemService {
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendChangeFlag: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendFlagBag(Player player) {
+        try (Message message = new Message(ConstsCmd.UPDATE_BAG)) {
+            DataOutputStream writer = message.writer();
+            writer.writeInt(player.getId());
+            writer.writeShort(player.getPlayerFashion().getFlagBag());
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendFlagBag: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendFlagBagImage(Player player, FlagImage flagImage) {
+        try (Message message = new Message(ConstsCmd.GET_BAG)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(flagImage.getId());
+            writer.writeByte(flagImage.getIconEffect().length);
+            for (short iconId : flagImage.getIconEffect()) {
+                writer.writeShort(iconId);
+            }
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendFlagBagImage: " + ex.getMessage(), ex);
         }
     }
 

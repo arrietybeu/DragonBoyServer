@@ -32,12 +32,9 @@ public class PlayerSkill {
 
     public void playerAttackMonster(Monster monster) {
         try {
-            if (monster == null)
-                return;
-            if (monster.getPoint().isDead())
-                return;
+            if (monster == null || monster.getPoint().isDead()) return;
             this.useSkill(monster);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             LogServer.LogException("playerAttackMonster player name:" + player.getName() + " error: " + e.getMessage());
         }
     }
@@ -73,14 +70,6 @@ public class PlayerSkill {
         }
     }
 
-    // private boolean checkUseSkill() {
-    // return true;
-    // }
-
-    public void addSkill(SkillInfo skill) {
-        this.skills.add(skill);
-    }
-
     public SkillInfo getSkillById(int id) {
         for (SkillInfo skillInfo : this.skills) {
             if (skillInfo.getSkillId() == id) {
@@ -88,10 +77,6 @@ public class PlayerSkill {
             }
         }
         return null;
-    }
-
-    public void removeSkill(SkillInfo skill) {
-        this.skills.remove(skill);
     }
 
     public void selectSkill(int skillId) {
@@ -105,7 +90,7 @@ public class PlayerSkill {
                 }
             }
         } catch (Exception ex) {
-            LogServer.LogException("selectSkill player name:" + player.getName() + " error: " + ex.getMessage());
+            LogServer.LogException("selectSkill player name:" + player.getName() + " error: " + ex.getMessage(), ex);
         }
     }
 
@@ -128,6 +113,14 @@ public class PlayerSkill {
                 throw new IllegalStateException("Unexpected value: " + gender);
         }
         return skillInfo;
+    }
+
+    public void addSkill(SkillInfo skill) {
+        this.skills.add(skill);
+    }
+
+    public void removeSkill(SkillInfo skill) {
+        this.skills.remove(skill);
     }
 
     @Override

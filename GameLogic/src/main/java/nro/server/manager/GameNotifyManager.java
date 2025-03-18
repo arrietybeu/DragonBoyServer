@@ -1,7 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.model.GameInfo;
+import nro.model.template.GameInfo;
 import nro.server.network.Message;
 import nro.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;

@@ -2,7 +2,6 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import nro.consts.ConstOption;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
@@ -95,6 +94,7 @@ public class PlayerPoints {
         if (dameSkill != 0) {
             dame = dame * dameSkill / 100;
         }
+        if (dame <= 0) dame = 1;
         return dame;
     }
 
@@ -146,7 +146,6 @@ public class PlayerPoints {
 
     private long getParamOption(ItemOption option) {
         if (option == null) return 0;
-
         return switch (ItemManager.getInstance().findTypeItemOption(option.getId())) {
             case ConstOption.CONG_PARAM, ConstOption.TRA_VE_PARAM -> option.getParam();
             case ConstOption.CONG_PARAM_000, ConstOption.CONG_PARAM_K -> option.getParam() * 1000L;
@@ -170,8 +169,7 @@ public class PlayerPoints {
     }
 
     public void addExp(int type, int exp) {
-        var ms = System.currentTimeMillis();
-        if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
+
         switch (type) {
             case 0 -> this.power += exp;
             case 1 -> this.potentialPoints += exp;
@@ -182,7 +180,7 @@ public class PlayerPoints {
         }
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendPlayerUpExp(this.player, type, exp);
-        player.getPlayerStatus().setLastTimeAddExp(ms);
+
     }
 
     public void returnTownFromDead() {
@@ -372,7 +370,7 @@ public class PlayerPoints {
         playerService.sendMpForPlayer(player);
     }
 
-    public int getPotentialPoints() {
+    public int getPotentialPointsAttack() {
         int exps = 1;
 
         // check option tang tnsm % o item body

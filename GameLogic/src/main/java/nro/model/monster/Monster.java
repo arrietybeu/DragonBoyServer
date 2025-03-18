@@ -69,6 +69,7 @@ public class Monster extends LiveObject {
 
             // kiem tra dame
             if (this.templateId == 0 && damage >= 10) damage = 10;
+
             SkillService.getInstance().sendPlayerAttackMonster(plAttack, this.getId());
 
             // tru hp cua monster
@@ -162,11 +163,14 @@ public class Monster extends LiveObject {
     }
 
     private void handleCreateExpEntityAttackMob(LiveObject entity) {
+        var ms = System.currentTimeMillis();
         try {
             switch (entity) {
                 case Player player -> {
-                    int exp = player.getPlayerPoints().getPotentialPoints();
+                    if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
+                    int exp = player.getPlayerPoints().getPotentialPointsAttack();
                     player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                    player.getPlayerStatus().setLastTimeAddExp(ms);
                 }
                 case Disciple disciple -> {
                 }

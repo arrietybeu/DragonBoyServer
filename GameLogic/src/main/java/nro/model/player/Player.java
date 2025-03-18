@@ -32,20 +32,22 @@ public class Player extends LiveObject {
     private final PlayerFusion playerFusion;
     private final PlayerMagicTree playerMagicTree;
     private final PlayerStatus playerStatus;
+    private final Session session;
 
     private Area area;
     private Clan clan;
     private Disciple disciple;
     private PetFollow petFollow;
     private Instant createdAt;
-    private Session session;
+    private PlayerAdministrator playerAdministrator;
 
     private int role;
     private int activePoint;
     private int rank;
 
-    public Player() {
+    public Player(Session session) {
         this.setTypeObject(ConstTypeObject.TYPE_PLAYER);
+        this.session = session;
         this.playerCurrencies = new PlayerCurrencies(this);
         this.playerPoints = new PlayerPoints(this);
         this.playerTask = new PlayerTask(this);
@@ -55,6 +57,7 @@ public class Player extends LiveObject {
         this.playerFusion = new PlayerFusion(this);
         this.playerMagicTree = new PlayerMagicTree(this);
         this.playerStatus = new PlayerStatus(this);
+        this.createAdministrator();
     }
 
     public void sendMessage(Message message) throws Exception {
@@ -78,7 +81,7 @@ public class Player extends LiveObject {
             boolean isInvalidIndex = index < 0 || index >= ItemManager.getInstance().getFlags().size();
 
             switch (action) {
-                case 0 -> itemService.sendShowListFlagBag(this);
+                case 0 -> itemService.sendShowListFlag(this);
                 case 1 -> {
 
                     if (index != 0 && lastChangeTime + 60000 > currentTime) {
@@ -144,6 +147,14 @@ public class Player extends LiveObject {
     @Override
     public void dispose() {
         AreaService.getInstance().playerExitArea(this);
+    }
+
+    public boolean isAdministrator() {
+        return this.session.getUserInfo().isAdmin();
+    }
+
+    private void createAdministrator() {
+        if (this.isAdministrator()) this.playerAdministrator = new PlayerAdministrator(this);
     }
 
     @Override

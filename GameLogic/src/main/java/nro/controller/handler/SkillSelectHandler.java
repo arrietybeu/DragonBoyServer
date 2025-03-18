@@ -14,13 +14,11 @@ public class SkillSelectHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
         if (player == null) return;
-//        if (player.getPlayerTask().getTaskMain().getId() <= 1) return;
         try {
             int skillId = message.reader().readShort();
             player.getPlayerSkill().selectSkill(skillId);
         } catch (Exception ex) {
-            LogServer.LogException("SkillSelectHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("SkillSelectHandler: " + ex.getMessage(), ex);
         }
     }
 

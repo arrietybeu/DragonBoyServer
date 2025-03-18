@@ -1,6 +1,7 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.consts.ConstsCmd;
 import nro.model.player.Player;
 import nro.server.network.Message;
 import nro.server.LogServer;
@@ -14,33 +15,35 @@ public class TaskService {
 
     public void sendTaskMain(Player player) {
 
-        try (Message message = new Message(40);
-             DataOutputStream output = message.writer()) {
+        try (Message message = new Message(ConstsCmd.TASK_GET);
+             DataOutputStream write = message.writer()) {
 
             var taskMain = player.getPlayerTask().getTaskMain();
             var subNames = taskMain.getSubNameList();
             int index = taskMain.getIndex();
             var gender = player.getGender();
-            output.writeShort(taskMain.getId());
-            // output.writeShort(15);
-            output.writeByte(index);
-            output.writeUTF(taskMain.getNameByGender(gender));
-            output.writeUTF(taskMain.getDetailByGender(gender));
-            output.writeByte(subNames.size());
+            write.writeShort(taskMain.getId());
+            write.writeByte(index);
+            write.writeUTF(taskMain.getNameByGender(gender));
+            write.writeUTF(taskMain.getDetailByGender(gender));
+            write.writeByte(subNames.size());
 
             for (int i = 0; i < subNames.size(); i++) {
                 var sub = subNames.get(i);
                 String nameToSend = (i <= index) ? sub.getNameMapByGender(gender) : "...";
-                output.writeUTF(nameToSend);
-                output.writeByte(sub.getNpcIdByGender(gender));
-                output.writeShort(sub.getMapIdByGender(gender));
-                output.writeUTF(sub.getContentInfo(gender));
+                int npcToSend = (i <= index) ? sub.getNpcIdByGender(gender) : 5;
+                int mapToSend = (i <= index) ? sub.getMapIdByGender(gender) : 0;
+                String contentToSend = (i <= index) ? sub.getContentInfo(gender) : "";
+                write.writeUTF(nameToSend);
+                write.writeByte(npcToSend);
+                write.writeShort(mapToSend);
+                write.writeUTF(contentToSend);
             }
 
-            output.writeShort(subNames.get(index).getCount());
+            write.writeShort(subNames.get(index).getCount());
 
             for (var sub : subNames) {
-                output.writeShort(sub.getMaxCount());
+                write.writeShort(sub.getMaxCount());
             }
 
             player.sendMessage(message);

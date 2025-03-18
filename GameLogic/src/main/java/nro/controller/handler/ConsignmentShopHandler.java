@@ -32,7 +32,10 @@ public class ConsignmentShopHandler implements IMessageProcessor {
                     player.getPlayerInventory().addItemBag(item);
                     Service.getInstance().sendChatGlobal(session, null, "Nhận thành công " + name, false);
                 }
-                default -> LogServer.LogWarning("ConsignmentShopHandler: " + action);
+                default -> {
+                    Service.getInstance().sendHideWaitDialog(player);
+                    LogServer.LogWarning("ConsignmentShopHandler: " + action);
+                }
             }
 
         } catch (Exception e) {

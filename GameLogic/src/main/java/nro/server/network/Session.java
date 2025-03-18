@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import nro.controller.Controller;
 import nro.model.player.Player;
 import nro.model.template.entity.ClientInfo;
@@ -26,6 +27,7 @@ import nro.server.LogServer;
 // @SuppressWarnings("ALL")
 @Getter
 @Setter
+@ToString
 public final class Session {
 
     private static AtomicInteger baseId = new AtomicInteger(0);
@@ -129,7 +131,7 @@ public final class Session {
      * {@code lastActiveTime} thì sẽ không bị
      * disconnect khỏi server nếu client và server vẫn duy trì giao típ thì sẽ không
      * bị disconnect
-     * 
+     *
      * <pre>
      * {@code
      * this.getClientInfo().updateLastActiveTime();
@@ -138,7 +140,7 @@ public final class Session {
      * </p>
      *
      * <p>
-     * 
+     *
      * <pre>
      *  * VÍ DỤ:
      *  <pre>
@@ -265,8 +267,7 @@ public final class Session {
     }
 
     public static int getBaseId() {
-        int newId = baseId.updateAndGet(id -> (id >= MAX_ID) ? 0 : id + 1);
-        return newId;
+        return baseId.updateAndGet(id -> (id >= MAX_ID) ? 0 : id + 1);
     }
 
     private void handleInitializationError() {

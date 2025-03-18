@@ -14,4 +14,14 @@ public class ConstSkill {
     public static final byte DEMON = 2;
     public static final byte GALICK = 4;
 
+
+    private final byte ATT_STAND = 0;
+    private final byte ATT_FLY = 1;
+    private final byte SKILL_AUTO_USE = 0;
+    private final byte SKILL_CLICK_USE_ATTACK = 1;
+    private final byte SKILL_CLICK_USE_BUFF = 2;
+    private final byte SKILL_CLICK_NPC = 3;
+    private final byte SKILL_CLICK_LIVE = 4;
+
+
 }
