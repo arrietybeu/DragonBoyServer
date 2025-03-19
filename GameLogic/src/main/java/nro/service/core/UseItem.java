@@ -86,14 +86,9 @@ public class UseItem {
             if (currentMp < points.getMaxMP()) {
                 points.setCurrentMp(newMP);
                 playerService.sendMpForPlayer(player);
-            } else if (currentHP < points.getMaxHP()) {
-                points.setCurrentHp(newHP);
-                playerService.sendHpForPlayer(player);
             } else {
-                points.setCurrentMp(newMP);
                 points.setCurrentHp(newHP);
                 playerService.sendHpForPlayer(player);
-                playerService.sendMpForPlayer(player);
             }
 
             player.getPlayerInventory().subQuantityItemsBag(pea, 1);

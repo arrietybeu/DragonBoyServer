@@ -38,6 +38,8 @@ public class ConstOption {
 
     public static final short HP_KI = 48;
 
+    public static final short DAMAGE_PERCENT = 50;
+
     public static final short HP_PERCENT = 77;
 
     public static final short TANG_TIEM_NANG_SUC_MANH_PERCENT = 101;

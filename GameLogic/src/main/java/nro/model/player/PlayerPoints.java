@@ -59,6 +59,8 @@ public class PlayerPoints {
 
     private int percentExpPotentia;
 
+    private boolean isHaveMount;
+
     public PlayerPoints(Player player) {
         this.player = player;
     }
@@ -70,15 +72,13 @@ public class PlayerPoints {
     public void setCurrentHp(long hp) {
         if (hp < 0) {
             this.currentHP = 0;
-        } else
-            this.currentHP = Math.min(hp, this.maxHP);
+        } else this.currentHP = Math.min(hp, this.maxHP);
     }
 
     public void setCurrentMp(long mp) {
         if (mp < 0) {
             this.currentMP = 0;
-        } else
-            this.currentMP = Math.min(mp, this.maxMP);
+        } else this.currentMP = Math.min(mp, this.maxMP);
     }
 
     public void subCurrentHp(long hp) {
@@ -110,6 +110,18 @@ public class PlayerPoints {
         this.totalDefense = this.baseDefense;
         this.totalCriticalChance = this.baseCriticalChance;
         this.percentExpPotentia = 0;
+        this.isHaveMount = false;
+    }
+
+    public void reduceMPWhenFlying() {
+        if (this.isHaveMount) return;
+
+        if (this.currentMP > 0) {
+            var subMp = this.maxMP / 100 * 2;
+            if (subMp < 1) subMp = 1;
+            this.currentMP -= subMp;
+            PlayerService.getInstance().sendMpForPlayer(player);
+        }
     }
 
     private void applyItemBonuses() {
@@ -120,22 +132,29 @@ public class PlayerPoints {
             for (Item item : itemsBody) {
                 if (item == null || item.getTemplate() == null) continue;
 
+                if (item.isItemMount() && item.getTemplate().part() >= 0) {
+                    this.isHaveMount = true;
+                }
+
                 for (ItemOption option : item.getItemOptions()) {
                     if (option == null) continue;
 
-                    final long param = this.getParamOption(option);
-
                     switch (option.getId()) {
-                        case ConstOption.TAN_CONG -> this.currentDamage += param;
-                        case ConstOption.HP, ConstOption.HP_K, ConstOption.HP_PERCENT -> this.maxHP += param;
-                        case ConstOption.KI, ConstOption.KI_K, ConstOption.KI_PERCENT -> this.maxMP += param;
+                        case ConstOption.TAN_CONG, ConstOption.DAMAGE_PERCENT ->
+                                this.currentDamage += this.getParamOption(this.currentDamage, option);
+                        case ConstOption.HP, ConstOption.HP_K, ConstOption.HP_PERCENT ->
+                                this.maxHP += this.getParamOption(maxHP, option);
+                        case ConstOption.KI, ConstOption.KI_K, ConstOption.KI_PERCENT ->
+                                this.maxMP += this.getParamOption(maxMP, option);
                         case ConstOption.HP_KI_000, ConstOption.HP_KI -> {
-                            this.maxHP += param;
-                            this.maxMP += param;
+                            this.maxHP += this.getParamOption(maxHP, option);
+                            this.maxMP += this.getParamOption(maxMP, option);
                         }
-                        case ConstOption.DEFENSE -> this.totalDefense += param;
-                        case ConstOption.CRITICAL -> this.totalCriticalChance += (byte) param;
-                        case ConstOption.TANG_TIEM_NANG_SUC_MANH_PERCENT -> this.percentExpPotentia += (int) param;
+                        case ConstOption.DEFENSE -> this.totalDefense += this.getParamOption(totalDefense, option);
+                        case ConstOption.CRITICAL ->
+                                this.totalCriticalChance += (byte) this.getParamOption(totalCriticalChance, option);
+                        case ConstOption.TANG_TIEM_NANG_SUC_MANH_PERCENT ->
+                                this.percentExpPotentia += (int) this.getParamOption(this.percentExpPotentia, option);
                     }
                 }
             }
@@ -144,12 +163,12 @@ public class PlayerPoints {
         }
     }
 
-    private long getParamOption(ItemOption option) {
+    private long getParamOption(long currentPoint, ItemOption option) {
         if (option == null) return 0;
         return switch (ItemManager.getInstance().findTypeItemOption(option.getId())) {
             case ConstOption.CONG_PARAM, ConstOption.TRA_VE_PARAM -> option.getParam();
             case ConstOption.CONG_PARAM_000, ConstOption.CONG_PARAM_K -> option.getParam() * 1000L;
-            case ConstOption.NHAN_PERCENT, ConstOption.CONG_PARAM_PERCENT -> option.getParam() / 100;
+            case ConstOption.NHAN_PERCENT, ConstOption.CONG_PARAM_PERCENT -> currentPoint * option.getParam() / 100;
             case ConstOption.TRU_PARAM_PERCENT -> -option.getParam() / 100;
             default -> 0;
         };
@@ -180,13 +199,11 @@ public class PlayerPoints {
         }
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendPlayerUpExp(this.player, type, exp);
-
     }
 
     public void returnTownFromDead() {
         try {
-            if (!this.isDead())
-                return;
+            if (!this.isDead()) return;
 
             this.currentHP = 1;
             this.player.getPlayerStatus().setLockMove(false);
@@ -199,8 +216,7 @@ public class PlayerPoints {
             playerService.sendPlayerRevive(player);// -16
             GameMap newMap = MapManager.getInstance().findMapById(mapID);
             if (newMap == null) {
-                Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID,
-                        false);
+                Service.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID, false);
                 return;
             }
             player.getPlayerStatus().setTeleport(1);
@@ -241,9 +257,7 @@ public class PlayerPoints {
             PlayerService playerService = PlayerService.getInstance();
 
             if (this.potentialPoints < point) {
-                Service.dialogMessage(this.player.getSession(),
-                        String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s",
-                                Util.numberToString(this.potentialPoints), point));
+                Service.dialogMessage(this.player.getSession(), String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s", Util.numberToString(this.potentialPoints), point));
                 return;
             }
 
@@ -263,8 +277,7 @@ public class PlayerPoints {
                         }
                     };
 
-                    if (multiplier == -1)
-                        return;
+                    if (multiplier == -1) return;
 
                     potentiaUse = multiplier * (2L * (currentBaseHp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980))) / 2;
                     currentPoint = currentBaseHp;
@@ -283,8 +296,7 @@ public class PlayerPoints {
                         }
                     };
 
-                    if (multiplier == -1)
-                        return;
+                    if (multiplier == -1) return;
 
                     potentiaUse = multiplier * (2L * (currentBaseMp + 1000) + (multiplier == 1 ? 0 : (multiplier == 10 ? 180 : 1980))) / 2;
                     currentPoint = currentBaseMp;
@@ -303,8 +315,7 @@ public class PlayerPoints {
                         }
                     };
 
-                    if (multiplier == -1)
-                        return;
+                    if (multiplier == -1) return;
 
                     potentiaUse = multiplier;
                     currentPoint = currentDamage;
@@ -339,9 +350,7 @@ public class PlayerPoints {
 
     private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point) throws Exception {
         if (this.potentialPoints < potentiaUse) {
-            Service.dialogMessage(this.player.getSession(),
-                    String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s",
-                            Util.numberToString(this.potentialPoints), potentiaUse));
+            Service.dialogMessage(this.player.getSession(), String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s", Util.numberToString(this.potentialPoints), potentiaUse));
             return false;
         }
 

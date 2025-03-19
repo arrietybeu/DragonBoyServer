@@ -109,7 +109,6 @@ public class PlayerFashion {
             LogServer.LogException("PlayerFashion.getMount: " + exception.getMessage(), exception);
             return -1;
         }
-
     }
 
     public short getFlagBag() {

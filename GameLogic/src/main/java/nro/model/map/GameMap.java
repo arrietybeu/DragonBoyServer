@@ -152,6 +152,15 @@ public class GameMap implements Runnable {
         return rY;
     }
 
+    public int tileTypeAt(int x, int y) {
+        try {
+            int[] types = new int[this.tileMap.tiles().length];
+            return types[y * this.tileMap.tmw() + x];
+        } catch (Exception exception) {
+            return 1000;
+        }
+    }
+
     private boolean isTileTop(int tile) {
         return TILE_TOP_SET.contains(tile);
     }

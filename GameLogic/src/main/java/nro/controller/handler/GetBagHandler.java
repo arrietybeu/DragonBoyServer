@@ -12,6 +12,7 @@ import nro.service.ItemService;
 
 @APacketHandler(-63)
 public class GetBagHandler implements IMessageProcessor {
+
     @Override
     public void process(Session session, Message message) {
         Player player = session.getPlayer();

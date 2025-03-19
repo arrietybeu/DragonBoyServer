@@ -82,6 +82,10 @@ public class Item implements AutoCloseable {
         this.itemOptions.clear();
     }
 
+    public boolean isItemMount() {
+        return this.template.type() == 23 || this.template.type() == 24;
+    }
+
     @Override
     public void close() {
         this.dispose();

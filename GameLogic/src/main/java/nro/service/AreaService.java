@@ -111,6 +111,7 @@ public class AreaService {
     }
 
     public void playerChangerMapByWayPoint(Player player) {
+        var ms = System.currentTimeMillis();
         try {
             Area currentArea = player.getArea();
             GameMap currentMap = currentArea.getMap();
@@ -137,8 +138,14 @@ public class AreaService {
                 return;
             }
 
-            this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY());
+//            if (player.getPlayerStatus().getLastTimeChangeMap() + 5000 > System.currentTimeMillis()) {
+//                this.keepPlayerInSafeZone(player, waypoint);
+//                service.sendChatGlobal(player.getSession(), null, "Vui lòng chờ 5 giây để chuyển map", false);
+//                return;
+//            }
 
+            this.gotoMap(player, newMap, waypoint.getGoX(), waypoint.getGoY());
+//            player.getPlayerStatus().setLastTimeChangeMap(System.currentTimeMillis());
         } catch (Exception ex) {
             LogServer.LogException("playerChangerMap: " + ex.getMessage(), ex);
         }
