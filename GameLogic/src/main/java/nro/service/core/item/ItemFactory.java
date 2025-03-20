@@ -70,9 +70,9 @@ public class ItemFactory {
         // class[2] = xayda,
 
         short[][] itemIdsByClass = {
-                { 0, 6 },
-                { 1, 7 },
-                { 2, 8 }
+                {0, 6},
+                {1, 7},
+                {2, 8}
         };
 
         if (clazz < 0 || clazz > itemIdsByClass.length) {
@@ -103,6 +103,12 @@ public class ItemFactory {
             throw new RuntimeException("Failed to create item id: " + itemId);
         }
         return items;
+    }
+
+    public static boolean isItemPea(int itemId) {
+        ItemManager itemManager = ItemManager.getInstance();
+        ItemTemplate item = itemManager.getItemTemplates().get((short) itemId);
+        return item != null && item.type() == 6;
     }
 
 }

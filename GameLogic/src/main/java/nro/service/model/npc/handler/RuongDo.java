@@ -1,4 +1,4 @@
-package nro.service.model.npc.type;
+package nro.service.model.npc.handler;
 
 import nro.consts.ConstNpc;
 import nro.service.model.npc.ANpcHandler;

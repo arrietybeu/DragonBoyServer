@@ -48,7 +48,6 @@ public class ChatService {
         }
     }
 
-
     private void commandForAdmins(Player playerChat, String text) {
         ServerService serverService = ServerService.getInstance();
         try {

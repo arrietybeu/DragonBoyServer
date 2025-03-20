@@ -13,6 +13,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import nro.controller.Controller;
 import nro.consts.ConstsCmd;
+import nro.controller.MessageProcessorRegistry;
+import nro.service.core.usage.ItemHandlerRegistry;
 import nro.service.model.npc.NpcFactory;
 import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
@@ -39,9 +41,11 @@ public class MainServer {
     }
 
     private void init() {
-        NpcFactory.init("nro.service.model.npc.type");
         Manager.getInstance();
         ConstsCmd.addListMsg();
+        MessageProcessorRegistry.init(ConfigServer.PATH_CONTROLLER_HANDLER);
+        NpcFactory.init(ConfigServer.PATH_NPC_HANDLER);
+        ItemHandlerRegistry.init(ConfigServer.PATH_USE_ITEM_HANDLER);
     }
 
     public static void main(String[] args) {

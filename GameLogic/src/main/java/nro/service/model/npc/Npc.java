@@ -36,8 +36,7 @@ public class Npc implements INpcAction {
             return this.getClass().getDeclaredConstructor(int.class, int.class, int.class, int.class, int.class, int.class)
                     .newInstance(npcId, status, mapId, x, y, avatar);
         } catch (Exception e) {
-            LogServer.LogException("Error cloning NPC: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error cloning NPC: " + e.getMessage(), e);
         }
         return null;
     }

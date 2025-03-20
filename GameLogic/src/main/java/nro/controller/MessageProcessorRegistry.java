@@ -17,9 +17,9 @@ import org.reflections.Reflections;
  */
 public class MessageProcessorRegistry {
 
-    private final Map<Byte, IMessageProcessor> processorMap = new HashMap<>();
+    private static final Map<Byte, IMessageProcessor> processorMap = new HashMap<>();
 
-    public void init(String packageName) {
+    public static void init(String packageName) {
         // khoi tao doi tuong Reflections de scan cac class trong package
         try {
             Reflections rf = new Reflections(packageName);
@@ -36,7 +36,7 @@ public class MessageProcessorRegistry {
                             Constructor<?> constructor = cls.getDeclaredConstructor();
                             IMessageProcessor processor = (IMessageProcessor) constructor.newInstance();
 
-                            this.registerProcessor(annotation.value(), processor);
+                            registerProcessor(annotation.value(), processor);
 
                         } catch (Exception e) {
                             LogServer.LogException("Loi ham init" + e.getMessage());
@@ -49,12 +49,12 @@ public class MessageProcessorRegistry {
         }
     }
 
-    private void registerProcessor(byte code, IMessageProcessor processor) {
-        this.processorMap.put(code, processor);
+    private static void registerProcessor(byte code, IMessageProcessor processor) {
+        processorMap.put(code, processor);
     }
 
-    public IMessageProcessor getProcessor(byte code) {
-        return this.processorMap.get(code);
+    public static IMessageProcessor getProcessor(byte code) {
+        return processorMap.get(code);
     }
 
 }

@@ -11,18 +11,11 @@ import nro.service.core.system.ServerService;
  */
 public class Controller {
 
-    private final MessageProcessorRegistry factory = new MessageProcessorRegistry();
-
-    public Controller() {
-        //scan package
-        this.factory.init("nro.controller.handler");
-    }
-
     public void handleMessage(Session session, Message message) {
         long st = System.currentTimeMillis();
         byte command = message.getCommand();
         try {
-            IMessageProcessor processor = this.factory.getProcessor(command);
+            IMessageProcessor processor = MessageProcessorRegistry.getProcessor(command);
             if (processor != null) {
                 processor.process(session, message);
             } else {

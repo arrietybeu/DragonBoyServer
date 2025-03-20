@@ -1,8 +1,5 @@
 package nro.utils;
 
-import nro.service.model.monster.Monster;
-import nro.service.model.player.Player;
-
 import java.text.Normalizer;
 import java.util.SplittableRandom;
 import java.util.concurrent.Executors;
@@ -38,10 +35,6 @@ public class Util {
 
     public static int getDistance(int x1, int y1, int x2, int y2) {
         return (int) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    }
-
-    public static int getDistance(Player player, Monster monster) {
-        return getDistance(player.getX(), player.getY(), monster.getX(), monster.getY());
     }
 
     public static boolean canDoWithTime(long lastTime, long miniTimeTarget) {

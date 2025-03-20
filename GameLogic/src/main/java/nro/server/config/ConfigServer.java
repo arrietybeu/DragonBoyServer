@@ -40,6 +40,10 @@ public final class ConfigServer {
 
     public static final String SCRIPT_FOLDER = "scripts/";
 
+    public static final String PATH_NPC_HANDLER = "nro.service.model.npc.handler";
+    public static final String PATH_USE_ITEM_HANDLER = "nro.service.core.usage.handler";
+    public static final String PATH_CONTROLLER_HANDLER = "nro.controller.handler";
+
     static {
         try {
             IP = InetAddress.getLocalHost().getHostAddress();
@@ -50,4 +54,5 @@ public final class ConfigServer {
         }
         LINK_IP_PORT = String.format("Arriety:%s:14445", IP);
     }
+
 }
