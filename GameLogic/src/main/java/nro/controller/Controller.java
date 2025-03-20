@@ -4,7 +4,7 @@ import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.consts.ConstsCmd;
 import nro.server.LogServer;
-import nro.service.Service;
+import nro.service.core.system.ServerService;
 
 /**
  * @author Arriety
@@ -27,7 +27,7 @@ public class Controller {
                 processor.process(session, message);
             } else {
                 var info = "Unknow command: [" + command + "] " + ConstsCmd.getMessageName(command);
-                Service.dialogMessage(session, info);
+                ServerService.dialogMessage(session, info);
                 LogServer.LogException(info);
             }
         } catch (Exception e) {

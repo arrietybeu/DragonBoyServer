@@ -2,8 +2,8 @@ package nro.server.manager;
 
 import lombok.Getter;
 import nro.server.config.ConfigDB;
-import nro.repositories.DatabaseConnectionPool;
-import nro.model.template.NpcTemplate;
+import nro.service.repositories.DatabaseConnectionPool;
+import nro.service.model.model.template.NpcTemplate;
 import nro.server.LogServer;
 
 import java.sql.Connection;

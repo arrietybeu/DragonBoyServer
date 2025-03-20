@@ -2,13 +2,13 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.map.areas.Area;
-import nro.model.player.Player;
+import nro.service.model.model.map.areas.Area;
+import nro.service.model.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.service.AreaService;
-import nro.service.Service;
+import nro.service.core.map.AreaService;
+import nro.service.core.system.ServerService;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class ChangeAreaHandler implements IMessageProcessor {
             var areaId = message.reader().readByte();
             List<Area> areaList = player.getArea().getMap().getAreas();
             if (areaId <= 0 && areaId >= areaList.size()) {
-                Service.getInstance().sendChatGlobal(player.getSession(), null,
+                ServerService.getInstance().sendChatGlobal(player.getSession(), null,
                         "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
                 return;
             }

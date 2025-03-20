@@ -4,14 +4,14 @@ import nro.consts.ConstShop;
 import nro.consts.ConstsCmd;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.item.Item;
-import nro.model.player.Player;
+import nro.service.model.model.item.Item;
+import nro.service.model.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.service.Service;
+import nro.service.core.system.ServerService;
 
-import nro.service.core.ItemFactory;
+import nro.service.core.item.ItemFactory;
 
 @APacketHandler(ConstsCmd.KIGUI)
 public class ConsignmentShopHandler implements IMessageProcessor {
@@ -29,11 +29,12 @@ public class ConsignmentShopHandler implements IMessageProcessor {
 
                     Item item = ItemFactory.getInstance().createItemOptionsBase(idItem);
                     String name = item.getTemplate().name();
-                    player.getPlayerInventory().addItemBag(item);
-                    Service.getInstance().sendChatGlobal(session, null, "Nhận thành công " + name, false);
+                    if (player.getPlayerInventory().addItemBag(item)) {
+                        ServerService.getInstance().sendChatGlobal(session, null, "Nhận thành công " + name, false);
+                    }
                 }
                 default -> {
-                    Service.getInstance().sendHideWaitDialog(player);
+                    ServerService.getInstance().sendHideWaitDialog(player);
                     LogServer.LogWarning("ConsignmentShopHandler: " + action);
                 }
             }

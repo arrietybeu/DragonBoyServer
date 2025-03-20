@@ -2,11 +2,11 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.player.Player;
+import nro.service.model.model.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.server.LogServer;
-import nro.service.AreaService;
+import nro.service.core.map.AreaService;
 
 @APacketHandler(-23)
 public class ChangeMapHandler implements IMessageProcessor {

@@ -18,6 +18,8 @@ public class ConstItem {
 
     public static final byte TYPE_PEA = 6;
 
+    public static final byte TYPE_LEARN_SKILL = 7;
+
     public static final byte TYPE_GOLD = 9;
 
     public static final byte TYPE_GEM = 10;

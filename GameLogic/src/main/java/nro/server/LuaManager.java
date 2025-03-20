@@ -1,11 +1,10 @@
 package nro.server;
 
 import lombok.Getter;
-import nro.model.player.Player;
+import nro.service.model.model.player.Player;
 import nro.server.config.ConfigServer;
 import nro.server.manager.IManager;
 import org.luaj.vm2.*;
-import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ZeroArgFunction;
 import org.luaj.vm2.lib.jse.*;
 

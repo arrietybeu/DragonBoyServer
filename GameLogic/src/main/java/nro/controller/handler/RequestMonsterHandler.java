@@ -1,12 +1,12 @@
 package nro.controller.handler;
 
-import nro.model.player.Player;
+import nro.service.model.model.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
 import nro.server.LogServer;
-import nro.service.ResourceService;
+import nro.service.core.system.ResourceService;
 
 @APacketHandler(11)
 public class RequestMonsterHandler implements IMessageProcessor {

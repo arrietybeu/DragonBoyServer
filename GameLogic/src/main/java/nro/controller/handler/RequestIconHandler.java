@@ -5,7 +5,7 @@ import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
 import nro.server.LogServer;
-import nro.service.ResourceService;
+import nro.service.core.system.ResourceService;
 
 @APacketHandler(-67)
 public class RequestIconHandler implements IMessageProcessor {

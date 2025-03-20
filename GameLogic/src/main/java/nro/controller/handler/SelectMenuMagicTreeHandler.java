@@ -2,12 +2,12 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.npc.Npc;
-import nro.model.player.Player;
+import nro.service.model.model.npc.Npc;
+import nro.service.model.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.service.Service;
+import nro.service.core.system.ServerService;
 
 @APacketHandler(22)
 public class SelectMenuMagicTreeHandler implements IMessageProcessor {
@@ -27,7 +27,7 @@ public class SelectMenuMagicTreeHandler implements IMessageProcessor {
                 return;
             }
 
-            Service.getInstance().sendHideWaitDialog(player);
+            ServerService.getInstance().sendHideWaitDialog(player);
         } catch (Exception ex) {
             LogServer.LogException("SelectMenuMagicTreeHandler: " + ex.getMessage());
             ex.printStackTrace();

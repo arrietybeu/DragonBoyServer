@@ -1,17 +1,17 @@
 package nro.controller.handler;
 
-import nro.model.player.Player;
+import nro.service.model.model.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.resources.DataItem;
-import nro.model.resources.DataMap;
-import nro.model.resources.DataSkill;
-import nro.service.MapService;
-import nro.service.PlayerService;
-import nro.service.ResourceService;
-import nro.service.Service;
+import nro.service.model.model.resources.DataItem;
+import nro.service.model.model.resources.DataMap;
+import nro.service.model.model.resources.DataSkill;
+import nro.service.core.map.MapService;
+import nro.service.core.player.PlayerService;
+import nro.service.core.system.ResourceService;
+import nro.service.core.system.ServerService;
 import nro.server.LogServer;
 
 @APacketHandler(-28)
@@ -95,7 +95,7 @@ public class NotMapHandler implements IMessageProcessor {
 
             String validationError = playerService.validateCharacterData(name, gender);
             if (validationError != null) {
-                Service.dialogMessage(session, validationError);
+                ServerService.dialogMessage(session, validationError);
                 return;
             }
 

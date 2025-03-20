@@ -2,10 +2,10 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.model.player.Player;
+import nro.service.model.model.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.service.MapService;
+import nro.service.core.map.MapService;
 
 @APacketHandler(29)
 public class OpenUIZoneHandler implements IMessageProcessor {

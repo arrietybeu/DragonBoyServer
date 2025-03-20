@@ -1,12 +1,12 @@
 package nro.controller.handler;
 
-import nro.model.player.Player;
+import nro.service.model.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.NpcService;
+import nro.service.core.npc.NpcService;
 
 @APacketHandler(-34)
 public class MagicTreeHandler implements IMessageProcessor {

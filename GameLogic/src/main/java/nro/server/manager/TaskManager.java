@@ -1,9 +1,9 @@
 package nro.server.manager;
 
-import nro.model.item.Item;
-import nro.model.player.Player;
-import nro.model.task.TaskMain;
-import nro.repositories.DatabaseConnectionPool;
+import nro.service.model.model.item.Item;
+import nro.service.model.model.player.Player;
+import nro.service.model.model.task.TaskMain;
+import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -11,9 +11,8 @@ import java.sql.*;
 import java.util.*;
 
 import lombok.Getter;
-import nro.service.PlayerService;
-import nro.service.Service;
-import nro.service.core.ItemFactory;
+import nro.service.core.system.ServerService;
+import nro.service.core.item.ItemFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 
@@ -160,7 +159,7 @@ public class TaskManager implements IManager {
                 Item item = ItemFactory.getInstance().createItemOptionsBase(reward.itemId());
                 String name = item.getTemplate().name();
                 player.getPlayerInventory().addItemBag(item);
-                Service.getInstance().sendChatGlobal(player.getSession(), null, String.format("Bạn nhận được %s", name), false);
+                ServerService.getInstance().sendChatGlobal(player.getSession(), null, String.format("Bạn nhận được %s", name), false);
                 return;
             }
         }

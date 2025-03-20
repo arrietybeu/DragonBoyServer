@@ -1,10 +1,10 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.model.player.Player;
-import nro.repositories.account.AccountRepository;
+import nro.service.model.model.player.Player;
+import nro.service.repositories.account.AccountRepository;
 import nro.server.network.Session;
-import nro.repositories.player.PlayerUpdate;
+import nro.service.repositories.player.PlayerUpdate;
 import nro.server.LogServer;
 import nro.utils.Util;
 
@@ -138,8 +138,7 @@ public class SessionManager {
 
             LogServer.DebugLogic("Tổng số sessions sau khi kick: " + sessions.size());
         } catch (Exception e) {
-            LogServer.LogException("Error kickAllPlayersAndSaveForMaintenance: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error kickAllPlayersAndSaveForMaintenance: " + e.getMessage(), e);
         } finally {
             this.lock.writeLock().unlock();
         }
