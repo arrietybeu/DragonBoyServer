@@ -1,7 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.service.model.model.player.Player;
+import nro.service.model.player.Player;
 import nro.service.repositories.account.AccountRepository;
 import nro.server.network.Session;
 import nro.service.repositories.player.PlayerUpdate;

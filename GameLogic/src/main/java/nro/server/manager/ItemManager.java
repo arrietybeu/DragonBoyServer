@@ -3,12 +3,12 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
+import nro.service.model.template.item.*;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
 import nro.server.LogServer;
 import nro.service.core.item.ItemFactory;
-import nro.service.model.model.item.Item;
-import nro.service.model.model.template.item.*;
+import nro.service.model.item.Item;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 

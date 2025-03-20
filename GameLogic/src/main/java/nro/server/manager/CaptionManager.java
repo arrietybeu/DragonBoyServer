@@ -1,8 +1,8 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.template.CaptionTemplate;
+import nro.service.model.player.Player;
+import nro.service.model.template.CaptionTemplate;
 import nro.server.network.Message;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;

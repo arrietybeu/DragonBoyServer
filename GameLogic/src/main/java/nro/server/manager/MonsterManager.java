@@ -4,7 +4,7 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.model.template.MonsterTemplate;
+import nro.service.model.template.MonsterTemplate;
 import nro.server.LogServer;
 
 import java.sql.Connection;

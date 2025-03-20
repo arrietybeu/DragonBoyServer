@@ -1,7 +1,7 @@
 package nro.utils;
 
-import nro.service.model.model.monster.Monster;
-import nro.service.model.model.player.Player;
+import nro.service.model.monster.Monster;
+import nro.service.model.player.Player;
 
 import java.text.Normalizer;
 import java.util.SplittableRandom;

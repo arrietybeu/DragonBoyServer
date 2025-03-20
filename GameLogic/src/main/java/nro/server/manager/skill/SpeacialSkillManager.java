@@ -2,7 +2,7 @@ package nro.server.manager.skill;
 
 import lombok.Getter;
 import nro.consts.ConstPlayer;
-import nro.service.model.model.template.skill.SpeacialSkillTemplate;
+import nro.service.model.template.skill.SpeacialSkillTemplate;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;

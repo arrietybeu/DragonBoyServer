@@ -2,11 +2,11 @@ package nro.service.core.npc;
 
 import lombok.Getter;
 import nro.service.core.system.ServerService;
-import nro.service.model.model.npc.Npc;
-import nro.service.model.model.npc.NpcFactory;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.player.PlayerMagicTree;
-import nro.service.model.model.template.MagicTreeTemplate;
+import nro.service.model.npc.Npc;
+import nro.service.model.npc.NpcFactory;
+import nro.service.model.player.Player;
+import nro.service.model.player.PlayerMagicTree;
+import nro.service.model.template.MagicTreeTemplate;
 import nro.server.manager.MagicTreeManager;
 import nro.server.network.Message;
 import nro.server.LogServer;

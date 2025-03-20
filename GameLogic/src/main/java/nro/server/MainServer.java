@@ -13,7 +13,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import nro.controller.Controller;
 import nro.consts.ConstsCmd;
-import nro.service.model.model.npc.NpcFactory;
+import nro.service.model.npc.NpcFactory;
 import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
@@ -30,7 +30,7 @@ public class MainServer {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private volatile boolean running;
 
-    public static  MainServer getInstance() {
+    public static MainServer getInstance() {
         if (instance == null) {
             instance = new MainServer();
             instance.init();
@@ -39,7 +39,7 @@ public class MainServer {
     }
 
     private void init() {
-        NpcFactory.init("nro.service.model.model.npc.type");
+        NpcFactory.init("nro.service.model.npc.type");
         Manager.getInstance();
         ConstsCmd.addListMsg();
     }
@@ -51,7 +51,7 @@ public class MainServer {
             startDeadLockDetector();
             MainServer.getInstance().start();
         } catch (Exception e) {
-            LogServer.LogException("Error main: " + e.getMessage());
+            LogServer.LogException("Error main: " + e.getMessage(), e);
         }
     }
 

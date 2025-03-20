@@ -1,9 +1,9 @@
 package nro.service.core.combat;
 
 import lombok.Getter;
-import nro.service.model.model.item.ItemMap;
-import nro.service.model.model.monster.Monster;
-import nro.service.model.model.player.Player;
+import nro.service.model.item.ItemMap;
+import nro.service.model.monster.Monster;
+import nro.service.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 

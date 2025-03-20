@@ -1,8 +1,8 @@
 package nro.server.manager;
 
-import nro.service.model.model.item.Item;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.task.TaskMain;
+import nro.service.model.item.Item;
+import nro.service.model.player.Player;
+import nro.service.model.task.TaskMain;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;
 import nro.server.config.ConfigDB;

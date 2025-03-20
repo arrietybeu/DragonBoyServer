@@ -1,9 +1,9 @@
 package nro.service.core.social;
 
 import lombok.Getter;
-import nro.service.model.model.clan.Clan;
-import nro.service.model.model.clan.ClanMessage;
-import nro.service.model.model.player.Player;
+import nro.service.model.clan.Clan;
+import nro.service.model.clan.ClanMessage;
+import nro.service.model.player.Player;
 import nro.server.network.Message;
 import nro.server.LogServer;
 

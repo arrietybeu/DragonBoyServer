@@ -5,9 +5,9 @@
 package nro.service.core.system;
 
 import nro.consts.ConstsCmd;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.player.PlayerFashion;
-import nro.service.model.model.template.entity.PartInfo;
+import nro.service.model.player.Player;
+import nro.service.model.player.PlayerFashion;
+import nro.service.model.template.entity.PartInfo;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.server.LogServer;

@@ -1,11 +1,11 @@
 package nro.service.core.system;
 
-import nro.service.model.model.map.GameMap;
-import nro.service.model.model.map.decorates.BackgroudEffect;
-import nro.service.model.model.template.CaptionTemplate;
-import nro.service.model.model.template.map.TileSetTemplate;
+import nro.service.model.map.GameMap;
+import nro.service.model.map.decorates.BackgroudEffect;
+import nro.service.model.template.CaptionTemplate;
+import nro.service.model.template.map.TileSetTemplate;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.model.template.entity.UserInfo;
+import nro.service.model.template.entity.UserInfo;
 import nro.service.repositories.player.PlayerCreator;
 import nro.server.config.ConfigDB;
 import nro.server.manager.*;

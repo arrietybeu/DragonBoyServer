@@ -4,9 +4,9 @@ import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.model.template.entity.SkillPaintInfo;
+import nro.service.model.template.entity.SkillPaintInfo;
 import nro.server.manager.IManager;
-import nro.service.model.model.skill.SkillPaint;
+import nro.service.model.skill.SkillPaint;
 import nro.server.LogServer;
 
 import java.io.DataOutputStream;

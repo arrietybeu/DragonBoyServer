@@ -4,7 +4,7 @@ import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.model.model.template.entity.UserInfo;
+import nro.service.model.template.entity.UserInfo;
 import nro.server.manager.UserManager;
 import nro.service.repositories.account.AccountRepository;
 import nro.server.Maintenance;

@@ -1,14 +1,14 @@
 package nro.service.core.system;
 
 import nro.consts.ConstMsgNotMap;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.resources.Effect;
-import nro.service.model.model.resources.ImageByName;
-import nro.service.model.model.template.CaptionTemplate;
+import nro.service.model.player.Player;
+import nro.service.model.resources.Effect;
+import nro.service.model.resources.ImageByName;
+import nro.service.model.template.CaptionTemplate;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.server.config.ConfigServer;
-import nro.service.model.model.resources.DataGame;
+import nro.service.model.resources.DataGame;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
 import nro.server.manager.skill.SkillPaintManager;

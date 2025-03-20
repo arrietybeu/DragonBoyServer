@@ -2,8 +2,8 @@ package nro.service.core.usage;
 
 import lombok.Getter;
 import nro.consts.ConstUseItem;
-import nro.service.model.model.item.Item;
-import nro.service.model.model.player.Player;
+import nro.service.model.item.Item;
+import nro.service.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.service.core.system.ServerService;

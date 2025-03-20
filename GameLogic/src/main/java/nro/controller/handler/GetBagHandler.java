@@ -1,7 +1,7 @@
 package nro.controller.handler;
 
-import nro.service.model.model.template.item.FlagImage;
-import nro.service.model.model.player.Player;
+import nro.service.model.template.item.FlagImage;
+import nro.service.model.player.Player;
 import nro.server.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;

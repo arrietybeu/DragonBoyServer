@@ -2,11 +2,11 @@ package nro.service.core.usage;
 
 import lombok.Getter;
 import nro.consts.ConstItem;
-import nro.service.model.model.item.Item;
-import nro.service.model.model.template.item.ItemOption;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.player.PlayerInventory;
-import nro.service.model.model.player.PlayerPoints;
+import nro.service.model.item.Item;
+import nro.service.model.template.item.ItemOption;
+import nro.service.model.player.Player;
+import nro.service.model.player.PlayerInventory;
+import nro.service.model.player.PlayerPoints;
 import nro.server.LogServer;
 import nro.service.core.npc.NpcService;
 import nro.service.core.player.PlayerService;

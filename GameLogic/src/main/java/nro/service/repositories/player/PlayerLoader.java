@@ -1,14 +1,14 @@
 package nro.service.repositories.player;
 
 import lombok.Getter;
-import nro.service.model.model.item.Item;
-import nro.service.model.model.map.areas.Area;
-import nro.service.model.model.player.Player;
-import nro.service.model.model.player.PlayerInventory;
-import nro.service.model.model.player.PlayerMagicTree;
-import nro.service.model.model.player.PlayerPoints;
-import nro.service.model.model.task.TaskMain;
-import nro.service.model.model.template.entity.SkillInfo;
+import nro.service.model.item.Item;
+import nro.service.model.map.areas.Area;
+import nro.service.model.player.Player;
+import nro.service.model.player.PlayerInventory;
+import nro.service.model.player.PlayerMagicTree;
+import nro.service.model.player.PlayerPoints;
+import nro.service.model.task.TaskMain;
+import nro.service.model.template.entity.SkillInfo;
 import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.LogServer;

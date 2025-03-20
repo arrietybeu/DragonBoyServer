@@ -1,7 +1,7 @@
 package nro.server;
 
 import lombok.Getter;
-import nro.service.model.model.player.Player;
+import nro.service.model.player.Player;
 import nro.server.config.ConfigServer;
 import nro.server.manager.IManager;
 import org.luaj.vm2.*;

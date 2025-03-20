@@ -3,7 +3,7 @@ package nro.service.repositories.account;
 import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.model.template.entity.UserInfo;
+import nro.service.model.template.entity.UserInfo;
 import nro.server.manager.UserManager;
 import nro.service.core.system.ServerService;
 import nro.server.manager.SessionManager;

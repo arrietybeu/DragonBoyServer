@@ -2,7 +2,7 @@ package nro.service.core.player;
 
 import lombok.Getter;
 import nro.consts.ConstsCmd;
-import nro.service.model.model.player.Player;
+import nro.service.model.player.Player;
 import nro.server.network.Message;
 import nro.server.LogServer;
 
