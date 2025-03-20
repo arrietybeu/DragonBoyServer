@@ -4,18 +4,18 @@ import nro.consts.ConstItem;
 import nro.server.LogServer;
 import nro.service.core.player.PlayerService;
 import nro.service.core.system.ServerService;
-import nro.service.core.usage.AItemHandler;
-import nro.service.core.usage.IItemHandler;
+import nro.service.core.usage.AUseItemHandler;
+import nro.service.core.usage.IUseItemHandler;
 import nro.service.model.item.Item;
 import nro.service.model.player.Player;
 import nro.service.model.player.PlayerPoints;
 import nro.service.model.template.item.ItemOption;
 
-@AItemHandler({ConstItem.TYPE_PEA})
-public class PeaItemHandler implements IItemHandler {
+@AUseItemHandler({ConstItem.TYPE_PEA})
+public class PeaUseItemHandler implements IUseItemHandler {
 
     @Override
-    public void use(Player player, Item item, int... itemId) {
+    public void use(Player player, int type, int index, Item item, int... itemId) {
         long time = System.currentTimeMillis();
 
         if (player.getPlayerMagicTree().getLastUsePea() + 10000 > time) {

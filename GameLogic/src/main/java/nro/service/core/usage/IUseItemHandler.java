@@ -3,8 +3,8 @@ package nro.service.core.usage;
 import nro.service.model.item.Item;
 import nro.service.model.player.Player;
 
-public interface IItemHandler {
+public interface IUseItemHandler {
 
-    void use(Player player, Item item, int... id);
+    void use(Player player, int type, int index, Item item, int... id);
 
 }

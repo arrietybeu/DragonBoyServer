@@ -21,8 +21,7 @@ public class ClanService {
             // DataOutputStream data = message.writer();
 
         } catch (Exception ex) {
-            LogServer.LogException("Error send list Clan: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error send list Clan: " + ex.getMessage(), ex);
         }
     }
 
@@ -84,8 +83,7 @@ public class ClanService {
             }
             player.sendMessage(message);
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException("Error sendClanInfo: " + e.getMessage());
+            LogServer.LogException("Error sendClanInfo: " + e.getMessage(), e);
         }
     }
 

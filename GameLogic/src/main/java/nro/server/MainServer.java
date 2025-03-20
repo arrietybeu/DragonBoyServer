@@ -43,9 +43,8 @@ public class MainServer {
     private void init() {
         Manager.getInstance();
         ConstsCmd.addListMsg();
-        MessageProcessorRegistry.init(ConfigServer.PATH_CONTROLLER_HANDLER);
-        NpcFactory.init(ConfigServer.PATH_NPC_HANDLER);
         ItemHandlerRegistry.init(ConfigServer.PATH_USE_ITEM_HANDLER);
+        MessageProcessorRegistry.init(ConfigServer.PATH_CONTROLLER_HANDLER);
     }
 
     public static void main(String[] args) {

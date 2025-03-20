@@ -27,22 +27,5 @@ public class SkillService {
         }
     }
 
-    public void sendPlayerLearnSkill(Player player, SkillInfo skillInfo, int type) {
-        try (Message message = new Message(ConstsCmd.SUB_COMMAND)) {
-            DataOutputStream writer = message.writer();
-            writer.writeByte(ConstMsgSubCommand.UPDATE_MY_SKILLS);
-            writer.writeShort(skillInfo.getSkillId());
-
-            switch (type) {
-                case 0 -> writer.writeShort(skillInfo.getPoint());
-                case 1 -> {
-                }
-            }
-
-            player.sendMessage(message);
-        } catch (Exception e) {
-            LogServer.LogException("SkillService: sendPlayerLearnSkill: " + e.getMessage());
-        }
-    }
 
 }

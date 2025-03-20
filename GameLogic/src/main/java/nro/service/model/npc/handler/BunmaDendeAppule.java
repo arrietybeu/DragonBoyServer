@@ -23,6 +23,7 @@ public class BunmaDendeAppule extends Npc {
 
     @Override
     public void openUIConFirm(Player player, int select) {
+        String beo = "My spirit is not stable";
     }
 
 }

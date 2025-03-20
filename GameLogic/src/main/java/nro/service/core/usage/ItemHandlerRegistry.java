@@ -10,19 +10,19 @@ import org.reflections.Reflections;
 
 public class ItemHandlerRegistry {
 
-    private static final Map<Integer, IItemHandler> handlerMap = new HashMap<>();
+    private static final Map<Integer, IUseItemHandler> handlerMap = new HashMap<>();
 
     public static void init(String packageName) {
         try {
             Reflections reflections = new Reflections(packageName);
-            Set<Class<?>> classes = reflections.getTypesAnnotatedWith(AItemHandler.class);
+            Set<Class<?>> classes = reflections.getTypesAnnotatedWith(AUseItemHandler.class);
 
             for (Class<?> cls : classes) {
-                if (IItemHandler.class.isAssignableFrom(cls)) {
+                if (IUseItemHandler.class.isAssignableFrom(cls)) {
                     try {
-                        AItemHandler annotation = cls.getAnnotation(AItemHandler.class);
+                        AUseItemHandler annotation = cls.getAnnotation(AUseItemHandler.class);
                         Constructor<?> constructor = cls.getDeclaredConstructor();
-                        IItemHandler handler = (IItemHandler) constructor.newInstance();
+                        IUseItemHandler handler = (IUseItemHandler) constructor.newInstance();
 
                         for (int type : annotation.value()) {
                             handlerMap.put(type, handler);
@@ -38,7 +38,7 @@ public class ItemHandlerRegistry {
         }
     }
 
-    public static IItemHandler getHandler(int type) {
+    public static IUseItemHandler getHandler(int type) {
         return handlerMap.get(type);
     }
 

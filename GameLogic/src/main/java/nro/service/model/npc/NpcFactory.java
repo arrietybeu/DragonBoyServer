@@ -58,4 +58,7 @@ public class NpcFactory {
         return npcMap.get(npcId);
     }
 
+    public static void clear() {
+        npcMap.clear();
+    }
 }

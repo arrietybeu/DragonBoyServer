@@ -2,11 +2,11 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
+import nro.service.core.usage.UseItem;
 import nro.service.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.service.core.usage.UseItemService;
 
 @APacketHandler(-40)
 public class GetItemHandler implements IMessageProcessor {
@@ -19,7 +19,7 @@ public class GetItemHandler implements IMessageProcessor {
             var type = message.reader().readByte();
             var index = message.reader().readByte();
 //            LogServer.DebugLogic("status: " + type + " index: " + index);
-            UseItemService.getInstance().getItem(player, type, index);
+            UseItem.getInstance().getItem(player, type, index);
         } catch (Exception ex) {
             LogServer.LogException("GetItemHandler: " + ex.getMessage(), ex);
         }

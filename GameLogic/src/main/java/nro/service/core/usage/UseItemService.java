@@ -1,114 +1,22 @@
 package nro.service.core.usage;
 
 import lombok.Getter;
-import nro.consts.ConstUseItem;
-import nro.service.model.item.Item;
+import nro.consts.ConstMsgSubCommand;
+import nro.consts.ConstsCmd;
 import nro.service.model.player.Player;
 import nro.server.LogServer;
 import nro.server.network.Message;
-import nro.service.core.system.ServerService;
+import nro.service.model.template.entity.SkillInfo;
 
 import java.io.DataOutputStream;
-import java.util.List;
 
 public class UseItemService {
 
     @Getter
     private static final UseItemService instance = new UseItemService();
 
-    public void useItem(Player player, byte type, byte where, byte index, short template) {
-        try {
-            switch (type) {
-                case ConstUseItem.USE_ITEM: {
-                    UseItem.getInstance().useItem(player, index, template);
-                    break;
-                }
-                case ConstUseItem.CONFIRM_THROW_ITEM: {
-                    this.confirmThrowItem(player, type, where, index);
-                    break;
-                }
-                case ConstUseItem.ACCEPT_THROW_ITEM: {
-                    player.getPlayerInventory().throwItem(where, index);
-                    break;
-                }
-                default: {
-                    LogServer.LogWarning("useItem status: " + type + " player: " + player.getName());
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            LogServer.LogException("useItem: " + ex.getMessage(), ex);
-        }
-    }
-
-    public void getItem(Player player, int type, int index) {
-        try {
-            switch (type) {
-                case ConstUseItem.MOVE_FROM_BOX_TO_BAG: {
-                    player.getPlayerInventory().moveFromBoxToBag(index);
-                    break;
-                }
-                case ConstUseItem.MOVE_FROM_BAG_TO_BOX: {
-                    player.getPlayerInventory().moveFromBagToBox(index);
-                    break;
-                }
-                case ConstUseItem.MOVE_FROM_BODY_TO_BOX: {
-                    player.getPlayerInventory().moveFromBodyToBox(index);
-                    break;
-                }
-                case ConstUseItem.EQUIP_ITEM_FROM_BAG: {
-                    player.getPlayerInventory().equipItemFromBag(index);
-                    break;
-                }
-                case ConstUseItem.UNEQUIP_ITEM_TO_BAG: {
-                    player.getPlayerInventory().unequipItemToBag(index);
-                    break;
-                }
-                default: {
-                    LogServer.LogWarning("Get Item: Chua hoan thien status: " + type);
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            LogServer.LogException("getItem: " + ex.getMessage(), ex);
-        }
-    }
-
-    public void confirmThrowItem(Player player, byte type, byte where, byte index) {
-        try {
-            List<Item> items = switch (where) {
-                case ConstUseItem.THROW_ITEM_BODY -> player.getPlayerInventory().getItemsBody();
-                case ConstUseItem.THROW_ITEM_BAG -> player.getPlayerInventory().getItemsBag();
-                default -> null;
-            };
-
-            if (items == null) {
-                LogServer.LogWarning("confirmThrowItem status: " + type + " player: " + player.getName());
-                return;
-            }
-
-            if (index < 0 || index >= items.size()) {
-                ServerService.dialogMessage(player.getSession(), "Đã xảy ra lỗi");
-                return;
-            }
-
-            Item item = items.get(index);
-            if (item == null || item.getTemplate() == null) {
-                ServerService.dialogMessage(player.getSession(), "Không có vật phẩm này!");
-                return;
-            }
-
-            String info = String.format("Bạn có chắc muốn hủy bỏ (mất luôn)\n%dx %s", item.getQuantity(), item.getTemplate().name());
-            this.eventUseItem(player, type, where, index, info);
-
-        } catch (Exception ex) {
-            LogServer.LogException("confirmThrowItem: " + ex.getMessage(), ex);
-        }
-    }
-
-
     public void eventUseItem(Player player, int itemAction, int where, int index, String info) {
-        try (Message message = new Message(-43)) {
+        try (Message message = new Message(ConstsCmd.USE_ITEM)) {
             DataOutputStream data = message.writer();
             data.writeByte(itemAction);
             data.writeByte(where);
@@ -117,6 +25,26 @@ public class UseItemService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("eventUseItem: " + ex.getMessage(), ex);
+        }
+    }
+
+    // học skill = sách type = -1
+    // chưa biết khi vô game nếu có skill mới thì gửi type = 0 và id skill mới
+    public void sendPlayerLearnSkill(Player player, SkillInfo skillInfo, int type) {
+        try (Message message = new Message(ConstsCmd.SUB_COMMAND)) {
+            DataOutputStream writer = message.writer();
+            writer.writeByte(ConstMsgSubCommand.UPDATE_MY_SKILLS);
+            writer.writeShort(skillInfo.getSkillId());
+
+            switch (type) {
+                case 0 -> writer.writeShort(skillInfo.getPoint());
+                case 1 -> {
+                }
+            }
+
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("SkillService: sendPlayerLearnSkill: " + e.getMessage());
         }
     }
 }

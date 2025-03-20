@@ -351,6 +351,7 @@ public class PlayerInventory {
                 return ItemFactory.getInstance().createItemNull();
             }
         }
+        ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, "Hành trang đã đầy.", false);
         return item;
     }
 
