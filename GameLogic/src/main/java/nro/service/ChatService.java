@@ -1,6 +1,7 @@
 package nro.service;
 
 import lombok.Getter;
+import nro.consts.ConstPlayer;
 import nro.consts.ConstShop;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
@@ -44,9 +45,9 @@ public class ChatService {
         }
     }
 
-    private int getNumber(String text) {
+    private long getNumber(String text) {
         try {
-            return Integer.parseInt(text.substring(2).trim());
+            return Long.parseLong(text.substring(2).trim());
         } catch (NumberFormatException e) {
             return -1;
         }
@@ -89,17 +90,29 @@ public class ChatService {
                 return;
             }
             if (text.startsWith("m ")) {
-                int mapId = this.getNumber(text);
+                int mapId = (int) this.getNumber(text);
                 AreaService.getInstance().changerMapByShip(playerChat, mapId, 1);
                 service.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
             }
             if (text.startsWith("hp ")) {
-                int hp = this.getNumber(text);
+                long hp = this.getNumber(text);
                 playerChat.getPlayerPoints().setCurrentHp(hp);
                 playerChat.getPlayerPoints().setCurrentMp(hp);
                 PlayerService.getInstance().sendCurrencyHpMp(playerChat);
                 service.sendChatGlobal(playerChat.getSession(), null, "Set HP: " + hp, false);
+                return;
+            }
+            if (text.startsWith("tn ")) {
+                long exp = this.getNumber(text);
+                playerChat.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                service.sendChatGlobal(playerChat.getSession(), null, "SET EXP: " + exp, false);
+                return;
+            }
+            if (text.startsWith("gt ")) {
+                long exp = this.getNumber(text);
+                playerChat.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                service.sendChatGlobal(playerChat.getSession(), null, "SET EXP: " + exp, false);
                 return;
             }
             if (text.startsWith("it ")) {
@@ -120,7 +133,7 @@ public class ChatService {
                 return;
             }
             if (text.startsWith("rm ")) {
-                int mobId = this.getNumber(text);
+                int mobId = (int) this.getNumber(text);
                 if (mobId == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null,
                             "Mob không hợp lệ: " + text, false);
@@ -136,7 +149,7 @@ public class ChatService {
                 return;
             }
             if (text.startsWith("im ")) {
-                int itemIdMap = this.getNumber(text);
+                int itemIdMap = (int) this.getNumber(text);
                 if (itemIdMap == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
                     return;
@@ -149,7 +162,7 @@ public class ChatService {
                 return;
             }
             if (text.startsWith("sd ")) {
-                int damage = this.getNumber(text);
+                int damage = (int) this.getNumber(text);
                 if (damage == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Damage không hợp lệ: " + text, false);
                     return;
@@ -159,7 +172,7 @@ public class ChatService {
                 return;
             }
             if (text.startsWith("c ")) {
-                int type = this.getNumber(text);
+                int type = (int) this.getNumber(text);
                 if (type == -1) {
                     service.sendChatGlobal(playerChat.getSession(), null, "Type không hợp lệ: " + text, false);
                     return;

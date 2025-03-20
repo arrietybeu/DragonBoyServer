@@ -2,6 +2,7 @@ package nro.model.player;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.model.LiveObject;
@@ -10,11 +11,11 @@ import nro.model.template.entity.SkillInfo;
 import nro.server.LogServer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @SuppressWarnings("ALL")
 public class PlayerSkill {
 
@@ -32,10 +33,13 @@ public class PlayerSkill {
 
     public void playerAttackMonster(Monster monster) {
         try {
-            if (monster == null || monster.getPoint().isDead()) return;
+            if (monster == null) return;
+            if (monster.getPoint().isDead()) return;
+
             this.useSkill(monster);
+
         } catch (Exception e) {
-            LogServer.LogException("playerAttackMonster player name:" + player.getName() + " error: " + e.getMessage());
+            LogServer.LogException("playerAttackMonster player name:" + player.getName() + " error: " + e.getMessage(), e);
         }
     }
 
@@ -50,7 +54,7 @@ public class PlayerSkill {
                 case ConstSkill.SKILL_NOT_FORCUS -> {
                 }
             }
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             LogServer.LogException("useSkill player name:" + player.getName() + " error: " + ex.getMessage());
         }
     }
@@ -61,29 +65,25 @@ public class PlayerSkill {
                 switch (target) {
                     case Player plTarget -> {
                     }
-                    case Monster monster ->
-                            monster.handleAttack(this.player, this.player.getPlayerPoints().getDameAttack());
-                    default -> LogServer.LogException(
-                            "useSkillTarget player name:" + player.getName() + " error: target not monster");
+                    case Monster monster -> {
+                        long dame = this.player.getPlayerPoints().getDameAttack();
+                        monster.handleAttack(this.player, dame);
+                    }
+                    default ->
+                            LogServer.LogException("useSkillTarget player name:" + player.getName() + " error: target not monster");
                 }
             }
         }
     }
 
     public SkillInfo getSkillById(int id) {
-        for (SkillInfo skillInfo : this.skills) {
-            if (skillInfo.getSkillId() == id) {
-                return skillInfo;
-            }
-        }
-        return null;
+        return this.skills.stream().filter(skillInfo -> skillInfo.getSkillId() == id).findFirst().orElse(null);
     }
 
     public void selectSkill(int skillId) {
         try {
             for (SkillInfo skillInfo : this.skills) {
-                if (skillInfo.getTemplate().getId() == -1)
-                    continue;
+                if (skillInfo.getTemplate().getId() == -1) continue;
                 if (skillInfo.getTemplate().getId() == skillId) {
                     this.skillSelect = skillInfo;
                     break;
@@ -123,13 +123,4 @@ public class PlayerSkill {
         this.skills.remove(skill);
     }
 
-    @Override
-    public String toString() {
-        return "PlayerSkill{" +
-                "skills=" + skills +
-                ", player=" + player +
-                ", isMonkey=" + isMonkey +
-                ", skillShortCut=" + Arrays.toString(skillShortCut) +
-                '}';
-    }
 }

@@ -17,6 +17,5 @@ public class Disciple extends LiveObject {
 
     @Override
     public void dispose() {
-
     }
 }

@@ -282,8 +282,7 @@ public class ResourceService {
     public void sendTileSetInfo(Session session) {
         try (Message message = new Message(-82)) {
             byte[] data = FileNio.loadDataFile("resources/data/tile_data/tile_set_info");
-            if (data == null)
-                return;
+            if (data == null) return;
             message.writer().write(data);
             session.doSendMessage(message);
         } catch (Exception e) {
@@ -337,7 +336,7 @@ public class ResourceService {
             data.write(effect.getImg());
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("Error send Effect Data id: " + id + " " + ex.getMessage());
+            LogServer.LogException("Error send Effect Data id: " + id + " " + ex.getMessage(), ex);
         }
     }
 
@@ -361,8 +360,7 @@ public class ResourceService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendImageByName: " + ex.getMessage() + " Error Send Image By Name: " + img
-                    + " zoomLevel: " + zoomLevel);
-            ex.printStackTrace();
+                    + " zoomLevel: " + zoomLevel, ex);
         }
     }
 
@@ -379,7 +377,6 @@ public class ResourceService {
 
     public void clientOk(Session session) {
         if (!session.getSessionInfo().isClientOk()) {
-
             this.sendDataBackgroundMapTemplate(session);// -31
             this.sendTileSetInfo(session); // -82
             this.sendSmallVersion(session);// -77

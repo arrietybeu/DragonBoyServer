@@ -11,6 +11,7 @@ public class MonsterPoint {
     private long maxHp;
     private byte level;
     private boolean isDead;
+    private long maxExp;
 
     public MonsterPoint(Monster monster, long maxHp, byte level) {
         this.monster = monster;

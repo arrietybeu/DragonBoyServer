@@ -8,9 +8,11 @@ import nro.consts.ConstSkill;
 import nro.model.item.Item;
 import nro.model.item.ItemOption;
 import nro.model.map.GameMap;
+import nro.model.monster.Monster;
 import nro.model.template.entity.SkillInfo;
 import nro.server.LogServer;
 import nro.server.config.ConfigServer;
+import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
 import nro.server.manager.MapManager;
 import nro.service.AreaService;
@@ -187,18 +189,43 @@ public class PlayerPoints {
         }
     }
 
-    public void addExp(int type, int exp) {
-
-        switch (type) {
-            case 0 -> this.power += exp;
-            case 1 -> this.potentialPoints += exp;
-            case 2 -> {
-                this.power += exp;
-                this.potentialPoints += exp;
-            }
-        }
+    public void addExp(int type, long exp) {
         PlayerService playerService = PlayerService.getInstance();
-        playerService.sendPlayerUpExp(this.player, type, exp);
+        long step = 5_000_000;
+        while (exp > 0) {
+            long addAmount = Math.min(exp, step);
+
+            switch (type) {
+                case 0 -> this.power += addAmount;
+                case 1 -> this.potentialPoints += addAmount;
+                case 2 -> {
+                    this.power += addAmount;
+                    this.potentialPoints += addAmount;
+                }
+            }
+            playerService.sendPlayerUpExp(this.player, type, (int) addAmount);
+            exp -= addAmount;
+        }
+    }
+
+    public void subExp(int type, long exp) {
+        if (power < exp || potentialPoints < 0) return;
+        PlayerService playerService = PlayerService.getInstance();
+        long step = 5_000_000;
+        while (exp > 0) {
+            long subAmount = Math.min(exp, step);
+
+            switch (type) {
+                case 0 -> this.power -= subAmount;
+                case 1 -> this.potentialPoints -= subAmount;
+                case 2 -> {
+                    this.power -= subAmount;
+                    this.potentialPoints -= subAmount;
+                }
+            }
+            playerService.sendPlayerUpExp(this.player, type, (int) -subAmount);
+            exp -= subAmount;
+        }
     }
 
     public void returnTownFromDead() {
@@ -263,6 +290,7 @@ public class PlayerPoints {
 
             long potentiaUse;
             long currentPoint;
+
             switch (type) {
                 case ConstPlayer.UP_POTENTIAL_HP -> {
                     final var currentBaseHp = this.baseHP;
@@ -321,14 +349,18 @@ public class PlayerPoints {
                     currentPoint = currentDamage;
                 }
                 case ConstPlayer.UP_POTENTIAL_DEFENSE -> {
+                    //TODO fix bug
                     final var currentBaseDefense = this.baseDefense;
-                    potentiaUse = 2L * (currentBaseDefense + 5) * 2 / 100000;
+                    potentiaUse = point * (500_000 + currentBaseDefense * 100_000L);
                     currentPoint = currentBaseDefense;
                 }
-
                 case ConstPlayer.UP_POTENTIAL_CRITICAL -> {
                     final var currentBaseCritical = this.baseCriticalChance;
-                    potentiaUse = (long) (50_000_000 * Math.pow(5, point));
+                    if (currentBaseCritical > ConstPlayer.potentialUse.length) {
+                        service.sendHideWaitDialog(player);
+                        return;
+                    }
+                    potentiaUse = ConstPlayer.potentialUse[currentBaseCritical];
                     currentPoint = currentBaseCritical;
                 }
 
@@ -339,6 +371,7 @@ public class PlayerPoints {
                 }
             }
 
+            if (potentiaUse < 0) return;
             if (potentiaUse > 0 && this.isUpgradePotential(type, potentiaUse, currentPoint, point)) {
                 playerService.sendPointForMe(player);
                 this.player.getPlayerTask().checkDoneTaskUpgradedPotential();
@@ -353,18 +386,20 @@ public class PlayerPoints {
             Service.dialogMessage(this.player.getSession(), String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s", Util.numberToString(this.potentialPoints), potentiaUse));
             return false;
         }
+        System.out.println("type: " + type);
 
         switch (type) {
             case ConstPlayer.UP_POTENTIAL_HP -> this.baseHP = (int) (currentPoint + 20L * point);
             case ConstPlayer.UP_POTENTIAL_MP -> this.baseMP = (int) (currentPoint + 20L * point);
             case ConstPlayer.UP_POTENTIAL_DAMAGE -> this.baseDamage = (int) (currentPoint + (long) point);
-            case ConstPlayer.UP_POTENTIAL_DEFENSE -> this.baseDefense += 1;
+            case ConstPlayer.UP_POTENTIAL_DEFENSE -> this.baseDefense += point;
             case ConstPlayer.UP_POTENTIAL_CRITICAL -> this.baseCriticalChance += 1;
             default -> {
                 LogServer.LogWarning("isUpgradePotential: status không tồn tại: " + type);
                 return false;
             }
         }
+        System.out.println("potentiaUse: " + potentiaUse);
 
         this.potentialPoints -= potentiaUse;
         this.calculateStats();
@@ -379,8 +414,54 @@ public class PlayerPoints {
         playerService.sendMpForPlayer(player);
     }
 
-    public int getPotentialPointsAttack() {
-        int exps = 1;
+    public long getPotentialPointsAttack(Monster monster, long damage) {
+        long exps;
+
+        byte level = (byte) CaptionManager.getInstance().getLevel(player);
+        int levelDifference = level - monster.getPoint().getLevel();
+
+        double pDameHit = (double) damage * 100 / monster.getPoint().getMaxHp();
+
+        exps = (long) (pDameHit * monster.getPoint().getMaxExp() / 100);
+
+        if (exps <= 0) exps = 1;
+
+        if (levelDifference >= 0) {
+            for (int i = 0; i < levelDifference; i++) {
+                long giam;
+                if (levelDifference >= 3) {
+                    if (level >= 12) {
+                        giam = 7;
+                    } else if (level >= 13) {
+                        giam = 15;
+                    } else if (level >= 14) {
+                        giam = 35;
+                    } else {
+                        giam = 0;
+                    }
+                    giam += Util.nextInt(26) + 20; // 20 đến 45
+                } else {
+                    giam = Util.nextInt(6) + 10; // 10 đến 15
+                }
+
+                giam = (exps * giam) / 100;
+                if (giam <= 0) giam = 1;
+                exps -= giam;
+            }
+        } else {
+            for (int i = 0; i < -levelDifference; i++) {
+                if (level >= 13) {
+                    exps -= exps * (Util.nextInt(26) + 25) / 100; // 25 đến 50%
+                    continue;
+                }
+
+                long add = (exps * (Util.nextInt(9) + 2)) / 100; // 2 đến 10%
+                if (add <= 0) break;
+                exps += add;
+            }
+        }
+
+        if (exps <= 0) exps = 1;
 
         // check option tang tnsm % o item body
         if (this.percentExpPotentia > 0) {
@@ -393,6 +474,8 @@ public class PlayerPoints {
             LogServer.LogException("Player name " + this.player.getName() + " Exception exps < 1: " + exps);
             exps = 1;
         }
-        return exps;
+        var expAdd = (long) (Util.nextDouble() * (exps * 0.5) + (exps * 0.7));
+        System.out.println("expAdd: " + expAdd);
+        return expAdd;
     }
 }

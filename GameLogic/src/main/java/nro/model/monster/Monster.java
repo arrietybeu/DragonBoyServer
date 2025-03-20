@@ -75,7 +75,7 @@ public class Monster extends LiveObject {
             // tru hp cua monster
             this.point.subHp(damage);
 
-            this.handleCreateExpEntityAttackMob(plAttack);
+            this.handleCreateExpEntityAttackMob(plAttack, damage);
 
             // kiem tra monster chet
             if (this.point.isDead()) {
@@ -162,13 +162,13 @@ public class Monster extends LiveObject {
         return null;
     }
 
-    private void handleCreateExpEntityAttackMob(LiveObject entity) {
+    private void handleCreateExpEntityAttackMob(LiveObject entity, long damage) {
         var ms = System.currentTimeMillis();
         try {
             switch (entity) {
                 case Player player -> {
                     if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
-                    int exp = player.getPlayerPoints().getPotentialPointsAttack();
+                    long exp = player.getPlayerPoints().getPotentialPointsAttack(this, damage);
                     player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
                     player.getPlayerStatus().setLastTimeAddExp(ms);
                 }

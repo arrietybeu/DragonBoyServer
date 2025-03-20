@@ -164,7 +164,7 @@ public class TaskManager implements IManager {
                 return;
             }
         }
-        LogServer.LogWarning("Không tìm thấy phần thưởng cho Task ID " + taskId + ", Task Index " + taskIndex + " và giới tính " + player.getGender());
+//        LogServer.LogWarning("Không tìm thấy phần thưởng cho Task ID " + taskId + ", Task Index " + taskIndex + " và giới tính " + player.getGender());
     }
 
     record ItemTaskReward(int taskId, int taskIndex, int gender, int itemId) {

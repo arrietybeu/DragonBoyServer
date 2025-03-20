@@ -3,7 +3,6 @@ package nro.utils;
 import nro.server.LogServer;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
@@ -80,7 +79,7 @@ public class FileNio {
             byte[] data = new byte[buffer.remaining()];
             buffer.get(data);
             return data;
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogServer.LogException("Lỗi đọc file: " + url + " - " + e.getMessage(), e);
         }
         return null;

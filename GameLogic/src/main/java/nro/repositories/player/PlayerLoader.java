@@ -201,7 +201,7 @@ public class PlayerLoader {
                     stats.setMaxMP(rs.getLong("mp_max"));                // cMPFull
                     stats.setCurrentMp(rs.getLong("mp_current"));        // cMP
 
-                    System.out.println("point current hp: " + stats.getCurrentHP() + " max mp: " + stats.getMaxMP());
+//                    System.out.println("point current hp: " + stats.getCurrentHP() + " max mp: " + stats.getMaxMP());
 
                     // --- Damage
                     stats.setBaseDamage((int) rs.getLong("dame_default")); // cDamGoc
