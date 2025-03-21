@@ -45,6 +45,7 @@ public class PlayerUpdate {
                 this.savePlayerStats(player, connection);
                 this.savePlayerLocation(player, connection);
                 this.savePlayerSkillsShortCut(player, connection);
+                this.savePlayerSkills(player, connection);
                 this.savePlayerTask(player, connection);
                 this.savePlayerMagicTree(player, connection);
                 this.savePlayerInventory(player, connection);
@@ -55,7 +56,7 @@ public class PlayerUpdate {
                 LogServer.DebugLogic("Last time Save Data Player: " + player.getName() + " " + time + " ms");
 
             } catch (SQLException ex) {
-                LogServer.LogException("Lỗi khi lưu dữ liệu Player: " + ex.getMessage());
+                LogServer.LogException("Lỗi khi lưu dữ liệu Player: " + ex.getMessage(), ex);
                 try {
                     connection.rollback();
                     LogServer.LogException("Rollback Transaction: Dữ liệu chưa được lưu.");
@@ -257,7 +258,7 @@ public class PlayerUpdate {
     }
 
     private void savePlayerSkillsShortCut(Player player, Connection connection) throws SQLException {
-        String query = "UPDATE player_skills_shortcut SET slot_1 = ?, slot_2 = ?, slot_3 = ?, " + "slot_4 = ?, slot_5 = ?, slot_6 = ?, slot_7 = ?, slot_8 = ?, slot_9 = ?, slot_10 = ? " + "WHERE player_id = ?";
+        String query = "UPDATE player_skills_shortcut SET slot_1 = ?, slot_2 = ?, slot_3 = ?, " + "slot_4 = ?, slot_5 = ?, slot_6 = ?, slot_7 = ?, slot_8 = ?, slot_9 = ?, slot_10 = ? WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             byte[] skillShortCut = player.getPlayerSkill().getSkillShortCut();
             for (int i = 0; i < 10; i++) {
@@ -265,6 +266,20 @@ public class PlayerUpdate {
             }
             statement.setInt(11, player.getId());
             statement.executeUpdate();
+        }
+    }
+
+    private void savePlayerSkills(Player player, Connection connection) throws SQLException {
+        String query = "UPDATE player_skills SET current_level = ?, last_time_use_skill = ? WHERE player_id = ? AND skill_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (int i = 0; i < player.getPlayerSkill().getSkills().size(); i++) {
+                statement.setInt(1, player.getPlayerSkill().getSkills().get(i).getPoint());
+                statement.setLong(2, player.getPlayerSkill().getSkills().get(i).getLastTimeUseThisSkill());
+                statement.setInt(3, player.getId());
+                statement.setInt(4, player.getPlayerSkill().getSkills().get(i).getTemplate().getId());
+                statement.addBatch();
+            }
+            statement.executeBatch();
         }
     }
 

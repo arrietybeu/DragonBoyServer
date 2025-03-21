@@ -74,7 +74,8 @@ public class PlayerCreator {
     }
 
     private void createPlayerSkills(Connection connection, int playerId, int gender) throws SQLException {
-        String query = "INSERT INTO player_skills (player_id, skill_id, current_level, last_time_use_skill) VALUES (?, ?, ?, ?);";
+        String query = "INSERT INTO player_skills (player_id, skill_id," +
+                " current_level, last_time_use_skill) VALUES (?, ?, ?, ?);";
 
         int[] skills = gender == 0 ? new int[]{0, 1, 6, 9, 10, 20, 22, 19, 24}
                 : gender == 1 ? new int[]{2, 3, 7, 11, 12, 17, 18, 19, 26}

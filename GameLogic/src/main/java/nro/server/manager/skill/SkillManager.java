@@ -136,14 +136,14 @@ public class SkillManager implements IManager {
         }
     }
 
-    public SkillInfo getSkillInfo(short skillId, int gender, int currentLevel) {
+    public SkillInfo getSkillInfoByTemplateId(short skillId, int gender, int currentLevel) {
         try {
             for (NClass nClass : this.nClasses) {
                 if (nClass.classId() == gender) {
                     for (SkillTemplate skillTemplate : nClass.skillTemplates()) {
                         if (skillTemplate.getId() == skillId) {
-                            SkillInfo skillInfo = skillTemplate.getSkill(skillId, currentLevel);
-                            if (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel) {
+                            SkillInfo skillInfo = skillTemplate.getSkillByTemplateId(skillId, currentLevel);
+                            if (skillInfo.getPoint() == currentLevel) {
                                 return skillInfo;
                             }
                         }
@@ -152,6 +152,26 @@ public class SkillManager implements IManager {
             }
         } catch (Exception ex) {
             LogServer.LogException("skillId: " + skillId + " gender: " + gender + " currentLevel: " + currentLevel + "\nmessage: " + ex.getMessage());
+            return null;
+        }
+        return null;
+    }
+
+    public SkillInfo getSkillInfoById(int skillId, int gender, int currentLevel) {
+        try {
+            for (NClass nClass : this.nClasses) {
+                if (nClass.classId() == gender) {
+                    for (SkillTemplate skillTemplate : nClass.skillTemplates()) {
+                        SkillInfo skillInfo = skillTemplate.getSkillById(skillId);
+                        if (skillInfo == null) continue;
+                        if (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel) {
+                            return skillInfo;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("skillId: " + skillId + " gender: " + gender + "\nmessage: " + ex.getMessage(), ex);
             return null;
         }
         return null;

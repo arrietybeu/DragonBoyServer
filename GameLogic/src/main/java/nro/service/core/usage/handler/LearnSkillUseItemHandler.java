@@ -3,6 +3,8 @@ package nro.service.core.usage.handler;
 import nro.consts.ConstItem;
 import nro.consts.ConstUseItem;
 import nro.server.LogServer;
+import nro.server.manager.skill.SkillManager;
+import nro.service.core.player.SkillService;
 import nro.service.core.system.ServerService;
 import nro.service.core.usage.AUseItemHandler;
 import nro.service.core.usage.IUseItemHandler;
@@ -23,39 +25,65 @@ public class LearnSkillUseItemHandler implements IUseItemHandler {
                 return;
             }
 
-
             ServerService serverService = ServerService.getInstance();
             int skillId = this.getSkillIdForItem(item);
-            if (skillId < 0) {
-                serverService.sendChatGlobal(player.getSession(), null, "Sách kỹ năng không hợp lệ!", false);
+            int levelSkill = this.getSkillLevelForItem(item);
+            if (skillId == -1) {
+                serverService.sendChatGlobal(player.getSession(), null, "Không thể học kỹ năng này", false);
                 return;
             }
 
-            SkillInfo currentSkill = player.getPlayerSkill().getSkillById(skillId);
-
-            if (currentSkill == null) {
-                if (this.getSkillLevelForItem(item) == 1) {
-//                    player.getPlayerSkill().learnSkill(skillId, 1); // Học skill level 1
-                    serverService.sendChatGlobal(player.getSession(), null, "Bạn đã học kỹ năng cấp 1!", false);
-                } else {
-                    serverService.sendChatGlobal(player.getSession(), null, "Bạn cần học cấp 1 trước!", false);
-                }
+            SkillInfo skillNew = SkillManager.getInstance().getSkillInfoById(skillId, player.getGender(), levelSkill);
+            if (skillNew == null) {
+                serverService.sendChatGlobal(player.getSession(), null, "Không thể học kỹ năng này", false);
                 return;
             }
 
-            int currentLevel = currentSkill.getPoint();
-            int nextLevel = this.getSkillLevelForItem(item);
+            int skillLevel = player.getPlayerSkill().getSkillLevel(skillNew.getTemplate().getId());
 
-            if (nextLevel == currentLevel + 1) {
-                if (currentLevel >= currentSkill.getTemplate().getMaxPoint()) {
-                    serverService.sendChatGlobal(player.getSession(), null, "Bạn đã đạt cấp tối đa của kỹ năng này!", false);
+            if (skillLevel >= skillNew.getPoint()) {
+                serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đã nâng %s cấp %d", skillNew.getTemplate().getName(), skillNew.getPoint()), false);
+                return;
+            }
+
+            if ((skillNew.getPoint() != 1 && skillLevel == -1) || (skillLevel != -1 && skillLevel + 1 != skillNew.getPoint())) {
+                if (skillLevel == -1) {
+                    serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn cần học %s", skillNew.getTemplate().getName()), false);
                     return;
                 }
-//                player.getPlayerSkill().learnSkill(skillId, nextLevel);
-                serverService.sendChatGlobal(player.getSession(), null, "Bạn đã nâng cấp kỹ năng lên cấp " + nextLevel + "!", false);
-            } else {
-                serverService.sendChatGlobal(player.getSession(), null, "Bạn cần học cấp " + (currentLevel + 1) + " trước!", false);
+                serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn cần nâng %s cấp %d trước", skillNew.getTemplate().getName(), skillLevel + 1), false);
+                return;
             }
+
+            if (skillLevel == -1) {
+                player.getPlayerSkill().addSkill(skillNew);
+                serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đã học %s cấp %d", skillNew.getTemplate().getName(), levelSkill), false);
+                SkillService.getInstance().sendLoadSkillInfoAll(player, player.getPlayerSkill().getSkills());
+            } else {
+                for (int i = 0; i < player.getPlayerSkill().getSkills().size(); i++) {
+                    SkillInfo skillInfo = player.getPlayerSkill().getSkills().get(i);
+                    if (skillInfo.getTemplate().getId() == skillNew.getTemplate().getId()) {
+
+                        // set thời gian sửa dụng skill của kỹ năng cũ cho kỹ năng mới
+                        skillNew.setLastTimeUseThisSkill(skillInfo.getLastTimeUseThisSkill());
+
+                        // set skill mới vào vị trí cũ
+                        player.getPlayerSkill().getSkills().set(i, skillNew);
+                        serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đã nâng %s cấp %d", skillNew.getTemplate().getName(), levelSkill), false);
+                        break;
+                    }
+                }
+            }
+
+            // loại bỏ sách học skill sau khi học hoặc nâng cấp level xong
+            player.getPlayerInventory().subQuantityItemsBag(item, 1);
+
+            // tính toán lại thông số của nhân vật
+            player.getPlayerPoints().calculateStats();
+
+            // send info skill to client
+            UseItemService.getInstance().sendPlayerLearnSkill(player, skillNew, -1);
+
         } catch (Exception ex) {
             LogServer.LogException("LearnSkillUseItemHandler: " + ex.getMessage(), ex);
         }

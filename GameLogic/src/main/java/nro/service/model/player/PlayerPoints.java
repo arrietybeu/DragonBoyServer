@@ -178,7 +178,7 @@ public class PlayerPoints {
 
     private long getDameSkill() {
         try {
-            SkillInfo skillSelect = this.player.getPlayerSkill().skillSelect;
+            SkillInfo skillSelect = this.player.getPlayerSkill().getSkillSelect();
             return switch (skillSelect.getTemplate().getId()) {
                 case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> skillSelect.getDamage();
                 default -> 0;

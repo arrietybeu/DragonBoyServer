@@ -2,6 +2,7 @@ package nro.service.model.item;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import nro.service.model.template.item.ItemOption;
 import nro.service.model.template.item.ItemTemplate;
 import org.json.simple.JSONArray;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @SuppressWarnings("ALL")
 public class Item implements AutoCloseable {
 

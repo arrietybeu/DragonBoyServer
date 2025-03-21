@@ -24,7 +24,7 @@ public class PlayerSkill {
 
     private boolean isMonkey;
     private byte[] skillShortCut;
-    public SkillInfo skillSelect;
+    private SkillInfo skillSelect;
 
     public PlayerSkill(Player player) {
         this.player = player;
@@ -121,6 +121,15 @@ public class PlayerSkill {
 
     public void removeSkill(SkillInfo skill) {
         this.skills.remove(skill);
+    }
+
+    public int getSkillLevel(int skillTemplateId) {
+        for (SkillInfo skill : this.skills) {
+            if (skill.getTemplate().getId() == skillTemplateId) {
+                return skill.getPoint();
+            }
+        }
+        return -1;
     }
 
 }

@@ -2,11 +2,13 @@ package nro.service.model.template.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import nro.service.model.template.skill.SkillOptionTemplate;
 import nro.service.model.template.skill.SkillTemplate;
 
 @Getter
 @Setter
+@ToString
 public class SkillInfo {
 
     // current skill id

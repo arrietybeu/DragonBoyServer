@@ -9,6 +9,7 @@ import nro.server.LogServer;
 import nro.server.network.Message;
 
 import java.io.DataOutputStream;
+import java.util.List;
 
 public class SkillService {
 
@@ -23,7 +24,21 @@ public class SkillService {
             writer.writeByte(mobId);
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception e) {
-            LogServer.LogException("SkillService: sendPlayerAttackMonster: " + e.getMessage());
+            LogServer.LogException("SkillService: sendPlayerAttackMonster: " + e.getMessage(), e);
+        }
+    }
+
+    public void sendLoadSkillInfoAll(Player player, List<SkillInfo> skillsInfo) {
+        try (Message message = new Message(ConstsCmd.SUB_COMMAND)) {
+            DataOutputStream writer = message.writer();
+            writer.writeByte(ConstMsgSubCommand.LOAD_MY_SKILLS);
+            writer.writeByte(skillsInfo.size());
+            for (SkillInfo skillInfo : skillsInfo) {
+                writer.writeShort(skillInfo.getSkillId());
+            }
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("SkillService: sendLoadSkillInfoAll: " + ex.getMessage(), ex);
         }
     }
 
