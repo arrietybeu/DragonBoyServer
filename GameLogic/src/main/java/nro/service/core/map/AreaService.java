@@ -29,8 +29,14 @@ public class AreaService {
         try {
             Map<Integer, LiveObject> objects = player.getArea().getAllPlayerInZone();
             for (LiveObject obj : objects.values()) {
-                if (obj instanceof Player plInZone && plInZone != player) {
-                    this.addPlayer(player, plInZone);
+                switch (obj) {
+                    case Player plInZone -> {
+                        if (plInZone != player) {
+                            this.addPlayer(player, plInZone);
+                        }
+                    }
+                    default -> {
+                    }
                 }
             }
             this.sendLiveObjectInfoToOthers(player);
@@ -43,8 +49,14 @@ public class AreaService {
         try {
             Map<Integer, LiveObject> players = player.getArea().getAllPlayerInZone();
             for (LiveObject obj : players.values()) {
-                if (obj instanceof Player plInZone && plInZone != player) {
-                    this.addPlayer(plInZone, player);
+                switch (obj) {
+                    case Player plInZone -> {
+                        if (plInZone != player) {
+                            this.addPlayer(plInZone, player);
+                        }
+                    }
+                    default -> {
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -52,61 +64,67 @@ public class AreaService {
         }
     }
 
-    private void addPlayer(Player isMe, Player playerInfo) {
-        try (Message message = new Message(-5)) {
-            DataOutputStream data = message.writer();
-            PlayerFashion playerFashion = playerInfo.getPlayerFashion();
-            data.writeInt(playerInfo.getId());
-            data.writeInt(playerInfo.getClan() != null ? playerInfo.getClan().getId() : -1);
-            if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
-                data.writeByte(playerInfo.getPlayerStatus().getTeleport());
-                data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
-                data.writeShort(playerFashion.getMount());
-            }
+    private void addPlayer(Player isMe, LiveObject entityInfo) {
+        switch (entityInfo) {
+            case Player playerInfo -> {
+                try (Message message = new Message(-5)) {
+                    DataOutputStream data = message.writer();
+                    PlayerFashion playerFashion = playerInfo.getPlayerFashion();
+                    data.writeInt(playerInfo.getId());
+                    data.writeInt(playerInfo.getClan() != null ? playerInfo.getClan().getId() : -1);
+                    if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
+                        data.writeByte(playerInfo.getPlayerStatus().getTeleport());
+                        data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
+                        data.writeShort(playerFashion.getMount());
+                    }
 
-            data.writeByte(playerFashion.getFlagPk());
-            data.writeByte(playerInfo.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
-            data.writeShort(playerInfo.getAura());
-            data.writeByte(playerInfo.getEffSetItem());
-            data.writeShort(playerInfo.getIdHat());
-            isMe.sendMessage(message);
-        } catch (Exception ex) {
-            LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
+                    data.writeByte(playerFashion.getFlagPk());
+                    data.writeByte(playerInfo.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
+                    data.writeShort(playerInfo.getAura());
+                    data.writeByte(playerInfo.getEffSetItem());
+                    data.writeShort(playerInfo.getIdHat());
+                    isMe.sendMessage(message);
+                } catch (Exception ex) {
+                    LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
+                }
+            }
+            default -> {
+            }
         }
     }
 
-    private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
-        byte level = (byte) CaptionManager.getInstance().getLevel(player);
+    private boolean writePlayerInfo(LiveObject entity, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
+        byte level = (byte) CaptionManager.getInstance().getLevel(entity);
         data.writeByte(level);
         data.writeBoolean(false);// write isInvisiblez
-        data.writeByte(player.getTypePk()); // write status Pk
-        data.writeByte(player.getGender());
-        data.writeByte(player.getGender());
+        data.writeByte(entity.getTypePk()); // write status Pk
+        data.writeByte(entity.getGender());
+        data.writeByte(entity.getGender());
         data.writeShort(playerFashion.getHead());
-        data.writeUTF(player.getName());
-        data.writeLong(player.getPlayerPoints().getCurrentHP());
-        data.writeLong(player.getPlayerPoints().getMaxHP());
+        data.writeUTF(entity.getName());
+        data.writeLong(entity.getPlayerPoints().getCurrentHP());
+        data.writeLong(entity.getPlayerPoints().getMaxHP());
         data.writeShort(playerFashion.getBody());
         data.writeShort(playerFashion.getLeg());
         data.writeShort(playerFashion.getFlagBag());
         data.writeByte(0);
-        data.writeShort(player.getX());
-        data.writeShort(player.getY());
-        data.writeShort(player.getPlayerPoints().getEff5BuffHp());
-        data.writeShort(player.getPlayerPoints().getEff5BuffMp());
+        data.writeShort(entity.getX());
+        data.writeShort(entity.getY());
+        data.writeShort(entity.getPlayerPoints().getEff5BuffHp());
+        data.writeShort(entity.getPlayerPoints().getEff5BuffMp());
         data.writeByte(0);
         return true;
     }
 
-    public void playerMove(Player player) {
+    public void playerMove(LiveObject entity) {
         try (Message message = new Message(-7)) {
             DataOutputStream data = message.writer();
-            data.writeInt(player.getId());
-            data.writeShort(player.getX());
-            data.writeShort(player.getY());
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            data.writeInt(entity.getId());
+            data.writeShort(entity.getX());
+            data.writeShort(entity.getY());
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + player.getId(), ex);
+            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + entity.getId(), ex);
         }
     }
 
@@ -155,11 +173,16 @@ public class AreaService {
         this.transferPlayer(player, newArea, player.getX(), player.getY());
     }
 
-    public void gotoMap(Player player, GameMap goMap, int goX, int goY) {
-        Area newArea = goMap.getArea();
-        if (this.transferPlayer(player, newArea, (short) goX, (short) goY)) {
-            player.getPlayerTask().checkDoneTaskGoMap();
-            DropItemMap.dropMissionItems(player);
+    public void gotoMap(LiveObject object, GameMap goMap, int goX, int goY) {
+        switch (object) {
+            case Player player -> {
+                Area newArea = goMap.getArea();
+                if (this.transferPlayer(player, newArea, (short) goX, (short) goY)) {
+                    player.getPlayerTask().checkDoneTaskGoMap();
+                    DropItemMap.dropMissionItems(player);
+                }
+            }
+            default -> LogServer.LogException("");
         }
     }
 
@@ -196,25 +219,25 @@ public class AreaService {
         }
     }
 
-    public void playerExitArea(Player player) {
+    public void playerExitArea(LiveObject entity) {
         try {
-            Area area = player.getArea();
-            if (area.getAllPlayerInZone().containsKey(player.getId())) {
-                this.sendTeleport(player);
-                this.sendRemovePlayerExitArea(player);
-                area.removePlayer(player);
+            Area area = entity.getArea();
+            if (area.getAllPlayerInZone().containsKey(entity.getId())) {
+                this.sendTeleport(entity);
+                this.sendRemovePlayerExitArea(entity);
+                area.removePlayer(entity);
             }
         } catch (Exception ex) {
             LogServer.LogException("playerExitArea: " + ex.getMessage(), ex);
         }
     }
 
-    private void sendRemovePlayerExitArea(Player player) {
+    private void sendRemovePlayerExitArea(LiveObject entity) {
         try (Message message = new Message(-6)) {
-            message.writer().writeInt(player.getId());
-            player.getArea().sendMessageToPlayersInArea(message, player);
+            message.writer().writeInt(entity.getId());
+            entity.getArea().sendMessageToPlayersInArea(message, entity);
         } catch (Exception ex) {
-            LogServer.LogException("sendRemovePlayerExitArea: " + ex.getMessage() + " player:  " + player.getId(), ex);
+            LogServer.LogException("sendRemovePlayerExitArea: " + ex.getMessage() + " player:  " + entity.getId(), ex);
         }
     }
 
@@ -264,14 +287,14 @@ public class AreaService {
         }
     }
 
-    public void sendTeleport(Player player) {
+    public void sendTeleport(LiveObject entity) {
         try (Message message = new Message(-65)) {
             DataOutputStream data = message.writer();
-            data.writeInt(player.getId());
-            data.writeByte(player.getPlayerStatus().getTeleport());
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            data.writeInt(entity.getId());
+            data.writeByte(entity.getPlayerStatus().getTeleport());
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("sendTeleport: " + ex.getMessage() + " player:  " + player.getId(), ex);
+            LogServer.LogException("sendTeleport: " + ex.getMessage() + " player:  " + entity.getId(), ex);
         }
     }
 

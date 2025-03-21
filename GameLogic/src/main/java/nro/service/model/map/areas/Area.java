@@ -2,6 +2,7 @@ package nro.service.model.map.areas;
 
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
+import nro.service.core.map.AreaService;
 import nro.service.model.LiveObject;
 import nro.service.model.map.GameMap;
 import nro.service.model.item.ItemMap;
@@ -34,7 +35,7 @@ public class Area {
     private final GameMap map;
     private Map<Integer, Monster> monsters;
 
-    private final Map<Integer, LiveObject> players;
+    private final Map<Integer, LiveObject> entitys;
 
     private final Map<Integer, ItemMap> itemsMap;
     private final List<Npc> npcList;
@@ -43,15 +44,15 @@ public class Area {
         this.map = map;
         this.id = zoneId;
         this.maxPlayers = maxPlayers;
-        this.players = new HashMap<>();
+        this.entitys = new HashMap<>();
         this.itemsMap = new HashMap<>();
         this.npcList = new ArrayList<>();
     }
 
-    private void updatePlayer() {
+    private void updateEntity() {
         this.lock.readLock().lock();
         try {
-            for (LiveObject player : this.players.values()) {
+            for (LiveObject player : this.entitys.values()) {
                 player.update();
             }
         } catch (Exception ex) {
@@ -113,7 +114,7 @@ public class Area {
 
     public void update() {
         try {
-            this.updatePlayer();
+            this.updateEntity();
             this.updateMonster();
             this.updateItemMap();
             this.updateNpc();
@@ -122,35 +123,40 @@ public class Area {
         }
     }
 
-    public void addPlayer(Player player) {
-        this.lock.writeLock().lock();
-        try {
-            if (this.players.size() >= this.maxPlayers) {
-                LogServer.LogException("Zone is full: " + this.id);
-                return;
-            }
+    public void addPlayer(LiveObject entity) {
+        switch (entity) {
+            case Player player -> {
+                this.lock.writeLock().lock();
+                try {
+                    if (this.entitys.size() >= this.maxPlayers) {
+                        LogServer.LogException("Zone is full: " + this.id);
+                        return;
+                    }
 
-            if (this.players.containsKey(player.getId())) {
-                LogServer.LogException("Player already in zone: " + player.getId());
-                SessionManager.getInstance().kickSession(player.getSession());
-                return;
+                    if (this.entitys.containsKey(player.getId())) {
+                        AreaService.getInstance().playerExitArea(player);
+                    }
+
+                    this.entitys.put(player.getId(), player);
+                } catch (Exception ex) {
+                    LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
+                } finally {
+                    this.lock.writeLock().unlock();
+                }
             }
-            this.players.put(player.getId(), player);
-        } catch (Exception ex) {
-            LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
-        } finally {
-            this.lock.writeLock().unlock();
+            default -> {
+                LogServer.LogException("addPlayer: Invalid entity type: " + entity.getTypeObject());
+            }
         }
     }
 
-    public void removePlayer(Player player) {
+    public void removePlayer(LiveObject entity) {
         this.lock.writeLock().lock();
         try {
-            this.players.remove(player.getId());
+            this.entitys.remove(entity.getId());
         } catch (Exception ex) {
             LogServer.LogException(
-                    "removePlayer: " + ex.getMessage() + " playerID: " + player.getId() + " zone id: " + this.id, ex);
-            ex.printStackTrace();
+                    "removePlayer: " + ex.getMessage() + " playerID: " + entity.getId() + " zone id: " + this.id, ex);
         } finally {
             this.lock.writeLock().unlock();
         }
@@ -159,7 +165,7 @@ public class Area {
     public Player getPlayer(int id) {
         this.lock.readLock().lock();
         try {
-            LiveObject obj = this.players.get(id);
+            LiveObject obj = this.entitys.get(id);
             return (obj instanceof Player player && obj.getTypeObject() == ConstTypeObject.TYPE_PLAYER) ? player : null;
         } finally {
             this.lock.readLock().unlock();
@@ -168,7 +174,7 @@ public class Area {
 
     public Collection<Player> getPlayersByType(int typeObject) {
         List<Player> result = new ArrayList<>();
-        for (LiveObject obj : this.players.values()) {
+        for (LiveObject obj : this.entitys.values()) {
             if (obj.getTypeObject() == typeObject && obj instanceof Player player) {
                 result.add(player);
             }
@@ -180,22 +186,19 @@ public class Area {
     public Map<Integer, LiveObject> getAllPlayerInZone() {
         this.lock.readLock().lock();
         try {
-            if (this.map.isMapOffline()) return Collections.emptyMap();
-            return Collections.unmodifiableMap(this.players);
+            return Collections.unmodifiableMap(this.entitys);
         } finally {
             this.lock.readLock().unlock();
         }
     }
 
-
-    public void sendMessageToPlayersInArea(Message message, Player exclude) {
+    public void sendMessageToPlayersInArea(Message message, LiveObject exclude) {
         if (message == null)
             return;
         this.lock.readLock().lock();
         try {
             this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(player -> {
                 if (exclude == null || player != exclude) {
-                    if (map.isMapOffline()) return;
                     try {
                         player.sendMessage(message);
                     } catch (Exception e) {

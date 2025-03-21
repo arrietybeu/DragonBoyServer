@@ -1,6 +1,8 @@
 package nro.service.model.map;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import nro.consts.ConstMap;
 import nro.consts.ConstTypeObject;
 import nro.service.model.map.areas.Area;
@@ -15,7 +17,8 @@ import nro.server.manager.MapManager;
 
 import java.util.*;
 
-@Data
+@Getter
+@Setter
 public class GameMap implements Runnable {
 
     private static final Set<Integer> TILE_TOP_SET = new HashSet<>(Set.of(2, 3, 5, 7)); // vi tri co the dung duoc

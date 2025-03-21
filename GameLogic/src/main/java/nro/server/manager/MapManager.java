@@ -123,6 +123,8 @@ public class MapManager implements IManager {
                 TileMap tileMap = tileMaps.get(id);
                 List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(connection, id);
 
+                if (type == ConstMap.MAP_OFFLINE) maxPlayer = 1;
+
                 GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems,
                         effects, waypoints, tileMap, npcs);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));

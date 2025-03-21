@@ -1,6 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
+import nro.service.model.LiveObject;
 import nro.service.model.player.Player;
 import nro.service.model.template.CaptionTemplate;
 import nro.server.network.Message;
@@ -119,9 +120,16 @@ public class CaptionManager implements IManager {
         }
     }
 
-    public int getLevel(Player player) {
-        long power = player.getPlayerPoints().getPower();
-        return CAPTIONS.stream().sorted(Comparator.comparingLong(CaptionTemplate::getExp).reversed()).filter(caption -> power >= caption.getExp()).findFirst().map(CAPTIONS::indexOf).orElse(0);
+    public int getLevel(LiveObject entity) {
+        switch (entity) {
+            case Player player -> {
+                long power = player.getPlayerPoints().getPower();
+                return CAPTIONS.stream().sorted(Comparator.comparingLong(CaptionTemplate::getExp).reversed()).filter(caption -> power >= caption.getExp()).findFirst().map(CAPTIONS::indexOf).orElse(0);
+            }
+            default -> {
+                return -1;
+            }
+        }
     }
 
     public String getCaptionsByPower(long power, byte gender) {
