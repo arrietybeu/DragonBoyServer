@@ -6,7 +6,7 @@ import nro.service.model.player.Player;
 public class Yajiro extends Bot {
 
     @Override
-    public long handleAttack(Player player, long damage) {
+    public long handleAttack(Player player, int type, long damage) {
         return 0;
     }
 

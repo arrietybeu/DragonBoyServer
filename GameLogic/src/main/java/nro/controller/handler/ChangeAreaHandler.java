@@ -20,6 +20,7 @@ public class ChangeAreaHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
         if (player == null) return;
+        if (player.getPlayerPoints().isDead()) return;
         try {
             var areaId = message.reader().readByte();
             List<Area> areaList = player.getArea().getMap().getAreas();

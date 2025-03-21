@@ -2,6 +2,7 @@ package nro.service.model.map.areas;
 
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
+import nro.service.model.LiveObject;
 import nro.service.model.map.GameMap;
 import nro.service.model.item.ItemMap;
 import nro.service.model.monster.Monster;
@@ -32,7 +33,9 @@ public class Area {
     private final AtomicInteger idItemMap = new AtomicInteger(0);
     private final GameMap map;
     private Map<Integer, Monster> monsters;
-    private final Map<Integer, Player> players;
+
+    private final Map<Integer, LiveObject> players;
+
     private final Map<Integer, ItemMap> itemsMap;
     private final List<Npc> npcList;
 
@@ -48,7 +51,7 @@ public class Area {
     private void updatePlayer() {
         this.lock.readLock().lock();
         try {
-            for (Player player : this.players.values()) {
+            for (LiveObject player : this.players.values()) {
                 player.update();
             }
         } catch (Exception ex) {
@@ -156,25 +159,34 @@ public class Area {
     public Player getPlayer(int id) {
         this.lock.readLock().lock();
         try {
-            Player player = this.players.get(id);
-            return (player != null && player.getTypeObject() == ConstTypeObject.TYPE_PLAYER) ? player : null;
+            LiveObject obj = this.players.get(id);
+            return (obj instanceof Player player && obj.getTypeObject() == ConstTypeObject.TYPE_PLAYER) ? player : null;
         } finally {
             this.lock.readLock().unlock();
         }
     }
 
     public Collection<Player> getPlayersByType(int typeObject) {
-        return this.players.values().stream().filter(player -> player.getTypeObject() == typeObject).toList();
+        List<Player> result = new ArrayList<>();
+        for (LiveObject obj : this.players.values()) {
+            if (obj.getTypeObject() == typeObject && obj instanceof Player player) {
+                result.add(player);
+            }
+        }
+        return result;
     }
 
-    public Map<Integer, Player> getAllPlayerInZone() {
+
+    public Map<Integer, LiveObject> getAllPlayerInZone() {
         this.lock.readLock().lock();
         try {
+            if (this.map.isMapOffline()) return Collections.emptyMap();
             return Collections.unmodifiableMap(this.players);
         } finally {
             this.lock.readLock().unlock();
         }
     }
+
 
     public void sendMessageToPlayersInArea(Message message, Player exclude) {
         if (message == null)
@@ -183,6 +195,7 @@ public class Area {
         try {
             this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(player -> {
                 if (exclude == null || player != exclude) {
+                    if (map.isMapOffline()) return;
                     try {
                         player.sendMessage(message);
                     } catch (Exception e) {
@@ -281,6 +294,15 @@ public class Area {
             return this.itemsMap.get(itemMapId);
         } catch (Exception ex) {
             return null;
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
+    public Map<Integer, Monster> getMonsters() {
+        this.lock.readLock().lock();
+        try {
+            return this.monsters;
         } finally {
             this.lock.readLock().unlock();
         }

@@ -1,10 +1,10 @@
-package nro.service.model.skill;
+package nro.service.model.template.skill;
 
 import nro.service.model.template.entity.SkillPaintInfo;
 
 import java.util.List;
 
-public class SkillPaint {
+public class SkillPaintTemplate {
 
     public int id;
     public int effectHappenOnMob;

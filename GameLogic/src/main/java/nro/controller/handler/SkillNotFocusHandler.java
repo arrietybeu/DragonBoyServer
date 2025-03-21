@@ -26,7 +26,7 @@ public class SkillNotFocusHandler implements IMessageProcessor {
                 short y = message.reader().readShort();
                 // useSkill.useSkillNotForcusNew(player, skillId, cx, cy, dir, x, y);
             } else {
-                // useSkill.useSkillNotForcus(player, status);
+                player.getPlayerSkill().useSkill(player);
             }
         } catch (Exception ex) {
             LogServer.LogException("SkillNotFocusHandler: " + ex.getMessage());

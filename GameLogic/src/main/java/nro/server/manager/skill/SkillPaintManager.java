@@ -3,10 +3,10 @@ package nro.server.manager.skill;
 import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
+import nro.service.model.template.skill.SkillPaintTemplate;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.model.template.entity.SkillPaintInfo;
 import nro.server.manager.IManager;
-import nro.service.model.skill.SkillPaint;
 import nro.server.LogServer;
 
 import java.io.DataOutputStream;
@@ -22,7 +22,7 @@ public class SkillPaintManager implements IManager {
 
     @Getter
     private static final SkillPaintManager instance = new SkillPaintManager();
-    private List<SkillPaint> skillPaintList;
+    private List<SkillPaintTemplate> skillPaintTemplateList;
     private byte[] skillPaintsData;
 
     @Override
@@ -44,21 +44,21 @@ public class SkillPaintManager implements IManager {
         String querySkillStand = "SELECT * FROM skill_stand WHERE id_skill_paint = ?";
         String querySkillFly = "SELECT * FROM skill_fly WHERE id_skill_paint = ?";
 
-        this.skillPaintList = new ArrayList<>();
+        this.skillPaintTemplateList = new ArrayList<>();
         try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement psSkillPaint = connection.prepareStatement(querySkillPaint)) {
 
             ResultSet rsSkillPaint = psSkillPaint.executeQuery();
 
             while (rsSkillPaint.next()) {
-                SkillPaint skillPaint = new SkillPaint();
-                skillPaint.id = rsSkillPaint.getInt("id");
-                skillPaint.effectHappenOnMob = rsSkillPaint.getInt("effect_happen_on_mob");
-                skillPaint.numEff = rsSkillPaint.getInt("num_eff");
+                SkillPaintTemplate skillPaintTemplate = new SkillPaintTemplate();
+                skillPaintTemplate.id = rsSkillPaint.getInt("id");
+                skillPaintTemplate.effectHappenOnMob = rsSkillPaint.getInt("effect_happen_on_mob");
+                skillPaintTemplate.numEff = rsSkillPaint.getInt("num_eff");
 
                 // Load skillStand
                 try (PreparedStatement psSkillStand = connection.prepareStatement(querySkillStand)) {
-                    psSkillStand.setInt(1, skillPaint.id);
+                    psSkillStand.setInt(1, skillPaintTemplate.id);
                     ResultSet rsSkillStand = psSkillStand.executeQuery();
                     List<SkillPaintInfo> skillStandList = new ArrayList<>();
                     while (rsSkillStand.next()) {
@@ -78,12 +78,12 @@ public class SkillPaintManager implements IManager {
                         skillInfoPaint.ady = rsSkillStand.getInt("ady");
                         skillStandList.add(skillInfoPaint);
                     }
-                    skillPaint.skillStand = skillStandList;
+                    skillPaintTemplate.skillStand = skillStandList;
                 }
 
                 // Load skillFly
                 try (PreparedStatement psSkillFly = connection.prepareStatement(querySkillFly)) {
-                    psSkillFly.setInt(1, skillPaint.id);
+                    psSkillFly.setInt(1, skillPaintTemplate.id);
                     ResultSet rsSkillFly = psSkillFly.executeQuery();
                     List<SkillPaintInfo> skillFlyList = new ArrayList<>();
                     while (rsSkillFly.next()) {
@@ -103,13 +103,13 @@ public class SkillPaintManager implements IManager {
                         skillInfoPaint.ady = rsSkillFly.getInt("ady");
                         skillFlyList.add(skillInfoPaint);
                     }
-                    skillPaint.skillfly = skillFlyList;
+                    skillPaintTemplate.skillfly = skillFlyList;
                 }
 
-                this.skillPaintList.add(skillPaint);
+                this.skillPaintTemplateList.add(skillPaintTemplate);
             }
             this.setData();
-//            LogServer.LogInit("SkillPaintManager initialized size: " + this.skillPaintList.size() + " data size: " + this.skillPaintsData.length);
+//            LogServer.LogInit("SkillPaintManager initialized size: " + this.skillPaintTemplateList.size() + " data size: " + this.skillPaintsData.length);
         } catch (SQLException e) {
 //            e.printStackTrace();
             LogServer.LogException("Error loading skill paint: " + e.getMessage());
@@ -119,16 +119,16 @@ public class SkillPaintManager implements IManager {
     private void setData() {
         try (Message ms = new Message()) {
             try (DataOutputStream dataOutputStream = ms.writer()) {
-                dataOutputStream.writeShort(skillPaintList.size());
-//                System.out.println("skillPaintList.size(): " + skillPaintList.size());
-                for (SkillPaint skillPaint : skillPaintList) {
-                    dataOutputStream.writeShort(skillPaint.id);
-                    dataOutputStream.writeShort(skillPaint.effectHappenOnMob);
-                    dataOutputStream.writeByte(skillPaint.numEff);
+                dataOutputStream.writeShort(skillPaintTemplateList.size());
+//                System.out.println("skillPaintTemplateList.size(): " + skillPaintTemplateList.size());
+                for (SkillPaintTemplate skillPaintTemplate : skillPaintTemplateList) {
+                    dataOutputStream.writeShort(skillPaintTemplate.id);
+                    dataOutputStream.writeShort(skillPaintTemplate.effectHappenOnMob);
+                    dataOutputStream.writeByte(skillPaintTemplate.numEff);
 
-                    if (skillPaint.skillStand != null) {
-                        dataOutputStream.writeByte(skillPaint.skillStand.size());
-                        for (SkillPaintInfo skillInfo : skillPaint.skillStand) {
+                    if (skillPaintTemplate.skillStand != null) {
+                        dataOutputStream.writeByte(skillPaintTemplate.skillStand.size());
+                        for (SkillPaintInfo skillInfo : skillPaintTemplate.skillStand) {
                             dataOutputStream.writeByte(skillInfo.status);
                             dataOutputStream.writeShort(skillInfo.effS0Id);
                             dataOutputStream.writeShort(skillInfo.e0dx);
@@ -146,9 +146,9 @@ public class SkillPaintManager implements IManager {
                     } else {
                         dataOutputStream.writeByte(0);
                     }
-                    if (skillPaint.skillfly != null) {
-                        dataOutputStream.writeByte(skillPaint.skillfly.size());// 14
-                        for (SkillPaintInfo skillInfo : skillPaint.skillfly) {
+                    if (skillPaintTemplate.skillfly != null) {
+                        dataOutputStream.writeByte(skillPaintTemplate.skillfly.size());// 14
+                        for (SkillPaintInfo skillInfo : skillPaintTemplate.skillfly) {
                             dataOutputStream.writeByte(skillInfo.status);// 13
                             dataOutputStream.writeShort(skillInfo.effS0Id);// 12
                             dataOutputStream.writeShort(skillInfo.e0dx);

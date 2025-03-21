@@ -3,6 +3,7 @@ package nro.service.core.map;
 import lombok.Getter;
 import nro.consts.ConstTypeObject;
 import nro.service.core.system.ServerService;
+import nro.service.model.LiveObject;
 import nro.service.model.map.GameMap;
 import nro.service.model.map.Waypoint;
 import nro.service.model.map.areas.Area;
@@ -24,25 +25,25 @@ public class AreaService {
     @Getter
     public static final AreaService instance = new AreaService();
 
-    public void sendInfoAllPlayerInArea(Player player) {
+    public void sendInfoAllLiveObjectsTo(Player player) {
         try {
-            Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
-            for (Player plInZone : players.values()) {
-                if (plInZone != player) {
+            Map<Integer, LiveObject> objects = player.getArea().getAllPlayerInZone();
+            for (LiveObject obj : objects.values()) {
+                if (obj instanceof Player plInZone && plInZone != player) {
                     this.addPlayer(player, plInZone);
                 }
             }
-            this.sendPlayerInfoToAllInArea(player);
+            this.sendLiveObjectInfoToOthers(player);
         } catch (Exception ex) {
             LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage(), ex);
         }
     }
 
-    private void sendPlayerInfoToAllInArea(Player player) {
+    private void sendLiveObjectInfoToOthers(Player player) {
         try {
-            Map<Integer, Player> players = player.getArea().getAllPlayerInZone();
-            for (Player plInZone : players.values()) {
-                if (plInZone != player) {
+            Map<Integer, LiveObject> players = player.getArea().getAllPlayerInZone();
+            for (LiveObject obj : players.values()) {
+                if (obj instanceof Player plInZone && plInZone != player) {
                     this.addPlayer(plInZone, player);
                 }
             }
@@ -71,12 +72,10 @@ public class AreaService {
             isMe.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
-    private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion)
-            throws Exception {
+    private boolean writePlayerInfo(Player player, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
         byte level = (byte) CaptionManager.getInstance().getLevel(player);
         data.writeByte(level);
         data.writeBoolean(false);// write isInvisiblez
@@ -107,8 +106,7 @@ public class AreaService {
             data.writeShort(player.getY());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
-            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  "
-                    + player.getId(), ex);
+            LogServer.LogException("playerMove: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }
     }
 
@@ -188,8 +186,8 @@ public class AreaService {
             player.setX(x);
             player.setY(y);
             this.sendMessageChangerMap(player);
-            this.sendInfoAllPlayerInArea(player);
-            this.sendPlayerInfoToAllInArea(player);
+            this.sendInfoAllLiveObjectsTo(player);
+            this.sendLiveObjectInfoToOthers(player);
             player.getPlayerStatus().setTeleport(0);
             return true;
         } catch (Exception ex) {
@@ -231,8 +229,7 @@ public class AreaService {
                 safeY = 336;
             } else {
                 safeX = (short) (waypoint.getMinX() - 40);
-                if (safeX < 0)
-                    safeX = (short) (waypoint.getMinX() + 50);
+                if (safeX < 0) safeX = (short) (waypoint.getMinX() + 50);
                 System.out.println("safeX: " + safeX + " safeY: " + safeY);
             }
 
@@ -288,8 +285,7 @@ public class AreaService {
 
         Area newArea = newMap.getArea();
         if (newArea == null) {
-            serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId,
-                    false);
+            serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
             return;
         }
         player.getPlayerStatus().setTeleport(typeTele);

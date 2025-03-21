@@ -38,7 +38,6 @@ public class SkillTemplate {
 
     public SkillInfo getSkillById(int skillId) {
         for (SkillInfo skillInfo : this.skills) {
-            System.out.println("skillInfo = " + skills.size() + " " + skillInfo.getTemplate().name);
             if (skillInfo.getSkillId() == skillId) {
                 return skillInfo;
             }

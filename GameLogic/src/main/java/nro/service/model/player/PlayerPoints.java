@@ -107,6 +107,9 @@ public class PlayerPoints {
 
     private void resetBaseStats() {
         this.currentDamage = this.baseDamage;
+        this.currentHP = this.baseHP;
+        this.currentMP = this.baseMP;
+
         this.maxHP = this.baseHP;
         this.maxMP = this.baseMP;
         this.totalDefense = this.baseDefense;
@@ -415,67 +418,83 @@ public class PlayerPoints {
     }
 
     public long getPotentialPointsAttack(Monster monster, long damage) {
-        long exps;
+        long exp;
 
-        byte level = (byte) CaptionManager.getInstance().getLevel(player);
-        int levelDifference = level - monster.getPoint().getLevel();
+        byte levelPlayer = (byte) CaptionManager.getInstance().getLevel(player);
+        int levelDiff = levelPlayer - monster.getPoint().getLevel();
+
+        if (monster.getTemplateId() == 0) {
+            if (Util.nextInt(100) > 65) {
+                return -1;
+            }
+            return 1;
+        }
 
         double pDameHit = (double) damage * 100 / monster.getPoint().getMaxHp();
 
-        exps = (long) (pDameHit * monster.getPoint().getMaxExp() / 100);
+        exp = (long) (pDameHit * monster.getPoint().getMaxHp() / 100);
 
-        if (exps <= 0) exps = 1;
+        if (exp <= 0) exp = 1;
 
-        if (levelDifference >= 0) {
-            for (int i = 0; i < levelDifference; i++) {
-                long giam;
-                if (levelDifference >= 3) {
-                    if (level >= 12) {
-                        giam = 7;
-                    } else if (level >= 13) {
-                        giam = 15;
-                    } else if (level >= 14) {
-                        giam = 35;
+        if (levelDiff >= 0) {
+            for (int i = 0; i < levelDiff; i++) {
+                long sub;
+                if (levelDiff >= 3) {
+                    if (levelPlayer >= 14) {
+                        sub = 35;
+                    } else if (levelPlayer == 13) {
+                        sub = 15;
+                    } else if (levelPlayer == 12) {
+                        sub = 7;
                     } else {
-                        giam = 0;
+                        sub = 0;
                     }
-                    giam += Util.nextInt(26) + 20; // 20 đến 45
+                    sub += Util.nextInt(26) + 20; // 20 -> 45
                 } else {
-                    giam = Util.nextInt(6) + 10; // 10 đến 15
+                    sub = Util.nextInt(6) + 10; // 10 -> 15
                 }
 
-                giam = (exps * giam) / 100;
-                if (giam <= 0) giam = 1;
-                exps -= giam;
+                long subExp = (exp * sub) / 100;
+                if (subExp <= 0) subExp = 1;
+
+                exp -= subExp;
             }
         } else {
-            for (int i = 0; i < -levelDifference; i++) {
-                if (level >= 13) {
-                    exps -= exps * (Util.nextInt(26) + 25) / 100; // 25 đến 50%
+            for (int i = 0; i < -levelDiff; i++) {
+                if (levelPlayer >= 13) {
+                    exp -= exp * (Util.nextInt(26) + 25) / 100; // 25 -> 50%
                     continue;
                 }
 
-                long add = (exps * (Util.nextInt(9) + 2)) / 100; // 2 đến 10%
+                long add = (exp * (Util.nextInt(9) + 2)) / 100; // 2 -> 10%
                 if (add <= 0) break;
-                exps += add;
+
+                exp += add;
             }
         }
 
-        if (exps <= 0) exps = 1;
+        if (exp <= 0) exp = 1;
 
-        // check option tang tnsm % o item body
+//        if (monster.getPoint().isSieuQuai()) {
+//            exp *= 2;
+//        }
+
+        // Bonus nếu có từ item
         if (this.percentExpPotentia > 0) {
-            exps += (exps * this.percentExpPotentia) / 100;
+            exp += (exp * this.percentExpPotentia) / 100;
         }
 
-        exps = exps * ConfigServer.EXP_RATE;
+        exp *= ConfigServer.EXP_RATE;
 
-        if (exps < 1) {
-            LogServer.LogException("Player name " + this.player.getName() + " Exception exps < 1: " + exps);
-            exps = 1;
+        if (exp < 1) {
+            LogServer.LogException("Player name " + this.player.getName() + " Exception exp < 1: " + exp);
+            exp = 1;
         }
-        var expAdd = (long) (Util.nextDouble() * (exps * 0.5) + (exps * 0.7));
-        System.out.println("expAdd: " + expAdd);
-        return expAdd;
+
+        long finalExp = Util.nextInt((int) (exp * 70 / 100), (int) (exp * 120 / 100));
+
+        System.out.println("exp: " + exp + " finalExp: " + finalExp);
+        return finalExp;
     }
+
 }

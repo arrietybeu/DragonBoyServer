@@ -14,6 +14,7 @@ public class ChangeOnSkillHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
         if (player == null) return;
+        if (player.getPlayerPoints().isDead()) return;
         try {
             for (int i = 0; i < player.getPlayerSkill().getSkillShortCut().length; i++) {
                 int skillId = message.reader().readByte();

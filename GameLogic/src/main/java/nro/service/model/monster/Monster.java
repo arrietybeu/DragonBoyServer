@@ -60,17 +60,27 @@ public class Monster extends LiveObject {
     }
 
     @Override
-    public long handleAttack(final Player plAttack, long damage) {
+    public long handleAttack(final Player plAttack, int type, long damage) {
         this.lock.writeLock().lock();
         try {
             if (this.point.isDead()) return 0;
 
             this.attackers.add(plAttack);
 
-            // kiem tra dame
-            if (this.templateId == 0 && damage >= 10) damage = 10;
+            // Kiem tra dame
+            if (type != 1) {
+                // mộc nhân thì giới hạn dame là 10
+                if (this.templateId == 0 && damage >= 10) damage = 10;
+
+                // nếu dame lớn hơn máu của quái thì khi trừ máu của quái, quái sẽ còn 1 máu tránh sốc dame lớn
+                if (this.point.getHp() == this.point.getMaxHp() && damage >= this.point.getHp()) {
+                    damage = this.point.getHp() - 1;
+                }
+            }
 
             SkillService.getInstance().sendPlayerAttackMonster(plAttack, this.getId());
+
+            if (damage >= this.point.getHp()) damage = this.point.getHp();
 
             // tru hp cua monster
             this.point.subHp(damage);
@@ -144,7 +154,7 @@ public class Monster extends LiveObject {
     private long constDame(Player player) {
         // TODO bù trừ dame
         long dame = this.point.getDameGoc();
-        return player.handleAttack(player, dame);
+        return player.handleAttack(player, 0, dame);
     }
 
     private boolean isMonsterAttack() {

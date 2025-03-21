@@ -1,6 +1,7 @@
 package nro.service.model.map;
 
 import lombok.Data;
+import nro.consts.ConstMap;
 import nro.consts.ConstTypeObject;
 import nro.service.model.map.areas.Area;
 import nro.service.model.map.decorates.BackgroudEffect;
@@ -175,6 +176,10 @@ public class GameMap implements Runnable {
 
     public boolean isMapHouseByGender(int gender) {
         return gender == 0 && this.id == 21 || gender == 1 && this.id == 22 || gender == 2 && this.id == 23;
+    }
+
+    public boolean isMapOffline() {
+        return this.typeMap == ConstMap.MAP_OFFLINE;
     }
 
     @Override

@@ -15,7 +15,7 @@ public class Boss extends LiveObject {
     }
 
     @Override
-    public long handleAttack(Player player, long damage) {
+    public long handleAttack(Player player, int type, long damage) {
         return 0;
     }
 

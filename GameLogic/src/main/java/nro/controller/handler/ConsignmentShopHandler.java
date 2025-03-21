@@ -19,6 +19,7 @@ public class ConsignmentShopHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
         if (player == null) return;
+        if (player.getPlayerPoints().isDead()) return;
         try {
             var action = message.reader().readByte();
             switch (action) {

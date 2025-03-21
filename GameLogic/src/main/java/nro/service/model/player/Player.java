@@ -24,17 +24,12 @@ import java.time.temporal.ChronoUnit;
 public class Player extends LiveObject {
 
     private final PlayerCurrencies playerCurrencies;
-    private final PlayerPoints playerPoints;
     private final PlayerTask playerTask;
-    private final PlayerFashion playerFashion;
-    private final PlayerSkill playerSkill;
     private final PlayerInventory playerInventory;
-    private final PlayerFusion playerFusion;
     private final PlayerMagicTree playerMagicTree;
-    private final PlayerStatus playerStatus;
+
     private final Session session;
 
-    private Area area;
     private Clan clan;
     private Disciple disciple;
     private PetFollow petFollow;
@@ -131,16 +126,19 @@ public class Player extends LiveObject {
     }
 
     @Override
-    public long handleAttack(Player player, long damage) {
-        System.out.println("Player{" + this.getId() + "} attack Player{" + player.getId() + "} with damage: " + damage);
-        if (this.playerPoints.isDead())
+    public long handleAttack(Player player, int type, long damage) {
+        if (this.playerPoints.isDead()) {
+            this.playerPoints.setDie();
             return 0;
+        }
 
         this.playerPoints.subCurrentHp(damage);
 
         if (this.playerPoints.isDead()) {
             this.playerPoints.setDie();
         }
+
+        System.out.println("hp: " + this.playerPoints.getCurrentHP());
         return damage;
     }
 

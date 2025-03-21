@@ -435,12 +435,8 @@ public class MapManager implements IManager {
     }
 
     public GameMap findMapById(int id) {
-        if (this.gameMaps.isEmpty()) {
-            return null;
-        }
-        if (id < 0 || id >= this.gameMaps.size()) {
-            return null;
-        }
+        if (this.gameMaps.isEmpty()) return null;
+        if (id < 0 || id >= this.gameMaps.size()) return null;
         return this.gameMaps.get(id);
     }
 

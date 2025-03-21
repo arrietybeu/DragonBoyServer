@@ -15,10 +15,10 @@ public class ChangeMapHandler implements IMessageProcessor {
         try {
             Player player = session.getPlayer();
             if (player == null) return;
+            if (player.getPlayerPoints().isDead()) return;
             AreaService.getInstance().playerChangerMapByWayPoint(player);
         } catch (Exception ex) {
-            LogServer.LogException("ChangerMapHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("ChangerMapHandler: " + ex.getMessage(), ex);
         }
     }
 }

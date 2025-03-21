@@ -5,13 +5,17 @@ import lombok.Setter;
 import lombok.ToString;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
+import nro.service.core.player.SkillService;
 import nro.service.model.LiveObject;
 import nro.service.model.monster.Monster;
 import nro.service.model.template.entity.SkillInfo;
 import nro.server.LogServer;
+import nro.utils.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -43,7 +47,7 @@ public class PlayerSkill {
         }
     }
 
-    private void useSkill(LiveObject target) {
+    public void useSkill(LiveObject target) {
         try {
             switch (this.skillSelect.getTemplate().getType()) {
                 case ConstSkill.SKILL_FORCUS -> {
@@ -52,6 +56,7 @@ public class PlayerSkill {
                 case ConstSkill.SKILL_SUPPORT -> {
                 }
                 case ConstSkill.SKILL_NOT_FORCUS -> {
+                    this.useSkillNotForcus();
                 }
             }
         } catch (Exception ex) {
@@ -67,11 +72,27 @@ public class PlayerSkill {
                     }
                     case Monster monster -> {
                         long dame = this.player.getPlayerPoints().getDameAttack();
-                        monster.handleAttack(this.player, dame);
+                        monster.handleAttack(this.player, 0, dame);
                     }
                     default ->
                             LogServer.LogException("useSkillTarget player name:" + player.getName() + " error: target not monster");
                 }
+            }
+        }
+    }
+
+    private void useSkillNotForcus() {
+        switch (this.skillSelect.getTemplate().getId()) {
+            case ConstSkill.TU_PHAT_NO -> {
+                SkillService.getInstance().sendUseSkillNotFocus(this.player, 7, skillSelect.getSkillId(), 3000);
+                Util.delay(3, () -> {
+                    Map<Integer, Monster> monstersCopy = new HashMap<>(this.player.getArea().getMonsters());
+                    for (Monster monster : monstersCopy.values()) {
+                        long dame = this.player.getPlayerPoints().getMaxHP();
+                        monster.handleAttack(this.player, 1, dame);
+                        player.getPlayerPoints().setDie();
+                    }
+                });
             }
         }
     }

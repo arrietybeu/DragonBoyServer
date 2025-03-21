@@ -9,10 +9,25 @@ public class ConstSkill {
     public static final byte SKILL_NOT_FORCUS = 3;
     public static final byte SKILL_SPECIAL = 4;
 
+    // type skill not focus
+    public static final byte NORMAL = 0;
+    public static final byte START_CHARGE = 1;
+    public static final byte CANCEL_CHARGE = 3;
+    public static final byte USE_AFTER_CHARGE = 4;
+    public static final byte STOP_CHARGE = 5;
+    public static final byte AUTO_USE = 6;
+    public static final byte SPECIAL_CHARGE_START = 7;
+    public static final byte AUTO_USE_OTHER = 8;
+
+    public static final byte AREA_MELEE = 20;
+    public static final byte AREA_RANGED = 21;
+
+
     // skill id
     public static final byte DRAGON = 0;
     public static final byte DEMON = 2;
     public static final byte GALICK = 4;
+    public static final byte TU_PHAT_NO = 14;
 
 
     private final byte ATT_STAND = 0;

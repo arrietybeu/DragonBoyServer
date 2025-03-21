@@ -15,6 +15,7 @@ public class UseItemHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
         if (player == null) return;
+        if (player.getPlayerPoints().isDead()) return;
         try {
             var type = message.reader().readByte();
             var where = message.reader().readByte();

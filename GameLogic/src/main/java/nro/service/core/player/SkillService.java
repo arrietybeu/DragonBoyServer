@@ -42,5 +42,18 @@ public class SkillService {
         }
     }
 
+    public void sendUseSkillNotFocus(Player player, int type, int skillId, int second) {
+        try (Message message = new Message(ConstsCmd.SKILL_NOT_FOCUS)) {
+            DataOutputStream writer = message.writer();
+            writer.writeByte(type);
+            writer.writeInt(player.getId());
+            writer.writeShort(skillId);
+            writer.writeShort(second);
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception e) {
+            LogServer.LogException("SkillService: sendUseSkillNotFocus: " + e.getMessage(), e);
+        }
+    }
+
 
 }

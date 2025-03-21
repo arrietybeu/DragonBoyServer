@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import nro.service.model.template.skill.NClassTemplate;
 import nro.service.model.template.skill.SkillOptionTemplate;
 import nro.server.config.ConfigDB;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.model.template.entity.SkillInfo;
 import nro.server.manager.IManager;
-import nro.service.model.skill.NClass;
 import nro.service.model.template.skill.SkillTemplate;
 import nro.server.LogServer;
 
@@ -21,7 +21,7 @@ public class SkillManager implements IManager {
 
     @Getter
     private static SkillManager instance = new SkillManager();
-    private final List<NClass> nClasses = new ArrayList<>();
+    private final List<NClassTemplate> nClassTemplates = new ArrayList<>();
     private final List<SkillOptionTemplate> skillOptions = new ArrayList<>();
 
     @Override
@@ -46,10 +46,10 @@ public class SkillManager implements IManager {
                 while (resultSet.next()) {
                     var nClassId = resultSet.getInt("class_id");
                     var name = resultSet.getString("name");
-                    NClass nClass = new NClass(nClassId, name, this.loadSkillTemplate(connection, nClassId));
-                    this.nClasses.add(nClass);
+                    NClassTemplate nClassTemplate = new NClassTemplate(nClassId, name, this.loadSkillTemplate(connection, nClassId));
+                    this.nClassTemplates.add(nClassTemplate);
                 }
-//                LogServer.LogInit("Skill Class initialized size: " + this.nClasses.size());
+//                LogServer.LogInit("Skill Class initialized size: " + this.nClassTemplates.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadSkill: " + e.getMessage());
@@ -138,9 +138,9 @@ public class SkillManager implements IManager {
 
     public SkillInfo getSkillInfoByTemplateId(short skillId, int gender, int currentLevel) {
         try {
-            for (NClass nClass : this.nClasses) {
-                if (nClass.classId() == gender) {
-                    for (SkillTemplate skillTemplate : nClass.skillTemplates()) {
+            for (NClassTemplate nClassTemplate : this.nClassTemplates) {
+                if (nClassTemplate.classId() == gender) {
+                    for (SkillTemplate skillTemplate : nClassTemplate.skillTemplates()) {
                         if (skillTemplate.getId() == skillId) {
                             SkillInfo skillInfo = skillTemplate.getSkillByTemplateId(skillId, currentLevel);
                             if (skillInfo.getPoint() == currentLevel) {
@@ -159,9 +159,9 @@ public class SkillManager implements IManager {
 
     public SkillInfo getSkillInfoById(int skillId, int gender, int currentLevel) {
         try {
-            for (NClass nClass : this.nClasses) {
-                if (nClass.classId() == gender) {
-                    for (SkillTemplate skillTemplate : nClass.skillTemplates()) {
+            for (NClassTemplate nClassTemplate : this.nClassTemplates) {
+                if (nClassTemplate.classId() == gender) {
+                    for (SkillTemplate skillTemplate : nClassTemplate.skillTemplates()) {
                         SkillInfo skillInfo = skillTemplate.getSkillById(skillId);
                         if (skillInfo == null) continue;
                         if (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel) {

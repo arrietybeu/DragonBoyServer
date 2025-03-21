@@ -3,7 +3,8 @@ package nro.service.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nro.service.model.player.Player;
+import nro.service.model.map.areas.Area;
+import nro.service.model.player.*;
 
 @Getter
 @Setter
@@ -21,6 +22,13 @@ public abstract class LiveObject {
 
     private short x;
     private short y;
+
+    protected PlayerPoints playerPoints;
+    protected PlayerSkill playerSkill;
+    protected PlayerStatus playerStatus;
+    protected PlayerFusion playerFusion;
+    protected PlayerFashion playerFashion;
+    protected Area area;
 
     private static final short[][] BIRD_FRAMES = {
             {281, 361, 351},
@@ -62,7 +70,7 @@ public abstract class LiveObject {
 
     public abstract void update();
 
-    public abstract long handleAttack(Player player, long damage);
+    public abstract long handleAttack(Player player, int type, long damage);
 
     public abstract void dispose();
 
