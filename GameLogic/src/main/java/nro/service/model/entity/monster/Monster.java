@@ -92,7 +92,7 @@ public class Monster extends LiveObject {
                 this.setDie(plAttack, damage);
                 plAttack.getPlayerTask().checkDoneTaskKKillMonster(this);
             } else {
-                boolean isHutHp = plAttack.getPlayerPoints().getTlHutHpMob() > 0;
+                boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
                 MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
             }
             return damage;
@@ -123,7 +123,7 @@ public class Monster extends LiveObject {
             this.status.setStatus((byte) 0);
             this.info.setLastTimeDie(System.currentTimeMillis());
             final List<ItemMap> itemMaps = DropItemMap.getInstance().dropItemMapForMonster(plAttack, this);
-            boolean isCritical = plAttack.getPlayerPoints().getTotalCriticalChance() == 1;
+            boolean isCritical = plAttack.getPoints().getTotalCriticalChance() == 1;
             MonsterService.getInstance().sendMonsterDie(this, damage, isCritical, itemMaps);
         } catch (RuntimeException ex) {
             LogServer.LogException("Monster setDie: " + ex.getMessage(), ex);
@@ -164,7 +164,7 @@ public class Monster extends LiveObject {
     private Player playerCanAttack() {
         for (Player player : this.area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
             if (player == null) continue;
-            if (player.getPlayerPoints().isDead()) continue;
+            if (player.getPoints().isDead()) continue;
             if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 80) {
                 return player;
             }
@@ -178,8 +178,8 @@ public class Monster extends LiveObject {
             switch (entity) {
                 case Player player -> {
                     if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
-                    long exp = player.getPlayerPoints().getPotentialPointsAttack(this, damage);
-                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                    long exp = player.getPoints().getPotentialPointsAttack(this, damage);
+                    player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
                     player.getPlayerStatus().setLastTimeAddExp(ms);
                 }
                 case Disciple disciple -> {

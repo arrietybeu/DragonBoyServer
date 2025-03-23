@@ -39,7 +39,7 @@ public class PlayerPoints {
     // chi so hien tai
     private long currentHP, currentMP, currentDamage;
 
-    // chi so max
+    // chi so
     private long maxHP, maxMP;
     private short maxStamina;
 
@@ -181,7 +181,7 @@ public class PlayerPoints {
 
     private long getDameSkill() {
         try {
-            SkillInfo skillSelect = this.player.getPlayerSkill().getSkillSelect();
+            SkillInfo skillSelect = this.player.getSkills().getSkillSelect();
             return switch (skillSelect.getTemplate().getId()) {
                 case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> skillSelect.getDamage();
                 default -> 0;
@@ -384,7 +384,7 @@ public class PlayerPoints {
         }
     }
 
-    private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point) throws Exception {
+    private boolean isUpgradePotential(int type, long potentiaUse, final long currentPoint, int point) {
         if (this.potentialPoints < potentiaUse) {
             ServerService.dialogMessage(this.player.getSession(), String.format("Bạn chỉ có %s điểm tiềm năng. Hãy luyện tập thêm để có đủ %s", Util.numberToString(this.potentialPoints), potentiaUse));
             return false;

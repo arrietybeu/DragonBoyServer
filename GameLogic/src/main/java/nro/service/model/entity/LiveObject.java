@@ -3,8 +3,8 @@ package nro.service.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nro.service.model.entity.player.*;
 import nro.service.model.map.areas.Area;
-import nro.service.model.player.*;
 
 @Getter
 @Setter
@@ -23,8 +23,8 @@ public abstract class LiveObject {
     private short x;
     private short y;
 
-    protected PlayerPoints playerPoints;
-    protected PlayerSkill playerSkill;
+    protected PlayerPoints points;
+    protected PlayerSkill skills;
     protected PlayerStatus playerStatus;
     protected PlayerFusion playerFusion;
     protected PlayerFashion playerFashion;

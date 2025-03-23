@@ -71,7 +71,7 @@ public class PlayerSkill {
                     case Player plTarget -> {
                     }
                     case Monster monster -> {
-                        long dame = this.player.getPlayerPoints().getDameAttack();
+                        long dame = this.player.getPoints().getDameAttack();
                         monster.handleAttack(this.player, 0, dame);
                     }
                     default ->
@@ -88,9 +88,9 @@ public class PlayerSkill {
                 Util.delay(3, () -> {
                     Map<Integer, Monster> monstersCopy = new HashMap<>(this.player.getArea().getMonsters());
                     for (Monster monster : monstersCopy.values()) {
-                        long dame = this.player.getPlayerPoints().getMaxHP();
+                        long dame = this.player.getPoints().getMaxHP();
                         monster.handleAttack(this.player, 1, dame);
-                        player.getPlayerPoints().setDie();
+                        player.getPoints().setDie();
                     }
                 });
             }

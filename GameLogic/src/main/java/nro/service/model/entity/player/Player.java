@@ -5,7 +5,6 @@ import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.service.model.LiveObject;
 import nro.service.model.clan.Clan;
-import nro.service.model.map.areas.Area;
 import nro.service.model.pet.PetFollow;
 import nro.service.model.discpile.Disciple;
 import nro.server.LogServer;
@@ -23,12 +22,12 @@ import java.time.temporal.ChronoUnit;
 @Setter
 public class Player extends LiveObject {
 
+    private final Session session;
     private final PlayerCurrencies playerCurrencies;
     private final PlayerTask playerTask;
     private final PlayerInventory playerInventory;
     private final PlayerMagicTree playerMagicTree;
-
-    private final Session session;
+    private final PlayerStatus playerStatus;
 
     private Clan clan;
     private Disciple disciple;
@@ -44,10 +43,10 @@ public class Player extends LiveObject {
         this.setTypeObject(ConstTypeObject.TYPE_PLAYER);
         this.session = session;
         this.playerCurrencies = new PlayerCurrencies(this);
-        this.playerPoints = new PlayerPoints(this);
+        this.points = new PlayerPoints(this);
         this.playerTask = new PlayerTask(this);
         this.playerFashion = new PlayerFashion(this);
-        this.playerSkill = new PlayerSkill(this);
+        this.skills = new PlayerSkill(this);
         this.playerInventory = new PlayerInventory(this);
         this.playerFusion = new PlayerFusion(this);
         this.playerMagicTree = new PlayerMagicTree(this);
@@ -127,18 +126,18 @@ public class Player extends LiveObject {
 
     @Override
     public long handleAttack(Player player, int type, long damage) {
-        if (this.playerPoints.isDead()) {
-            this.playerPoints.setDie();
+        if (this.points.isDead()) {
+            this.points.setDie();
             return 0;
         }
 
-        this.playerPoints.subCurrentHp(damage);
+        this.points.subCurrentHp(damage);
 
-        if (this.playerPoints.isDead()) {
-            this.playerPoints.setDie();
+        if (this.points.isDead()) {
+            this.points.setDie();
         }
 
-        System.out.println("hp: " + this.playerPoints.getCurrentHP());
+        System.out.println("hp: " + this.points.getCurrentHP());
         return damage;
     }
 
@@ -158,8 +157,8 @@ public class Player extends LiveObject {
     @Override
     public String toString() {
         return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerPoints="
-                + playerPoints + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill="
-                + playerSkill + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion
+                + points + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill="
+                + skills + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion
                 + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple
                 + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
     }

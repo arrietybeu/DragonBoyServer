@@ -99,7 +99,7 @@ public class PlayerTask {
                             + "Con có thể sửa dụng đậu thần khi hết HP hoặc KI, bằng cách click vào nút có hình trái tim\n"
                             + "Nhanh lên, ta đói lắm rồi!";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 3000);
+                    player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 3000);
                 }
             }
         } catch (Exception ex) {
@@ -122,7 +122,7 @@ public class PlayerTask {
                             + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n"
                             + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh", mapName);
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    player.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 10_000);
+                    player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 10_000);
                     Item duiGa = player.getPlayerInventory().findItemInBag(ConstItem.DUI_GA);
                     if (duiGa != null && duiGa.getQuantity() >= 10) {
                         player.getPlayerInventory().subQuantityItemsBag(duiGa, duiGa.getQuantity());
