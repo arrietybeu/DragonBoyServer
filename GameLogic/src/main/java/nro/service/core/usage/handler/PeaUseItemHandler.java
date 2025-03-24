@@ -57,7 +57,12 @@ public class PeaUseItemHandler implements IUseItemHandler {
             long newHP = currentHP + hpKiHoiPhuc;
             long newMP = currentMp + hpKiHoiPhuc;
 
-            if (currentMp < points.getMaxMP()) {
+            if (currentHP < points.getMaxHP() && currentMp < points.getMaxMP()) {
+                points.setCurrentHp(newHP);
+                points.setCurrentMp(newMP);
+                playerService.sendMpForPlayer(player);
+                playerService.sendHpForPlayer(player);
+            } else if (currentMp < points.getMaxMP()) {
                 points.setCurrentMp(newMP);
                 playerService.sendMpForPlayer(player);
             } else {

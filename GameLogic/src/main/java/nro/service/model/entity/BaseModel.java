@@ -26,7 +26,6 @@ public abstract class BaseModel {
 
     protected Points points;
     protected Skills skills;
-
     protected Fusion fusion;
     protected Fashion fashion;
     protected Area area;
