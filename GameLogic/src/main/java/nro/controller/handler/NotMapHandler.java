@@ -1,6 +1,6 @@
 package nro.controller.handler;
 
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
@@ -12,7 +12,7 @@ import nro.service.core.map.MapService;
 import nro.service.core.player.PlayerService;
 import nro.service.core.system.ResourceService;
 import nro.service.core.system.ServerService;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 @APacketHandler(-28)
 public class NotMapHandler implements IMessageProcessor {

@@ -6,7 +6,7 @@ import nro.server.config.ConfigServer;
 import nro.service.model.npc.NpcFactory;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.model.template.NpcTemplate;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

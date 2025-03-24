@@ -3,7 +3,7 @@ package nro.controller;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.consts.ConstsCmd;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.system.ServerService;
 
 /**

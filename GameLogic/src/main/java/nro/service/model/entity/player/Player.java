@@ -1,13 +1,13 @@
-package nro.service.model.player;
+package nro.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
-import nro.service.model.LiveObject;
+import nro.service.model.entity.*;
 import nro.service.model.clan.Clan;
-import nro.service.model.pet.PetFollow;
-import nro.service.model.discpile.Disciple;
-import nro.server.LogServer;
+import nro.service.model.entity.pet.PetFollow;
+import nro.service.model.entity.discpile.Disciple;
+import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
@@ -20,7 +20,7 @@ import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
-public class Player extends LiveObject {
+public class Player extends BaseModel {
 
     private final Session session;
     private final PlayerCurrencies playerCurrencies;
@@ -43,14 +43,14 @@ public class Player extends LiveObject {
         this.setTypeObject(ConstTypeObject.TYPE_PLAYER);
         this.session = session;
         this.playerCurrencies = new PlayerCurrencies(this);
-        this.points = new PlayerPoints(this);
         this.playerTask = new PlayerTask(this);
-        this.playerFashion = new PlayerFashion(this);
-        this.skills = new PlayerSkill(this);
         this.playerInventory = new PlayerInventory(this);
-        this.playerFusion = new PlayerFusion(this);
         this.playerMagicTree = new PlayerMagicTree(this);
         this.playerStatus = new PlayerStatus(this);
+        this.points = new Points(this);
+        this.fashion = new Fashion(this);
+        this.skills = new Skills(this);
+        this.fusion = new Fusion(this);
         this.createAdministrator();
     }
 
@@ -77,7 +77,6 @@ public class Player extends LiveObject {
             switch (action) {
                 case 0 -> itemService.sendShowListFlag(this);
                 case 1 -> {
-
                     if (index != 0 && lastChangeTime + 60000 > currentTime) {
                         long remainingTime = (lastChangeTime + 60000 - currentTime) / 1000;
                         ServerService.getInstance().sendChatGlobal(this.getSession(), null,
@@ -96,7 +95,7 @@ public class Player extends LiveObject {
                         this.getPlayerStatus().setLastTimeChangeFlag(currentTime);
                     }
 
-                    this.playerFashion.setFlagPk((byte) index);
+                    this.fashion.setFlagPk((byte) index);
                     itemService.sendChangeFlag(this, index);
                     itemService.sendImageFlag(this, index, ItemManager.getInstance().findFlagId(index).icon());
                 }
@@ -157,8 +156,8 @@ public class Player extends LiveObject {
     @Override
     public String toString() {
         return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerPoints="
-                + points + ", playerTask=" + playerTask + ", playerFashion=" + playerFashion + ", playerSkill="
-                + skills + ", playerInventory=" + playerInventory + ", playerFusion=" + playerFusion
+                + points + ", playerTask=" + playerTask + ", fashion=" + fashion + ", playerSkill="
+                + skills + ", playerInventory=" + playerInventory + ", fusion=" + fusion
                 + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple
                 + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
     }

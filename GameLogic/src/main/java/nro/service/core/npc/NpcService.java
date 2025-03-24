@@ -4,12 +4,12 @@ import lombok.Getter;
 import nro.service.core.system.ServerService;
 import nro.service.model.npc.Npc;
 import nro.service.model.npc.NpcFactory;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerMagicTree;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerMagicTree;
 import nro.service.model.template.MagicTreeTemplate;
 import nro.server.manager.MagicTreeManager;
 import nro.server.network.Message;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 import java.util.List;

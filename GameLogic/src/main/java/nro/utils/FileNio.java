@@ -1,6 +1,6 @@
 package nro.utils;
 
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.File;
 import java.nio.ByteBuffer;

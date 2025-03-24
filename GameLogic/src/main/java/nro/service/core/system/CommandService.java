@@ -10,8 +10,8 @@ import nro.service.repositories.player.PlayerCreator;
 import nro.server.config.ConfigDB;
 import nro.server.manager.*;
 import nro.server.manager.resources.PartManager;
-import nro.server.Maintenance;
-import nro.server.LogServer;
+import nro.server.system.Maintenance;
+import nro.server.system.LogServer;
 import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SpeacialSkillManager;
 

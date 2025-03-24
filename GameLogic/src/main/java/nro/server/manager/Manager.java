@@ -4,8 +4,8 @@
  */
 package nro.server.manager;
 
-import nro.server.MainServer;
-import nro.server.LogServer;
+import nro.server.ServerManager;
+import nro.server.system.LogServer;
 
 /**
  * @author Arriety
@@ -35,7 +35,7 @@ public class Manager {
             ManagerRegistry.initAll();
         } catch (Exception e) {
             LogServer.LogException("Error loadDataBase: " + e.getMessage(), e);
-            MainServer.getInstance().shutdown();
+            ServerManager.getInstance().shutdown();
         } finally {
             System.gc();
         }
@@ -47,7 +47,7 @@ public class Manager {
         } catch (Exception e) {
             LogServer.LogException("Error Clear All Data Manager: " + e.getMessage(), e);
             System.exit(0);
-            MainServer.getInstance().shutdown();
+            ServerManager.getInstance().shutdown();
         } finally {
             System.gc();
         }

@@ -14,11 +14,11 @@ import nro.service.model.item.Item;
 import nro.service.model.item.ItemMap;
 import nro.service.model.map.GameMap;
 import nro.service.model.map.areas.Area;
-import nro.service.model.monster.Monster;
-import nro.service.model.player.Player;
+import nro.service.model.entity.monster.Monster;
+import nro.service.model.entity.player.Player;
 import nro.server.manager.*;
 import nro.server.network.Message;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.item.ItemFactory;
 import nro.service.core.item.ItemService;
 import nro.service.core.player.PlayerService;
@@ -88,21 +88,21 @@ public class ChatService {
             }
             if (text.startsWith("hp ")) {
                 long hp = this.getNumber(text);
-                playerChat.getPlayerPoints().setCurrentHp(hp);
-                playerChat.getPlayerPoints().setCurrentMp(hp);
+                playerChat.getPoints().setCurrentHp(hp);
+                playerChat.getPoints().setCurrentMp(hp);
                 PlayerService.getInstance().sendCurrencyHpMp(playerChat);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Set HP: " + hp, false);
                 return;
             }
             if (text.startsWith("tn ")) {
                 long exp = this.getNumber(text);
-                playerChat.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                playerChat.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "SET EXP: " + exp, false);
                 return;
             }
             if (text.startsWith("gt ")) {
                 long exp = this.getNumber(text);
-                playerChat.getPlayerPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                playerChat.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "SET EXP: " + exp, false);
                 return;
             }
@@ -158,7 +158,7 @@ public class ChatService {
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Damage không hợp lệ: " + text, false);
                     return;
                 }
-                playerChat.getPlayerPoints().setBaseDamage(damage);
+                playerChat.getPoints().setBaseDamage(damage);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Set Damage: " + damage, false);
                 return;
             }

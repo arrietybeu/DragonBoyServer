@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import nro.consts.ConstsCmd;
 import nro.server.config.ConfigServer;
 import nro.server.manager.SessionManager;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 /**
  * @author Arriety

@@ -3,8 +3,8 @@ package nro.service.core.usage;
 import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstsCmd;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 import nro.service.model.template.entity.SkillInfo;
 

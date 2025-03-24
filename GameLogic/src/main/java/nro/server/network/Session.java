@@ -13,13 +13,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import nro.controller.Controller;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.service.model.template.entity.ClientInfo;
 import nro.service.model.template.entity.SessionInfo;
 import nro.service.model.template.entity.UserInfo;
 import nro.server.manager.SessionManager;
 import nro.server.manager.UserManager;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 /**
  * @author {@code Arriety}

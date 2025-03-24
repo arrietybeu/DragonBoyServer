@@ -1,4 +1,4 @@
-package nro.service.model.pet;
+package nro.service.model.entity.pet;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -6,9 +6,9 @@ import nro.consts.ConstUseItem;
 import nro.service.core.item.ItemFactory;
 import nro.service.core.system.ServerService;
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerInventory;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerInventory;
+import nro.server.system.LogServer;
 import nro.service.core.npc.NpcService;
 
 import java.util.List;

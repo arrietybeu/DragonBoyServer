@@ -2,8 +2,8 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.service.core.system.ServerService;
@@ -23,9 +23,9 @@ public class PlayerReviveHandler implements IMessageProcessor {
         }
         try {
             if (player.getPlayerCurrencies().subCurrency(1)) {
-                if (player.getPlayerPoints().isDead()) {
+                if (player.getPoints().isDead()) {
                     player.getPlayerStatus().setLastTimeLive(time);
-                    player.getPlayerPoints().setLive();
+                    player.getPoints().setLive();
                 }
             }
         } catch (Exception ex) {

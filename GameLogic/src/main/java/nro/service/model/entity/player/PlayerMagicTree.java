@@ -1,9 +1,9 @@
-package nro.service.model.player;
+package nro.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.service.model.item.Item;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.manager.MagicTreeManager;
 import nro.service.core.system.ServerService;
 import nro.service.core.item.ItemFactory;

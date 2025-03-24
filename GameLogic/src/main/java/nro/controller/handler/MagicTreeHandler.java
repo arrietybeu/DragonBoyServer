@@ -1,7 +1,7 @@
 package nro.controller.handler;
 
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;

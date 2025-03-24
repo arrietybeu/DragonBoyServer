@@ -2,9 +2,9 @@ package nro.service.core.combat;
 
 import lombok.Getter;
 import nro.service.model.item.ItemMap;
-import nro.service.model.monster.Monster;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.monster.Monster;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 
 import java.io.DataOutputStream;
@@ -70,9 +70,9 @@ public class MonsterService {
             DataOutputStream data = message.writer();
             data.writeByte(monster.getId());
             data.writeInt(player.getId());
-            data.writeLong(player.getPlayerPoints().getCurrentHP());
+            data.writeLong(player.getPoints().getCurrentHP());
             if (MpShow > 0) {
-                data.writeLong(player.getPlayerPoints().getCurrentMP());
+                data.writeLong(player.getPoints().getCurrentMP());
             }
             monster.getArea().sendMessageToPlayersInArea(message, player);
         } catch (Exception ex) {

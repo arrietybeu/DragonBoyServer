@@ -1,10 +1,10 @@
 package nro.server.manager;
 
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.service.model.task.TaskMain;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
 import java.sql.*;

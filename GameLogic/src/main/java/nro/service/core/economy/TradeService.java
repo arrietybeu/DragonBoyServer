@@ -1,7 +1,7 @@
 package nro.service.core.economy;
 
 import lombok.Getter;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 
 public class TradeService {
 

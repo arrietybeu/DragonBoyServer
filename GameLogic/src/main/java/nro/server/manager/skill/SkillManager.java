@@ -14,7 +14,7 @@ import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.model.template.entity.SkillInfo;
 import nro.server.manager.IManager;
 import nro.service.model.template.skill.SkillTemplate;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 @Getter
 public class SkillManager implements IManager {
@@ -49,7 +49,7 @@ public class SkillManager implements IManager {
                     NClassTemplate nClassTemplate = new NClassTemplate(nClassId, name, this.loadSkillTemplate(connection, nClassId));
                     this.nClassTemplates.add(nClassTemplate);
                 }
-//                LogServer.LogInit("Skill Class initialized size: " + this.nClassTemplates.size());
+//                LogServer.LogInit("Skills Class initialized size: " + this.nClassTemplates.size());
             }
         } catch (Exception e) {
             LogServer.LogException("Error loadSkill: " + e.getMessage());

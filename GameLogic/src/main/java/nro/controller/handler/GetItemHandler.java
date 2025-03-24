@@ -3,8 +3,8 @@ package nro.controller.handler;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
 import nro.service.core.usage.UseItem;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 

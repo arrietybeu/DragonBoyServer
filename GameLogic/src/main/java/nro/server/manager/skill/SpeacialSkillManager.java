@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.consts.ConstPlayer;
 import nro.service.model.template.skill.SpeacialSkillTemplate;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.IManager;
 

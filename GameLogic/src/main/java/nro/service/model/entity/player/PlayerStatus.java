@@ -1,4 +1,4 @@
-package nro.service.model.player;
+package nro.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public class PlayerStatus {
     private long lastTimePickItem;
     private long lastTimeAddExp;
 
-    private int teleport = 0;
+
     private int idItemTask;
 
     public PlayerStatus(Player player) {

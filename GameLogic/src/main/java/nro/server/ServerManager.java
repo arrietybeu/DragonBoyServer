@@ -14,8 +14,9 @@ import ch.qos.logback.classic.Logger;
 import nro.controller.Controller;
 import nro.consts.ConstsCmd;
 import nro.controller.MessageProcessorRegistry;
+import nro.server.system.DeadLockDetector;
+import nro.server.system.LogServer;
 import nro.service.core.usage.ItemHandlerRegistry;
-import nro.service.model.npc.NpcFactory;
 import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
@@ -24,17 +25,17 @@ import nro.server.manager.SessionManager;
 import nro.service.core.system.CommandService;
 import org.slf4j.LoggerFactory;
 
-public class MainServer {
+public class ServerManager {
 
     private ServerSocket serverSocket;
     private final Controller controller = new Controller();
-    private static MainServer instance;
+    private static ServerManager instance;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private volatile boolean running;
 
-    public static MainServer getInstance() {
+    public static ServerManager getInstance() {
         if (instance == null) {
-            instance = new MainServer();
+            instance = new ServerManager();
             instance.init();
         }
         return instance;
@@ -47,12 +48,12 @@ public class MainServer {
         MessageProcessorRegistry.init(ConfigServer.PATH_CONTROLLER_HANDLER);
     }
 
-    public static void main(String[] args) {
+    public static void launch() {
         try {
             configure();
             startCommandLine();
             startDeadLockDetector();
-            MainServer.getInstance().start();
+            ServerManager.getInstance().start();
         } catch (Exception e) {
             LogServer.LogException("Error main: " + e.getMessage(), e);
         }

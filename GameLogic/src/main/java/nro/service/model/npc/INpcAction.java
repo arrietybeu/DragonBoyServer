@@ -1,6 +1,6 @@
 package nro.service.model.npc;
 
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 
 public interface INpcAction {
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import nro.server.config.ConfigServer;
 import nro.server.manager.SessionManager;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 /**
  * @author Arriety

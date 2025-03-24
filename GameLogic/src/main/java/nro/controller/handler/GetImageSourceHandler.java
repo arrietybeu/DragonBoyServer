@@ -5,7 +5,7 @@ import nro.server.network.Session;
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
 import nro.service.core.system.ResourceService;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 @APacketHandler(-74)
 public class GetImageSourceHandler implements IMessageProcessor {

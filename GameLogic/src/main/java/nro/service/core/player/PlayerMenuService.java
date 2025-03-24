@@ -2,7 +2,7 @@ package nro.service.core.player;
 
 import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 
 public class PlayerMenuService {

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.reflections.Reflections;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 public class NpcFactory {
 

@@ -1,16 +1,18 @@
-package nro.service.model.player;
+package nro.service.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstOption;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
+import nro.service.model.entity.boss.Boss;
+import nro.service.model.entity.player.Player;
 import nro.service.model.item.Item;
 import nro.service.model.template.item.ItemOption;
 import nro.service.model.map.GameMap;
-import nro.service.model.monster.Monster;
+import nro.service.model.entity.monster.Monster;
 import nro.service.model.template.entity.SkillInfo;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
@@ -24,9 +26,13 @@ import java.util.List;
 
 @Getter
 @Setter
-public class PlayerPoints {
+public class Points {
 
-    private final Player player;
+    private final BaseModel entity;
+
+    private Player player;
+    private Monster monster;
+    private Boss boss;
 
     // chỉ số cơ bản, chỉ số gốc
     private int baseHP, baseMP;
@@ -63,8 +69,18 @@ public class PlayerPoints {
 
     private boolean isHaveMount;
 
-    public PlayerPoints(Player player) {
-        this.player = player;
+    public Points(BaseModel entity) {
+        this.entity = entity;
+        this.setEntity(this.entity);
+    }
+
+    private void setEntity(BaseModel entity) {
+        switch (entity) {
+            case Player ignored -> this.player = ignored;
+            case Boss ignored -> this.boss = ignored;
+            case Monster ignored -> this.monster = ignored;
+            default -> LogServer.LogWarning("setEntity: entity không tồn tại: " + entity);
+        }
     }
 
     public boolean isDead() {
@@ -249,7 +265,7 @@ public class PlayerPoints {
                 ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, "Map không tồn tại: " + mapID, false);
                 return;
             }
-            player.getPlayerStatus().setTeleport(1);
+            player.setTeleport(1);
             AreaService.getInstance().gotoMap(this.player, newMap, x, y);
         } catch (Exception ex) {
             LogServer.LogException("returnTownFromDead: " + ex.getMessage());

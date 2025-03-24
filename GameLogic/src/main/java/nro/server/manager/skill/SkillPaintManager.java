@@ -7,7 +7,7 @@ import nro.service.model.template.skill.SkillPaintTemplate;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.model.template.entity.SkillPaintInfo;
 import nro.server.manager.IManager;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 import java.sql.Connection;

@@ -5,12 +5,12 @@
 package nro.service.core.system;
 
 import nro.consts.ConstsCmd;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerFashion;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.Fashion;
 import nro.service.model.template.entity.PartInfo;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigServer;
 import nro.server.manager.GameNotifyManager;
 import nro.server.manager.resources.PartManager;
@@ -105,7 +105,7 @@ public class ServerService {
             out.writeUTF(text);
 
             if (player != null) {
-                PlayerFashion fashion = player.getPlayerFashion();
+                Fashion fashion = player.getFashion();
                 PartInfo part = PartManager.getInstance().findPartById(fashion.getHead());
                 out.writeInt(player.getId());
                 out.writeShort(fashion.getHead());

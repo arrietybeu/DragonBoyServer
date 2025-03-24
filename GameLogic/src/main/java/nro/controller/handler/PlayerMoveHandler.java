@@ -2,10 +2,10 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.map.AreaService;
 
 @APacketHandler(-7)
@@ -22,7 +22,7 @@ public class PlayerMoveHandler implements IMessageProcessor {
             byte isOnGround = message.reader().readByte();//  0: on ground, 1: in air
 
             if (isOnGround == 1) {
-                player.getPlayerPoints().reduceMPWhenFlying();
+                player.getPoints().reduceMPWhenFlying();
             }
 
             short newX = message.reader().readShort();

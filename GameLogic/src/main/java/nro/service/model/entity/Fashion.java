@@ -1,24 +1,37 @@
-package nro.service.model.player;
+package nro.service.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstItem;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerInventory;
 import nro.service.model.item.Item;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.util.List;
 
 @Setter
 @Getter
-public class PlayerFashion {
+public class Fashion {
 
-    private final Player player;
+    private final BaseModel entity;
+
+    private Player player;
 
     private byte flagPk = 0;
     private short head = -1;
 
-    public PlayerFashion(Player player) {
-        this.player = player;
+    public Fashion(BaseModel entity) {
+        this.entity = entity;
+        this.setEntity(this.entity);
+    }
+
+    private void setEntity(BaseModel entity) {
+        switch (entity) {
+            case Player player -> this.player = player;
+            default -> {
+            }
+        }
     }
 
     public short getHead() {
@@ -40,7 +53,7 @@ public class PlayerFashion {
             }
             return head;
         } catch (Exception exception) {
-            LogServer.LogException("PlayerFashion.getHead: " + exception.getMessage());
+            LogServer.LogException("Fashion.getHead: " + exception.getMessage());
             exception.printStackTrace();
             return head;
         }
@@ -64,7 +77,7 @@ public class PlayerFashion {
             }
             return -1;
         } catch (Exception exception) {
-            LogServer.LogException("PlayerFashion.getBody: " + exception.getMessage());
+            LogServer.LogException("Fashion.getBody: " + exception.getMessage());
             exception.printStackTrace();
             return -1;
         }
@@ -89,7 +102,7 @@ public class PlayerFashion {
             }
             return -1;
         } catch (Exception exception) {
-            LogServer.LogException("PlayerFashion.getLeg: " + exception.getMessage());
+            LogServer.LogException("Fashion.getLeg: " + exception.getMessage());
             exception.printStackTrace();
             return -1;
         }
@@ -106,7 +119,7 @@ public class PlayerFashion {
             }
             return -1;
         } catch (Exception exception) {
-            LogServer.LogException("PlayerFashion.getMount: " + exception.getMessage(), exception);
+            LogServer.LogException("Fashion.getMount: " + exception.getMessage(), exception);
             return -1;
         }
     }

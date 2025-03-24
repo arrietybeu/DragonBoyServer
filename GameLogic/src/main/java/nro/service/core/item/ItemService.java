@@ -6,8 +6,8 @@ import nro.consts.ConstsCmd;
 import nro.service.model.template.item.Flag;
 import nro.service.model.template.item.FlagImage;
 import nro.service.model.item.ItemMap;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
 
@@ -73,7 +73,7 @@ public class ItemService {
         try (Message message = new Message(ConstsCmd.UPDATE_BAG)) {
             DataOutputStream writer = message.writer();
             writer.writeInt(player.getId());
-            writer.writeShort(player.getPlayerFashion().getFlagBag());
+            writer.writeShort(player.getFashion().getFlagBag());
             player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendFlagBag: " + ex.getMessage(), ex);

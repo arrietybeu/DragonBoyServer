@@ -1,7 +1,7 @@
 package nro.controller.handler;
 
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 import nro.controller.APacketHandler;
@@ -16,7 +16,7 @@ public class SkillSelectHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             int skillId = message.reader().readShort();
-            player.getPlayerSkill().selectSkill(skillId);
+            player.getSkills().selectSkill(skillId);
         } catch (Exception ex) {
             LogServer.LogException("SkillSelectHandler: " + ex.getMessage(), ex);
         }

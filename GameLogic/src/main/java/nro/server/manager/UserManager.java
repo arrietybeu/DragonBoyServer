@@ -2,7 +2,7 @@ package nro.server.manager;
 
 import lombok.Getter;
 import nro.service.model.template.entity.UserInfo;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.util.HashMap;
 import java.util.Map;

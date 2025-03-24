@@ -1,7 +1,7 @@
 package nro.service.core.system;
 
 import nro.consts.ConstMsgNotMap;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.service.model.resources.Effect;
 import nro.service.model.resources.ImageByName;
 import nro.service.model.template.CaptionTemplate;
@@ -15,7 +15,7 @@ import nro.server.manager.skill.SkillPaintManager;
 import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.resources.PartManager;
 import nro.utils.FileNio;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 import java.io.File;

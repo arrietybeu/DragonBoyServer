@@ -8,11 +8,11 @@ import nro.service.model.map.Waypoint;
 import nro.service.model.map.areas.Area;
 import nro.service.model.map.decorates.BackgroudEffect;
 import nro.service.model.map.decorates.BgItem;
-import nro.service.model.monster.Monster;
+import nro.service.model.entity.monster.Monster;
 import nro.service.model.npc.Npc;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -187,7 +187,7 @@ public class MapService {
         }
 
         output.writeByte(map.getBgType());
-        output.writeByte(player.getPlayerStatus().getTeleport()); // is teleport
+        output.writeByte(player.getTeleport()); // is teleport
     }
 
     /**

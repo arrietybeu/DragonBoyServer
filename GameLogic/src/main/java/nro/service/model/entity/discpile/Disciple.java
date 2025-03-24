@@ -1,9 +1,9 @@
-package nro.service.model.discpile;
+package nro.service.model.entity.discpile;
 
-import nro.service.model.LiveObject;
-import nro.service.model.player.Player;
+import nro.service.model.entity.BaseModel;
+import nro.service.model.entity.player.Player;
 
-public class Disciple extends LiveObject {
+public class Disciple extends BaseModel {
 
     @Override
     public void update() {

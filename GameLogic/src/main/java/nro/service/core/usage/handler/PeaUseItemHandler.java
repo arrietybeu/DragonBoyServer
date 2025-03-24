@@ -1,14 +1,14 @@
 package nro.service.core.usage.handler;
 
 import nro.consts.ConstItem;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.player.PlayerService;
 import nro.service.core.system.ServerService;
 import nro.service.core.usage.AUseItemHandler;
 import nro.service.core.usage.IUseItemHandler;
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerPoints;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.Points;
 import nro.service.model.template.item.ItemOption;
 
 @AUseItemHandler({ConstItem.TYPE_PEA})
@@ -32,7 +32,7 @@ public class PeaUseItemHandler implements IUseItemHandler {
                 return;
             }
 
-            PlayerPoints points = player.getPlayerPoints();
+            Points points = player.getPoints();
 
             long currentHP = points.getCurrentHP();
             long currentMp = points.getCurrentMP();

@@ -10,7 +10,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 import lombok.Getter;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 /**
  * @author Arriety

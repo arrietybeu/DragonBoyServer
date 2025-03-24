@@ -5,9 +5,9 @@ import nro.consts.ConstItem;
 import nro.consts.ConstMap;
 import nro.service.model.item.Item;
 import nro.service.model.item.ItemMap;
-import nro.service.model.monster.Monster;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerTask;
+import nro.service.model.entity.monster.Monster;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerTask;
 
 import java.util.ArrayList;
 import java.util.List;

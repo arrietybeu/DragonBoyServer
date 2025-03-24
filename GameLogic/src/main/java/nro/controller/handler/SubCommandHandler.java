@@ -2,8 +2,8 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.server.network.Message;
 import nro.server.network.Session;
 
@@ -23,7 +23,7 @@ public class SubCommandHandler implements IMessageProcessor {
                 case 16 -> {
                     byte typePotential = message.reader().readByte();
                     short num = message.reader().readShort();
-                    player.getPlayerPoints().upPotentialPoint(typePotential, num);
+                    player.getPoints().upPotentialPoint(typePotential, num);
                 }
                 default -> {
                     var info = "Unknow command -30: [" + command + "] ";

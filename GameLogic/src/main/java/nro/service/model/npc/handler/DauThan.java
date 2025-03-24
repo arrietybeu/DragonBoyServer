@@ -4,9 +4,9 @@ import nro.consts.ConstMenu;
 import nro.consts.ConstNpc;
 import nro.service.model.npc.ANpcHandler;
 import nro.service.model.npc.Npc;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerMagicTree;
-import nro.service.model.player.PlayerStatus;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerMagicTree;
+import nro.service.model.entity.player.PlayerStatus;
 import nro.service.core.npc.NpcService;
 
 import java.util.ArrayList;

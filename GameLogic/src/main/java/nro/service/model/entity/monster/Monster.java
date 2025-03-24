@@ -1,15 +1,15 @@
-package nro.service.model.monster;
+package nro.service.model.entity.monster;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
-import nro.service.model.LiveObject;
-import nro.service.model.discpile.Disciple;
+import nro.service.model.entity.BaseModel;
+import nro.service.model.entity.discpile.Disciple;
 import nro.service.model.item.ItemMap;
 import nro.service.model.map.areas.Area;
-import nro.service.model.player.Player;
-import nro.server.LogServer;
+import nro.service.model.entity.player.Player;
+import nro.server.system.LogServer;
 import nro.service.core.combat.MonsterService;
 import nro.service.core.player.SkillService;
 import nro.service.core.item.DropItemMap;
@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Getter
 @Setter
-public class Monster extends LiveObject {
+public class Monster extends BaseModel {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -172,7 +172,7 @@ public class Monster extends LiveObject {
         return null;
     }
 
-    private void handleCreateExpEntityAttackMob(LiveObject entity, long damage) {
+    private void handleCreateExpEntityAttackMob(BaseModel entity, long damage) {
         var ms = System.currentTimeMillis();
         try {
             switch (entity) {

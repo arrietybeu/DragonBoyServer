@@ -5,7 +5,7 @@ import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.model.template.MonsterTemplate;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

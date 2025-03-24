@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import nro.server.config.ConfigDB;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 /**
  * @author Arriety

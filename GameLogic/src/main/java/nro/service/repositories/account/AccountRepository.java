@@ -7,7 +7,7 @@ import nro.service.model.template.entity.UserInfo;
 import nro.server.manager.UserManager;
 import nro.service.core.system.ServerService;
 import nro.server.manager.SessionManager;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.utils.Util;
 
 import java.sql.*;

@@ -10,8 +10,8 @@ import nro.service.core.system.ServerService;
 import nro.service.model.item.Item;
 import nro.service.model.item.ItemMap;
 import nro.service.model.template.item.ItemOption;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerPoints;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.Points;
 import nro.service.model.task.TaskMain;
 import nro.service.model.template.entity.SkillInfo;
 import nro.server.manager.SessionManager;
@@ -20,7 +20,7 @@ import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.service.repositories.player.PlayerCreator;
 import nro.service.repositories.player.PlayerLoader;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
@@ -141,7 +141,7 @@ public class PlayerService {
     private void sendSkillShortCut(Player player) {
         try (Message message = new Message(-113)) {
             DataOutputStream out = message.writer();
-            byte[] skillShortCut = player.getPlayerSkill().getSkillShortCut();
+            byte[] skillShortCut = player.getSkills().getSkillShortCut();
             for (byte skill : skillShortCut) {
                 out.writeByte(skill);
             }
@@ -156,8 +156,8 @@ public class PlayerService {
             DataOutputStream data = message.writer();
             data.writeByte(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT);
             data.writeUTF(text);
-            data.writeInt(player.getPlayerSkill().getSkillShortCut().length);
-            data.write(player.getPlayerSkill().getSkillShortCut());
+            data.writeInt(player.getSkills().getSkillShortCut().length);
+            data.write(player.getSkills().getSkillShortCut());
             player.sendMessage(message);
         } catch (Exception exception) {
             LogServer.LogException("Error sendSelectSkillShortCut: " + exception.getMessage(), exception);
@@ -178,10 +178,10 @@ public class PlayerService {
             DataOutputStream out = message.writer();
             out.writeByte(1);
             out.writeInt(player.getId());
-            out.writeShort(player.getPlayerFashion().getHead());
-            out.writeShort(player.getPlayerFashion().getBody());
-            out.writeShort(player.getPlayerFashion().getLeg());
-            out.writeByte(player.getPlayerSkill().isMonkey() ? 1 : 0);
+            out.writeShort(player.getFashion().getHead());
+            out.writeShort(player.getFashion().getBody());
+            out.writeShort(player.getFashion().getLeg());
+            out.writeByte(player.getSkills().isMonkey() ? 1 : 0);
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendPlayerBody: " + e.getMessage(), e);
@@ -194,8 +194,8 @@ public class PlayerService {
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP);
             out.writeLong(player.getPlayerCurrencies().getGold());
             out.writeInt(player.getPlayerCurrencies().getGem());
-            out.writeLong(player.getPlayerPoints().getCurrentHP());
-            out.writeLong(player.getPlayerPoints().getCurrentMP());
+            out.writeLong(player.getPoints().getCurrentHP());
+            out.writeLong(player.getPoints().getCurrentMP());
             out.writeInt(player.getPlayerCurrencies().getRuby());
             player.sendMessage(message);
         } catch (Exception e) {
@@ -206,7 +206,7 @@ public class PlayerService {
     private void sendMaxStamina(Player player) {
         try (Message msg = new Message(-69)) {
             DataOutputStream out = msg.writer();
-            out.writeShort(player.getPlayerPoints().getMaxStamina());
+            out.writeShort(player.getPoints().getMaxStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendMaxStamina: " + e.getMessage(), e);
@@ -237,7 +237,7 @@ public class PlayerService {
     public void sendStamina(Player player) {
         try (Message msg = new Message(-68)) {
             DataOutputStream out = msg.writer();
-            out.writeShort(player.getPlayerPoints().getStamina());
+            out.writeShort(player.getPoints().getStamina());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendStamina: " + e.getMessage(), e);
@@ -248,7 +248,7 @@ public class PlayerService {
         try (Message message = new Message(-30)) {
             DataOutputStream out = message.writer();
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_HP);
-            out.writeLong(player.getPlayerPoints().getCurrentHP());
+            out.writeLong(player.getPoints().getCurrentHP());
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendHpForPlayer: " + e.getMessage(), e);
@@ -259,7 +259,7 @@ public class PlayerService {
         try (Message message = new Message(-30)) {
             DataOutputStream out = message.writer();
             out.writeByte(ConstMsgSubCommand.UPDATE_MY_MP);
-            out.writeLong(player.getPlayerPoints().getCurrentMP());
+            out.writeLong(player.getPoints().getCurrentMP());
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendHpForPlayer: " + e.getMessage(), e);
@@ -268,7 +268,7 @@ public class PlayerService {
 
     public void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
-            PlayerPoints stats = player.getPlayerPoints();
+            Points stats = player.getPoints();
             DataOutputStream out = msg.writer();
             out.writeInt(stats.getBaseHP());
             out.writeInt(stats.getBaseMP());
@@ -304,18 +304,18 @@ public class PlayerService {
             out.writeInt(player.getId());
             out.writeByte(player.getPlayerTask().getTaskMain().getId());
             out.writeByte(gender);
-            out.writeShort(player.getPlayerFashion().getHead());
+            out.writeShort(player.getFashion().getHead());
             out.writeUTF(player.getName());
             out.writeByte(0);// cpk
             out.writeByte(player.getTypePk());
-            out.writeLong(player.getPlayerPoints().getPower());
-            out.writeShort(player.getPlayerPoints().getEff5BuffHp());// eff5BuffHp
-            out.writeShort(player.getPlayerPoints().getEff5BuffMp());// eff5BuffMp
+            out.writeLong(player.getPoints().getPower());
+            out.writeShort(player.getPoints().getEff5BuffHp());// eff5BuffHp
+            out.writeShort(player.getPoints().getEff5BuffMp());// eff5BuffMp
             out.writeByte(gender);
 
-            // ============ Send Skill ============
+            // ============ Send Skills ============
 
-            List<SkillInfo> skills = player.getPlayerSkill().getSkills();
+            List<SkillInfo> skills = player.getSkills().getSkills();
             out.writeByte(skills.size());
 
             for (SkillInfo skill : skills) {
@@ -345,7 +345,7 @@ public class PlayerService {
             sendPlayerBirdFrames(out, player);
 
             // status fusion = 0 return 0 = false
-            out.writeByte(player.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
+            out.writeByte(player.getFusion().getTypeFusion() != 0 ? 1 : 0);
             out.writeInt(19062006);
 
             out.writeByte(player.isNewPlayer() ? 1 : 0);
@@ -402,8 +402,8 @@ public class PlayerService {
         try (Message message = new Message(-79)) {
             Player playerInArea = player.getArea().getPlayer(playerId);
             message.writer().writeInt(playerInArea.getId());
-            message.writer().writeLong(playerInArea.getPlayerPoints().getPower());
-            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPlayerPoints().getPower(), playerInArea.getGender()));
+            message.writer().writeLong(playerInArea.getPoints().getPower());
+            message.writer().writeUTF(CaptionManager.getInstance().getCaptionsByPower(playerInArea.getPoints().getPower(), playerInArea.getGender()));
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendMenuPlayerInfo: " + ex.getMessage(), ex);
@@ -416,7 +416,7 @@ public class PlayerService {
             out.writeByte(player.getTypePk());
             out.writeShort(player.getX());
             out.writeShort(player.getY());
-            out.writeLong(player.getPlayerPoints().getPower());
+            out.writeLong(player.getPoints().getPower());
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendPlayerDie: " + ex.getMessage(), ex);
@@ -450,8 +450,8 @@ public class PlayerService {
             DataOutputStream out = message.writer();
             out.writeByte(ConstMsgSubCommand.CHAR_REVIVE);
             out.writeInt(player.getId());
-            out.writeLong(player.getPlayerPoints().getCurrentHP());
-            out.writeLong(player.getPlayerPoints().getMaxHP());
+            out.writeLong(player.getPoints().getCurrentHP());
+            out.writeLong(player.getPoints().getMaxHP());
             out.writeShort(player.getX());
             out.writeShort(player.getY());
             player.getArea().sendMessageToPlayersInArea(message, null);
@@ -529,7 +529,7 @@ public class PlayerService {
         var type = -1;
 
         if (player.getArea().getMap().isMapHouseByGender(player.getGender()) && itemMapId == player.getPlayerStatus().getIdItemTask()) {
-            player.getPlayerPoints().healPlayer();
+            player.getPoints().healPlayer();
             notify = "Bạn vừa ăn Đùi gà nướng";
             isTask = true;
             type = 27;

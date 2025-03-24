@@ -1,6 +1,5 @@
 package nro.service.model.map;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstMap;
@@ -10,9 +9,9 @@ import nro.service.model.map.decorates.BackgroudEffect;
 import nro.service.model.map.decorates.BgItem;
 import nro.service.model.npc.Npc;
 import nro.service.model.npc.NpcFactory;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.service.model.template.NpcTemplate;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.manager.MapManager;
 
 import java.util.*;

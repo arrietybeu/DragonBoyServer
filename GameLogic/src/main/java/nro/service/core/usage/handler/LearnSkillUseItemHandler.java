@@ -2,7 +2,7 @@ package nro.service.core.usage.handler;
 
 import nro.consts.ConstItem;
 import nro.consts.ConstUseItem;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.manager.skill.SkillManager;
 import nro.service.core.player.SkillService;
 import nro.service.core.system.ServerService;
@@ -10,7 +10,7 @@ import nro.service.core.usage.AUseItemHandler;
 import nro.service.core.usage.IUseItemHandler;
 import nro.service.core.usage.UseItemService;
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.service.model.template.entity.SkillInfo;
 
 @AUseItemHandler({ConstItem.TYPE_LEARN_SKILL})
@@ -39,7 +39,7 @@ public class LearnSkillUseItemHandler implements IUseItemHandler {
                 return;
             }
 
-            int skillLevel = player.getPlayerSkill().getSkillLevel(skillNew.getTemplate().getId());
+            int skillLevel = player.getSkills().getSkillLevel(skillNew.getTemplate().getId());
 
             if (skillLevel >= skillNew.getPoint()) {
                 serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đã nâng %s cấp %d", skillNew.getTemplate().getName(), skillNew.getPoint()), false);
@@ -56,19 +56,19 @@ public class LearnSkillUseItemHandler implements IUseItemHandler {
             }
 
             if (skillLevel == -1) {
-                player.getPlayerSkill().addSkill(skillNew);
+                player.getSkills().addSkill(skillNew);
                 serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đã học %s cấp %d", skillNew.getTemplate().getName(), levelSkill), false);
-                SkillService.getInstance().sendLoadSkillInfoAll(player, player.getPlayerSkill().getSkills());
+                SkillService.getInstance().sendLoadSkillInfoAll(player, player.getSkills().getSkills());
             } else {
-                for (int i = 0; i < player.getPlayerSkill().getSkills().size(); i++) {
-                    SkillInfo skillInfo = player.getPlayerSkill().getSkills().get(i);
+                for (int i = 0; i < player.getSkills().getSkills().size(); i++) {
+                    SkillInfo skillInfo = player.getSkills().getSkills().get(i);
                     if (skillInfo.getTemplate().getId() == skillNew.getTemplate().getId()) {
 
                         // set thời gian sửa dụng skill của kỹ năng cũ cho kỹ năng mới
                         skillNew.setLastTimeUseThisSkill(skillInfo.getLastTimeUseThisSkill());
 
                         // set skill mới vào vị trí cũ
-                        player.getPlayerSkill().getSkills().set(i, skillNew);
+                        player.getSkills().getSkills().set(i, skillNew);
                         serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đã nâng %s cấp %d", skillNew.getTemplate().getName(), levelSkill), false);
                         break;
                     }
@@ -79,7 +79,7 @@ public class LearnSkillUseItemHandler implements IUseItemHandler {
             player.getPlayerInventory().subQuantityItemsBag(item, 1);
 
             // tính toán lại thông số của nhân vật
-            player.getPlayerPoints().calculateStats();
+            player.getPoints().calculateStats();
 
             // send info skill to client
             UseItemService.getInstance().sendPlayerLearnSkill(player, skillNew, -1);

@@ -1,9 +1,9 @@
-package nro.server;
+package nro.server.manager;
 
 import lombok.Getter;
+import nro.server.system.LogServer;
 import nro.service.model.entity.player.Player;
 import nro.server.config.ConfigServer;
-import nro.server.manager.IManager;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.ZeroArgFunction;
 import org.luaj.vm2.lib.jse.*;

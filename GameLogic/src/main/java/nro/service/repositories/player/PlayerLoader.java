@@ -3,15 +3,15 @@ package nro.service.repositories.player;
 import lombok.Getter;
 import nro.service.model.item.Item;
 import nro.service.model.map.areas.Area;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerInventory;
-import nro.service.model.player.PlayerMagicTree;
-import nro.service.model.player.PlayerPoints;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerInventory;
+import nro.service.model.entity.player.PlayerMagicTree;
+import nro.service.model.entity.Points;
 import nro.service.model.task.TaskMain;
 import nro.service.model.template.entity.SkillInfo;
 import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
@@ -60,7 +60,7 @@ public class PlayerLoader {
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));
-        player.getPlayerFashion().setHead(resultSet.getShort("head"));
+        player.getFashion().setHead(resultSet.getShort("head"));
         player.getPlayerInventory().setItemBagSize(resultSet.getByte("max_bag_size"));
         player.getPlayerInventory().setItemBoxSize(resultSet.getByte("max_box_size"));
 
@@ -93,7 +93,7 @@ public class PlayerLoader {
         this.loadPlayerInventory(player, connection);
 
         // Load Point
-        player.getPlayerPoints().calculateStats();
+        player.getPoints().calculateStats();
         return player;
     }
 
@@ -110,7 +110,7 @@ public class PlayerLoader {
                     SkillInfo skillInfo = SkillManager.getInstance().getSkillInfoByTemplateId(skillId, player.getGender(), currentLevel);
                     if (skillInfo == null) continue;
                     skillInfo.setLastTimeUseThisSkill(lastTimeUseSkill);
-                    player.getPlayerSkill().addSkill(skillInfo);
+                    player.getSkills().addSkill(skillInfo);
                 }
             }
         }
@@ -191,7 +191,7 @@ public class PlayerLoader {
             statement.setInt(1, player.getId());
             try (ResultSet rs = statement.executeQuery()) {
                 if (rs.next()) {
-                    PlayerPoints stats = player.getPlayerPoints();
+                    Points stats = player.getPoints();
                     // --- HP
                     stats.setBaseHP((int) rs.getLong("hp"));           // cHPGoc
                     stats.setMaxHP(rs.getLong("hp_max"));                // cHPFull
@@ -274,11 +274,11 @@ public class PlayerLoader {
     }
 
     private boolean isInvalidLocation(short x, short y, Player player) {
-        return x < 0 || y < 0 || player.getPlayerPoints().getCurrentHP() <= 0;
+        return x < 0 || y < 0 || player.getPoints().getCurrentHP() <= 0;
     }
 
     private void resetPlayerLocation(Player player) {
-        player.getPlayerPoints().setCurrentHp(1);
+        player.getPoints().setCurrentHp(1);
         player.setX((short) 400);
         player.setY((short) 336);
     }
@@ -349,18 +349,18 @@ public class PlayerLoader {
                 for (int i = 0; i < 10; i++) {
                     skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
                 }
-                player.getPlayerSkill().setSkillShortCut(skillShortCut);
+                player.getSkills().setSkillShortCut(skillShortCut);
 
                 SkillInfo selectedSkill = null;
                 for (byte skillId : skillShortCut) {
-                    selectedSkill = player.getPlayerSkill().getSkillById(skillId);
+                    selectedSkill = player.getSkills().getSkillById(skillId);
                     if (selectedSkill != null) break;
                 }
 
                 if (selectedSkill == null) {
-                    selectedSkill = player.getPlayerSkill().getSkillDefaultByGender(player.getGender());
+                    selectedSkill = player.getSkills().getSkillDefaultByGender(player.getGender());
                 }
-                player.getPlayerSkill().setSkillSelect(selectedSkill);
+                player.getSkills().setSkillSelect(selectedSkill);
             }
         }
     }

@@ -2,7 +2,7 @@ package nro.service.repositories.player;
 
 import lombok.Getter;
 import nro.service.model.item.Item;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.item.ItemFactory;
 
 import java.sql.*;

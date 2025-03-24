@@ -2,9 +2,9 @@ package nro.service.core.player;
 
 import lombok.Getter;
 import nro.consts.ConstsCmd;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 

@@ -1,10 +1,10 @@
-package nro.service.model.boss;
+package nro.service.model.entity.boss;
 
 import nro.consts.ConstTypeObject;
-import nro.service.model.LiveObject;
-import nro.service.model.player.Player;
+import nro.service.model.entity.BaseModel;
+import nro.service.model.entity.player.Player;
 
-public class Boss extends LiveObject {
+public class Boss extends BaseModel {
 
     public Boss() {
         this.setTypeObject(ConstTypeObject.TYPE_BOSS);

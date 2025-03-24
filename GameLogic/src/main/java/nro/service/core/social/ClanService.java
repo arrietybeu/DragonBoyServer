@@ -3,9 +3,9 @@ package nro.service.core.social;
 import lombok.Getter;
 import nro.service.model.clan.Clan;
 import nro.service.model.clan.ClanMessage;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 import java.util.List;

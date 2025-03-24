@@ -2,10 +2,10 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.map.AreaService;
 
 @APacketHandler(-23)
@@ -15,7 +15,7 @@ public class ChangeMapHandler implements IMessageProcessor {
         try {
             Player player = session.getPlayer();
             if (player == null) return;
-            if (player.getPlayerPoints().isDead()) return;
+            if (player.getPoints().isDead()) return;
             AreaService.getInstance().playerChangerMapByWayPoint(player);
         } catch (Exception ex) {
             LogServer.LogException("ChangerMapHandler: " + ex.getMessage(), ex);

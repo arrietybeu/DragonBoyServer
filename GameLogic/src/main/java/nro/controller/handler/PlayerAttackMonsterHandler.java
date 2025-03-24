@@ -2,11 +2,11 @@ package nro.controller.handler;
 
 import nro.controller.APacketHandler;
 import nro.controller.IMessageProcessor;
-import nro.service.model.monster.Monster;
-import nro.service.model.player.Player;
+import nro.service.model.entity.monster.Monster;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 @APacketHandler(54)
 public class PlayerAttackMonsterHandler implements IMessageProcessor {
@@ -20,7 +20,7 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
             Monster monster = player.getArea().getMonsterInAreaById(mobId);
             if (monster == null) return;
             if (mobId != -1) {
-                player.getPlayerSkill().playerAttackMonster(monster);
+                player.getSkills().playerAttackMonster(monster);
             } else {
                 var monsterID = message.reader().readInt();
                 LogServer.LogWarning("monsterId:" + monsterID);

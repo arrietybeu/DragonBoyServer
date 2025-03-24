@@ -2,12 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package nro.server;
+package nro.server.system;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lombok.Getter;
+import nro.server.ServerManager;
 
 /**
  * @author Arriety
@@ -41,7 +42,7 @@ public class Maintenance {
                     LogServer.LogException("Error Maintenance 2: " + e.getMessage());
                 }
             }
-            MainServer.getInstance().shutdown();
+            ServerManager.getInstance().shutdown();
 
             LogServer.DebugLogic("Maintenance stop server");
         } catch (Exception e) {

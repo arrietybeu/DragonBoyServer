@@ -2,13 +2,13 @@ package nro.service.repositories.player;
 
 import lombok.Getter;
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerMagicTree;
-import nro.service.model.player.PlayerPoints;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.player.PlayerMagicTree;
+import nro.service.model.entity.Points;
 import nro.service.model.task.TaskMain;
 import nro.service.model.template.entity.SessionInfo;
 import nro.service.repositories.DatabaseConnectionPool;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
 import java.sql.Connection;
@@ -214,7 +214,7 @@ public class PlayerUpdate {
     private void savePlayerStats(Player player, Connection connection) throws SQLException {
         String query = "UPDATE player_point SET hp = ?, hp_max = ?, hp_current = ?, " + "mp = ?, mp_max = ?, mp_current = ?, " + "dame_max = ?, dame_default = ?, " + "crit = ?, crit_default = ?, " + "defense = ?, def_default = ?, " + "stamina = ?, max_stamina = ?, " + "power = ?, limit_power = ?, " + "tiem_nang = ?, nang_dong = ? " + "WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            PlayerPoints stats = player.getPlayerPoints();
+            Points stats = player.getPoints();
             statement.setLong(1, stats.getBaseHP());
             statement.setLong(2, stats.getMaxHP());
             statement.setLong(3, stats.getCurrentHP());
@@ -260,7 +260,7 @@ public class PlayerUpdate {
     private void savePlayerSkillsShortCut(Player player, Connection connection) throws SQLException {
         String query = "UPDATE player_skills_shortcut SET slot_1 = ?, slot_2 = ?, slot_3 = ?, " + "slot_4 = ?, slot_5 = ?, slot_6 = ?, slot_7 = ?, slot_8 = ?, slot_9 = ?, slot_10 = ? WHERE player_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            byte[] skillShortCut = player.getPlayerSkill().getSkillShortCut();
+            byte[] skillShortCut = player.getSkills().getSkillShortCut();
             for (int i = 0; i < 10; i++) {
                 statement.setByte(i + 1, skillShortCut[i]);
             }
@@ -272,11 +272,11 @@ public class PlayerUpdate {
     private void savePlayerSkills(Player player, Connection connection) throws SQLException {
         String query = "UPDATE player_skills SET current_level = ?, last_time_use_skill = ? WHERE player_id = ? AND skill_id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int i = 0; i < player.getPlayerSkill().getSkills().size(); i++) {
-                statement.setInt(1, player.getPlayerSkill().getSkills().get(i).getPoint());
-                statement.setLong(2, player.getPlayerSkill().getSkills().get(i).getLastTimeUseThisSkill());
+            for (int i = 0; i < player.getSkills().getSkills().size(); i++) {
+                statement.setInt(1, player.getSkills().getSkills().get(i).getPoint());
+                statement.setLong(2, player.getSkills().getSkills().get(i).getLastTimeUseThisSkill());
                 statement.setInt(3, player.getId());
-                statement.setInt(4, player.getPlayerSkill().getSkills().get(i).getTemplate().getId());
+                statement.setInt(4, player.getSkills().getSkills().get(i).getTemplate().getId());
                 statement.addBatch();
             }
             statement.executeBatch();

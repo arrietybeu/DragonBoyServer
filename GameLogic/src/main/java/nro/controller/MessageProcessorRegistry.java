@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import org.reflections.Reflections;
 
 /**

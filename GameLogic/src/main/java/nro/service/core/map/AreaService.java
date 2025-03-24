@@ -3,15 +3,15 @@ package nro.service.core.map;
 import lombok.Getter;
 import nro.consts.ConstTypeObject;
 import nro.service.core.system.ServerService;
-import nro.service.model.LiveObject;
+import nro.service.model.entity.BaseModel;
 import nro.service.model.map.GameMap;
 import nro.service.model.map.Waypoint;
 import nro.service.model.map.areas.Area;
-import nro.service.model.player.Player;
-import nro.service.model.player.PlayerFashion;
+import nro.service.model.entity.player.Player;
+import nro.service.model.entity.Fashion;
 import nro.server.network.Message;
 import nro.service.core.item.DropItemMap;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
 import nro.service.core.player.PlayerService;
@@ -27,8 +27,8 @@ public class AreaService {
 
     public void sendInfoAllLiveObjectsTo(Player player) {
         try {
-            Map<Integer, LiveObject> objects = player.getArea().getAllPlayerInZone();
-            for (LiveObject obj : objects.values()) {
+            Map<Integer, BaseModel> objects = player.getArea().getAllPlayerInZone();
+            for (BaseModel obj : objects.values()) {
                 switch (obj) {
                     case Player plInZone -> {
                         if (plInZone != player) {
@@ -47,8 +47,8 @@ public class AreaService {
 
     private void sendLiveObjectInfoToOthers(Player player) {
         try {
-            Map<Integer, LiveObject> players = player.getArea().getAllPlayerInZone();
-            for (LiveObject obj : players.values()) {
+            Map<Integer, BaseModel> players = player.getArea().getAllPlayerInZone();
+            for (BaseModel obj : players.values()) {
                 switch (obj) {
                     case Player plInZone -> {
                         if (plInZone != player) {
@@ -64,22 +64,22 @@ public class AreaService {
         }
     }
 
-    private void addPlayer(Player isMe, LiveObject entityInfo) {
+    private void addPlayer(Player isMe, BaseModel entityInfo) {
         switch (entityInfo) {
             case Player playerInfo -> {
                 try (Message message = new Message(-5)) {
                     DataOutputStream data = message.writer();
-                    PlayerFashion playerFashion = playerInfo.getPlayerFashion();
+                    Fashion fashion = playerInfo.getFashion();
                     data.writeInt(playerInfo.getId());
                     data.writeInt(playerInfo.getClan() != null ? playerInfo.getClan().getId() : -1);
-                    if (this.writePlayerInfo(playerInfo, data, playerFashion)) {
-                        data.writeByte(playerInfo.getPlayerStatus().getTeleport());
-                        data.writeByte(playerInfo.getPlayerSkill().isMonkey() ? 1 : 0);
-                        data.writeShort(playerFashion.getMount());
+                    if (this.writePlayerInfo(playerInfo, data, fashion)) {
+                        data.writeByte(playerInfo.getTeleport());
+                        data.writeByte(playerInfo.getSkills().isMonkey() ? 1 : 0);
+                        data.writeShort(fashion.getMount());
                     }
 
-                    data.writeByte(playerFashion.getFlagPk());
-                    data.writeByte(playerInfo.getPlayerFusion().getTypeFusion() != 0 ? 1 : 0);
+                    data.writeByte(fashion.getFlagPk());
+                    data.writeByte(playerInfo.getFusion().getTypeFusion() != 0 ? 1 : 0);
                     data.writeShort(playerInfo.getAura());
                     data.writeByte(playerInfo.getEffSetItem());
                     data.writeShort(playerInfo.getIdHat());
@@ -93,30 +93,30 @@ public class AreaService {
         }
     }
 
-    private boolean writePlayerInfo(LiveObject entity, DataOutputStream data, PlayerFashion playerFashion) throws Exception {
+    private boolean writePlayerInfo(BaseModel entity, DataOutputStream data, Fashion fashion) throws Exception {
         byte level = (byte) CaptionManager.getInstance().getLevel(entity);
         data.writeByte(level);
         data.writeBoolean(false);// write isInvisiblez
         data.writeByte(entity.getTypePk()); // write status Pk
         data.writeByte(entity.getGender());
         data.writeByte(entity.getGender());
-        data.writeShort(playerFashion.getHead());
+        data.writeShort(fashion.getHead());
         data.writeUTF(entity.getName());
-        data.writeLong(entity.getPlayerPoints().getCurrentHP());
-        data.writeLong(entity.getPlayerPoints().getMaxHP());
-        data.writeShort(playerFashion.getBody());
-        data.writeShort(playerFashion.getLeg());
-        data.writeShort(playerFashion.getFlagBag());
+        data.writeLong(entity.getPoints().getCurrentHP());
+        data.writeLong(entity.getPoints().getMaxHP());
+        data.writeShort(fashion.getBody());
+        data.writeShort(fashion.getLeg());
+        data.writeShort(fashion.getFlagBag());
         data.writeByte(0);
         data.writeShort(entity.getX());
         data.writeShort(entity.getY());
-        data.writeShort(entity.getPlayerPoints().getEff5BuffHp());
-        data.writeShort(entity.getPlayerPoints().getEff5BuffMp());
+        data.writeShort(entity.getPoints().getEff5BuffHp());
+        data.writeShort(entity.getPoints().getEff5BuffMp());
         data.writeByte(0);
         return true;
     }
 
-    public void playerMove(LiveObject entity) {
+    public void playerMove(BaseModel entity) {
         try (Message message = new Message(-7)) {
             DataOutputStream data = message.writer();
             data.writeInt(entity.getId());
@@ -173,7 +173,7 @@ public class AreaService {
         this.transferPlayer(player, newArea, player.getX(), player.getY());
     }
 
-    public void gotoMap(LiveObject object, GameMap goMap, int goX, int goY) {
+    public void gotoMap(BaseModel object, GameMap goMap, int goX, int goY) {
         switch (object) {
             case Player player -> {
                 Area newArea = goMap.getArea();
@@ -211,7 +211,7 @@ public class AreaService {
             this.sendMessageChangerMap(player);
             this.sendInfoAllLiveObjectsTo(player);
             this.sendLiveObjectInfoToOthers(player);
-            player.getPlayerStatus().setTeleport(0);
+            player.setTeleport(0);
             return true;
         } catch (Exception ex) {
             LogServer.LogException("transferPlayer: " + ex.getMessage(), ex);
@@ -219,7 +219,7 @@ public class AreaService {
         }
     }
 
-    public void playerExitArea(LiveObject entity) {
+    public void playerExitArea(BaseModel entity) {
         try {
             Area area = entity.getArea();
             if (area.getAllPlayerInZone().containsKey(entity.getId())) {
@@ -232,7 +232,7 @@ public class AreaService {
         }
     }
 
-    private void sendRemovePlayerExitArea(LiveObject entity) {
+    private void sendRemovePlayerExitArea(BaseModel entity) {
         try (Message message = new Message(-6)) {
             message.writer().writeInt(entity.getId());
             entity.getArea().sendMessageToPlayersInArea(message, entity);
@@ -287,11 +287,11 @@ public class AreaService {
         }
     }
 
-    public void sendTeleport(LiveObject entity) {
+    public void sendTeleport(BaseModel entity) {
         try (Message message = new Message(-65)) {
             DataOutputStream data = message.writer();
             data.writeInt(entity.getId());
-            data.writeByte(entity.getPlayerStatus().getTeleport());
+            data.writeByte(entity.getTeleport());
             entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendTeleport: " + ex.getMessage() + " player:  " + entity.getId(), ex);
@@ -311,7 +311,7 @@ public class AreaService {
             serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
             return;
         }
-        player.getPlayerStatus().setTeleport(typeTele);
+        player.setTeleport(typeTele);
         AreaService.getInstance().gotoMap(player, newMap, Util.nextInt(400, 444), 5);
     }
 

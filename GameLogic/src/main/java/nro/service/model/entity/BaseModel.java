@@ -1,4 +1,4 @@
-package nro.service.model;
+package nro.service.model.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import nro.service.model.map.areas.Area;
 @Getter
 @Setter
 @NoArgsConstructor
-public abstract class LiveObject {
+public abstract class BaseModel {
 
     private int id;
     private String name = "";
@@ -17,17 +17,18 @@ public abstract class LiveObject {
 
     private byte gender;
     private byte typePk;
+    private int teleport = 0;
 
     private short mount = -1;
 
     private short x;
     private short y;
 
-    protected PlayerPoints points;
-    protected PlayerSkill skills;
-    protected PlayerStatus playerStatus;
-    protected PlayerFusion playerFusion;
-    protected PlayerFashion playerFashion;
+    protected Points points;
+    protected Skills skills;
+
+    protected Fusion fusion;
+    protected Fashion fashion;
     protected Area area;
 
     private static final short[][] BIRD_FRAMES = {

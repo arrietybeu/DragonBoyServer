@@ -1,4 +1,4 @@
-package nro.service.model.player;
+package nro.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import nro.consts.ConstItem;
 import nro.consts.ConstUseItem;
 import nro.service.model.item.Item;
 import nro.service.model.template.item.ItemOption;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.service.core.player.InventoryService;
 import nro.service.core.item.ItemService;
 import nro.service.core.system.ServerService;

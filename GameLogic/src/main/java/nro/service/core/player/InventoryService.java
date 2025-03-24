@@ -2,9 +2,9 @@ package nro.service.core.player;
 
 import lombok.Getter;
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 import nro.server.network.Message;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
 import java.util.List;
@@ -17,7 +17,7 @@ public class InventoryService {
     public void sendFlagBag(Player player) {
         try (Message msg = new Message(-64)) {
             msg.writer().writeInt(player.getId());
-            msg.writer().writeShort(player.getPlayerFashion().getFlagBag());
+            msg.writer().writeShort(player.getFashion().getFlagBag());
             player.sendMessage(msg);
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,7 +30,7 @@ public class InventoryService {
             DataOutputStream data = message.writer();
             List<Item> itemBodys = player.getPlayerInventory().getItemsBody();
             data.writeByte(0);
-            data.writeShort(player.getPlayerFashion().getHead());
+            data.writeShort(player.getFashion().getHead());
             PlayerService.getInstance().sendInventoryForPlayer(data, itemBodys);
             player.sendMessage(message);
         } catch (Exception ex) {

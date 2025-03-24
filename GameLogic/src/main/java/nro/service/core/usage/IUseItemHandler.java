@@ -1,7 +1,7 @@
 package nro.service.core.usage;
 
 import nro.service.model.item.Item;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 
 public interface IUseItemHandler {
 

@@ -3,12 +3,12 @@ package nro.service.model.map.areas;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.service.core.map.AreaService;
-import nro.service.model.LiveObject;
+import nro.service.model.entity.BaseModel;
 import nro.service.model.map.GameMap;
 import nro.service.model.item.ItemMap;
-import nro.service.model.monster.Monster;
+import nro.service.model.entity.monster.Monster;
 import nro.service.model.npc.Npc;
-import nro.service.model.player.Player;
+import nro.service.model.entity.player.Player;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,8 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import lombok.Getter;
 import nro.server.network.Message;
-import nro.server.LogServer;
-import nro.server.manager.SessionManager;
+import nro.server.system.LogServer;
 import nro.service.core.item.ItemService;
 
 @Getter
@@ -35,7 +34,7 @@ public class Area {
     private final GameMap map;
     private Map<Integer, Monster> monsters;
 
-    private final Map<Integer, LiveObject> entitys;
+    private final Map<Integer, BaseModel> entitys;
 
     private final Map<Integer, ItemMap> itemsMap;
     private final List<Npc> npcList;
@@ -52,7 +51,7 @@ public class Area {
     private void updateEntity() {
         this.lock.readLock().lock();
         try {
-            for (LiveObject player : this.entitys.values()) {
+            for (BaseModel player : this.entitys.values()) {
                 player.update();
             }
         } catch (Exception ex) {
@@ -123,7 +122,7 @@ public class Area {
         }
     }
 
-    public void addPlayer(LiveObject entity) {
+    public void addPlayer(BaseModel entity) {
         switch (entity) {
             case Player player -> {
                 this.lock.writeLock().lock();
@@ -150,7 +149,7 @@ public class Area {
         }
     }
 
-    public void removePlayer(LiveObject entity) {
+    public void removePlayer(BaseModel entity) {
         this.lock.writeLock().lock();
         try {
             this.entitys.remove(entity.getId());
@@ -165,7 +164,7 @@ public class Area {
     public Player getPlayer(int id) {
         this.lock.readLock().lock();
         try {
-            LiveObject obj = this.entitys.get(id);
+            BaseModel obj = this.entitys.get(id);
             return (obj instanceof Player player && obj.getTypeObject() == ConstTypeObject.TYPE_PLAYER) ? player : null;
         } finally {
             this.lock.readLock().unlock();
@@ -174,7 +173,7 @@ public class Area {
 
     public Collection<Player> getPlayersByType(int typeObject) {
         List<Player> result = new ArrayList<>();
-        for (LiveObject obj : this.entitys.values()) {
+        for (BaseModel obj : this.entitys.values()) {
             if (obj.getTypeObject() == typeObject && obj instanceof Player player) {
                 result.add(player);
             }
@@ -183,7 +182,7 @@ public class Area {
     }
 
 
-    public Map<Integer, LiveObject> getAllPlayerInZone() {
+    public Map<Integer, BaseModel> getAllPlayerInZone() {
         this.lock.readLock().lock();
         try {
             return Collections.unmodifiableMap(this.entitys);
@@ -192,7 +191,7 @@ public class Area {
         }
     }
 
-    public void sendMessageToPlayersInArea(Message message, LiveObject exclude) {
+    public void sendMessageToPlayersInArea(Message message, BaseModel exclude) {
         if (message == null)
             return;
         this.lock.readLock().lock();

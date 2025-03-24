@@ -1,15 +1,15 @@
-package nro.service.model.player;
+package nro.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.*;
 
 import nro.service.model.item.Item;
-import nro.service.model.monster.Monster;
+import nro.service.model.entity.monster.Monster;
 import nro.service.model.npc.Npc;
 import nro.service.model.npc.NpcFactory;
 import nro.service.model.task.TaskMain;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.server.manager.MapManager;
 import nro.server.manager.TaskManager;
 import nro.service.core.item.ItemService;

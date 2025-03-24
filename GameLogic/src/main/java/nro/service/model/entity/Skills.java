@@ -1,4 +1,4 @@
-package nro.service.model.player;
+package nro.service.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,10 +6,12 @@ import lombok.ToString;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.service.core.player.SkillService;
-import nro.service.model.LiveObject;
-import nro.service.model.monster.Monster;
+import nro.service.model.entity.boss.Boss;
+import nro.service.model.entity.discpile.Disciple;
+import nro.service.model.entity.monster.Monster;
+import nro.service.model.entity.player.Player;
 import nro.service.model.template.entity.SkillInfo;
-import nro.server.LogServer;
+import nro.server.system.LogServer;
 import nro.utils.Util;
 
 import java.util.ArrayList;
@@ -21,18 +23,34 @@ import java.util.Map;
 @Setter
 @ToString
 @SuppressWarnings("ALL")
-public class PlayerSkill {
+public class Skills {
 
     private final List<SkillInfo> skills;
-    private final Player player;
+
+    private final BaseModel entity;
+
+    private Player player;
+    private Boss boss;
+    private Disciple disciple;
 
     private boolean isMonkey;
     private byte[] skillShortCut;
     private SkillInfo skillSelect;
 
-    public PlayerSkill(Player player) {
-        this.player = player;
+    public Skills(BaseModel entity) {
+        this.entity = entity;
         this.skills = new ArrayList<>();
+        this.setEntity(this.entity);
+    }
+
+    private void setEntity(BaseModel entity) {
+        switch (entity) {
+            case Player player -> this.player = player;
+            case Boss boss -> this.boss = boss;
+            case Disciple disciple -> this.disciple = disciple;
+            default ->
+                    LogServer.LogException("setEntity player name:" + player.getName() + " error: entity not player");
+        }
     }
 
     public void playerAttackMonster(Monster monster) {
@@ -47,7 +65,7 @@ public class PlayerSkill {
         }
     }
 
-    public void useSkill(LiveObject target) {
+    public void useSkill(BaseModel target) {
         try {
             switch (this.skillSelect.getTemplate().getType()) {
                 case ConstSkill.SKILL_FORCUS -> {
@@ -64,7 +82,7 @@ public class PlayerSkill {
         }
     }
 
-    private void useSkillTarget(LiveObject target) {
+    private void useSkillTarget(BaseModel target) {
         switch (this.skillSelect.getTemplate().getId()) {
             case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> {
                 switch (target) {
