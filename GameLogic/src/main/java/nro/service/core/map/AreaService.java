@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.consts.ConstTypeObject;
 import nro.service.core.system.ServerService;
 import nro.service.model.entity.BaseModel;
+import nro.service.model.entity.discpile.Disciple;
 import nro.service.model.map.GameMap;
 import nro.service.model.map.Waypoint;
 import nro.service.model.map.areas.Area;
@@ -182,41 +183,60 @@ public class AreaService {
                     DropItemMap.dropMissionItems(player);
                 }
             }
+            case Disciple disciple -> {
+                Area newArea = goMap.getArea();
+            }
             default -> LogServer.LogException("");
         }
     }
 
-    private boolean transferPlayer(Player player, Area newArea, short x, short y) {
+    private boolean transferPlayer(BaseModel entity, Area newArea, short x, short y) {
         try {
-            ServerService serverService = ServerService.getInstance();
+            switch (entity) {
+                case Player player -> {
+                    ServerService serverService = ServerService.getInstance();
 
-            if (newArea == null) {
-                this.keepPlayerInSafeZone(player, null);
-                serverService.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
-                return false;
+                    if (newArea == null) {
+                        this.keepPlayerInSafeZone(player, null);
+                        serverService.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
+                        return false;
+                    }
+
+                    if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
+                        this.keepPlayerInSafeZone(player, null);
+                        serverService.sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
+                        return false;
+                    }
+
+                    this.playerExitArea(player);
+
+                    newArea.addPlayer(player);
+                    player.setArea(newArea);
+                    player.setX(x);
+                    player.setY(y);
+                    this.sendMessageChangerMap(player);
+                    this.sendInfoAllLiveObjectsTo(player);
+                    this.sendLiveObjectInfoToOthers(player);
+                    player.setTeleport(0);
+                    return true;
+                }
+                case Disciple disciple -> {
+                    if (newArea == null) {
+                        return false;
+                    }
+                    disciple.setArea(newArea);
+                    disciple.setX(x);
+                    disciple.setY(y);
+                    return true;
+                }
+                default -> {
+                }
             }
-
-            if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
-                this.keepPlayerInSafeZone(player, null);
-                serverService.sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
-                return false;
-            }
-
-            this.playerExitArea(player);
-
-            newArea.addPlayer(player);
-            player.setArea(newArea);
-            player.setX(x);
-            player.setY(y);
-            this.sendMessageChangerMap(player);
-            this.sendInfoAllLiveObjectsTo(player);
-            this.sendLiveObjectInfoToOthers(player);
-            player.setTeleport(0);
-            return true;
         } catch (Exception ex) {
             LogServer.LogException("transferPlayer: " + ex.getMessage(), ex);
             return false;
         }
+        return false;
     }
 
     public void playerExitArea(BaseModel entity) {
@@ -253,7 +273,7 @@ public class AreaService {
             } else {
                 safeX = (short) (waypoint.getMinX() - 40);
                 if (safeX < 0) safeX = (short) (waypoint.getMinX() + 50);
-                System.out.println("safeX: " + safeX + " safeY: " + safeY);
+//                System.out.println("safeX: " + safeX + " safeY: " + safeY);
             }
 
             player.setX(safeX);
@@ -299,20 +319,24 @@ public class AreaService {
     }
 
     public void changerMapByShip(Player player, int mapId, int typeTele) {
-        GameMap newMap = MapManager.getInstance().findMapById(mapId);
-        ServerService serverService = ServerService.getInstance();
-        if (newMap == null) {
-            serverService.sendChatGlobal(player.getSession(), null, "Map không tồn tại: " + mapId, false);
-            return;
-        }
+        try {
+            GameMap newMap = MapManager.getInstance().findMapById(mapId);
+            ServerService serverService = ServerService.getInstance();
+            if (newMap == null) {
+                serverService.sendChatGlobal(player.getSession(), null, "Map không tồn tại: " + mapId, false);
+                return;
+            }
 
-        Area newArea = newMap.getArea();
-        if (newArea == null) {
-            serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
-            return;
+            Area newArea = newMap.getArea();
+            if (newArea == null) {
+                serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
+                return;
+            }
+            player.setTeleport(typeTele);
+            AreaService.getInstance().gotoMap(player, newMap, Util.nextInt(400, 444), 5);
+        } catch (Exception ex) {
+            LogServer.LogException("changerMapByShip: " + ex.getMessage(), ex);
         }
-        player.setTeleport(typeTele);
-        AreaService.getInstance().gotoMap(player, newMap, Util.nextInt(400, 444), 5);
     }
 
 }

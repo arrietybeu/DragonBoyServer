@@ -77,8 +77,7 @@ public class Fashion {
             }
             return -1;
         } catch (Exception exception) {
-            LogServer.LogException("Fashion.getBody: " + exception.getMessage());
-            exception.printStackTrace();
+            LogServer.LogException("Fashion.getBody: " + exception.getMessage(), exception);
             return -1;
         }
     }
@@ -102,8 +101,8 @@ public class Fashion {
             }
             return -1;
         } catch (Exception exception) {
-            LogServer.LogException("Fashion.getLeg: " + exception.getMessage());
-            exception.printStackTrace();
+            LogServer.LogException("Fashion.getLeg: " + exception.getMessage(), exception);
+
             return -1;
         }
     }
@@ -125,16 +124,21 @@ public class Fashion {
     }
 
     public short getFlagBag() {
-        PlayerInventory playerInventory = this.player.getPlayerInventory();
-        if (playerInventory != null) {
-            List<Item> itemsBody = playerInventory.getItemsBody();
-            if (itemsBody.get(8) != null && itemsBody.get(8).getTemplate() != null) {
-                return itemsBody.get(8).getTemplate().part();
+        try {
+            PlayerInventory playerInventory = this.player.getPlayerInventory();
+            if (playerInventory != null) {
+                List<Item> itemsBody = playerInventory.getItemsBody();
+                if (itemsBody.get(8) != null && itemsBody.get(8).getTemplate() != null) {
+                    return itemsBody.get(8).getTemplate().part();
+                }
             }
-        }
+            var taskMain = this.player.getPlayerTask().getTaskMain();
+            if (taskMain.getId() == 3 && taskMain.getIndex() == 2) return 28;
 
-        var taskMain = this.player.getPlayerTask().getTaskMain();
-        if (taskMain.getId() == 3 && taskMain.getIndex() == 2) return 28;
+        } catch (Exception exception) {
+            LogServer.LogException("Fashion.getFlagBag: " + exception.getMessage(), exception);
+            return -1;
+        }
         return -1;
     }
 

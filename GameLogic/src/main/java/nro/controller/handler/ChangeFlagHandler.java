@@ -25,8 +25,7 @@ public class ChangeFlagHandler implements IMessageProcessor {
             }
 
         } catch (Exception ex) {
-            LogServer.LogException("ChangeFlagHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("ChangeFlagHandler: " + ex.getMessage(), ex);
         }
     }
 }

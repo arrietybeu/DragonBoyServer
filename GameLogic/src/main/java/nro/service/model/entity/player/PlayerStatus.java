@@ -30,4 +30,5 @@ public class PlayerStatus {
     public boolean isBaseMenu() {
         return this.indexMenu == ConstMenu.BASE_MENU;
     }
+
 }
