@@ -26,4 +26,10 @@ public abstract class Fashion {
     public abstract short getMount();
 
     public abstract short getFlagBag();
+
+    public abstract short getAura();
+
+    public abstract byte getEffSetItem();
+
+    public abstract short getIdHat();
 }

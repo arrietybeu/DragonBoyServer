@@ -90,9 +90,9 @@ public class AreaService {
 
                     data.writeByte(fashion.getFlagPk());
                     data.writeByte(playerInfo.getFusion().getTypeFusion() != 0 ? 1 : 0);
-                    data.writeShort(playerInfo.getAura());
-                    data.writeByte(playerInfo.getEffSetItem());
-                    data.writeShort(playerInfo.getIdHat());
+                    data.writeShort(playerInfo.getFashion().getAura());
+                    data.writeByte(playerInfo.getFashion().getEffSetItem());
+                    data.writeShort(playerInfo.getFashion().getIdHat());
                     me.sendMessage(message);
                 } catch (Exception ex) {
                     LogServer.LogException("addPlayer: " + ex.getMessage(), ex);

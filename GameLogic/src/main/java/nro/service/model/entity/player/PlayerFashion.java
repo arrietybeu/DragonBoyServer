@@ -127,4 +127,19 @@ public class PlayerFashion extends Fashion {
         return -1;
     }
 
+    @Override
+    public short getAura() {
+        return -1;
+    }
+
+    @Override
+    public byte getEffSetItem() {
+        return -1;
+    }
+
+    @Override
+    public short getIdHat() {
+        return -1;
+    }
+
 }

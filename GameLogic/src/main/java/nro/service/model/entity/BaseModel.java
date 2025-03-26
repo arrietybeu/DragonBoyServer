@@ -39,18 +39,6 @@ public abstract class BaseModel {
             {"Puaru"}, {"Piano"}, {"Icarus"}
     };
 
-    public short getAura() {
-        return -1;
-    }
-
-    public byte getEffSetItem() {
-        return -1;
-    }
-
-    public short getIdHat() {
-        return -1;
-    }
-
     public short[] getPlayerBirdFrames() {
         var gender = this.getGender();
         if (gender < 0 || gender >= BIRD_FRAMES.length) {

@@ -349,9 +349,9 @@ public class PlayerService {
             out.writeInt(19062006);
 
             out.writeByte(player.isNewPlayer() ? 1 : 0);
-            out.writeShort(player.getAura());
-            out.writeByte(player.getEffSetItem());
-            out.writeShort(player.getIdHat());
+            out.writeShort(player.getFashion().getAura());
+            out.writeByte(player.getFashion().getEffSetItem());
+            out.writeShort(player.getFashion().getIdHat());
             player.sendMessage(msg);
         } catch (Exception e) {
             LogServer.LogException("Error sendInfoPlayer: " + e.getMessage(), e);
