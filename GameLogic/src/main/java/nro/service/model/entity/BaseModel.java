@@ -18,7 +18,6 @@ public abstract class BaseModel {
     private byte gender;
     private byte typePk;
     private int teleport = 0;
-
     private short mount = -1;
 
     private short x;
