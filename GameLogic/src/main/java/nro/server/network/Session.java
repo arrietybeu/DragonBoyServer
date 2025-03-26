@@ -62,7 +62,7 @@ public final class Session {
             SessionManager.getInstance().add(this);
         } catch (Exception e) {
             this.handleInitializationError();
-            LogServer.LogException("Error Session: " + e.getMessage());
+            LogServer.LogException("Error Session: " + e.getMessage(), e);
         }
         // LogServer.DebugLogic("Session connect: " + sessionInfo.getId() + "-" +
         // Thread.activeCount() + " session size: " +
@@ -166,7 +166,7 @@ public final class Session {
                 this.getClientInfo().updateLastActiveTime();
             }
         } catch (Exception e) {
-            LogServer.LogException("Error sendMessage: " + e.getMessage());
+            LogServer.LogException("Error sendMessage: " + e.getMessage(), e);
             LogServer.DebugLogic(
                     "Socket State: isClosed=" + this.socket.isClosed() + ", isConnected=" + this.socket.isConnected());
         }
@@ -180,7 +180,7 @@ public final class Session {
         try {
             this.messageSender.doSendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error doSendMessage: " + e.getMessage());
+            LogServer.LogException("Error doSendMessage: " + e.getMessage(), e);
         }
     }
 
@@ -233,7 +233,6 @@ public final class Session {
         sessionInfo.curR = 0;
         sessionInfo.curW = 0;
         executorService.shutdown();
-
         try {
             if (socket != null) {
                 socket.close();
@@ -257,8 +256,12 @@ public final class Session {
                 UserManager.getInstance().remove(userInfo);
             }
 
+            if (this.player != null) {
+                this.player = null;
+            }
+
         } catch (Exception e) {
-            LogServer.LogException("Error during disconnect: " + e.getMessage());
+            LogServer.LogException("Error during disconnect: " + e.getMessage(), e);
         }
     }
 
@@ -276,8 +279,8 @@ public final class Session {
                 this.socket.close();
             }
             SessionManager.getInstance().kickSession(this);
-        } catch (IOException e) {
-            LogServer.LogException("error during cleanup: " + e.getMessage());
+        } catch (Exception e) {
+            LogServer.LogException("error during cleanup: " + e.getMessage(), e);
         }
     }
 

@@ -216,7 +216,6 @@ public class PlayerPoints extends Points {
         // cancel trade
         // huy skill
         this.currentHP = 0;
-
         this.player.getPlayerStatus().setLockMove(true);
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendCurrencyHpMp(this.player);
@@ -448,7 +447,7 @@ public class PlayerPoints extends Points {
 
         long finalExp = Util.nextInt((int) (exp * 70 / 100), (int) (exp * 120 / 100));
 
-        System.out.println("exp: " + exp + " finalExp: " + finalExp);
+//        System.out.println("exp: " + exp + " finalExp: " + finalExp);
         return finalExp;
     }
 

@@ -136,7 +136,6 @@ public class Player extends BaseModel {
             this.points.setDie();
         }
 
-
         return damage;
     }
 

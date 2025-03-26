@@ -20,7 +20,6 @@ public class PlayerStatus {
     private long lastTimePickItem;
     private long lastTimeAddExp;
 
-
     private int idItemTask;
 
     public PlayerStatus(Player player) {

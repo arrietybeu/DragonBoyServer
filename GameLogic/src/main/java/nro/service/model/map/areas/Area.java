@@ -51,8 +51,8 @@ public class Area {
     private void updateEntity() {
         this.lock.readLock().lock();
         try {
-            for (BaseModel player : this.entitys.values()) {
-                player.update();
+            for (BaseModel entitys : this.entitys.values()) {
+                entitys.update();
             }
         } catch (Exception ex) {
             LogServer.LogException("updateLiveObjects: " + ex.getMessage(), ex);
