@@ -180,6 +180,7 @@ public class Monster extends BaseModel {
                     if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
                     long exp = player.getPoints().getPotentialPointsAttack(this, damage);
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
+                    player.getPlayerTask().checkDoneTaskUpgradeExp(player.getPoints().getPower());
                     player.getPlayerStatus().setLastTimeAddExp(ms);
                 }
                 case Disciple disciple -> {

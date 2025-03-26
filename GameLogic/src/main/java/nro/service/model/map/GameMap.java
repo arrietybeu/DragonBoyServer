@@ -15,6 +15,7 @@ import nro.server.system.LogServer;
 import nro.server.manager.MapManager;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicIntegerArray;
 
 @Getter
 @Setter
@@ -106,7 +107,7 @@ public class GameMap implements Runnable {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LogServer.LogException("Error getWayPointInMap id: " + this.id + " name: " + this.name + ex.getMessage(), ex);
         }
         return this.getWaypointBase(player);
     }
@@ -157,8 +158,8 @@ public class GameMap implements Runnable {
 
     public int tileTypeAt(int x, int y) {
         try {
-            int[] types = new int[this.tileMap.tiles().length];
-            return types[y * this.tileMap.tmw() + x];
+            AtomicIntegerArray types = new AtomicIntegerArray(new int[this.tileMap.tiles().length]);
+            return types.get(y * this.tileMap.tmw() + x);
         } catch (Exception exception) {
             return 1000;
         }
@@ -195,7 +196,8 @@ public class GameMap implements Runnable {
                 long timeDo = System.currentTimeMillis() - st;
                 Thread.sleep(1000 - timeDo);
             } catch (Exception ex) {
-                LogServer.LogException("Error Update Map id: " + this.id + " name: " + this.name + ex.getMessage(), ex);
+                LogServer.LogException("Error Update Map id: " + this.id + " name: "
+                        + this.name + ex.getMessage(), ex);
             }
         }
     }

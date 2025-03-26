@@ -182,7 +182,7 @@ public class Area {
     }
 
 
-    public Map<Integer, BaseModel> getAllPlayerInZone() {
+    public Map<Integer, BaseModel> getAllEntityInArea() {
         this.lock.readLock().lock();
         try {
             return Collections.unmodifiableMap(this.entitys);

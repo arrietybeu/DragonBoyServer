@@ -93,11 +93,7 @@ public class PlayerTask {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     serverService.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
                     serverService.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k tiềm năng nữa", false);
-                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n"
-                            + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n"
-                            + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n"
-                            + "Con có thể sửa dụng đậu thần khi hết HP hoặc KI, bằng cách click vào nút có hình trái tim\n"
-                            + "Nhanh lên, ta đói lắm rồi!";
+                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n" + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n" + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n" + "Con có thể sửa dụng đậu thần khi hết HP hoặc KI, bằng cách click vào nút có hình trái tim\n" + "Nhanh lên, ta đói lắm rồi!";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 3000);
                 }
@@ -117,10 +113,7 @@ public class PlayerTask {
                 }
                 case 1 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                    var content = String.format("Đùi gà đây rồi, tối lắm, haha. Ta sẽ nướng tại đống lửa đằng kia, con có thể ăn bất cứ lúc nào nếu muốn\n"
-                            + "Ta vừa nghe thấy 1 tiếng động lớn, dường như có 1 ngôi sao rơi tại %s, con hãy đến kiểm tra xem\n"
-                            + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n"
-                            + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh", mapName);
+                    var content = String.format("Đùi gà đây rồi, tối lắm, haha. Ta sẽ nướng tại đống lửa đằng kia, con có thể ăn bất cứ lúc nào nếu muốn\n" + "Ta vừa nghe thấy 1 tiếng động lớn, dường như có 1 ngôi sao rơi tại %s, con hãy đến kiểm tra xem\n" + "Con cũng đã có thể bay được, nhưng nhớ là sẽ mất sức nếu bay nhiều đấy nhé!\n" + "Con cũng có thể dùng tiềm năng bản thân để nâng HP, KI, hoặc Sức đánh", mapName);
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 10_000);
                     Item duiGa = player.getPlayerInventory().findItemInBag(ConstItem.DUI_GA);
@@ -161,12 +154,7 @@ public class PlayerTask {
         try {
             if (index == 3) {
                 Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                var content = "Con đã thực sự trưởng thành\n" +
-                        "Ta cho con cuốn bí kíp này để nâng cao võ hoc.\n" +
-                        "Con hãy dùng sức mạnh của mình trừ gian diệt ác bảo vệ dân lành nhé\n" +
-                        "Ta vừa mới nhận được tin, người bán hàng của chúng ta, Bumma, vừa bị một bọn mãnh thú bắt đi\n" +
-                        "Ta nghĩ chúng cũng chưa đi được xa đâu, con hãy chạy theo cứu Bunma, đi nhanh đi con\n" +
-                        "Con phải đạt sức mạnh 78.000 mới có thể đánh lại bọn chúng, hãy siêng năng tập luyện";
+                var content = "Con đã thực sự trưởng thành\n" + "Ta cho con cuốn bí kíp này để nâng cao võ hoc.\n" + "Con hãy dùng sức mạnh của mình trừ gian diệt ác bảo vệ dân lành nhé\n" + "Ta vừa mới nhận được tin, người bán hàng của chúng ta, Bumma, vừa bị một bọn mãnh thú bắt đi\n" + "Ta nghĩ chúng cũng chưa đi được xa đâu, con hãy chạy theo cứu Bunma, đi nhanh đi con\n" + "Con phải đạt sức mạnh 78.000 mới có thể đánh lại bọn chúng, hãy siêng năng tập luyện";
                 npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
             }
         } catch (Exception ex) {
@@ -184,12 +172,7 @@ public class PlayerTask {
                 }
                 case 3 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                    var content = "Con đã bao giờ nghe về Rồng thần chưa?\n" +
-                            "Truyền thuyết kể rằng có 7 viên Ngọc rồng nằm rải rác khắp địa cầu\n" +
-                            "Người có 7 viên ngọc rồng này sex có thể triệu hồi Rồng thần\n" +
-                            "Khi rồng thần xuất hiện, sẽ có 3 điều ước cho người đó\n" +
-                            "Ta được biết tại rừng Karin (Trái đất) có 1 viên ngọc rồng\n" +
-                            "Con hãy tìm đem về cho ta nhé";
+                    var content = "Con đã bao giờ nghe về Rồng thần chưa?\n" + "Truyền thuyết kể rằng có 7 viên Ngọc rồng nằm rải rác khắp địa cầu\n" + "Người có 7 viên ngọc rồng này sex có thể triệu hồi Rồng thần\n" + "Khi rồng thần xuất hiện, sẽ có 3 điều ước cho người đó\n" + "Ta được biết tại rừng Karin (Trái đất) có 1 viên ngọc rồng\n" + "Con hãy tìm đem về cho ta nhé";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                 }
             }
@@ -243,9 +226,7 @@ public class PlayerTask {
     public boolean checkDoneTaskTalkNpc(Npc npc) {
         return switch (npc.getTempId()) {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
-                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1)
-                            || this.doneTask(2, 1) || this.doneTask(3, 2)
-                            || this.doneTask(4, 3) || this.doneTask(7, 3);
+                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1) || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3) || this.doneTask(7, 3);
             case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
             default -> false;
         };
@@ -289,7 +270,7 @@ public class PlayerTask {
         this.doneTask(3, 0);
     }
 
-    public void checkDoneTaskConfirmMenuNpc(int npcId) {
+    public void checkDoneTaskConfirmMenuNpc(int npcId) throws RuntimeException {
         if (npcId == ConstNpc.DAU_THAN) {
             if (player.getPlayerStatus().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
                 this.doneTask(0, 4);
@@ -301,6 +282,16 @@ public class PlayerTask {
         switch (itemId) {
             case ConstItem.DUI_GA -> this.doneTask(2, 0);
             case ConstItem.DUA_BE -> this.doneTask(3, 1);
+        }
+    }
+
+    public void checkDoneTaskUpgradeExp(long exp) throws RuntimeException {
+        switch (this.taskMain.getId()) {
+            case 7 -> {
+                if (exp >= 78_000) {
+                    this.doneTask(7, 0);
+                }
+            }
         }
     }
 

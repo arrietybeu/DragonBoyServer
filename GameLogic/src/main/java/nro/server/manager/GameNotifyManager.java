@@ -1,7 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.service.model.template.GameInfo;
+import nro.service.model.template.GameNotify;
 import nro.server.network.Message;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.system.LogServer;
@@ -21,7 +21,7 @@ public class GameNotifyManager implements IManager {
     @Getter
     private static final GameNotifyManager instance = new GameNotifyManager();
 
-    private final List<GameInfo> notifyList = new ArrayList<>();
+    private final List<GameNotify> notifyList = new ArrayList<>();
     private byte[] dataNotify;
 
     @Override
@@ -52,10 +52,10 @@ public class GameNotifyManager implements IManager {
                     var textMain = resultSet.getString("main");
                     var content = resultSet.getString("content");
 
-                    GameInfo gameInfo = new GameInfo(id, textMain, content);
-                    this.notifyList.add(gameInfo);
+                    GameNotify gameNotify = new GameNotify(id, textMain, content);
+                    this.notifyList.add(gameNotify);
                 }
-//                LogServer.LogInit("GameInfo initialized size: " + this.notifyList.size());
+//                LogServer.LogInit("GameNotify initialized size: " + this.notifyList.size());
             }
         } catch (SQLException ex) {
             LogServer.LogException("Error loadNotify: " + ex.getMessage());
@@ -76,8 +76,7 @@ public class GameNotifyManager implements IManager {
             this.dataNotify = message.getData();
 
         } catch (IOException ex) {
-            LogServer.LogException("Error set data Notify: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("Error set data Notify: " + ex.getMessage(), ex);
         }
     }
 

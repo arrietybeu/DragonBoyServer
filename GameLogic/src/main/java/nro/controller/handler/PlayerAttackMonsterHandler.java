@@ -20,7 +20,7 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
             Monster monster = player.getArea().getMonsterInAreaById(mobId);
             if (monster == null) return;
             if (mobId != -1) {
-                player.getSkills().playerAttackMonster(monster);
+                player.getSkills().entityAttackMonster(monster);
             } else {
                 var monsterID = message.reader().readInt();
                 LogServer.LogWarning("monsterId:" + monsterID);

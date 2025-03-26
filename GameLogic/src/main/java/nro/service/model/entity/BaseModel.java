@@ -41,11 +41,11 @@ public abstract class BaseModel {
     };
 
     public short getAura() {
-        return 2;
+        return -1;
     }
 
     public byte getEffSetItem() {
-        return 8;
+        return -1;
     }
 
     public short getIdHat() {

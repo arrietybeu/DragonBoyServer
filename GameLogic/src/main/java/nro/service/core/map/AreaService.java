@@ -26,48 +26,57 @@ public class AreaService {
     @Getter
     public static final AreaService instance = new AreaService();
 
-    public void sendInfoAllLiveObjectsTo(Player player) {
+    public void sendInfoAllLiveObjectsTo(BaseModel entity) {
         try {
-            Map<Integer, BaseModel> objects = player.getArea().getAllPlayerInZone();
-            for (BaseModel obj : objects.values()) {
-                switch (obj) {
-                    case Player plInZone -> {
-                        if (plInZone != player) {
-                            this.addPlayer(player, plInZone);
-                        }
-                    }
-                    default -> {
-                    }
+            Map<Integer, BaseModel> entities = entity.getArea().getAllEntityInArea();
+
+            for (BaseModel plInZone : entities.values()) {
+                // Hiện tại chỉ xử lý Player
+                if (plInZone != entity) {
+                    // Gửi thông tin Player đang có mặt cho entity (người mới vào)
+                    this.addPlayer(entity, plInZone);
                 }
             }
-            this.sendLiveObjectInfoToOthers(player);
+
+            this.sendLiveObjectInfoToOthers(entity);
+
         } catch (Exception ex) {
             LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage(), ex);
         }
     }
 
-    private void sendLiveObjectInfoToOthers(Player player) {
+    /**
+     * Gửi thông tin của entity vừa vào zone đến tất cả các thực thể khác trong zone.
+     * <p>
+     * - entity: người/đối tượng mới vào zone.
+     * - Mục tiêu: những người khác trong zone sẽ thấy entity này xuất hiện.
+     */
+    private void sendLiveObjectInfoToOthers(BaseModel entity) {
         try {
-            Map<Integer, BaseModel> players = player.getArea().getAllPlayerInZone();
+            Map<Integer, BaseModel> players = entity.getArea().getAllEntityInArea();
+
             for (BaseModel obj : players.values()) {
                 switch (obj) {
                     case Player plInZone -> {
-                        if (plInZone != player) {
-                            this.addPlayer(plInZone, player);
+                        if (plInZone != entity) {
+                            // Gửi thông tin entity cho player đang ở trong zone
+                            this.addPlayer(plInZone, entity);
                         }
                     }
-                    default -> {
-                    }
+                    default -> LogServer.LogException("sendLiveObjectInfoToOthers: Not Object: " + entity);
                 }
             }
+
         } catch (Exception ex) {
             LogServer.LogException("sendPlayerInfoToAllInArea: " + ex.getMessage(), ex);
         }
     }
 
-    private void addPlayer(Player isMe, BaseModel entityInfo) {
-        switch (entityInfo) {
+
+    private void addPlayer(BaseModel entity, BaseModel isMe) {
+        switch (entity) {
             case Player playerInfo -> {
+                Player me = (Player) isMe;
                 try (Message message = new Message(-5)) {
                     DataOutputStream data = message.writer();
                     Fashion fashion = playerInfo.getFashion();
@@ -84,13 +93,12 @@ public class AreaService {
                     data.writeShort(playerInfo.getAura());
                     data.writeByte(playerInfo.getEffSetItem());
                     data.writeShort(playerInfo.getIdHat());
-                    isMe.sendMessage(message);
+                    me.sendMessage(message);
                 } catch (Exception ex) {
                     LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
                 }
             }
-            default -> {
-            }
+            default -> LogServer.LogException("sendLiveObjectInfoToOthers: Not Object: " + entity);
         }
     }
 
@@ -130,7 +138,7 @@ public class AreaService {
     }
 
     public void playerChangerMapByWayPoint(Player player) {
-        var ms = System.currentTimeMillis();
+//        var ms = System.currentTimeMillis();
         try {
             Area currentArea = player.getArea();
             GameMap currentMap = currentArea.getMap();
@@ -186,7 +194,7 @@ public class AreaService {
             case Disciple disciple -> {
                 Area newArea = goMap.getArea();
             }
-            default -> LogServer.LogException("");
+            default -> LogServer.LogException("Not Entity :" + object);
         }
     }
 
@@ -208,41 +216,50 @@ public class AreaService {
                         return false;
                     }
 
-                    this.playerExitArea(player);
-
-                    newArea.addPlayer(player);
-                    player.setArea(newArea);
-                    player.setX(x);
-                    player.setY(y);
-                    this.sendMessageChangerMap(player);
-                    this.sendInfoAllLiveObjectsTo(player);
-                    this.sendLiveObjectInfoToOthers(player);
-                    player.setTeleport(0);
+                    this.entityEnterArea(player, newArea, x, y);
+                    this.sendMessageChangerMap(player);// no entity
                     return true;
                 }
                 case Disciple disciple -> {
                     if (newArea == null) {
                         return false;
                     }
-                    disciple.setArea(newArea);
-                    disciple.setX(x);
-                    disciple.setY(y);
+
+                    this.entityEnterArea(disciple, newArea, x, y);
                     return true;
                 }
                 default -> {
+                    LogServer.LogException("transferPlayer: Not Entity :" + entity);
+                    return false;
                 }
             }
         } catch (Exception ex) {
             LogServer.LogException("transferPlayer: " + ex.getMessage(), ex);
             return false;
         }
-        return false;
+    }
+
+    private void entityEnterArea(BaseModel entity, Area newArea, short x, short y) {
+        try {
+            // xoa entity khỏi area cũ
+            this.playerExitArea(entity);
+
+            // add entity vào area mới
+            newArea.addPlayer(entity);
+            entity.setArea(newArea);
+            entity.setX(x);
+            entity.setY(y);
+            this.sendInfoAllLiveObjectsTo(entity);
+            entity.setTeleport(0);
+        } catch (Exception ex) {
+            LogServer.LogException("entityEnterArea: " + ex.getMessage(), ex);
+        }
     }
 
     public void playerExitArea(BaseModel entity) {
         try {
             Area area = entity.getArea();
-            if (area.getAllPlayerInZone().containsKey(entity.getId())) {
+            if (area.getAllEntityInArea().containsKey(entity.getId())) {
                 this.sendTeleport(entity);
                 this.sendRemovePlayerExitArea(entity);
                 area.removePlayer(entity);

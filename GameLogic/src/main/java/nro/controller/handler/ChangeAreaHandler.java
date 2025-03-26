@@ -32,8 +32,7 @@ public class ChangeAreaHandler implements IMessageProcessor {
             Area area = areaList.get(areaId);
             AreaService.getInstance().changeArea(player, area);
         } catch (Exception ex) {
-            LogServer.LogException("ChangeAreaHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("ChangeAreaHandler: " + ex.getMessage(), ex);
         }
     }
 }

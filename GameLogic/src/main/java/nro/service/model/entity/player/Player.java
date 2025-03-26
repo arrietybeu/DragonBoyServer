@@ -47,10 +47,10 @@ public class Player extends BaseModel {
         this.playerInventory = new PlayerInventory(this);
         this.playerMagicTree = new PlayerMagicTree(this);
         this.playerStatus = new PlayerStatus(this);
-        this.points = new Points(this);
-        this.fashion = new Fashion(this);
-        this.skills = new Skills(this);
-        this.fusion = new Fusion(this);
+        this.points = new PlayerPoints(this);
+        this.fashion = new PlayerFashion(this);
+        this.skills = new PlayerSkills(this);
+        this.fusion = new PlayerFusion(this);
         this.createAdministrator();
     }
 
@@ -136,7 +136,7 @@ public class Player extends BaseModel {
             this.points.setDie();
         }
 
-        System.out.println("hp: " + this.points.getCurrentHP());
+
         return damage;
     }
 
