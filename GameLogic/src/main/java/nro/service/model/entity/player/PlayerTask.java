@@ -35,15 +35,16 @@ public class PlayerTask {
     }
 
     public boolean doneTask(int taskId, int index) {
-        if (this.player.getTypeObject() != ConstTypeObject.TYPE_PLAYER) {
-            return false;
-        }
+        if (this.player.getTypeObject() != ConstTypeObject.TYPE_PLAYER) return false;
         try {
             if (!checkTaskInfo(taskId, index)) return false;
 
-            TaskManager.getInstance().rewardTask(this.player, taskId, index);
+            if (!TaskManager.getInstance().rewardTask(this.player, taskId, index)) {
+//                ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, "Không thể nhận thưởng nhiệm vụ!", false);
+            }
 
             this.addDoneSubTask();
+
             NpcService npcService = NpcService.getInstance();
             var npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
             var mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
@@ -65,7 +66,7 @@ public class PlayerTask {
     }
 
     private void handleTaskZero(int index, NpcService npcService, String npcName, String mapName, String mapNameVillage) {
-        System.out.println("done index: " + index);
+
         switch (index) {
             case 0 ->
                     npcService.sendNpcTalkUI(player, 5, String.format("Hãy di chuyển đến %s, %s đang chờ bạn ở đằng kia!", mapName, npcName), -1);
@@ -93,7 +94,10 @@ public class PlayerTask {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     serverService.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k sức mạnh", false);
                     serverService.sendChatGlobal(player.getSession(), null, "Bạn vừa được thưởng 3 k tiềm năng nữa", false);
-                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n" + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n" + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n" + "Con có thể sửa dụng đậu thần khi hết HP hoặc KI, bằng cách click vào nút có hình trái tim\n" + "Nhanh lên, ta đói lắm rồi!";
+                    String content = "Tốt lắm, con đã biết cách chiến đấu rồi đấy\n"
+                            + "Bây giờ, con hãy đi đến đồi hoa cúc, đánh bọn khủng long con mang về cho ta 10 cái đùi gà, chúng ta sẽ để dành ăn dần\n"
+                            + "đây là tấm bản đồ của vùng đất này, con có thể xem để tìm đường đi đến đồi hoa cúc\n"
+                            + "Con có thể sửa dụng đậu thần khi hết HP hoặc KI, bằng cách click vào nút có hình trái tim\n" + "Nhanh lên, ta đói lắm rồi!";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 3000);
                 }
@@ -140,7 +144,7 @@ public class PlayerTask {
 
                     Item duaBe = player.getPlayerInventory().findItemInBag(ConstItem.DUA_BE);
                     if (duaBe != null && duaBe.getQuantity() >= 1) {
-                        player.getPlayerInventory().subQuantityItemsBag(duaBe, duaBe.getQuantity());
+                        player.getPlayerInventory().subQuantityItemAllInventory(duaBe, duaBe.getQuantity());
                         ItemService.getInstance().sendFlagBag(player);
                     }
                 }
@@ -205,21 +209,25 @@ public class PlayerTask {
     }
 
     public void checkDoneTaskGoMap() {
-        switch (this.player.getArea().getMap().getId()) {
-            case ConstMap.VACH_NUI_ARU_BASE:
-            case ConstMap.VACH_NUI_MOORI_BASE:
-            case ConstMap.VUC_PLANT: {
-                if (this.player.getX() >= 635) {
-                    this.doneTask(0, 0);
+        try {
+            switch (this.player.getArea().getMap().getId()) {
+                case ConstMap.VACH_NUI_ARU_BASE:
+                case ConstMap.VACH_NUI_MOORI_BASE:
+                case ConstMap.VUC_PLANT: {
+                    if (this.player.getX() >= 635) {
+                        this.doneTask(0, 0);
+                    }
+                    break;
                 }
-                break;
+                case ConstMap.NHA_GOHAN:
+                case ConstMap.NHA_MOORI:
+                case ConstMap.NHA_BROLY: {
+                    this.doneTask(0, 1);
+                    break;
+                }
             }
-            case ConstMap.NHA_GOHAN:
-            case ConstMap.NHA_MOORI:
-            case ConstMap.NHA_BROLY: {
-                this.doneTask(0, 1);
-                break;
-            }
+        } catch (Exception e) {
+            LogServer.LogException("PlayerTask checkDoneTaskGoMap - " + e.getMessage(), e);
         }
     }
 
@@ -311,30 +319,34 @@ public class PlayerTask {
     }
 
     private void addDoneSubTask() {
-        TaskService taskService = TaskService.getInstance();
-        var subList = this.taskMain.getSubNameList();
-        var currentIndex = this.taskMain.getIndex();
-        subList.get(currentIndex).addCount(1);
+        try {
+            TaskService taskService = TaskService.getInstance();
+            var subList = this.taskMain.getSubNameList();
+            var currentIndex = this.taskMain.getIndex();
+            subList.get(currentIndex).addCount(1);
 
-        var count = subList.get(currentIndex).getCount();
-        if (count >= subList.get(currentIndex).getMaxCount()) {
-            this.taskMain.setIndex(currentIndex + 1);
-            if (this.taskMain.getIndex() >= subList.size()) {
-                int nextTaskId = (this.taskMain.getId() == 4) ? 7 : this.taskMain.getId() + 1;// nhay coc nhiem vu 4 len 7
-                TaskMain nextTask = this.getTaskMainById(nextTaskId);
-                if (nextTask != null) {
-                    this.taskMain = nextTask;
-                    this.taskMain.setIndex(0);
-                    taskService.sendTaskMain(player);
+            var count = subList.get(currentIndex).getCount();
+            if (count >= subList.get(currentIndex).getMaxCount()) {
+                this.taskMain.setIndex(currentIndex + 1);
+                if (this.taskMain.getIndex() >= subList.size()) {
+                    int nextTaskId = (this.taskMain.getId() == 4) ? 7 : this.taskMain.getId() + 1;// nhay coc nhiem vu 4 len 7
+                    TaskMain nextTask = this.getTaskMainById(nextTaskId);
+                    if (nextTask != null) {
+                        this.taskMain = nextTask;
+                        this.taskMain.setIndex(0);
+                        taskService.sendTaskMain(player);
+                    } else {
+                        LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
+                    }
                 } else {
-                    LogServer.LogWarning("Không tìm thấy nhiệm vụ tiếp theo! Giữ nguyên nhiệm vụ hiện tại.");
+                    taskService.sendTaskMain(player);
                 }
-            } else {
-                taskService.sendTaskMain(player);
             }
-        }
 
-        taskService.sendTaskMainUpdate(player);
+            taskService.sendTaskMainUpdate(player);
+        } catch (Exception exception) {
+            LogServer.LogException("PlayerTask addDoneSubTask - " + exception.getMessage(), exception);
+        }
     }
 
 }

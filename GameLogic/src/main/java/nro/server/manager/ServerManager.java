@@ -1,4 +1,4 @@
-package nro.server;
+package nro.server.manager;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -20,8 +20,6 @@ import nro.service.core.usage.ItemHandlerRegistry;
 import nro.server.network.Session;
 import nro.service.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
-import nro.server.manager.Manager;
-import nro.server.manager.SessionManager;
 import nro.service.core.system.CommandService;
 import org.slf4j.LoggerFactory;
 

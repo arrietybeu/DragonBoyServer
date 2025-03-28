@@ -38,14 +38,10 @@ public class PlayerSkills extends Skills {
     public void useSkill(BaseModel target) {
         try {
             switch (this.skillSelect.getTemplate().getType()) {
-                case ConstSkill.SKILL_FORCUS -> {
-                    this.useSkillTarget(target);
-                }
+                case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);
                 case ConstSkill.SKILL_SUPPORT -> {
                 }
-                case ConstSkill.SKILL_NOT_FORCUS -> {
-                    this.useSkillNotForcus();
-                }
+                case ConstSkill.SKILL_NOT_FORCUS -> this.useSkillNotForcus();
             }
         } catch (Exception ex) {
             LogServer.LogException("useSkill player name:" + player.getName() + " error: " + ex.getMessage());

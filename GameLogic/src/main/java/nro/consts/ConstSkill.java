@@ -9,6 +9,11 @@ public class ConstSkill {
     public static final byte SKILL_NOT_FORCUS = 3;
     public static final byte SKILL_SPECIAL = 4;
 
+    // mana type
+
+    public static final byte MANA = 0;
+    public static final byte HP = 1;
+
     // type skill not focus
     public static final byte NORMAL = 0;
     public static final byte START_CHARGE = 1;
@@ -22,14 +27,6 @@ public class ConstSkill {
     public static final byte AREA_MELEE = 20;
     public static final byte AREA_RANGED = 21;
 
-
-    // skill id
-    public static final byte DRAGON = 0;
-    public static final byte DEMON = 2;
-    public static final byte GALICK = 4;
-    public static final byte TU_PHAT_NO = 14;
-
-
     private final byte ATT_STAND = 0;
     private final byte ATT_FLY = 1;
     private final byte SKILL_AUTO_USE = 0;
@@ -37,6 +34,13 @@ public class ConstSkill {
     private final byte SKILL_CLICK_USE_BUFF = 2;
     private final byte SKILL_CLICK_NPC = 3;
     private final byte SKILL_CLICK_LIVE = 4;
+
+
+    // skill id
+    public static final byte DRAGON = 0;
+    public static final byte DEMON = 2;
+    public static final byte GALICK = 4;
+    public static final byte TU_PHAT_NO = 14;
 
 
 }

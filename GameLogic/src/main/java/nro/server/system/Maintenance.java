@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import lombok.Getter;
-import nro.server.ServerManager;
+import nro.server.manager.ServerManager;
 
 /**
  * @author Arriety

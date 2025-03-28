@@ -3,6 +3,7 @@ package nro.service.core.player;
 import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstsCmd;
+import nro.service.model.entity.BaseModel;
 import nro.service.model.entity.player.Player;
 import nro.service.model.template.entity.SkillInfo;
 import nro.server.system.LogServer;
@@ -16,13 +17,13 @@ public class SkillService {
     @Getter
     private static final SkillService instance = new SkillService();
 
-    public void sendPlayerAttackMonster(Player player, int mobId) {
+    public void sendEntityAttackMonster(BaseModel entity, int mobId) {
         try (Message message = new Message(54)) {
             DataOutputStream writer = message.writer();
-            writer.writeInt(player.getId());
-            writer.writeByte(player.getSkills().getSkillSelect().getSkillId());
+            writer.writeInt(entity.getId());
+            writer.writeByte(entity.getSkills().getSkillSelect().getSkillId());
             writer.writeByte(mobId);
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception e) {
             LogServer.LogException("SkillService: sendPlayerAttackMonster: " + e.getMessage(), e);
         }

@@ -1,6 +1,6 @@
 package nro;
 
-import nro.server.ServerManager;
+import nro.server.manager.ServerManager;
 import nro.server.system.LogServer;
 
 public class DragonBall {

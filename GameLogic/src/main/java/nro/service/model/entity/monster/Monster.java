@@ -78,7 +78,8 @@ public class Monster extends BaseModel {
                 }
             }
 
-            SkillService.getInstance().sendPlayerAttackMonster(plAttack, this.getId());
+            // send effect skill attack monster
+            SkillService.getInstance().sendEntityAttackMonster(plAttack, this.getId());
 
             if (damage >= this.point.getHp()) damage = this.point.getHp();
 
@@ -104,14 +105,14 @@ public class Monster extends BaseModel {
         }
     }
 
-    public void setLive() throws RuntimeException {
+    public void setLive() {
         try {
             this.point.setDead(false);
             this.status.setStatus((byte) 5);
             this.info.setLevelBoss((byte) 0);
             this.point.setHp(this.point.getMaxHp());
             MonsterService.getInstance().sendMonsterRevice(this);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             LogServer.LogException("Monster setLive: " + e.getMessage(), e);
         }
     }

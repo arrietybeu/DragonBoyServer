@@ -240,6 +240,12 @@ public class PlayerInventory {
         // Xử lý trừ số lượng item
     }
 
+    public void subQuantityItemAllInventory(Item item, int quantity) {
+        this.subQuantityItemsBag(item, quantity);
+        this.subQuantityItemsBody(item, quantity);
+        this.subQuantityItemsBox(item, quantity);
+    }
+
     public void subQuantityItemsBag(Item item, int quantity) {
         this.subQuantityItem(this.getItemsBag(), item, quantity);
         InventoryService.getInstance().sendItemToBags(player, 0);

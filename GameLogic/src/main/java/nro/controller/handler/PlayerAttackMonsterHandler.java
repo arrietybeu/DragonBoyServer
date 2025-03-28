@@ -15,6 +15,8 @@ public class PlayerAttackMonsterHandler implements IMessageProcessor {
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
         if (player == null) return;
+        if (player.getSkills() == null) return;
+        if (player.getSkills().getSkillSelect() == null) return;
         try {
             var mobId = message.reader().readByte();
             Monster monster = player.getArea().getMonsterInAreaById(mobId);
