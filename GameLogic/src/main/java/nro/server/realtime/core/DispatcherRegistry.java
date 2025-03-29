@@ -20,7 +20,7 @@ public class DispatcherRegistry {
                 Method startMethod = clazz.getMethod("start");
                 startMethod.invoke(instance);
 
-                LogServer.LogInit("Started dispatcher: " + clazz.getSimpleName());
+//                LogServer.LogInit("Started dispatcher: " + clazz.getSimpleName());
             } catch (Exception e) {
                 LogServer.LogException("Error starting dispatcher: " + clazz.getSimpleName(), e);
             }

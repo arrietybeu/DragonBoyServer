@@ -26,7 +26,7 @@ public class ItemHandlerRegistry {
 
                         for (int type : annotation.value()) {
                             handlerMap.put(type, handler);
-                            System.out.println("Registered item handler: " + cls.getName() + " for type: " + type);
+//                            System.out.println("Registered item handler: " + cls.getName() + " for type: " + type);
                         }
                     } catch (Exception e) {
                         LogServer.LogException("Error registering item handler: " + cls.getName() + " - " + e.getMessage(), e);

@@ -5,6 +5,7 @@ import nro.consts.ConstPlayer;
 import nro.consts.ConstShop;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
+import nro.server.realtime.system.player.MagicTreeISystem;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.core.economy.ShopService;
@@ -241,7 +242,10 @@ public class ChatService {
                             + playerChat.getArea().getMap().getId() + " zone id: " + playerChat.getArea().getId()
                             + " x: " + playerChat.getX() + " y: " + playerChat.getY();
 
-                    String content = threadInfo + playerLocation;
+                    var sizePlayer = MagicTreeISystem.getInstance().size();
+                    String systemInfo = "\nsize player magic tree: " + sizePlayer;
+
+                    String content = threadInfo + playerLocation + systemInfo;
                     NpcService.getInstance().sendNpcTalkUI(playerChat, 5, content, -1);
                 }
                 case "reload_map" -> {

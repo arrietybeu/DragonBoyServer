@@ -26,7 +26,6 @@ public class MapSystemDispatcher implements IDispatcherBase {
     public void start() {
         registerSystems();
         scheduler.scheduleAtFixedRate(this::tick, 0, 100, TimeUnit.MILLISECONDS);
-        LogServer.LogInit("MapSystemDispatcher started with " + systems.size() + " systems.");
     }
 
     @Override

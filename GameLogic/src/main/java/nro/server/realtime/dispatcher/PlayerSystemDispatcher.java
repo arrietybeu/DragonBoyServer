@@ -9,6 +9,7 @@ import nro.server.system.LogServer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -63,6 +64,15 @@ public class PlayerSystemDispatcher implements IDispatcherBase {
 
     @Override
     public void stop() {
+        for (ISystemBase system : systems) {
+
+            if (Objects.requireNonNull(system) instanceof MagicTreeISystem magicTreeISystem) {
+                magicTreeISystem.getPlayers().clear();
+            } else {
+                LogServer.LogException("System '" + system.name() + "' not supported for stop.");
+            }
+        }
+        systems.clear();
         scheduler.shutdown();
     }
 }
