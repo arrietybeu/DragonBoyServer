@@ -26,6 +26,8 @@ public class ConstItem {
 
     public static final byte TYPE_FLAG_BAG = 11;
 
+    public static final byte TYPE_VE_TINH = 22;
+
     public static final byte TYPE_MOUNT = 23;
 
     public static final byte TYPE_MOUNT_VIP = 24;

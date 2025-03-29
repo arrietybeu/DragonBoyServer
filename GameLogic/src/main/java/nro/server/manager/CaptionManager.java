@@ -1,11 +1,11 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.service.model.entity.BaseModel;
-import nro.service.model.entity.player.Player;
-import nro.service.model.template.CaptionTemplate;
+import nro.server.service.model.entity.Entity;
+import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.template.CaptionTemplate;
 import nro.server.network.Message;
-import nro.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseConnectionPool;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -120,7 +120,7 @@ public class CaptionManager implements IManager {
         }
     }
 
-    public int getLevel(BaseModel entity) {
+    public int getLevel(Entity entity) {
         switch (entity) {
             case Player player -> {
                 long power = player.getPoints().getPower();

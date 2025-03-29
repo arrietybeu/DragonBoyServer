@@ -3,19 +3,19 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.consts.ConstMap;
 import nro.consts.ConstPlayer;
-import nro.service.model.map.TileMap;
-import nro.service.model.map.Waypoint;
-import nro.service.model.map.areas.Area;
-import nro.service.model.map.decorates.BackgroudEffect;
-import nro.service.model.map.decorates.BgItem;
-import nro.service.model.entity.monster.Monster;
-import nro.service.model.template.NpcTemplate;
-import nro.service.model.template.map.TileSetTemplate;
+import nro.server.service.model.map.TileMap;
+import nro.server.service.model.map.Waypoint;
+import nro.server.service.model.map.areas.Area;
+import nro.server.service.model.map.decorates.BackgroudEffect;
+import nro.server.service.model.map.decorates.BgItem;
+import nro.server.service.model.entity.monster.Monster;
+import nro.server.service.model.template.NpcTemplate;
+import nro.server.service.model.template.map.TileSetTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
-import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.template.map.BackgroundMapTemplate;
-import nro.service.model.map.GameMap;
+import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.model.template.map.BackgroundMapTemplate;
+import nro.server.service.model.map.GameMap;
 import nro.server.system.LogServer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -31,9 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @SuppressWarnings("ALL")
@@ -43,7 +40,6 @@ public class MapManager implements IManager {
 
     @Getter
     private static final MapManager instance = new MapManager();
-    private ExecutorService threadPool = Executors.newFixedThreadPool(200);
     private final Map<Integer, GameMap> gameMaps = new HashMap<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
@@ -56,45 +52,22 @@ public class MapManager implements IManager {
         this.loadDataBackgroundMap();
         this.loadTileSetInfo();
         running = true;
-        this.start();
     }
 
     @Override
     public void reload() {
         running = false;
         this.clear();
-        try {
-            if (!this.threadPool.awaitTermination(3, TimeUnit.SECONDS)) {
-                this.threadPool.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            this.threadPool.shutdownNow();
-        }
-
-        this.threadPool = Executors.newFixedThreadPool(200);
         this.init();
     }
 
     @Override
     public void clear() {
-        this.threadPool.shutdown();
         this.gameMaps.clear();
         this.backgroundMapTemplates.clear();
         this.tileSetTemplates.clear();
         this.BackgroundMapData = null;
         this.TileSetData = null;
-    }
-
-    private void start() {
-        try {
-            for (GameMap map : this.gameMaps.values()) {
-                map.initNpc();
-                this.threadPool.submit(map);
-            }
-        } catch (Exception ex) {
-            LogServer.LogException("Error start thread pool Map: " + ex.getMessage());
-            ex.printStackTrace();
-        }
     }
 
     private void loadMapTemplate() {
@@ -128,6 +101,7 @@ public class MapManager implements IManager {
                 GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems,
                         effects, waypoints, tileMap, npcs);
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
+                mapTemplate.initNpc();
                 this.gameMaps.put(id, mapTemplate);
             }
 

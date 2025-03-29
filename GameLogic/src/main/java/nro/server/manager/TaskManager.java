@@ -1,9 +1,9 @@
 package nro.server.manager;
 
-import nro.service.model.item.Item;
-import nro.service.model.entity.player.Player;
-import nro.service.model.task.TaskMain;
-import nro.service.repositories.DatabaseConnectionPool;
+import nro.server.service.model.item.Item;
+import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.task.TaskMain;
+import nro.server.service.repositories.DatabaseConnectionPool;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -11,8 +11,8 @@ import java.sql.*;
 import java.util.*;
 
 import lombok.Getter;
-import nro.service.core.system.ServerService;
-import nro.service.core.item.ItemFactory;
+import nro.server.service.core.system.ServerService;
+import nro.server.service.core.item.ItemFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 

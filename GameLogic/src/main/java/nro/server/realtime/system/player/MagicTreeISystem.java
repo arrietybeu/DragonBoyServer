@@ -1,0 +1,74 @@
+package nro.server.realtime.system.player;
+
+import lombok.Getter;
+import nro.server.realtime.core.ISystemBase;
+import nro.server.service.model.entity.player.Player;
+import nro.server.system.LogServer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public class MagicTreeISystem implements ISystemBase {
+
+    @Getter
+    private static final MagicTreeISystem instance = new MagicTreeISystem();
+    private final List<Player> players = new ArrayList<>();
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    @Override
+    public void register(Object object) {
+        if (object instanceof Player player) {
+            lock.writeLock().lock();
+            try {
+                if (players.contains(player)) {
+                    LogServer.LogException(player.getName() + " is already registered!");
+                    return;
+                }
+                players.add(player);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    @Override
+    public void unregister(Object object) {
+        if ((object instanceof Player player)) {
+            lock.writeLock().lock();
+            try {
+                if (!players.contains(player)) {
+                    LogServer.LogException(player.getName() + " is not registered!");
+                    return;
+                }
+                players.remove(player);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    @Override
+    public void update() {
+        lock.readLock().lock();
+        try {
+            for (Player player : players) {
+                try {
+                    if (player.getPlayerMagicTree() != null) {
+                        player.getPlayerMagicTree().update();
+                    }
+                } catch (Exception e) {
+                    LogServer.LogException("MagicTreeISystem error for player: " + player.getId(), e);
+                }
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public int size() {
+        return players.size();
+    }
+
+}

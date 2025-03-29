@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
-import nro.service.model.template.skill.NClassTemplate;
-import nro.service.model.template.skill.SkillOptionTemplate;
+import nro.server.service.model.template.skill.NClassTemplate;
+import nro.server.service.model.template.skill.SkillOptionTemplate;
 import nro.server.config.ConfigDB;
-import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.template.entity.SkillInfo;
+import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.manager.IManager;
-import nro.service.model.template.skill.SkillTemplate;
+import nro.server.service.model.template.skill.SkillTemplate;
 import nro.server.system.LogServer;
 
 @Getter

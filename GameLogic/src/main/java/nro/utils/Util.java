@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Util {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
     private static final SplittableRandom random = new SplittableRandom();
 
     public static void delay(int delayTime, Runnable callback) {

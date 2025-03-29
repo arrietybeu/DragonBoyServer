@@ -3,8 +3,8 @@ package nro.server.manager;
 
 import lombok.Getter;
 import nro.server.config.ConfigDB;
-import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.template.MonsterTemplate;
+import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.model.template.MonsterTemplate;
 import nro.server.system.LogServer;
 
 import java.sql.Connection;

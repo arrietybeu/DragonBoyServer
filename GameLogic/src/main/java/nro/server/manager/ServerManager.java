@@ -5,22 +5,22 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import nro.controller.Controller;
+import nro.server.controller.Controller;
 import nro.consts.ConstsCmd;
-import nro.controller.MessageProcessorRegistry;
-import nro.server.system.DeadLockDetector;
+import nro.server.controller.MessageProcessorRegistry;
+import nro.server.realtime.core.DispatcherRegistry;
+import nro.server.realtime.dispatcher.PlayerSystemDispatcher;
 import nro.server.system.LogServer;
-import nro.service.core.usage.ItemHandlerRegistry;
+import nro.server.service.core.usage.ItemHandlerRegistry;
 import nro.server.network.Session;
-import nro.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseConnectionPool;
 import nro.server.config.ConfigServer;
-import nro.service.core.system.CommandService;
+import nro.server.service.core.system.CommandService;
 import org.slf4j.LoggerFactory;
 
 public class ServerManager {
@@ -44,13 +44,13 @@ public class ServerManager {
         ConstsCmd.addListMsg();
         ItemHandlerRegistry.init(ConfigServer.PATH_USE_ITEM_HANDLER);
         MessageProcessorRegistry.init(ConfigServer.PATH_CONTROLLER_HANDLER);
+        DispatcherRegistry.startAllDispatchers(ConfigServer.PATH_ENTITY_COMPONENT_SYSTEM);
     }
 
     public static void launch() {
         try {
             configure();
             startCommandLine();
-            startDeadLockDetector();
             ServerManager.getInstance().start();
         } catch (Exception e) {
             LogServer.LogException("Error main: " + e.getMessage(), e);
@@ -110,12 +110,12 @@ public class ServerManager {
         threadPool.execute(CommandService::ActiveCommandLine);
     }
 
-    private static void startDeadLockDetector() {
-        DeadLockDetector deadLockDetector = new DeadLockDetector(Duration.ofSeconds(2L), () -> {
-            System.out.println("isRestartOnDeadLock");
-        });
-        deadLockDetector.start();
-    }
+//    private static void startDeadLockDetector() {
+//        DeadLockDetector deadLockDetector = new DeadLockDetector(Duration.ofSeconds(2L), () -> {
+//            System.out.println("isRestartOnDeadLock");
+//        });
+//        deadLockDetector.start();
+//    }
 
     public void shutdown() {
         try {

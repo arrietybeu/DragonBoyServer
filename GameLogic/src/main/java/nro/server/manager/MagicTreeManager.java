@@ -1,10 +1,10 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.service.model.entity.player.Player;
-import nro.service.model.entity.player.PlayerMagicTree;
-import nro.service.model.template.MagicTreeTemplate;
-import nro.service.repositories.DatabaseConnectionPool;
+import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.entity.player.PlayerMagicTree;
+import nro.server.service.model.template.MagicTreeTemplate;
+import nro.server.service.repositories.DatabaseConnectionPool;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 

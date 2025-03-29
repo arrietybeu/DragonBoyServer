@@ -3,9 +3,9 @@ package nro.server.manager.skill;
 import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
-import nro.service.model.template.skill.SkillPaintTemplate;
-import nro.service.repositories.DatabaseConnectionPool;
-import nro.service.model.template.entity.SkillPaintInfo;
+import nro.server.service.model.template.skill.SkillPaintTemplate;
+import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.model.template.entity.SkillPaintInfo;
 import nro.server.manager.IManager;
 import nro.server.system.LogServer;
 

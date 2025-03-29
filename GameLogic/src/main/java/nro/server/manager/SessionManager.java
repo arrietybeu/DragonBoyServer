@@ -1,10 +1,10 @@
 package nro.server.manager;
 
 import lombok.Getter;
-import nro.service.model.entity.player.Player;
-import nro.service.repositories.account.AccountRepository;
+import nro.server.service.model.entity.player.Player;
+import nro.server.service.repositories.account.AccountRepository;
 import nro.server.network.Session;
-import nro.service.repositories.player.PlayerUpdate;
+import nro.server.service.repositories.player.PlayerUpdate;
 import nro.server.system.LogServer;
 import nro.utils.Util;
 
