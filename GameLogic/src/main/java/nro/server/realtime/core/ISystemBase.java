@@ -1,6 +1,5 @@
 package nro.server.realtime.core;
 
-
 public interface ISystemBase {
 
     void register(Object object);
@@ -14,5 +13,6 @@ public interface ISystemBase {
     default String name() {
         return this.getClass().getSimpleName();
     }
+
 
 }

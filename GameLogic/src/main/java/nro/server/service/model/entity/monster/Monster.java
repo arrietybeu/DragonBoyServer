@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
+import nro.server.realtime.system.monster.MonsterRespawnSystem;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.discpile.Disciple;
 import nro.server.service.model.item.ItemMap;
@@ -44,20 +45,8 @@ public class Monster extends Entity {
         this.info = new MonsterInfo(this);
         this.status = new MonsterStatus(this);
         this.area = area;
+        MonsterRespawnSystem.getInstance().register(this);
     }
-
-//    @Override
-//    public void update() {
-//        if (this.point.isDead()) {
-//            if (Util.canDoWithTime(this.info.getLastTimeDie(), 5000)) {
-//                this.setLive();
-//            }
-//        } else {
-//            if (Util.canDoWithTime(this.info.getLastTimeAttack(), 1000)) {
-//                this.attackPlayer();
-//            }
-//        }
-//    }
 
     @Override
     public long handleAttack(final Player plAttack, int type, long damage) {
@@ -131,7 +120,7 @@ public class Monster extends Entity {
         }
     }
 
-    private void attackPlayer() {
+    public void attackPlayer() {
         if (this.isMonsterAttack()) {
             try {
                 Player player = this.playerCanAttack();

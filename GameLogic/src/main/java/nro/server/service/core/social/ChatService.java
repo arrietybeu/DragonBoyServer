@@ -5,6 +5,7 @@ import nro.consts.ConstPlayer;
 import nro.consts.ConstShop;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
+import nro.server.realtime.system.item.ItemMapSystem;
 import nro.server.realtime.system.player.MagicTreeISystem;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
@@ -73,8 +74,7 @@ public class ChatService {
                 }
 
                 if (resultList.isEmpty()) {
-                    serverService.sendChatGlobal(playerChat.getSession(), null, "Không tìm thấy vật phẩm nào chứa: "
-                            + keyword, false);
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Không tìm thấy vật phẩm nào chứa: " + keyword, false);
                 } else {
                     String[] tableHeader = new String[]{"Size: " + resultList.size(), "", "", "", ""};
                     ShopService.getInstance().showShop(playerChat, keyword, ConstShop.SHOP_KY_GUI, resultList, tableHeader);
@@ -127,8 +127,7 @@ public class ChatService {
             if (text.startsWith("rm ")) {
                 int mobId = (int) this.getNumber(text);
                 if (mobId == -1) {
-                    serverService.sendChatGlobal(playerChat.getSession(), null,
-                            "Mob không hợp lệ: " + text, false);
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Mob không hợp lệ: " + text, false);
                     return;
                 }
                 Monster monster = playerChat.getArea().getMonsterInAreaById(mobId);
@@ -147,8 +146,7 @@ public class ChatService {
                     return;
                 }
                 Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap);
-                ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getArea().increaseItemMapID(), playerChat.getId(), item, playerChat.getX(),
-                        playerChat.getY(), -1, true);
+                ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getArea().increaseItemMapID(), playerChat.getId(), item, playerChat.getX(), playerChat.getY(), -1, true);
                 ItemService.getInstance().sendDropItemMap(playerChat, itemMap, true);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
                 return;
@@ -179,8 +177,7 @@ public class ChatService {
                     int x = playerChat.getX();
                     for (itemIdMap = 0; itemIdMap < 100; itemIdMap++) {
                         Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap);
-                        ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getArea().increaseItemMapID(), playerChat.getId(), item, x + 10,
-                                playerChat.getY(), -1, true);
+                        ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getArea().increaseItemMapID(), playerChat.getId(), item, x + 10, playerChat.getY(), -1, true);
                         ItemService.getInstance().sendDropItemMap(playerChat, itemMap, true);
                     }
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
@@ -222,8 +219,7 @@ public class ChatService {
                     int sizeNpcAllArea = 0;
                     for (GameMap map : MapManager.getInstance().getGameMaps().values()) {
                         for (Area area : map.getAreas()) {
-                            System.out.println("map id: " + map.getId() + " area id: " + area.getId() + " npc size: "
-                                    + area.getNpcList().size());
+                            System.out.println("map id: " + map.getId() + " area id: " + area.getId() + " npc size: " + area.getNpcList().size());
                             sizeNpcAllArea += area.getNpcList().size();
                         }
                     }
@@ -236,14 +232,12 @@ public class ChatService {
                 case "cache" ->
                         ServerService.dialogMessage(playerChat.getSession(), "Cache size: " + FileNio.CACHE.size());
                 case "info" -> {
-                    String threadInfo = "Thread const: " + Thread.activeCount() + " session size: "
-                            + SessionManager.getInstance().getSizeSession();
-                    String playerLocation = "\nPlayer Location mapId: "
-                            + playerChat.getArea().getMap().getId() + " zone id: " + playerChat.getArea().getId()
-                            + " x: " + playerChat.getX() + " y: " + playerChat.getY();
+                    String threadInfo = "Thread const: " + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession();
+                    String playerLocation = "\nPlayer Location mapId: " + playerChat.getArea().getMap().getId() + " zone id: " + playerChat.getArea().getId() + " x: " + playerChat.getX() + " y: " + playerChat.getY();
 
                     var sizePlayer = MagicTreeISystem.getInstance().size();
-                    String systemInfo = "\nsize player magic tree: " + sizePlayer;
+                    var sizeAreaItemMap = ItemMapSystem.getInstance().size();
+                    String systemInfo = "\nsize player magic tree: " + sizePlayer + " size itemMap: " + sizeAreaItemMap;
 
                     String content = threadInfo + playerLocation + systemInfo;
                     NpcService.getInstance().sendNpcTalkUI(playerChat, 5, content, -1);
@@ -254,8 +248,7 @@ public class ChatService {
                 }
                 case "reload_item" -> {
                     ManagerRegistry.reloadManager(ItemManager.class);
-                    serverService.sendChatGlobal(playerChat.getSession(), null, "Load Item Manager Thành Công: "
-                            + ItemManager.getInstance().getItemOptionTemplates().size(), false);
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Load Item Manager Thành Công: " + ItemManager.getInstance().getItemOptionTemplates().size(), false);
                 }
                 case "reload_task" -> {
                     ManagerRegistry.reloadManager(TaskManager.class);
@@ -266,8 +259,7 @@ public class ChatService {
                     var itemMapSize = playerChat.getArea().getItemsMap().size();
                     var monsterSize = playerChat.getArea().getMonsters().size();
                     var npcSize = playerChat.getArea().getNpcList().size();
-                    var infoArea = "Player Size: " + playerMapSize + "\nitemMapSize: " + itemMapSize + "\nmonsterSize: "
-                            + monsterSize + "\nnpcSize: " + npcSize;
+                    var infoArea = "Player Size: " + playerMapSize + "\nitemMapSize: " + itemMapSize + "\nmonsterSize: " + monsterSize + "\nnpcSize: " + npcSize;
                     ServerService.dialogMessage(playerChat.getSession(), infoArea);
                 }
                 case "remove_bag" -> {

@@ -39,7 +39,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'nro.server.MainServer'
+                'Main-Class': 'nro.server.DragonBall'
         )
     }
 }
@@ -52,7 +52,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = 'nro.server.MainServer'
+    mainClass = 'nro.server.DragonBall'
 }
 
 tasks.withType(JavaCompile).configureEach {

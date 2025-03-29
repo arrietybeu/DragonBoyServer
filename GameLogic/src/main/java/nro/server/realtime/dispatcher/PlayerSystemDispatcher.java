@@ -30,28 +30,7 @@ public class PlayerSystemDispatcher implements IDispatcherBase {
     }
 
     private void tick() {
-        long start = System.currentTimeMillis();
-
-        for (ISystemBase system : systems) {
-            long systemStart = System.currentTimeMillis();
-
-            try {
-                system.update();
-            } catch (Exception e) {
-                LogServer.LogException("Error in system: " + system.name(), e);
-            }
-
-            long systemTime = System.currentTimeMillis() - systemStart;
-
-            if (systemTime > 30) {
-                LogServer.LogException("System '" + system.name() + "' delay: " + systemTime + "ms");
-            }
-        }
-
-        long timeSpent = System.currentTimeMillis() - start;
-        if (timeSpent > 100) {
-            LogServer.LogException("Tick delay: " + timeSpent + "ms");
-        }
+        tick(systems);
     }
 
     private void registerSystems() {
@@ -59,7 +38,6 @@ public class PlayerSystemDispatcher implements IDispatcherBase {
 
         // TODO add system new to here
         // systems.add(SkillCooldownSystem.getInstance());
-
     }
 
     @Override

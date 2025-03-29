@@ -1,4 +1,74 @@
 package nro.server.realtime.system.monster;
 
-public class MonsterRespawnSystem {
+import lombok.Getter;
+import nro.server.realtime.core.ISystemBase;
+import nro.server.service.model.entity.monster.Monster;
+import nro.utils.Util;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public class MonsterRespawnSystem implements ISystemBase {
+
+    @Getter
+    private static final MonsterRespawnSystem instance = new MonsterRespawnSystem();
+    private final List<Monster> monsters = new ArrayList<>();
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    @Override
+    public void register(Object object) {
+        if (object instanceof Monster monster) {
+            lock.writeLock().lock();
+            try {
+                if (!monsters.contains(monster)) {
+                    monsters.add(monster);
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    @Override
+    public void unregister(Object object) {
+        if (object instanceof Monster monster) {
+            lock.writeLock().lock();
+            try {
+                monsters.remove(monster);
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    @Override
+    public void update() {
+        lock.readLock().lock();
+        try {
+            for (Monster monster : monsters) {
+                try {
+                    if (monster.getPoint().isDead()) {
+                        if (Util.canDoWithTime(monster.getInfo().getLastTimeDie(), 5000)) {
+                            monster.setLive();
+                        }
+                    } else {
+                        if (Util.canDoWithTime(monster.getInfo().getLastTimeAttack(), 1000)) {
+                            monster.attackPlayer();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } finally {
+            lock.readLock().unlock();
+        }
+
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
 }
