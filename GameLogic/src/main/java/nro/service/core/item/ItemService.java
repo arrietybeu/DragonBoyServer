@@ -3,6 +3,7 @@ package nro.service.core.item;
 import lombok.Getter;
 import nro.consts.ConstItem;
 import nro.consts.ConstsCmd;
+import nro.service.model.item.ItemTime;
 import nro.service.model.template.item.Flag;
 import nro.service.model.template.item.FlagImage;
 import nro.service.model.item.ItemMap;
@@ -136,6 +137,17 @@ public class ItemService {
             itemMap.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendRemoveItemMap: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendItemTime(Player player, ItemTime itemTime) {
+        try (Message message = new Message(ConstsCmd.ITEM_TIME)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(itemTime.getIconId());
+            writer.writeShort(itemTime.getSecond());
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendItemTime: " + ex.getMessage(), ex);
         }
     }
 

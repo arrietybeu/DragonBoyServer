@@ -145,9 +145,7 @@ public class ServerService {
             DataOutputStream write = message.writer();
             write.writeInt(player.getId());
             switch (type) {
-                case 0 -> {// Stop follow
-                    write.writeByte(type);
-                }
+                case 0 -> write.writeByte(type);// stop follow
                 case 1 -> {
                     write.writeByte(type);
                     write.writeShort(5000);// smallId

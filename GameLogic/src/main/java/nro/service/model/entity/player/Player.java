@@ -3,6 +3,7 @@ package nro.service.model.entity.player;
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
+import nro.service.core.player.PetFollowService;
 import nro.service.model.entity.*;
 import nro.service.model.clan.Clan;
 import nro.service.model.entity.pet.PetFollow;
@@ -120,6 +121,9 @@ public class Player extends BaseModel {
     public void update() {
         if (this.playerMagicTree != null) {
             this.playerMagicTree.update();
+        }
+        if (this.petFollow != null) {
+            this.petFollow.update();
         }
     }
 

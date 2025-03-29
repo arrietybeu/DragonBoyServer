@@ -56,5 +56,15 @@ public class SkillService {
         }
     }
 
+    public void sendCooldownSkill(Player player) {
+        try (Message message = new Message(ConstsCmd.UPDATE_COOLDOWN)) {
+            DataOutputStream writer = message.writer();
+            writer.writeShort(player.getSkills().getSkillSelect().getSkillId());
+//            writer.writeInt();// write time cooldown
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("SkillService: sendCooldownSkill: " + e.getMessage(), e);
+        }
+    }
 
 }

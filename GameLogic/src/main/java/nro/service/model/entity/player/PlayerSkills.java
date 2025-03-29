@@ -4,6 +4,7 @@ import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.server.system.LogServer;
 import nro.service.core.player.SkillService;
+import nro.service.core.system.ServerService;
 import nro.service.model.entity.BaseModel;
 import nro.service.model.entity.Skills;
 import nro.service.model.entity.monster.Monster;
@@ -37,10 +38,19 @@ public class PlayerSkills extends Skills {
     @Override
     public void useSkill(BaseModel target) {
         try {
+            if (!this.skillSelect.isReady()) {
+                // Gửi thông báo cho client biết đang hồi chiêu
+                var notify = "Kỹ năng đang hồi chiêu: " + skillSelect.getCooldownRemaining() + "ms";
+                ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, notify, false);
+                return;
+            }
+
+            // Đánh dấu đã dùng
+            this.skillSelect.markUsedNow();
+
             switch (this.skillSelect.getTemplate().getType()) {
                 case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);
-                case ConstSkill.SKILL_SUPPORT -> {
-                }
+                case ConstSkill.SKILL_SUPPORT -> { /* TODO */ }
                 case ConstSkill.SKILL_NOT_FORCUS -> this.useSkillNotForcus();
             }
         } catch (Exception ex) {

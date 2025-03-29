@@ -44,7 +44,17 @@ public class SkillInfo {
 
     private String moreInfo;
 
-    public SkillInfo() {
+    public boolean isReady() {
+        return System.currentTimeMillis() - lastTimeUseThisSkill >= coolDown;
+    }
+
+    public long getCooldownRemaining() {
+        long remaining = coolDown - (System.currentTimeMillis() - lastTimeUseThisSkill);
+        return Math.max(0, remaining);
+    }
+
+    public void markUsedNow() {
+        this.lastTimeUseThisSkill = System.currentTimeMillis();
     }
 
 }

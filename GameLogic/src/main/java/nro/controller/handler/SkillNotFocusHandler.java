@@ -13,8 +13,9 @@ public class SkillNotFocusHandler implements IMessageProcessor {
     @Override
     public void process(Session session, Message message) {
         Player player = session.getPlayer();
-        if (player == null)
-            return;
+        if (player == null) return;
+        if (player.getSkills() == null) return;
+        if (player.getSkills().getSkillSelect() == null) return;
         try {
             byte status = message.reader().readByte();
             if (status == 20) {
@@ -29,8 +30,7 @@ public class SkillNotFocusHandler implements IMessageProcessor {
                 player.getSkills().useSkill(player);
             }
         } catch (Exception ex) {
-            LogServer.LogException("SkillNotFocusHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("SkillNotFocusHandler: " + ex.getMessage(), ex);
         }
     }
 
