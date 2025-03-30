@@ -30,7 +30,7 @@ public class PlayerSystemDispatcher implements IDispatcherBase {
     }
 
     private void tick() {
-        tick(systems);
+        this.tick(systems);
     }
 
     private void registerSystems() {

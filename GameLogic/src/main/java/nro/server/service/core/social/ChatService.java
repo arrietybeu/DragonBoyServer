@@ -7,6 +7,7 @@ import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
 import nro.server.realtime.system.item.ItemMapSystem;
 import nro.server.realtime.system.player.MagicTreeISystem;
+import nro.server.service.core.dragon.DragonService;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.core.economy.ShopService;
@@ -169,6 +170,21 @@ public class ChatService {
                 }
                 serverService.sendPetFollow(playerChat, type, -1);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Call Pet: " + type, false);
+                return;
+            }
+
+            if (text.startsWith("dr ")) {
+                int type = (int) this.getNumber(text);
+
+                if (type == -1) {
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Type không hợp lệ: " + text, false);
+                    return;
+                }
+                // 0 appear, 1 hide , 2 call dragon namec
+                boolean isDragonNamec = type == 2;
+                if (isDragonNamec) type = 0;
+                DragonService.getInstance().sendShenronDragon(playerChat, type, isDragonNamec);
+                serverService.sendChatGlobal(playerChat.getSession(), null, "Call Dragon: " + type, false);
                 return;
             }
             switch (text) {

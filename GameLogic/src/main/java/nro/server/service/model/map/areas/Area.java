@@ -33,9 +33,7 @@ public class Area {
     private final AtomicInteger idItemMap = new AtomicInteger(0);
     private final GameMap map;
     private Map<Integer, Monster> monsters;
-
     private final Map<Integer, Entity> entitys;
-
     private final Map<Integer, ItemMap> itemsMap;
     private final List<Npc> npcList;
 

@@ -45,7 +45,6 @@ public class MonsterService {
             monster.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendMonsterRevice: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
@@ -61,7 +60,6 @@ public class MonsterService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("sendMonsterAttackMe: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 
@@ -77,7 +75,6 @@ public class MonsterService {
             monster.getArea().sendMessageToPlayersInArea(message, player);
         } catch (Exception ex) {
             LogServer.LogException("sendMonsterAttackPlayer: " + ex.getMessage(), ex);
-            ex.printStackTrace();
         }
     }
 

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
-import nro.server.realtime.system.monster.MonsterRespawnSystem;
+import nro.server.realtime.system.monster.MonsterUpdateSystem;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.discpile.Disciple;
 import nro.server.service.model.item.ItemMap;
@@ -45,7 +45,7 @@ public class Monster extends Entity {
         this.info = new MonsterInfo(this);
         this.status = new MonsterStatus(this);
         this.area = area;
-        MonsterRespawnSystem.getInstance().register(this);
+        MonsterUpdateSystem.getInstance().register(this);
     }
 
     @Override

@@ -3,16 +3,17 @@ package nro.server.realtime.system.monster;
 import lombok.Getter;
 import nro.server.realtime.core.ISystemBase;
 import nro.server.service.model.entity.monster.Monster;
+import nro.server.system.LogServer;
 import nro.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class MonsterRespawnSystem implements ISystemBase {
+public class MonsterUpdateSystem implements ISystemBase {
 
     @Getter
-    private static final MonsterRespawnSystem instance = new MonsterRespawnSystem();
+    private static final MonsterUpdateSystem instance = new MonsterUpdateSystem();
     private final List<Monster> monsters = new ArrayList<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -58,7 +59,7 @@ public class MonsterRespawnSystem implements ISystemBase {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LogServer.LogException("MonsterUpdateSystem: " + e.getMessage(), e);
                 }
             }
         } finally {

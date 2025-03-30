@@ -26,11 +26,15 @@ public class ConstItem {
 
     public static final byte TYPE_FLAG_BAG = 11;
 
+    public static final byte TYPE_DRAGON_BALL = 12;
+
     public static final byte TYPE_VE_TINH = 22;
 
     public static final byte TYPE_MOUNT = 23;
 
     public static final byte TYPE_MOUNT_VIP = 24;
+
+    public static final byte TYPE_SYNTHESIS = 27;
 
     public static final byte TYPE_GIAP_LUYEN_TAP = 32;
 
@@ -53,6 +57,8 @@ public class ConstItem {
     public static final short DUI_HEO_XAYDA = 75;
 
     public static final short DUA_BE = 78;
+
+    public static final short GOI_10_VIEN_CAPSULE = 193;
 
     public static final short RUBY = 861;
 

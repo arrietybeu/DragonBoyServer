@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.realtime.core.GameDispatcher;
 import nro.server.realtime.core.IDispatcherBase;
 import nro.server.realtime.core.ISystemBase;
-import nro.server.realtime.system.monster.MonsterRespawnSystem;
+import nro.server.realtime.system.monster.MonsterUpdateSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +29,10 @@ public class MonsterSystemDispatcher implements IDispatcherBase {
 
     @Override
     public void stop() {
-
     }
 
     private void registerSystems() {
-        systems.add(MonsterRespawnSystem.getInstance());
+        systems.add(MonsterUpdateSystem.getInstance());
 
         // TODO add system new to here
     }
