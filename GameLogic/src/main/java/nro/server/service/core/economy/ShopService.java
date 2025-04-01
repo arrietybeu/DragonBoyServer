@@ -3,7 +3,11 @@ package nro.server.service.core.economy;
 import lombok.Getter;
 import nro.consts.ConstShop;
 import nro.consts.ConstsCmd;
+import nro.server.manager.ShopManager;
 import nro.server.service.model.item.Item;
+import nro.server.service.model.item.ItemShop;
+import nro.server.service.model.shop.Shop;
+import nro.server.service.model.shop.TabShop;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.entity.player.Player;
 import nro.server.system.LogServer;
@@ -18,10 +22,51 @@ public class ShopService {
     @Getter
     private static final ShopService instance = new ShopService();
 
+    public void sendNornalShop(Player player, int shopId) {
+        Shop shop = ShopManager.getInstance().getShop(shopId);
+        if (shop == null) {
+            LogServer.LogException("ShopService.sendNornalShop: shopId = " + shopId + " not found");
+            return;
+        }
+
+        var tabShops = shop.getTabShops();
+        try (Message message = new Message(ConstsCmd.SHOP)) {
+            DataOutputStream writer = message.writer();
+            writer.writeByte(shop.getTypeShop());
+            writer.writeByte(tabShops.size());
+
+            for (TabShop tabShop : tabShops) {
+                var itemShopMap = tabShop.getItemShopMap();
+                writer.writeUTF(tabShop.getName());
+                writer.writeByte(itemShopMap.size());
+                for (ItemShop itemShop : itemShopMap.values()) {
+                    writer.writeShort(itemShop.getTemplate().id());
+                    writer.writeInt(itemShop.getSellGold());// buy gold
+                    writer.writeInt(itemShop.getSellGem());// buy gem
+                    // write item options
+                    itemShop.writeDataOptions(writer);
+                    writer.writeByte(itemShop.isNewItem() ? 1 : 0);// is new Item
+                    if (itemShop.displayDisguise()) {
+                        writer.writeByte(1);// is show cai trang
+                        writer.writeShort(itemShop.getTemplate().head());
+                        writer.writeShort(itemShop.getTemplate().body());
+                        writer.writeShort(itemShop.getTemplate().leg());
+                        writer.writeShort(itemShop.getTemplate().part());
+                    } else {
+                        writer.writeByte(0);
+                    }
+                }
+            }
+
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendNornalShop: " + ex.getMessage(), ex);
+        }
+    }
+
     public void showShop(Player player, String keyword, int type, List<Item> items, String... tableHeader) {
         try (Message message = new Message(ConstsCmd.SHOP)) {
             DataOutputStream writer = message.writer();
-
             var sizeTable = tableHeader.length;
             writer.writeByte(type);
             writer.writeByte(sizeTable);
@@ -65,12 +110,7 @@ public class ShopService {
                         writer.writeShort(1);// buy spectial
                     }
                     // write item options
-                    writer.writeByte(item.getItemOptions().size());
-                    for (int k = 0; k < item.getItemOptions().size(); k++) {
-                        ItemOption itemOption = item.getItemOptions().get(k);
-                        writer.writeShort(itemOption.getId());
-                        writer.writeInt(itemOption.getParam());
-                    }
+                    item.writeDataOptions(writer);
 
                     writer.writeByte(0);// is new Item
                     writer.writeByte(0);// is show cai trang

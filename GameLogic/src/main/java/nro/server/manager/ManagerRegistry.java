@@ -29,6 +29,7 @@ public final class ManagerRegistry {
         MANAGERS.add(GameNotifyManager.getInstance());
         MANAGERS.add(MagicTreeManager.getInstance());
         MANAGERS.add(ItemMapManager.getInstance());
+        MANAGERS.add(ShopManager.getInstance());
 //        MANAGERS.add(LuaManager.getInstance());
     }
 

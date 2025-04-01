@@ -376,24 +376,8 @@ public class PlayerService {
             data.writeInt(item.getQuantity());
             data.writeUTF("");
             data.writeUTF("");
-
-            List<ItemOption> itemOptions = item.getItemOptions();
-            if (itemOptions.isEmpty()) {
-                data.writeByte(1);
-                data.writeShort(73);
-                data.writeInt(0);
-                continue;
-            }
-            data.writeByte(itemOptions.size());
-            for (var itemOption : itemOptions) {
-                this.writeItemOptions(data, itemOption);
-            }
+            item.writeDataOptions(data);
         }
-    }
-
-    public void writeItemOptions(DataOutputStream dataOutputStream, ItemOption options) throws IOException {
-        dataOutputStream.writeShort(options.getId());
-        dataOutputStream.writeInt(options.getParam());
     }
 
     public void sendMenuPlayerInfo(Player player, int playerId) {

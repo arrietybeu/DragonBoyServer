@@ -96,6 +96,12 @@ public class ChatService {
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Set HP: " + hp, false);
                 return;
             }
+            if (text.startsWith("s ")) {
+                int idShop = (int) this.getNumber(text);
+                ShopService.getInstance().sendNornalShop(playerChat, idShop);
+                serverService.sendChatGlobal(playerChat.getSession(), null, "OpenShop Id: " + idShop, false);
+                return;
+            }
             if (text.startsWith("tn ")) {
                 long exp = this.getNumber(text);
                 playerChat.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
@@ -257,6 +263,10 @@ public class ChatService {
                 case "reload_map" -> {
                     ManagerRegistry.reloadManager(MapManager.class);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
+                }
+                case "reload_shop" -> {
+                    ManagerRegistry.reloadManager(ShopManager.class);
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Load Item Shop Manager Thành Công", false);
                 }
                 case "reload_item" -> {
                     ManagerRegistry.reloadManager(ItemManager.class);

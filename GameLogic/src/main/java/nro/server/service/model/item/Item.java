@@ -9,6 +9,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +76,27 @@ public class Item implements AutoCloseable {
         if (this.quantity < 0) {
             this.quantity = 0;
         }
+    }
+
+    public void writeDataOptions(DataOutputStream dataOutputStream) throws IOException {
+        if (itemOptions.isEmpty()) {
+            dataOutputStream.writeByte(1);
+            dataOutputStream.writeShort(73);
+            dataOutputStream.writeInt(0);
+            return;
+        }
+        dataOutputStream.writeByte(itemOptions.size());
+        for (ItemOption option : itemOptions) {
+            dataOutputStream.writeShort(option.getId());
+            dataOutputStream.writeInt(option.getParam());
+        }
+    }
+
+    public boolean displayDisguise() {
+        return (this.template.type() == 0 && this.template.body() != -1)
+                || (this.template.type() == 1 && this.template.leg() != -1)
+                || this.template.type() == 5
+                || (this.template.type() == 11 && this.template.part() != -1);
     }
 
     public void addQuantity(int quantity) {

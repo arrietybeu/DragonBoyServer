@@ -2,6 +2,7 @@ package nro.server.service.core.item;
 
 import lombok.Getter;
 import nro.server.service.model.item.Item;
+import nro.server.service.model.item.ItemShop;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.template.item.ItemTemplate;
 import nro.server.manager.ItemManager;
@@ -30,6 +31,15 @@ public class ItemFactory {
         Item item = this.createItemNotOptionsBase(itemId, quantity);
         this.initBaseOptions(item);
         return item;
+    }
+
+    public ItemShop createItemShopOptionsBase(int itemId, int... quantitys) {
+        int quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
+        ItemShop itemShop = new ItemShop();
+        itemShop.setTemplate(getTemplate(itemId));
+        itemShop.setQuantity(quantity);
+        this.initBaseOptions(itemShop);
+        return itemShop;
     }
 
     public Item createItemNull() {
