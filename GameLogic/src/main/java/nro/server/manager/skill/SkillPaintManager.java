@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.skill.SkillPaintTemplate;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.entity.SkillPaintInfo;
 import nro.server.manager.IManager;
 import nro.server.system.LogServer;
@@ -45,7 +45,7 @@ public class SkillPaintManager implements IManager {
         String querySkillFly = "SELECT * FROM skill_fly WHERE id_skill_paint = ?";
 
         this.skillPaintTemplateList = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement psSkillPaint = connection.prepareStatement(querySkillPaint)) {
 
             ResultSet rsSkillPaint = psSkillPaint.executeQuery();

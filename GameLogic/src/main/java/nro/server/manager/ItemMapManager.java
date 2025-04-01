@@ -2,7 +2,7 @@ package nro.server.manager;
 
 import lombok.Getter;
 
-public class ItemMapManager implements IManager {
+public final class ItemMapManager implements IManager {
     @Getter
     private static final ItemMapManager instance = new ItemMapManager();
 

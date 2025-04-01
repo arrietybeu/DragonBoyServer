@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.template.MagicTreeTemplate;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MagicTreeManager implements IManager {
+public final class MagicTreeManager implements IManager {
 
     @Getter
     private static final MagicTreeManager instance = new MagicTreeManager();
@@ -38,7 +38,7 @@ public class MagicTreeManager implements IManager {
 
 
     private void loadIconMagicTree() {
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             String query = "SELECT gender, level, icon_id FROM magic_tree_icon ";
             try (PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -58,7 +58,7 @@ public class MagicTreeManager implements IManager {
     }
 
     private MagicTreeTemplate.MagicTreeLevel loadMagicTreeLevel(int level) {
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             String query = "SELECT * FROM magic_tree_level WHERE level = ?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 preparedStatement.setInt(1, level);
@@ -80,7 +80,7 @@ public class MagicTreeManager implements IManager {
     }
 
     private MagicTreeTemplate.MagicTreeTimeUpgrade loadTimeUpgradeMagicTree(int level) {
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             String query = "SELECT days, hours, minutes, gold FROM magic_tree_pea_upgrade WHERE upgrade_level = ?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 preparedStatement.setInt(1, level);
@@ -103,7 +103,7 @@ public class MagicTreeManager implements IManager {
 
     private List<MagicTreeTemplate.MagicTreePosition> loadPositionMagicTree(int level) {
         List<MagicTreeTemplate.MagicTreePosition> magicTreePositions = new ArrayList<>();
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             String query = "SELECT pos_x, pos_y FROM magic_tree_pea_positions WHERE level = ?";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
                 preparedStatement.setInt(1, level);

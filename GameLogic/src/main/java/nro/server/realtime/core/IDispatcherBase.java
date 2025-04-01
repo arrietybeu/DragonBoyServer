@@ -24,13 +24,13 @@ public interface IDispatcherBase {
 
             long systemTime = System.currentTimeMillis() - systemStart;
 
-            if (systemTime > 30) {
+            if (systemTime > 1000) {
                 LogServer.LogException("System '" + system.name() + "' delay: " + systemTime + "ms");
             }
         }
 
         long timeSpent = System.currentTimeMillis() - start;
-        if (timeSpent > 100) {
+        if (timeSpent > 1000) {
             LogServer.LogException("Tick delay: " + timeSpent + "ms");
         }
     }

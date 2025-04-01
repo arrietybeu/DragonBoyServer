@@ -7,7 +7,7 @@ import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.entity.Points;
 import nro.server.service.model.task.TaskMain;
 import nro.server.service.model.template.entity.SessionInfo;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -34,7 +34,7 @@ public class PlayerUpdate {
         sessionInfo.setSaveData(true);
         var ms = System.currentTimeMillis();
 
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             if (connection == null) {
                 throw new SQLException("Lỗi: Không thể kết nối database để lưu dữ liệu.");
             }

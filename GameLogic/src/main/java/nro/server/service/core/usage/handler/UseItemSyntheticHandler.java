@@ -19,7 +19,7 @@ public class UseItemSyntheticHandler implements IUseItemHandler {
             var idItem = item.getTemplate().id();
             switch (idItem) {
                 case ConstItem.GOI_10_VIEN_CAPSULE -> {
-                    useCapsuleBayHandler(player);
+                    this.useCapsuleBayHandler(player);
                     player.getPlayerInventory().subQuantityItemsBag(item, 1);
                 }
                 case ConstItem.VIEN_CAPSULE_DAC_BIET -> useCapsuleBayHandler(player);

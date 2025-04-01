@@ -2,6 +2,7 @@ package nro.server.service.core.map;
 
 import lombok.Getter;
 import nro.consts.ConstTypeObject;
+import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.Entity;
@@ -356,20 +357,7 @@ public class AreaService {
         }
     }
 
-    //Util.nextInt(400, 444), 5)
 
-    public void playerTransport(Player player, int index) {
-        try {
-            List<Transport> transports = player.getTransports();
-            if (index < 0 || index >= transports.size()) return;
-            Transport transport = transports.get(index);
 
-            var mapId = transport.getMapIdByGender(player.getGender());
-            this.changerMapByShip(player, mapId, transport.getX(), transport.getY(), 1);
-            player.getTransports().clear();
-        } catch (Exception ex) {
-            LogServer.LogException("playerTransport: " + ex.getMessage(), ex);
-        }
-    }
 
 }

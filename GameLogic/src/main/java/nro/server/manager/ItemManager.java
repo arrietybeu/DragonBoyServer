@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.item.*;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.config.ConfigServer;
 import nro.server.system.LogServer;
 import nro.server.service.core.item.ItemFactory;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-public class ItemManager implements IManager {
+public final class ItemManager implements IManager {
 
     @Getter
     private static final ItemManager instance = new ItemManager();
@@ -76,7 +76,7 @@ public class ItemManager implements IManager {
 
     private void loadItemTemplate() {
         String sql = "SELECT * FROM `item_template`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -121,7 +121,7 @@ public class ItemManager implements IManager {
     private void loadItemOptionTemplate() {
         String query = "SELECT * FROM item_option_template";
 
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
@@ -140,7 +140,7 @@ public class ItemManager implements IManager {
 
     private void loadHeadAvatar() {
         String sql = "SELECT * FROM  item_head";
-        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (var connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             if (connection == null) throw new SQLException("Connect connection select item_head = null");
             try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -160,7 +160,7 @@ public class ItemManager implements IManager {
 
     private void loadFlagBag() {
         String query = "SELECT * FROM item_flag_bag_pk";
-        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (var connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             if (connection == null) throw new SQLException("Connect connection select flag_bag = null");
             try (var preparedStatement = connection.prepareStatement(query); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -181,7 +181,7 @@ public class ItemManager implements IManager {
 
     private void loadFlagBagImage() {
         String query = "SELECT * FROM item_flag_bag_image";
-        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (var connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             if (connection == null) throw new SQLException("Connect connection select flag_bag_image = null");
             try (var preparedStatement = connection.prepareStatement(query); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -208,7 +208,7 @@ public class ItemManager implements IManager {
 
     private void loadItemArrHead2Fr() {
         String sql = "SELECT id, head_one, head_two FROM `item_arr_head_2frame`";
-        try (var connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (var connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
             try (var preparedStatement = connection.prepareStatement(sql); var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

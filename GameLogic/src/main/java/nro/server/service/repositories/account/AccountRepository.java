@@ -2,7 +2,7 @@ package nro.server.service.repositories.account;
 
 import lombok.Getter;
 import nro.server.config.ConfigDB;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.entity.UserInfo;
 import nro.server.manager.UserManager;
 import nro.server.service.core.system.ServerService;
@@ -32,7 +32,7 @@ public class AccountRepository {
             }
 
             String query = "SELECT * FROM `account` WHERE `username` = ? AND `password` = ? LIMIT 1;";
-            try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login");
+            try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC, "login");
                  PreparedStatement ps = conn.prepareStatement(query)) {
                 ps.setString(1, username);
                 ps.setString(2, password);
@@ -159,7 +159,7 @@ public class AccountRepository {
     public static void updateAccountLogout(UserInfo userInfo) {
         String query = "UPDATE account SET last_time_logout = ? WHERE id = ?;";
 
-        try (Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
+        try (Connection con = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             if (con == null) {
                 LogServer.LogException("Connection is null in updateAccountLogout");
                 return;

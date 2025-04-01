@@ -1,6 +1,6 @@
 package nro.server.manager;
 
-public class PetFollowManager implements IManager {
+public final class PetFollowManager implements IManager {
 
     @Override
     public void init() {

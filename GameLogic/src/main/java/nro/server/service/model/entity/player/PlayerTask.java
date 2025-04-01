@@ -198,7 +198,7 @@ public class PlayerTask {
             ServerService serverService = ServerService.getInstance();
             switch (index) {
                 case 2 -> {
-                    Npc npc = NpcFactory.getNpc(ConstNpc.GetRescuedNpcId(player.getGender()));
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     var content = "hihi quên kéo cái text nhiệm vụ của npc này rồi :>";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                 }

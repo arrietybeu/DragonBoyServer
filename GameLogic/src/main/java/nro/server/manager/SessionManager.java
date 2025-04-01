@@ -14,7 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class SessionManager {
+public final class SessionManager {
 
     @Getter
     private static final SessionManager instance = new SessionManager();

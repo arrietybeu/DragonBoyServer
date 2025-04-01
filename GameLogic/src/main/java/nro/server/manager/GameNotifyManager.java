@@ -3,7 +3,7 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.server.service.model.template.GameNotify;
 import nro.server.network.Message;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class GameNotifyManager implements IManager {
+public final class GameNotifyManager implements IManager {
 
     @Getter
     private static final GameNotifyManager instance = new GameNotifyManager();
@@ -44,7 +44,7 @@ public class GameNotifyManager implements IManager {
 
     private void loadNotify() {
         String sql = "SELECT * FROM `game_notify`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
                  var resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

@@ -14,16 +14,15 @@ import nro.server.controller.Controller;
 import nro.consts.ConstsCmd;
 import nro.server.controller.MessageProcessorRegistry;
 import nro.server.realtime.core.DispatcherRegistry;
-import nro.server.realtime.dispatcher.PlayerSystemDispatcher;
 import nro.server.system.LogServer;
 import nro.server.service.core.usage.ItemHandlerRegistry;
 import nro.server.network.Session;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.config.ConfigServer;
 import nro.server.service.core.system.CommandService;
 import org.slf4j.LoggerFactory;
 
-public class ServerManager {
+public final class ServerManager {
 
     private ServerSocket serverSocket;
     private final Controller controller = new Controller();
@@ -123,7 +122,7 @@ public class ServerManager {
             closeServerSocket();
             SessionManager.getInstance().kickAllPlayer("Bảo trì");
             Manager.getInstance().clearAllData();
-            DatabaseConnectionPool.closeConnections();
+            DatabaseFactory.closeConnections();
             LogServer.DebugLogic("Server closed");
             System.exit(0);
         } catch (Exception e) {

@@ -5,7 +5,7 @@ import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.template.CaptionTemplate;
 import nro.server.network.Message;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Getter
-public class CaptionManager implements IManager {
+public final class CaptionManager implements IManager {
 
     @Getter
     private static CaptionManager instance = new CaptionManager();
@@ -50,7 +50,7 @@ public class CaptionManager implements IManager {
 
     private void loadCaption() {
         String query = "SELECT * FROM game_caption";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement preparedStatement = connection.prepareStatement(query); var rs = preparedStatement.executeQuery()) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement preparedStatement = connection.prepareStatement(query); var rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getShort("id");
                 long exp = rs.getLong("exp");
@@ -66,7 +66,7 @@ public class CaptionManager implements IManager {
 
     private void loadCaptionLevel() {
         String query = "SELECT * FROM game_caption_level";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement preparedStatement = connection.prepareStatement(query); var rs = preparedStatement.executeQuery()) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement preparedStatement = connection.prepareStatement(query); var rs = preparedStatement.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getShort("id");
                 byte gender = rs.getByte("gender");

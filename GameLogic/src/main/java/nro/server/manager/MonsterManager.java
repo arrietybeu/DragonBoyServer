@@ -3,7 +3,7 @@ package nro.server.manager;
 
 import lombok.Getter;
 import nro.server.config.ConfigDB;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.MonsterTemplate;
 import nro.server.system.LogServer;
 
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @Author Arriety
  */
-public class MonsterManager implements IManager {
+public final class MonsterManager implements IManager {
 
     @Getter
     private static MonsterManager instance = new MonsterManager();
@@ -40,7 +40,7 @@ public class MonsterManager implements IManager {
 
     private void loadMonsterTemplates() {
         String query = "SELECT * FROM monster_template";
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {

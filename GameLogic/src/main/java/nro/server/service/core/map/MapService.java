@@ -5,6 +5,7 @@ import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
 import nro.server.manager.MapManager;
+import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.Waypoint;
@@ -230,24 +231,17 @@ public class MapService {
     }
 
     public void sendMapTransport(Player player) {
-        player.getTransports().clear();
+        PlayerTransport playerTransport = player.getPlayerTransport();
+
+        playerTransport.initCapsuleTransport();
+
         try (Message message = new Message(ConstsCmd.MAP_TRASPORT)) {
             DataOutputStream writer = message.writer();
+            writer.writeByte(playerTransport.getTransports().size());
 
-            int currentMapId = player.getArea().getMap().getId();
-            int gender = player.getGender();
-            List<Transport> transports = MapManager.getInstance().getTransports();
-
-            for (Transport transport : transports) {
-                if (transport.getMapIdByGender(gender) == currentMapId) continue;
-                player.getTransports().add(transport);
-            }
-
-            writer.writeByte(player.getTransports().size());
-
-            for (Transport transport : player.getTransports()) {
+            for (Transport transport : playerTransport.getTransports()) {
                 writer.writeUTF(transport.getName());
-                writer.writeUTF(transport.getPlanetNameByGender(gender));
+                writer.writeUTF(transport.getPlanetNameByGender(player.getGender()));
             }
 
             player.sendMessage(message);

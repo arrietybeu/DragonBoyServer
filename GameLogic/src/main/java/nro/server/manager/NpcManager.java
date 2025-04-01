@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.server.config.ConfigServer;
 import nro.server.service.model.entity.npc.NpcFactory;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.NpcTemplate;
 import nro.server.system.LogServer;
 
@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NpcManager implements IManager {
+public final class NpcManager implements IManager {
 
     @Getter
     private static final NpcManager instance = new NpcManager();
@@ -40,7 +40,7 @@ public class NpcManager implements IManager {
 
     private void loadNpcTemplates() {
         String query = "SELECT * FROM npc_template";
-        try (Connection conn = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert conn != null : "Connection is null";
             try (PreparedStatement ps = conn.prepareStatement(query);
                  ResultSet rs = ps.executeQuery()) {

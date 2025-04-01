@@ -16,7 +16,7 @@ import nro.server.system.LogServer;
 /**
  * @author Arriety
  */
-public class DatabaseConnectionPool {
+public class DatabaseFactory {
 
     private static final HikariDataSource DYNAMIC_DATA_SOURCE;
     private static final HikariDataSource STATIC_DATA_SOURCE;

@@ -4,7 +4,7 @@ import nro.server.network.Message;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MessageManager {
+public final class MessageManager {
 
     private static final ConcurrentHashMap<Integer, Message> cache = new ConcurrentHashMap<>();
 

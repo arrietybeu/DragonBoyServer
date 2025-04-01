@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.server.realtime.system.player.MagicTreeISystem;
+import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.model.entity.Entity;
 
 import nro.server.service.model.clan.Clan;
@@ -20,8 +21,6 @@ import nro.server.service.core.system.ServerService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -33,15 +32,14 @@ public class Player extends Entity {
     private final PlayerInventory playerInventory;
     private final PlayerMagicTree playerMagicTree;
     private final PlayerStatus playerStatus;
+    private final PlayerTransport playerTransport;
 
-    private final List<Transport> transports;
 
     private Clan clan;
     private Disciple disciple;
     private PetFollow petFollow;
     private Instant createdAt;
     private PlayerAdministrator playerAdministrator;
-
 
     private int role;
     private int activePoint;
@@ -59,7 +57,7 @@ public class Player extends Entity {
         this.fashion = new PlayerFashion(this);
         this.skills = new PlayerSkills(this);
         this.fusion = new PlayerFusion(this);
-        this.transports = new ArrayList<>();
+        this.playerTransport = new PlayerTransport(this);
         this.createAdministrator();
     }
 
@@ -148,10 +146,6 @@ public class Player extends Entity {
 
     private void createAdministrator() {
         if (this.isAdministrator()) this.playerAdministrator = new PlayerAdministrator(this);
-    }
-
-    private void registerToEntityComponentSystem() {
-
     }
 
     private void unregisterFromEntityComponentSystem() {

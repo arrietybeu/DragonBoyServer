@@ -1,4 +1,4 @@
 package nro.server.manager;
 
-public class ClanManager {
+public final class ClanManager {
 }

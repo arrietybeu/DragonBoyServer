@@ -4,7 +4,7 @@ import nro.consts.ConstTypeObject;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.player.Player;
 
-public class Boss extends Entity {
+public abstract class Boss extends Entity {
 
     public Boss() {
         this.setTypeObject(ConstTypeObject.TYPE_BOSS);
@@ -18,4 +18,5 @@ public class Boss extends Entity {
     @Override
     public void dispose() {
     }
+
 }

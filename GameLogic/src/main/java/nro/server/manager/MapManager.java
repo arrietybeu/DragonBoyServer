@@ -14,7 +14,7 @@ import nro.server.service.model.template.map.TileSetTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.map.Transport;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.map.BackgroundMapTemplate;
 import nro.server.service.model.map.GameMap;
 import nro.server.system.LogServer;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 @Getter
 @SuppressWarnings("ALL")
-public class MapManager implements IManager {
+public final class MapManager implements IManager {
 
     @Getter
     private static final MapManager instance = new MapManager();
@@ -72,7 +72,7 @@ public class MapManager implements IManager {
 
     private void loadMapTemplate() {
         String query = "SELECT * FROM `map_template`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement ps = connection.prepareStatement(query);
              var rs = ps.executeQuery()) {
 
@@ -222,7 +222,7 @@ public class MapManager implements IManager {
 
     private void loadDataBackgroundMap() {
         String query = "SELECT * FROM `map_data_background`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement ps = connection.prepareStatement(query);
              var rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -265,7 +265,7 @@ public class MapManager implements IManager {
 
     private void loadTileSetInfo() {
         String query = "SELECT * FROM `map_tile_set_info`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement ps = connection.prepareStatement(query);
              var rs = ps.executeQuery()) {
             while (rs.next()) {
@@ -286,7 +286,7 @@ public class MapManager implements IManager {
 
     private void loadTransportsMap() {
         String query = "SELECT * FROM `map_transport`";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
              PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
             while (rs.next()) {
                 Transport transport = new Transport();

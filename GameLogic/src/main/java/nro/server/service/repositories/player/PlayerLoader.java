@@ -11,7 +11,7 @@ import nro.server.service.model.entity.Points;
 import nro.server.service.model.task.TaskMain;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.network.Session;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;
@@ -32,7 +32,7 @@ public class PlayerLoader {
     public Player loadPlayer(Session session) throws Exception {
         String query = "SELECT * FROM player WHERE account_id = ? LIMIT 1";
         var ms = System.currentTimeMillis();
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             if (connection == null) {
                 throw new Exception("Error loading player for account_id: " + session.getUserInfo().getId() + ", Error: connection null");
             }

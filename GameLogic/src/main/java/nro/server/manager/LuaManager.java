@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 
-public class LuaManager implements IManager {
+public final class LuaManager implements IManager {
 
     @Getter
     private static final LuaManager instance = new LuaManager();

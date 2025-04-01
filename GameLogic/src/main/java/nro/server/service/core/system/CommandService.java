@@ -4,7 +4,7 @@ import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.template.CaptionTemplate;
 import nro.server.service.model.template.map.TileSetTemplate;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.entity.UserInfo;
 import nro.server.service.repositories.player.PlayerCreator;
 import nro.server.config.ConfigDB;
@@ -67,7 +67,7 @@ public class CommandService {
                         SessionManager.getInstance().kickAllPlayer("Thích thì kick");
                         break;
                     case "close_database":
-                        DatabaseConnectionPool.closeConnections();
+                        DatabaseFactory.closeConnections();
                         break;
                     case "version_image":
                         // System.out.println("Version image: " +
@@ -98,7 +98,7 @@ public class CommandService {
                         }
                         break;
                     case "create":
-                        Connection con = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC);
+                        Connection con = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC);
                         for (int i = 0; i < 1000; i++) {
                             PlayerCreator.getInstance().createPlayer(con, 1, "tuanbeo", (byte) 2, 1);
                         }

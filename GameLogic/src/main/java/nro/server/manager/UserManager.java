@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class UserManager {
+public final class UserManager {
 
     @Getter
     private static final UserManager instance = new UserManager();

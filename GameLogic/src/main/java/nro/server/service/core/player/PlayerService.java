@@ -17,7 +17,7 @@ import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.manager.SessionManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.repositories.player.PlayerCreator;
 import nro.server.service.repositories.player.PlayerLoader;
 import nro.server.system.LogServer;
@@ -582,7 +582,7 @@ public class PlayerService {
             return false;
         }
         final String QUERY_CHECK = "SELECT 1 FROM player WHERE name = ? OR account_id = ?";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_DYNAMIC)) {
             if (connection == null) return false;
             try (PreparedStatement psCheck = connection.prepareStatement(QUERY_CHECK)) {
 

@@ -10,7 +10,7 @@ import lombok.Getter;
 import nro.server.service.model.template.skill.NClassTemplate;
 import nro.server.service.model.template.skill.SkillOptionTemplate;
 import nro.server.config.ConfigDB;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.manager.IManager;
 import nro.server.service.model.template.skill.SkillTemplate;
@@ -40,7 +40,7 @@ public class SkillManager implements IManager {
 
     private void loadSkill() {
         String query = "SELECT * FROM skill_class";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -118,7 +118,7 @@ public class SkillManager implements IManager {
 
     private void loadSkillOption() {
         String query = "SELECT * FROM skill_option";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {

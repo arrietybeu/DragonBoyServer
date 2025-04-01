@@ -3,7 +3,7 @@ package nro.server.manager.skill;
 import lombok.Getter;
 import nro.consts.ConstPlayer;
 import nro.server.service.model.template.skill.SpeacialSkillTemplate;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.IManager;
@@ -46,7 +46,7 @@ public class SpeacialSkillManager implements IManager {
 
     private void loadSpecialSkill() {
         String query = "SELECT * FROM skill_special";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             assert connection != null : "Connection is null";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {

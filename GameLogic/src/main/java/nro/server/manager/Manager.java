@@ -9,7 +9,7 @@ import nro.server.system.LogServer;
 /**
  * @author Arriety
  */
-public class Manager {
+public final class Manager {
 
     private static Manager instance;
 

@@ -10,7 +10,7 @@ import nro.server.manager.skill.SpeacialSkillManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ManagerRegistry {
+public final class ManagerRegistry {
 
     private static final List<IManager> MANAGERS = new ArrayList<>();
 

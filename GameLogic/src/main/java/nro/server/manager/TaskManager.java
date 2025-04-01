@@ -3,7 +3,7 @@ package nro.server.manager;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.task.TaskMain;
-import nro.server.service.repositories.DatabaseConnectionPool;
+import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
@@ -17,7 +17,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 
 @SuppressWarnings("ALL")
-public class TaskManager implements IManager {
+public final class TaskManager implements IManager {
 
     @Getter
     private static final TaskManager instance = new TaskManager();
@@ -48,7 +48,7 @@ public class TaskManager implements IManager {
     private void loadTask() {
         String mainTaskQuery = "SELECT id, name, detail FROM task_main";
 
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
             if (connection == null) {
                 LogServer.LogException("Database connection is null!");
                 return;
@@ -138,7 +138,7 @@ public class TaskManager implements IManager {
 
     private void loadItemTaskReward() {
         String query = "SELECT * FROM `task_rewards`;";
-        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC); PreparedStatement ps = connection.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int taskId = rs.getInt("task_id");

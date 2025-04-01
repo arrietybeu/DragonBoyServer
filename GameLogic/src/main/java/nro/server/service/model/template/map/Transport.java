@@ -14,6 +14,7 @@ public class Transport {
     private int x;
     private int y;
 
+
     public String getPlanetNameByGender(int gender) {
         if (planetName.length == 0) {
             return "Arriety";
