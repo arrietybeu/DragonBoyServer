@@ -3,11 +3,13 @@ package nro.server.service.core.item;
 import lombok.Getter;
 import nro.consts.ConstItem;
 import nro.consts.ConstMap;
+import nro.consts.ConstMonster;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerTask;
+import nro.utils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +37,35 @@ public class DropItemMap {
 
     private void dropItemMapToTask(Player player, Monster monster, List<ItemMap> itemMaps) {
         PlayerTask playerTask = player.getPlayerTask();
-        switch (playerTask.getTaskMain().getId()) {
-            case 2 -> {
-                if (playerTask.getTaskMain().getIndex() != 0) return;
-                Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.DUI_GA);
-                ItemMap itemMap = new ItemMap(monster.getArea(), monster.getArea().increaseItemMapID(), player.getId(), item, monster.getX(), monster.getY(),
-                        -1, true);
-                itemMaps.add(itemMap);
+        switch (monster.getTemplateId()) {
+            case ConstMonster.KHUNG_LONG, ConstMonster.LON_LOI, ConstMonster.QUY_DAT -> {
+                if (playerTask.getTaskMain().getId() == 2) {
+                    if (playerTask.getTaskMain().getIndex() != 0) return;
+                    Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.DUI_GA);
+                    ItemMap itemMap = new ItemMap(monster.getArea(), monster.getArea().increaseItemMapID(), player.getId(), item, monster.getX(), monster.getY(),
+                            -1, true);
+                    itemMaps.add(itemMap);
+                }
+            }
+            case ConstMonster.THAN_LAN_ME -> {
+                if (playerTask.getTaskMain().getId() == 8) {
+                    if (playerTask.getTaskMain().getIndex() != 1) return;
+                    if (Util.nextInt(100) < 10) {
+                        Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.NGOC_RONG_7_SAO);
+                        ItemMap itemMap = new ItemMap(
+                                monster.getArea(),
+                                monster.getArea().increaseItemMapID(),
+                                player.getId(),
+                                item,
+                                monster.getX(),
+                                360,
+                                -1,
+                                true
+                        );
+                        itemMaps.add(itemMap);
+                        player.getPlayerTask().checkDoneTask(8, 1);
+                    }
+                }
             }
         }
     }

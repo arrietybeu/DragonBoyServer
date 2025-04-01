@@ -7,7 +7,7 @@ import nro.server.service.model.entity.Entity;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 
 import java.util.*;
@@ -17,7 +17,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.system.LogServer;
-import nro.server.service.core.item.ItemService;
 
 @Getter
 @Setter

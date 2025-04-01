@@ -6,8 +6,8 @@ import nro.consts.*;
 
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.monster.Monster;
-import nro.server.service.model.npc.Npc;
-import nro.server.service.model.npc.NpcFactory;
+import nro.server.service.model.entity.npc.Npc;
+import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.model.task.TaskMain;
 import nro.server.system.LogServer;
 import nro.server.manager.MapManager;
@@ -39,10 +39,6 @@ public class PlayerTask {
         try {
             if (!checkTaskInfo(taskId, index)) return false;
 
-            if (!TaskManager.getInstance().rewardTask(this.player, taskId, index)) {
-//                ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, "Không thể nhận thưởng nhiệm vụ!", false);
-            }
-
             this.addDoneSubTask();
 
             NpcService npcService = NpcService.getInstance();
@@ -57,6 +53,7 @@ public class PlayerTask {
                 case 3 -> this.handleTaskThree(index, npcService);
                 case 4 -> this.handleTaskFour(index, npcService);
                 case 7 -> this.handleTaskSeven(index, npcService);
+                case 8 -> this.handlerTaskEight(index, npcService);
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
@@ -158,7 +155,12 @@ public class PlayerTask {
         try {
             if (index == 3) {
                 Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
-                var content = "Con đã thực sự trưởng thành\n" + "Ta cho con cuốn bí kíp này để nâng cao võ hoc.\n" + "Con hãy dùng sức mạnh của mình trừ gian diệt ác bảo vệ dân lành nhé\n" + "Ta vừa mới nhận được tin, người bán hàng của chúng ta, Bumma, vừa bị một bọn mãnh thú bắt đi\n" + "Ta nghĩ chúng cũng chưa đi được xa đâu, con hãy chạy theo cứu Bunma, đi nhanh đi con\n" + "Con phải đạt sức mạnh 78.000 mới có thể đánh lại bọn chúng, hãy siêng năng tập luyện";
+                var content = "Con đã thực sự trưởng thành\n"
+                        + "Ta cho con cuốn bí kíp này để nâng cao võ hoc.\n"
+                        + "Con hãy dùng sức mạnh của mình trừ gian diệt ác bảo vệ dân lành nhé\n"
+                        + "Ta vừa mới nhận được tin, người bán hàng của chúng ta, Bumma, vừa bị một bọn mãnh thú bắt đi\n"
+                        + "Ta nghĩ chúng cũng chưa đi được xa đâu, con hãy chạy theo cứu Bunma, đi nhanh đi con\n"
+                        + "Con phải đạt sức mạnh 78.000 mới có thể đánh lại bọn chúng, hãy siêng năng tập luyện";
                 npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
             }
         } catch (Exception ex) {
@@ -168,16 +170,42 @@ public class PlayerTask {
 
     private void handleTaskSeven(int index, NpcService npcService) {
         try {
+            ServerService serverService = ServerService.getInstance();
             switch (index) {
+                case 1 -> {
+                    var count = this.taskMain.getSubNameList().get(index).getCount();
+                    var maxCount = this.taskMain.getSubNameList().get(index).getMaxCount();
+                    serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn đánh được %d/%d", count, maxCount), false);
+                }
                 case 2 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetRescuedNpcId(player.getGender()));
-                    var content = "Cảm ơn ngươi đã cứu ta. Ta sẽ sẵn sàng phục vụ nếu ngươi cần mua vật dụng";
+                    var content = "Cảm ơn bạn đã cứu tôi. Tôi sẽ sẵn sàng phục vụ nếu bạn cần mua vật dụng";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                 }
                 case 3 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     var content = "Con đã bao giờ nghe về Rồng thần chưa?\n" + "Truyền thuyết kể rằng có 7 viên Ngọc rồng nằm rải rác khắp địa cầu\n" + "Người có 7 viên ngọc rồng này sex có thể triệu hồi Rồng thần\n" + "Khi rồng thần xuất hiện, sẽ có 3 điều ước cho người đó\n" + "Ta được biết tại rừng Karin (Trái đất) có 1 viên ngọc rồng\n" + "Con hãy tìm đem về cho ta nhé";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskSeven - " + ex.getMessage(), ex);
+        }
+    }
+
+    private void handlerTaskEight(int index, NpcService npcService) {
+        try {
+            ServerService serverService = ServerService.getInstance();
+            switch (index) {
+                case 2 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetRescuedNpcId(player.getGender()));
+                    var content = "hihi quên kéo cái text nhiệm vụ của npc này rồi :>";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
+                case 3 -> {
+                    var tdAdd = 60_000;
+                    player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, tdAdd);
+                    serverService.sendChatGlobal(player.getSession(), null, String.format("Bạn vừa được thưởng %d tiềm năng sức mạnh", tdAdd), false);
                 }
             }
         } catch (Exception ex) {
@@ -211,20 +239,11 @@ public class PlayerTask {
     public void checkDoneTaskGoMap() {
         try {
             switch (this.player.getArea().getMap().getId()) {
-                case ConstMap.VACH_NUI_ARU_BASE:
-                case ConstMap.VACH_NUI_MOORI_BASE:
-                case ConstMap.VUC_PLANT: {
-                    if (this.player.getX() >= 635) {
-                        this.doneTask(0, 0);
-                    }
-                    break;
+                case ConstMap.VACH_NUI_ARU_BASE, ConstMap.VACH_NUI_MOORI_BASE, ConstMap.VUC_PLANT -> {
+                    if (this.player.getX() >= 635) this.doneTask(0, 0);
                 }
-                case ConstMap.NHA_GOHAN:
-                case ConstMap.NHA_MOORI:
-                case ConstMap.NHA_BROLY: {
-                    this.doneTask(0, 1);
-                    break;
-                }
+                case ConstMap.NHA_GOHAN, ConstMap.NHA_MOORI, ConstMap.NHA_BROLY -> this.doneTask(0, 1);
+                case ConstMap.RUNG_KARIN -> this.doneTask(8, 3);
             }
         } catch (Exception e) {
             LogServer.LogException("PlayerTask checkDoneTaskGoMap - " + e.getMessage(), e);
@@ -234,7 +253,9 @@ public class PlayerTask {
     public boolean checkDoneTaskTalkNpc(Npc npc) {
         return switch (npc.getTempId()) {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
-                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1) || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3) || this.doneTask(7, 3);
+                    this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1)
+                            || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3)
+                            || this.doneTask(7, 3) || this.doneTask(8, 2);
             case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
             default -> false;
         };
@@ -242,26 +263,43 @@ public class PlayerTask {
 
     public void checkDoneTaskKKillMonster(Monster monster) {
         try {
+
+            var gender = player.getGender();
             switch (monster.getTemplateId()) {
                 case ConstMonster.MOC_NHAN -> this.doneTask(1, 0);
 
                 case ConstMonster.KHUNG_LONG_ME -> {
-                    switch (this.player.getGender()) {
+                    switch (gender) {
                         case ConstPlayer.TRAI_DAT -> this.doneTask(4, 0);
                         case ConstPlayer.NAMEC, ConstPlayer.XAYDA -> this.doneTask(4, 1);
                     }
                 }
                 case ConstMonster.LON_LOI_ME -> {
-                    switch (this.player.getGender()) {
+                    switch (gender) {
                         case ConstPlayer.TRAI_DAT -> this.doneTask(4, 1);
                         case ConstPlayer.NAMEC -> this.doneTask(4, 0);
                         case ConstPlayer.XAYDA -> this.doneTask(4, 2);
                     }
                 }
                 case ConstMonster.QUY_DAT_ME -> {
-                    switch (this.player.getGender()) {
+                    switch (gender) {
                         case ConstPlayer.TRAI_DAT, ConstPlayer.NAMEC -> this.doneTask(4, 2);
                         case ConstPlayer.XAYDA -> this.doneTask(4, 0);
+                    }
+                }
+                case ConstMonster.THAN_LAN_BAY -> {
+                    if (gender == ConstPlayer.TRAI_DAT) {
+                        this.doneTask(7, 1);
+                    }
+                }
+                case ConstMonster.PHI_LONG -> {
+                    if (gender == ConstPlayer.NAMEC) {
+                        this.doneTask(7, 1);
+                    }
+                }
+                case ConstMonster.QUY_BAY -> {
+                    if (gender == ConstPlayer.XAYDA) {
+                        this.doneTask(7, 1);
                     }
                 }
             }
@@ -270,12 +308,8 @@ public class PlayerTask {
         }
     }
 
-    public void checkDoneTaskGetItemBox() {
-        this.doneTask(0, 3);
-    }
-
-    public void checkDoneTaskUpgradedPotential() {
-        this.doneTask(3, 0);
+    public void checkDoneTask(int id, int index) {
+        this.doneTask(id, index);
     }
 
     public void checkDoneTaskConfirmMenuNpc(int npcId) throws RuntimeException {
@@ -293,11 +327,16 @@ public class PlayerTask {
         }
     }
 
-    public void checkDoneTaskUpgradeExp(long exp) throws RuntimeException {
+    public void checkDoneTaskUpgradeExp(long exp) {
         switch (this.taskMain.getId()) {
             case 7 -> {
                 if (exp >= 78_000) {
                     this.doneTask(7, 0);
+                }
+            }
+            case 8 -> {
+                if (exp >= 140_000) {
+                    this.doneTask(8, 0);
                 }
             }
         }

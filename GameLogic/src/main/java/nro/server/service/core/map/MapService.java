@@ -3,6 +3,8 @@ package nro.server.service.core.map;
 import nro.consts.ConstMsgNotMap;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
+import nro.consts.ConstsCmd;
+import nro.server.manager.MapManager;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.Waypoint;
@@ -10,9 +12,10 @@ import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.map.decorates.BgItem;
 import nro.server.service.model.entity.monster.Monster;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.network.Message;
+import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
@@ -62,8 +65,8 @@ public class MapService {
             DataOutputStream data = message.writer();
             GameMap map = player.getArea().getMap();
             data.writeByte(ConstMsgNotMap.REQUEST_MAP_TEMPLATE);
-            data.writeByte(map.getTileMap().tmw());
-            data.writeByte(map.getTileMap().tmh());
+            data.writeByte(map.getTileMap().width());
+            data.writeByte(map.getTileMap().height());
 
             for (int i = 0; i < map.getTileMap().tiles().length; i++) {
                 data.writeByte(map.getTileMap().tiles()[i]);
@@ -223,6 +226,33 @@ public class MapService {
             player.sendMessage(CLEAR_MAP_MESSAGE);
         } catch (Exception e) {
             LogServer.LogException("Error clearMap: " + e.getMessage());
+        }
+    }
+
+    public void sendMapTransport(Player player) {
+        player.getTransports().clear();
+        try (Message message = new Message(ConstsCmd.MAP_TRASPORT)) {
+            DataOutputStream writer = message.writer();
+
+            int currentMapId = player.getArea().getMap().getId();
+            int gender = player.getGender();
+            List<Transport> transports = MapManager.getInstance().getTransports();
+
+            for (Transport transport : transports) {
+                if (transport.getMapIdByGender(gender) == currentMapId) continue;
+                player.getTransports().add(transport);
+            }
+
+            writer.writeByte(player.getTransports().size());
+
+            for (Transport transport : player.getTransports()) {
+                writer.writeUTF(transport.getName());
+                writer.writeUTF(transport.getPlanetNameByGender(gender));
+            }
+
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendMapTransport: " + e.getMessage());
         }
     }
 

@@ -10,7 +10,6 @@ public class Boss extends Entity {
         this.setTypeObject(ConstTypeObject.TYPE_BOSS);
     }
 
-
     @Override
     public long handleAttack(Player player, int type, long damage) {
         return 0;

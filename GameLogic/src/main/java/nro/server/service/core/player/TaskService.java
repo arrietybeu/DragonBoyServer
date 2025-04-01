@@ -22,9 +22,10 @@ public class TaskService {
             var subNames = taskMain.getSubNameList();
             int index = taskMain.getIndex();
             var gender = player.getGender();
+            var nameTask = taskMain.getNameByGender(gender) + " id:" + taskMain.getId() + " index:" + taskMain.getIndex();
             write.writeShort(taskMain.getId());
             write.writeByte(index);
-            write.writeUTF(taskMain.getNameByGender(gender));
+            write.writeUTF(nameTask);
             write.writeUTF(taskMain.getDetailByGender(gender));
             write.writeByte(subNames.size());
 

@@ -19,8 +19,9 @@ public class PlayerStatus {
     private long lastTimeChangeMap;
     private long lastTimePickItem;
     private long lastTimeAddExp;
-
     private int idItemTask;
+
+    private byte typeTransport;
 
     public PlayerStatus(Player player) {
         this.player = player;

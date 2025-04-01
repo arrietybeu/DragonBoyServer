@@ -85,7 +85,6 @@ public class ItemMapSystem implements ISystemBase {
                     itemsToRemove.add(itemMap.getId());
                     continue;
                 }
-                System.out.println("Updating items in area: " + area.getId() + " item name:" + itemMap.getItem().getTemplate().name());
                 long elapsedTime = currentTime - itemMap.getItem().getCreateTime();
                 if (elapsedTime > 60_000) {
                     ItemService.getInstance().sendRemoveItemMap(itemMap);

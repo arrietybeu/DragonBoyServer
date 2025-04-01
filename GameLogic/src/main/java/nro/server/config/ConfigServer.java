@@ -40,7 +40,7 @@ public final class ConfigServer {
 
     public static final String SCRIPT_FOLDER = "scripts/";
 
-    public static final String PATH_NPC_HANDLER = "nro.server.service.model.npc.handler";
+    public static final String PATH_NPC_HANDLER = "nro.server.service.model.entity.npc.handler";
     public static final String PATH_USE_ITEM_HANDLER = "nro.server.service.core.usage.handler";
     public static final String PATH_CONTROLLER_HANDLER = "nro.server.controller.handler";
     public static final String PATH_ENTITY_COMPONENT_SYSTEM = "nro.server.realtime.dispatcher";

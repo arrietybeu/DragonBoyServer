@@ -17,7 +17,6 @@ public class BotData {
     private int flagBag;
 
     public BotData() {
-
     }
 
 }

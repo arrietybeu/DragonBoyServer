@@ -94,11 +94,13 @@ public class UseItem {
             }
 
             IUseItemHandler handler = ItemHandlerRegistry.getHandler(item.getTemplate().type());
-            if (handler != null) {
-                handler.use(player, type, index, item, template);
-            } else {
+
+            if (handler == null) {
                 LogServer.LogWarning("Không có handler cho item type: " + item.getTemplate().type());
+                return;
             }
+
+            handler.use(player, type, index, item, template);
         } catch (Exception ex) {
             LogServer.LogException("Error useItem: " + ex.getMessage(), ex);
         }

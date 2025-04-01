@@ -1,9 +1,9 @@
-package nro.server.service.model.npc.handler;
+package nro.server.service.model.entity.npc.handler;
 
 import nro.consts.ConstMenu;
 import nro.consts.ConstNpc;
-import nro.server.service.model.npc.ANpcHandler;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.ANpcHandler;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.entity.player.PlayerStatus;

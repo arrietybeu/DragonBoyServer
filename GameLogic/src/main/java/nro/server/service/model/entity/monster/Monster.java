@@ -112,10 +112,11 @@ public class Monster extends Entity {
             this.point.setDead(true);
             this.status.setStatus((byte) 0);
             this.info.setLastTimeDie(System.currentTimeMillis());
+
             final List<ItemMap> itemMaps = DropItemMap.getInstance().dropItemMapForMonster(plAttack, this);
             boolean isCritical = plAttack.getPoints().getTotalCriticalChance() == 1;
             MonsterService.getInstance().sendMonsterDie(this, damage, isCritical, itemMaps);
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
             LogServer.LogException("Monster setDie: " + ex.getMessage(), ex);
         }
     }
@@ -170,7 +171,6 @@ public class Monster extends Entity {
                     if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
                     long exp = player.getPoints().getPotentialPointsAttack(this, damage);
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
-                    player.getPlayerTask().checkDoneTaskUpgradeExp(player.getPoints().getPower());
                     player.getPlayerStatus().setLastTimeAddExp(ms);
                 }
                 case Disciple disciple -> {

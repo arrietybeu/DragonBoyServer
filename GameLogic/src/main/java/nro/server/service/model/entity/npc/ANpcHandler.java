@@ -1,4 +1,4 @@
-package nro.server.service.model.npc;
+package nro.server.service.model.entity.npc;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -13,6 +13,7 @@ import nro.server.service.model.template.NpcTemplate;
 import nro.server.service.model.template.map.TileSetTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
+import nro.server.service.model.template.map.Transport;
 import nro.server.service.repositories.DatabaseConnectionPool;
 import nro.server.service.model.template.map.BackgroundMapTemplate;
 import nro.server.service.model.map.GameMap;
@@ -36,13 +37,12 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 public class MapManager implements IManager {
 
-    public static volatile boolean running;
-
     @Getter
     private static final MapManager instance = new MapManager();
     private final Map<Integer, GameMap> gameMaps = new HashMap<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
+    private final List<Transport> transports = new ArrayList<>();
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
 
@@ -51,12 +51,11 @@ public class MapManager implements IManager {
         this.loadMapTemplate();
         this.loadDataBackgroundMap();
         this.loadTileSetInfo();
-        running = true;
+        this.loadTransportsMap();
     }
 
     @Override
     public void reload() {
-        running = false;
         this.clear();
         this.init();
     }
@@ -66,6 +65,7 @@ public class MapManager implements IManager {
         this.gameMaps.clear();
         this.backgroundMapTemplates.clear();
         this.tileSetTemplates.clear();
+        this.transports.clear();
         this.BackgroundMapData = null;
         this.TileSetData = null;
     }
@@ -121,8 +121,8 @@ public class MapManager implements IManager {
 
             while (rs.next()) {
                 int mapId = rs.getInt("map_id");
-                int tmw = rs.getInt("tmw");
-                int tmh = rs.getInt("tmh");
+                int tmw = rs.getInt("width");
+                int tmh = rs.getInt("height");
                 String mapsJson = rs.getString("tiles");
 
                 int[] maps = parseJsonToIntArray(mapsJson);
@@ -271,7 +271,7 @@ public class MapManager implements IManager {
             while (rs.next()) {
                 var tileSet = new TileSetTemplate();
                 tileSet.setId(rs.getInt("id"));
-                tileSet.setTile_type(rs.getByte("tile_type"));
+                tileSet.setTileType(rs.getByte("tile_type"));
                 var tileTypes = this.loadTileType(connection, tileSet.getId());
                 tileSet.setTileTypes(tileTypes);
                 this.tileSetTemplates.add(tileSet);
@@ -280,7 +280,43 @@ public class MapManager implements IManager {
             // this.tileSetTemplates.size());
             this.setTileSetData();
         } catch (SQLException e) {
-            LogServer.LogException("Error loadTileSetInfo: " + e.getMessage());
+            LogServer.LogException("Error loadTileSetInfo: " + e.getMessage(), e);
+        }
+    }
+
+    private void loadTransportsMap() {
+        String query = "SELECT * FROM `map_transport`";
+        try (Connection connection = DatabaseConnectionPool.getConnectionForTask(ConfigDB.DATABASE_STATIC);
+             PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Transport transport = new Transport();
+                var mapIds = rs.getString("map_id");
+                var nameMap = rs.getString("name");
+                var planetName = rs.getString("planet_name");
+                var x = rs.getShort("x");
+                var y = rs.getShort("y");
+
+                JSONArray planetNameArray = (JSONArray) JSONValue.parse(planetName);
+                JSONArray mapIdArray = (JSONArray) JSONValue.parse(mapIds);
+
+                transport.setName(nameMap);
+                transport.setPlanetName(new String[planetNameArray.size()]);
+                transport.setMapIds(new short[mapIdArray.size()]);
+                transport.setX(x);
+                transport.setY(y);
+
+                for (int i = 0; i < planetNameArray.size(); i++) {
+                    transport.getPlanetName()[i] = planetNameArray.get(i).toString();
+                }
+
+                for (int i = 0; i < mapIdArray.size(); i++) {
+                    transport.getMapIds()[i] = Short.parseShort(mapIdArray.get(i).toString());
+                }
+
+                this.transports.add(transport);
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("Error loadTransportsMap: " + ex.getMessage(), ex);
         }
     }
 
@@ -304,7 +340,7 @@ public class MapManager implements IManager {
                     for (int i = 0; i < dataArray.size(); i++) {
                         indexValues[i] = ((Number) dataArray.get(i)).intValue();
                     }
-                    tileType.setIndex_value(indexValues);
+                    tileType.setIndexValue(indexValues);
                     tileTypes.add(tileType); // add to the list
                 }
             }
@@ -346,12 +382,11 @@ public class MapManager implements IManager {
                 List<TileSetTemplate> tileSetTemplates = this.tileSetTemplates;
                 dataOutputStream.writeByte(tileSetTemplates.size());
                 for (var tile : tileSetTemplates) {
-                    dataOutputStream.writeByte(tile.getTile_type());
+                    dataOutputStream.writeByte(tile.getTileType());
                     for (var tileType : tile.getTileTypes()) {
                         dataOutputStream.writeInt(tileType.getTileSetId());
                         dataOutputStream.writeByte(tileType.getIndex());
-
-                        for (var indexValue : tileType.getIndex_value()) {
+                        for (var indexValue : tileType.getIndexValue()) {
                             dataOutputStream.writeByte(indexValue);
                         }
                     }

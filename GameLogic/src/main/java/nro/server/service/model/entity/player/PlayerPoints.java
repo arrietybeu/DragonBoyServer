@@ -58,13 +58,15 @@ public class PlayerPoints extends Points {
     public void calculateStats() {
         this.resetBaseStats();
         this.applyItemBonuses();
+        this.setPointOverflow();
     }
 
     @Override
     public void resetBaseStats() {
         this.currentDamage = this.baseDamage;
-        this.currentHP = this.baseHP;
-        this.currentMP = this.baseMP;
+
+//        this.currentHP = this.baseHP;
+//        this.currentMP = this.baseMP;
 
         this.maxHP = this.baseHP;
         this.maxMP = this.baseMP;
@@ -127,6 +129,29 @@ public class PlayerPoints extends Points {
         }
     }
 
+    private void setPointOverflow() {
+        if (this.currentHP > this.maxHP) {
+            this.currentHP = this.maxHP;
+        }
+
+        if (this.currentMP > this.maxMP) {
+            this.currentMP = this.maxMP;
+        }
+
+        if (this.currentHP < 0) {
+            this.currentHP = 0;
+        }
+
+        if (this.currentMP < 0) {
+            this.currentMP = 0;
+        }
+
+        if (this.currentDamage < 0) {
+            this.currentDamage = 1;
+        }
+    }
+
+
     @Override
     public long getParamOption(long currentPoint, ItemOption option) {
         if (option == null) return 0;
@@ -141,24 +166,28 @@ public class PlayerPoints extends Points {
 
     @Override
     public void addExp(int type, long exp) {
-        PlayerService playerService = PlayerService.getInstance();
-        long step = 5_000_000;
-        while (exp > 0) {
-            long addAmount = Math.min(exp, step);
+        try {
+            PlayerService playerService = PlayerService.getInstance();
+            long step = 5_000_000;
+            while (exp > 0) {
+                long addAmount = Math.min(exp, step);
 
-            switch (type) {
-                case 0 -> this.power += addAmount;
-                case 1 -> this.potentialPoints += addAmount;
-                case 2 -> {
-                    this.power += addAmount;
-                    this.potentialPoints += addAmount;
+                switch (type) {
+                    case 0 -> this.power += addAmount;
+                    case 1 -> this.potentialPoints += addAmount;
+                    case 2 -> {
+                        this.power += addAmount;
+                        this.potentialPoints += addAmount;
+                    }
                 }
+                playerService.sendPlayerUpExp(this.player, type, (int) addAmount);
+                exp -= addAmount;
             }
-            playerService.sendPlayerUpExp(this.player, type, (int) addAmount);
-            exp -= addAmount;
+            this.player.getPlayerTask().checkDoneTaskUpgradeExp(this.getPower());
+        } catch (Exception ex) {
+            LogServer.LogException("Error adding exp: " + ex.getMessage(), ex);
         }
     }
-
 
     @Override
     public void subExp(int type, long exp) {
@@ -330,7 +359,7 @@ public class PlayerPoints extends Points {
             if (potentiaUse < 0) return;
             if (potentiaUse > 0 && this.isUpgradePotential(type, potentiaUse, currentPoint, point)) {
                 playerService.sendPointForMe(player);
-                this.player.getPlayerTask().checkDoneTaskUpgradedPotential();
+                this.player.getPlayerTask().checkDoneTask(3, 0);
             }
         } catch (Exception ex) {
             LogServer.LogException("upPotentialPoint: " + ex.getMessage(), ex);

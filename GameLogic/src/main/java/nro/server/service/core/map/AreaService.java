@@ -13,6 +13,7 @@ import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.Fashion;
 import nro.server.network.Message;
 import nro.server.service.core.item.DropItemMap;
+import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
@@ -20,6 +21,7 @@ import nro.server.service.core.player.PlayerService;
 import nro.utils.Util;
 
 import java.io.DataOutputStream;
+import java.util.List;
 import java.util.Map;
 
 public class AreaService {
@@ -248,7 +250,7 @@ public class AreaService {
             entity.setX(x);
             entity.setY(y);
             this.sendInfoAllLiveObjectsTo(entity);
-//
+
         } catch (Exception ex) {
             LogServer.LogException("entityEnterArea: " + ex.getMessage(), ex);
         }
@@ -333,7 +335,7 @@ public class AreaService {
         }
     }
 
-    public void changerMapByShip(Player player, int mapId, int typeTele) {
+    public void changerMapByShip(Player player, int mapId, int x, int y, int typeTele) {
         try {
             GameMap newMap = MapManager.getInstance().findMapById(mapId);
             ServerService serverService = ServerService.getInstance();
@@ -348,9 +350,25 @@ public class AreaService {
                 return;
             }
             player.setTeleport(typeTele);
-            AreaService.getInstance().gotoMap(player, newMap, Util.nextInt(400, 444), 5);
+            AreaService.getInstance().gotoMap(player, newMap, x, y);
         } catch (Exception ex) {
             LogServer.LogException("changerMapByShip: " + ex.getMessage(), ex);
+        }
+    }
+
+    //Util.nextInt(400, 444), 5)
+
+    public void playerTransport(Player player, int index) {
+        try {
+            List<Transport> transports = player.getTransports();
+            if (index < 0 || index >= transports.size()) return;
+            Transport transport = transports.get(index);
+
+            var mapId = transport.getMapIdByGender(player.getGender());
+            this.changerMapByShip(player, mapId, transport.getX(), transport.getY(), 1);
+            player.getTransports().clear();
+        } catch (Exception ex) {
+            LogServer.LogException("playerTransport: " + ex.getMessage(), ex);
         }
     }
 

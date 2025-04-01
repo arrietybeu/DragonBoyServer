@@ -3,7 +3,7 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.server.config.ConfigDB;
 import nro.server.config.ConfigServer;
-import nro.server.service.model.npc.NpcFactory;
+import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.repositories.DatabaseConnectionPool;
 import nro.server.service.model.template.NpcTemplate;
 import nro.server.system.LogServer;

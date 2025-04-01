@@ -1,13 +1,13 @@
-package nro.server.service.model.npc.handler;
+package nro.server.service.model.entity.npc.handler;
 
 import nro.consts.ConstMenu;
 import nro.consts.ConstNpc;
-import nro.server.service.model.npc.ANpcHandler;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.ANpcHandler;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.core.npc.NpcService;
 
-@ANpcHandler({ConstNpc.BUNMA})
+@ANpcHandler({ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE})
 public class BunmaDendeAppule extends Npc {
 
     public BunmaDendeAppule(int tempId, int status, int mapId, int cx, int cy, int avartar) {

@@ -84,7 +84,7 @@ public class ChatService {
             }
             if (text.startsWith("m ")) {
                 int mapId = (int) this.getNumber(text);
-                AreaService.getInstance().changerMapByShip(playerChat, mapId, 1);
+                AreaService.getInstance().changerMapByShip(playerChat, mapId, Util.nextInt(400, 444), 5, 1);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
             }
@@ -197,10 +197,6 @@ public class ChatService {
                         ItemService.getInstance().sendDropItemMap(playerChat, itemMap, true);
                     }
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
-                }
-                case "switch_update_map" -> {
-                    MapManager.running = !MapManager.running;
-                    serverService.sendChatGlobal(playerChat.getSession(), null, String.format(" update map %s Sussecs!", MapManager.running), false);
                 }
                 case "clear_cache" -> {
                     FileNio.clearCache();

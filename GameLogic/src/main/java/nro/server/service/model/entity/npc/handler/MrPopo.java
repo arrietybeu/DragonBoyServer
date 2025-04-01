@@ -1,8 +1,8 @@
-package nro.server.service.model.npc.handler;
+package nro.server.service.model.entity.npc.handler;
 
 import nro.consts.ConstNpc;
-import nro.server.service.model.npc.ANpcHandler;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.ANpcHandler;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;

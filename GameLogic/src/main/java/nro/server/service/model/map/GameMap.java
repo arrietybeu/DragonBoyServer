@@ -7,12 +7,11 @@ import nro.consts.ConstTypeObject;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.map.decorates.BgItem;
-import nro.server.service.model.npc.Npc;
-import nro.server.service.model.npc.NpcFactory;
+import nro.server.service.model.entity.npc.Npc;
+import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.template.NpcTemplate;
 import nro.server.system.LogServer;
-import nro.server.manager.MapManager;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -133,32 +132,22 @@ public class GameMap {
         return this.id == 51 || this.id == 103 || this.id == 112 || this.id == 113 || this.id == 129 || this.id == 130;
     }
 
-    public int yPhysicInTop(int x, int y) {
-        int rX = x / SIZE;
-        int rY = 0;
-        int row = y / SIZE;
-        int tmw = this.tileMap.tmw();
-        int[] tiles = this.tileMap.tiles();
-
-        int index = row * tmw + rX;
-        if (index >= 0 && index < tiles.length && isTileTop(tiles[index])) {
-            return y;
-        }
-
-        for (int i = row; i < this.tileMap.tmh(); i++) {
-            index = i * tmw + rX;
-            if (index >= 0 && index < tiles.length && isTileTop(tiles[index])) {
-                rY = i * SIZE;
-                break;
+    public int getGroundY(int tileX) {
+        TileMap tileMap = this.tileMap;
+        for (int y = 0; y < tileMap.height(); y++) {
+            int index = y * tileMap.width() + tileX;
+            if (tileMap.tiles()[index] != 0) {
+                return y;
             }
         }
-        return rY;
+        return -1;
     }
+
 
     public int tileTypeAt(int x, int y) {
         try {
             AtomicIntegerArray types = new AtomicIntegerArray(new int[this.tileMap.tiles().length]);
-            return types.get(y * this.tileMap.tmw() + x);
+            return types.get(y * this.tileMap.width() + x);
         } catch (Exception exception) {
             return 1000;
         }

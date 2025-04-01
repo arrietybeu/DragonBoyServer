@@ -2,8 +2,8 @@ package nro.server.service.core.npc;
 
 import lombok.Getter;
 import nro.server.service.core.system.ServerService;
-import nro.server.service.model.npc.Npc;
-import nro.server.service.model.npc.NpcFactory;
+import nro.server.service.model.entity.npc.Npc;
+import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.template.MagicTreeTemplate;

@@ -9,6 +9,7 @@ import nro.server.service.model.entity.Entity;
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.pet.PetFollow;
 import nro.server.service.model.entity.discpile.Disciple;
+import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
@@ -19,6 +20,8 @@ import nro.server.service.core.system.ServerService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -31,11 +34,14 @@ public class Player extends Entity {
     private final PlayerMagicTree playerMagicTree;
     private final PlayerStatus playerStatus;
 
+    private final List<Transport> transports;
+
     private Clan clan;
     private Disciple disciple;
     private PetFollow petFollow;
     private Instant createdAt;
     private PlayerAdministrator playerAdministrator;
+
 
     private int role;
     private int activePoint;
@@ -53,6 +59,7 @@ public class Player extends Entity {
         this.fashion = new PlayerFashion(this);
         this.skills = new PlayerSkills(this);
         this.fusion = new PlayerFusion(this);
+        this.transports = new ArrayList<>();
         this.createAdministrator();
     }
 
@@ -120,6 +127,7 @@ public class Player extends Entity {
 
     @Override
     public long handleAttack(Player player, int type, long damage) {
+//        System.out.println("Player.handleAttack: " + player.getName() + " " + damage);
         if (this.points.isDead()) {
             this.points.setDie();
             return 0;

@@ -43,4 +43,11 @@ public class ConstPlayer {
     public static final byte TANG_EXP = 1;
     public static final byte ADD_POWER_AND_EXP = 2;
 
+    /// =================== STATUS ===================///
+
+    // type transport map
+
+    public static final byte TYPE_TRANSPORT_CAPSULE = 0;
+
+
 }

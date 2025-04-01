@@ -2,7 +2,7 @@ package nro.server.controller.handler;
 
 import nro.server.controller.APacketHandler;
 import nro.server.controller.IMessageProcessor;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.system.LogServer;
 import nro.server.network.Message;

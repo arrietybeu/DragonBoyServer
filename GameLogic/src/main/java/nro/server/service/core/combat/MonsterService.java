@@ -25,8 +25,8 @@ public class MonsterService {
             for (ItemMap itemMap : itemMaps) {
                 data.writeShort(itemMap.getId());
                 data.writeShort(itemMap.getItem().getTemplate().id());
-                data.writeShort(itemMap.getX());
-                data.writeShort(itemMap.getY());
+                data.writeShort(itemMap.getX());// vat pham dat o vi tri nao
+                data.writeShort(itemMap.getY());// vx = xEnd - x >> 2; thì vật phẩm rơi xuống
                 data.writeInt(itemMap.getPlayerId());
             }
             monster.getArea().sendMessageToPlayersInArea(message, null);

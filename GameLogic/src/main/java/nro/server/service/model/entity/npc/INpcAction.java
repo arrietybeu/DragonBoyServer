@@ -1,4 +1,4 @@
-package nro.server.service.model.npc;
+package nro.server.service.model.entity.npc;
 
 import nro.server.service.model.entity.player.Player;
 

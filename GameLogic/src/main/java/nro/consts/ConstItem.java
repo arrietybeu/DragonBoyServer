@@ -44,6 +44,20 @@ public class ConstItem {
 
     // Item ID
 
+    public static final int NGOC_RONG_1_SAO = 14;
+
+    public static final int NGOC_RONG_2_SAO = 15;
+
+    public static final int NGOC_RONG_3_SAO = 16;
+
+    public static final int NGOC_RONG_4_SAO = 17;
+
+    public static final int NGOC_RONG_5_SAO = 18;
+
+    public static final int NGOC_RONG_6_SAO = 19;
+
+    public static final int NGOC_RONG_7_SAO = 20;
+
     public static final short GANG_VAI_DEN = 21;
 
     public static final short GANG_SOI_LEN = 22;
@@ -59,6 +73,8 @@ public class ConstItem {
     public static final short DUA_BE = 78;
 
     public static final short GOI_10_VIEN_CAPSULE = 193;
+
+    public static final short VIEN_CAPSULE_DAC_BIET = 194;
 
     public static final short RUBY = 861;
 

@@ -286,7 +286,7 @@ public class PlayerInventory {
         Item itemBox = this.itemsBox.get(index);
         if (itemBox != null && itemBox.getTemplate() != null) {
             if (this.player.getPlayerTask().getTaskMain().getId() == 0 && itemBox.getTemplate().id() == 12) {
-                player.getPlayerTask().checkDoneTaskGetItemBox();
+                player.getPlayerTask().checkDoneTask(0, 3);
             }
             this.addItemBag(itemBox);
             if (itemBox.getQuantity() == 0) {

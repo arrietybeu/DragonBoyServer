@@ -1,13 +1,14 @@
-package nro.server.service.model.npc.handler;
+package nro.server.service.model.entity.npc.handler;
 
 import nro.consts.ConstMap;
 import nro.consts.ConstMenu;
 import nro.consts.ConstNpc;
-import nro.server.service.model.npc.ANpcHandler;
-import nro.server.service.model.npc.Npc;
+import nro.server.service.model.entity.npc.ANpcHandler;
+import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.npc.NpcService;
+import nro.utils.Util;
 
 @ANpcHandler({ConstNpc.DR_BRIEF})
 public class DrBrief extends Npc {
@@ -29,8 +30,10 @@ public class DrBrief extends Npc {
         AreaService areaService = AreaService.getInstance();
         if (player.getPlayerStatus().isBaseMenu()) {
             switch (select) {
-                case 0 -> areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_NAMEC, 1);
-                case 1 -> areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_XAYDA, 1);
+                case 0 ->
+                        areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_NAMEC, Util.nextInt(400, 444), 5, 1);
+                case 1 ->
+                        areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_XAYDA, Util.nextInt(400, 444), 5, 1);
             }
         }
     }
