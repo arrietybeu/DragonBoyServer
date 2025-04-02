@@ -1,7 +1,7 @@
 package nro.server.service.repositories.player;
 
 import lombok.Getter;
-import nro.server.realtime.system.player.MagicTreeISystem;
+import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.entity.player.Player;
@@ -102,7 +102,7 @@ public class PlayerLoader {
 
 
     public void registerToEntityComponentSystem(Player player) {
-        MagicTreeISystem.getInstance().register(player);
+        PlayerSystem.getInstance().register(player);
     }
 
     private void loadPlayerSkills(Player player, Connection connection) throws SQLException {

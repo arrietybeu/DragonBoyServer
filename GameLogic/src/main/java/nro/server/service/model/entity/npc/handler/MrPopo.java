@@ -17,11 +17,11 @@ public class MrPopo extends Npc {
     @Override
     public void openMenu(Player player) {
         ServerService.getInstance().sendHideWaitDialog(player);
-        NpcService.getInstance().sendNpcChatAllPlayerInArea(player, this, "Xin chào");
-
+        NpcService.getInstance().sendNpcChatAllPlayerInArea(player, this, "Npc đang được phát triển vui lòng quay lại sau [" + this.getClass().getSimpleName() + "]");
     }
 
     @Override
-    public void openUIConFirm(Player player, int select) {
+    public void openUIConfirm(Player player, int select) {
     }
+
 }

@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import nro.server.service.model.item.ItemShop;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Getter
@@ -16,9 +15,4 @@ public class TabShop {
     private int id;
     private String name;
     private Map<Short, ItemShop> itemShopMap;
-
-    public TabShop() {
-    }
-
-
 }

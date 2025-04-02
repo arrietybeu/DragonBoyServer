@@ -1,4 +1,4 @@
-package nro.server.service.model.entity.bot;
+package nro.server.service.model.entity.ai.bot;
 
 import lombok.Getter;
 import lombok.Setter;

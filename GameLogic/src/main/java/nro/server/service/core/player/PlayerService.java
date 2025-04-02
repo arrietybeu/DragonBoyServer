@@ -4,9 +4,11 @@ import lombok.Getter;
 import nro.consts.ConstError;
 import nro.consts.ConstItem;
 import nro.consts.ConstMsgSubCommand;
+import nro.consts.ConstsCmd;
 import nro.server.service.core.map.MapService;
 import nro.server.service.core.social.ClanService;
 import nro.server.service.core.system.ServerService;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.template.item.ItemOption;
@@ -545,6 +547,18 @@ public class PlayerService {
             player.getArea().sendMessageToPlayersInArea(message, player);
         } catch (Exception ex) {
             LogServer.LogException("sendPLayerPickItemMap: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendEntityChangerTypePlayerKill(Entity entity, int type) {
+        try (Message message = new Message(ConstsCmd.SUB_COMMAND)) {
+            DataOutputStream write = message.writer();
+            write.writeByte(ConstMsgSubCommand.UPDATE_CHAR_PK_TYPE);
+            write.writeInt(entity.getId());
+            write.writeByte(type);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception e) {
+            LogServer.LogException("sendEntityChangerTypePlayerKill: " + e.getMessage(), e);
         }
     }
 

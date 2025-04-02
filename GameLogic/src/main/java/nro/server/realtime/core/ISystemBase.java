@@ -14,5 +14,4 @@ public interface ISystemBase {
         return this.getClass().getSimpleName();
     }
 
-
 }

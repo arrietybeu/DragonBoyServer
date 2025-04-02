@@ -61,7 +61,6 @@ public class MapService {
     }
 
     public void requestMaptemplate(Player player) {
-
         try (Message message = new Message(-28)) {
             DataOutputStream data = message.writer();
             GameMap map = player.getArea().getMap();

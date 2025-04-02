@@ -12,6 +12,12 @@ public class ConstShop {
 
     public static final byte SHOP_REBUY_ITEM = 8;
 
+    // ================= SHOP ID =================//
+
+    public static final byte SHOP_BUNMA = 0;
+    public static final byte SHOP_DENDE = 1;
+    public static final byte SHOP_APPULE = 2;
+
     // ================= SHOP_KY_GUI =================//
 
     public static final byte CONSIGN = 0;

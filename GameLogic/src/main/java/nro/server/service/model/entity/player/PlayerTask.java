@@ -54,6 +54,7 @@ public class PlayerTask {
                 case 4 -> this.handleTaskFour(index, npcService);
                 case 7 -> this.handleTaskSeven(index, npcService);
                 case 8 -> this.handlerTaskEight(index, npcService);
+                case 9 -> this.handlerTaskNine(index, npcService);
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
@@ -213,6 +214,21 @@ public class PlayerTask {
         }
     }
 
+    private void handlerTaskNine(int index, NpcService npcService) {
+        try {
+            ServerService serverService = ServerService.getInstance();
+            switch (index) {
+                case 0 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.BO_MONG);
+                    String content = "Hắn sắp đến đây, hãy giúp ta tiêu diệt hắn";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskNine - " + ex.getMessage(), ex);
+        }
+    }
+
     private boolean checkTaskInfo(int taskId, int index) {
         return this.taskMain != null && this.taskMain.getId() == taskId && this.taskMain.getIndex() == index;
     }
@@ -257,6 +273,7 @@ public class PlayerTask {
                             || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3)
                             || this.doneTask(7, 3) || this.doneTask(8, 2);
             case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
+            case ConstNpc.BO_MONG -> this.doneTask(9, 0);
             default -> false;
         };
     }

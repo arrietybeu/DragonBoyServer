@@ -45,7 +45,7 @@ public class NpcService {
             ServerService.getInstance().sendHideWaitDialog(player);
             return;
         }
-        npc.openUIConFirm(player, select);
+        npc.openUIConfirm(player, select);
     }
 
     public void createMenu(Player player, int npcId, int indexMenu, String npcSay, String... menus) {

@@ -34,7 +34,6 @@ public class Item implements AutoCloseable {
         this.itemOptions.add(new ItemOption(id, param));
     }
 
-    @SuppressWarnings("unchecked")
     public String getJsonOptions() {
         JSONArray options = new JSONArray();
         for (ItemOption io : this.itemOptions) {
@@ -103,14 +102,14 @@ public class Item implements AutoCloseable {
         this.quantity += quantity;
     }
 
+    public boolean isItemMount() {
+        return this.template.type() == 23 || this.template.type() == 24;
+    }
+
     public void dispose() {
         this.quantity = 0;
         this.template = null;
         this.itemOptions.clear();
-    }
-
-    public boolean isItemMount() {
-        return this.template.type() == 23 || this.template.type() == 24;
     }
 
     @Override

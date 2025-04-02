@@ -46,6 +46,8 @@ public final class MapManager implements IManager {
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
 
+    private final String SELECT_MAP_TRANSPORT = "SELECT * FROM `map_transport` ORDER BY index_row";
+
     @Override
     public void init() {
         this.loadMapTemplate();
@@ -285,9 +287,8 @@ public final class MapManager implements IManager {
     }
 
     private void loadTransportsMap() {
-        String query = "SELECT * FROM `map_transport`";
         try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = connection.prepareStatement(query); var rs = ps.executeQuery()) {
+             PreparedStatement ps = connection.prepareStatement(SELECT_MAP_TRANSPORT); var rs = ps.executeQuery()) {
             while (rs.next()) {
                 Transport transport = new Transport();
                 var mapIds = rs.getString("map_id");

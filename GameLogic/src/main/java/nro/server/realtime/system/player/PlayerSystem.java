@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Getter
-public class MagicTreeISystem implements ISystemBase {
+public class PlayerSystem implements ISystemBase {
 
     @Getter
-    private static final MagicTreeISystem instance = new MagicTreeISystem();
+    private static final PlayerSystem instance = new PlayerSystem();
     private final List<Player> players = new ArrayList<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -59,7 +59,7 @@ public class MagicTreeISystem implements ISystemBase {
                         player.getPlayerMagicTree().update();
                     }
                 } catch (Exception e) {
-                    LogServer.LogException("MagicTreeISystem error for player: " + player.getId(), e);
+                    LogServer.LogException("PlayerSystem error for player: " + player.getId(), e);
                 }
             }
         } finally {

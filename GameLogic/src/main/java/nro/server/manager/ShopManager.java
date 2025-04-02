@@ -72,8 +72,6 @@ public final class ShopManager implements IManager {
                     tabShop.setId(resultSet.getInt("id"));
                     tabShop.setName(resultSet.getString("name"));
                     tabShop.setItemShopMap(this.loadItemShop(connection, tabShop.getId()));
-
-                    System.out.println("loadTabShops: " + tabShop.getName() + " - " + tabShop.getItemShopMap().size() + " tab id = " + tabShop.getId());
                     tabShops.add(tabShop);
                 }
             }

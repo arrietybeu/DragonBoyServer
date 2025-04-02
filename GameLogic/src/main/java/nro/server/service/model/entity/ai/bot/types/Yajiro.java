@@ -1,6 +1,6 @@
-package nro.server.service.model.entity.bot.types;
+package nro.server.service.model.entity.ai.bot.types;
 
-import nro.server.service.model.entity.bot.Bot;
+import nro.server.service.model.entity.ai.bot.Bot;
 import nro.server.service.model.entity.player.Player;
 
 public class Yajiro extends Bot {

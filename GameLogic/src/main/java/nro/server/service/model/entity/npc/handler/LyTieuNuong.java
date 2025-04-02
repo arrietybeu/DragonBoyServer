@@ -21,7 +21,7 @@ public class LyTieuNuong extends Npc {
     }
 
     @Override
-    public void openUIConFirm(Player player, int select) {
+    public void openUIConfirm(Player player, int select) {
     }
 
 }

@@ -46,7 +46,7 @@ public class DauThan extends Npc {
     }
 
     @Override
-    public void openUIConFirm(Player player, int select) {
+    public void openUIConfirm(Player player, int select) {
         var indexMenu = player.getPlayerStatus().getIndexMenu();
         var playerMagicTree = player.getPlayerMagicTree();
         switch (indexMenu) {

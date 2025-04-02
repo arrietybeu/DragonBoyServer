@@ -1,7 +1,10 @@
 package nro.server.service.model.entity.npc.handler;
 
+import nro.consts.ConstMap;
 import nro.consts.ConstMenu;
 import nro.consts.ConstNpc;
+import nro.consts.ConstShop;
+import nro.server.service.core.economy.ShopService;
 import nro.server.service.model.entity.npc.ANpcHandler;
 import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
@@ -22,8 +25,14 @@ public class BunmaDendeAppule extends Npc {
     }
 
     @Override
-    public void openUIConFirm(Player player, int select) {
-        String beo = "My spirit is not stable";
+    public void openUIConfirm(Player player, int select) {
+        if (player.getPlayerStatus().isBaseMenu()) {
+            switch (player.getArea().getMap().getId()) {
+                case ConstMap.LANG_ARU -> ShopService.getInstance().sendNornalShop(player, 0);
+                case ConstMap.LANG_MOORI -> ShopService.getInstance().sendNornalShop(player, 1);
+                case ConstMap.LANG_KAKAROT -> ShopService.getInstance().sendNornalShop(player, ConstShop.SHOP_APPULE);
+            }
+        }
     }
 
 }

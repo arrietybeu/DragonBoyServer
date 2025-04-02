@@ -6,7 +6,7 @@ import nro.consts.ConstShop;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
 import nro.server.realtime.system.item.ItemMapSystem;
-import nro.server.realtime.system.player.MagicTreeISystem;
+import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.core.dragon.DragonService;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
@@ -253,7 +253,7 @@ public class ChatService {
                     String threadInfo = "Thread const: " + Thread.activeCount() + " session size: " + SessionManager.getInstance().getSizeSession();
                     String playerLocation = "\nPlayer Location mapId: " + playerChat.getArea().getMap().getId() + " zone id: " + playerChat.getArea().getId() + " x: " + playerChat.getX() + " y: " + playerChat.getY();
 
-                    var sizePlayer = MagicTreeISystem.getInstance().size();
+                    var sizePlayer = PlayerSystem.getInstance().size();
                     var sizeAreaItemMap = ItemMapSystem.getInstance().size();
                     String systemInfo = "\nsize player magic tree: " + sizePlayer + " size itemMap: " + sizeAreaItemMap;
 

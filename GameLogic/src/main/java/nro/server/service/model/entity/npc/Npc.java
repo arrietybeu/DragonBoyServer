@@ -11,7 +11,7 @@ import nro.server.service.core.system.ServerService;
 
 @Getter
 @Setter
-public class Npc implements INpcAction {
+public abstract class Npc {
 
     private int mapId;
     private final GameMap map;
@@ -41,14 +41,8 @@ public class Npc implements INpcAction {
         return null;
     }
 
-    @Override
-    public void openMenu(Player player) {
-        ServerService.getInstance().sendHideWaitDialog(player);
-        NpcService.getInstance().sendNpcChatAllPlayerInArea(player, this, "Xin chào");
-    }
+    public abstract void openMenu(Player player);
 
-    @Override
-    public void openUIConFirm(Player player, int select) {
-    }
+    public abstract void openUIConfirm(Player player, int select);
 
 }

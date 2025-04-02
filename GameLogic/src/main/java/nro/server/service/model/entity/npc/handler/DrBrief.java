@@ -26,7 +26,7 @@ public class DrBrief extends Npc {
     }
 
     @Override
-    public void openUIConFirm(Player player, int select) {
+    public void openUIConfirm(Player player, int select) {
         AreaService areaService = AreaService.getInstance();
         if (player.getPlayerStatus().isBaseMenu()) {
             switch (select) {

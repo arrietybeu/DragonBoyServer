@@ -1,4 +1,4 @@
-package nro.server.service.model.entity.discpile;
+package nro.server.service.model.entity.ai.discpile;
 
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.player.Player;

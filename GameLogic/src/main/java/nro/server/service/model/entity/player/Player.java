@@ -3,14 +3,13 @@ package nro.server.service.model.entity.player;
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
-import nro.server.realtime.system.player.MagicTreeISystem;
+import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.model.entity.Entity;
 
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.pet.PetFollow;
-import nro.server.service.model.entity.discpile.Disciple;
-import nro.server.service.model.template.map.Transport;
+import nro.server.service.model.entity.ai.discpile.Disciple;
 import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
@@ -33,7 +32,6 @@ public class Player extends Entity {
     private final PlayerMagicTree playerMagicTree;
     private final PlayerStatus playerStatus;
     private final PlayerTransport playerTransport;
-
 
     private Clan clan;
     private Disciple disciple;
@@ -149,7 +147,7 @@ public class Player extends Entity {
     }
 
     private void unregisterFromEntityComponentSystem() {
-        MagicTreeISystem.getInstance().unregister(this);
+        PlayerSystem.getInstance().unregister(this);
     }
 
     @Override

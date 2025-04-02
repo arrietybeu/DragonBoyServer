@@ -36,5 +36,10 @@ public class QuestGiver extends Npc {
         NpcService.getInstance().sendNpcTalkUI(player, this.getTempId(), text, this.getAvatar());
     }
 
+    @Override
+    public void openUIConfirm(Player player, int select) {
+
+    }
+
 
 }

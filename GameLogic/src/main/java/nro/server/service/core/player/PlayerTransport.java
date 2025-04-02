@@ -35,6 +35,7 @@ public class PlayerTransport {
             beforeTransport.setName("Về chỗ cũ: " + beforeTransport.getName());
             this.transports.add(beforeTransport);
         }
+
         for (Transport transport : transports) {
             if (transport.getMapIdByGender(gender) == currentMapId) continue;
             this.transports.add(transport);

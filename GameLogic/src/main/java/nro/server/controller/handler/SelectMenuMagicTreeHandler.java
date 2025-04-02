@@ -23,7 +23,7 @@ public class SelectMenuMagicTreeHandler implements IMessageProcessor {
 
             if (npcId == 4) {
                 Npc npc = player.getArea().getNpcById(npcId);
-                npc.openUIConFirm(player, select);
+                npc.openUIConfirm(player, select);
                 return;
             }
 

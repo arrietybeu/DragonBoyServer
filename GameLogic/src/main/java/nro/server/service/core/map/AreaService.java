@@ -2,11 +2,10 @@ package nro.server.service.core.map;
 
 import lombok.Getter;
 import nro.consts.ConstTypeObject;
-import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.Entity;
-import nro.server.service.model.entity.discpile.Disciple;
+import nro.server.service.model.entity.ai.discpile.Disciple;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.Waypoint;
 import nro.server.service.model.map.areas.Area;
@@ -14,15 +13,12 @@ import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.Fashion;
 import nro.server.network.Message;
 import nro.server.service.core.item.DropItemMap;
-import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.MapManager;
 import nro.server.service.core.player.PlayerService;
-import nro.utils.Util;
 
 import java.io.DataOutputStream;
-import java.util.List;
 import java.util.Map;
 
 public class AreaService {

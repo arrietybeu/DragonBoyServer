@@ -13,7 +13,6 @@ public class PlayerMenuService {
     public void showListMenuPlayer() {
         try (Message message = new Message(-30)) {
             message.writer().writeByte(ConstMsgSubCommand.PLAYER_MENU_LIST);
-
         } catch (Exception ex) {
             LogServer.LogException("showListMenuPlayer: " + ex.getMessage(), ex);
             ex.printStackTrace();
