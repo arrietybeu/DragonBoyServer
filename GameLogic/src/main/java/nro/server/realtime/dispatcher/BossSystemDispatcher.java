@@ -29,8 +29,6 @@ public class BossSystemDispatcher implements IDispatcherBase {
 
     private void registerSystems() {
         systems.add(BossAISystem.getInstance());
-        systems.add(BossMovementSystem.getInstance());
-        systems.add(BossAttackSystem.getInstance());
     }
 
     private void tick() {

@@ -5,15 +5,15 @@ import nro.server.realtime.core.ISystemBase;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.system.LogServer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class BossAISystem implements ISystemBase {
 
     @Getter
     private static final BossAISystem instance = new BossAISystem();
-    private final List<Boss> bosses = new ArrayList<>();
+    private final Map<Integer, Boss> bosses = new HashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
@@ -21,9 +21,11 @@ public class BossAISystem implements ISystemBase {
         if (object instanceof Boss boss) {
             lock.writeLock().lock();
             try {
-                if (!bosses.contains(boss)) {
-                    bosses.add(boss);
+                if (bosses.containsKey(boss.getId())) {
+                    LogServer.LogException("Boss " + boss.getId() + " is already registered!");
+                    return;
                 }
+                bosses.put(boss.getId(), boss);
             } finally {
                 lock.writeLock().unlock();
             }
@@ -35,7 +37,7 @@ public class BossAISystem implements ISystemBase {
         if (object instanceof Boss boss) {
             lock.writeLock().lock();
             try {
-                bosses.remove(boss);
+                bosses.remove(boss.getId());
             } finally {
                 lock.writeLock().unlock();
             }
@@ -46,7 +48,7 @@ public class BossAISystem implements ISystemBase {
     public void update() {
         lock.readLock().lock();
         try {
-            for (Boss boss : bosses) {
+            for (Boss boss : bosses.values()) {
                 try {
 //                    boss.updateAI();
                 } catch (Exception e) {

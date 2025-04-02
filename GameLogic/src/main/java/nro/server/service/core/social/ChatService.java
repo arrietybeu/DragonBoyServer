@@ -13,6 +13,7 @@ import nro.server.service.core.system.ServerService;
 import nro.server.service.core.economy.ShopService;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.player.InventoryService;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.GameMap;
@@ -37,16 +38,18 @@ public class ChatService {
     @Getter
     private static final ChatService instance = new ChatService();
 
-    public void chatMap(Player player, String text) {
+    public void chatMap(Entity entity, String text) {
         try (Message message = new Message(ConstsCmd.CHAT_MAP)) {
-            message.writer().writeInt(player.getId());
+            message.writer().writeInt(entity.getId());
             message.writer().writeUTF(text);
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("Error ServerService Chat Map: " + ex.getMessage(), ex);
         } finally {
-            if (player.isAdministrator()) {
-                this.commandForAdmins(player, text);
+            if (entity instanceof Player player) {
+                if (player.isAdministrator()) {
+                    this.commandForAdmins(player, text);
+                }
             }
         }
     }
