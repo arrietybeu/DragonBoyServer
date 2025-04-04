@@ -1,14 +1,16 @@
 package nro.server.service.model.entity.ai.handler;
 
 import nro.server.service.model.entity.ai.AIState;
+import nro.server.service.model.entity.ai.AIStateHandler;
 import nro.server.service.model.entity.ai.AbstractAI;
 import nro.server.service.model.entity.player.Player;
 
-public class ChasingEventHandler {
+public class ChasingEventHandler implements AIStateHandler {
 
     private static final int ATTACK_RANGE = 60; // khoarng cacsh de boss tan cong
 
-    public static void handler(AbstractAI ai) {
+    @Override
+    public void handle(AbstractAI ai) {
         Player target = ai.getEntityTargetAsPlayer();
 
         // target không còn hoặc không hợp lệ

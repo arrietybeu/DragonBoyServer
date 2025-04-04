@@ -1,14 +1,16 @@
 package nro.server.service.model.entity.ai.handler;
 
 import nro.server.service.model.entity.ai.AIState;
+import nro.server.service.model.entity.ai.AIStateHandler;
 import nro.server.service.model.entity.ai.AbstractAI;
 import nro.server.service.model.entity.player.Player;
 
-public class AttackingEventHandler {
+public class AttackingEventHandler implements AIStateHandler {
 
     private static final int ATTACK_RANGE = 60;
 
-    public static void handler(AbstractAI ai) {
+    @Override
+    public void handle(AbstractAI ai) {
         Player target = ai.getEntityTargetAsPlayer();
 
         // neu target mất hoặc chết hoặc khác map → về SEARCHING
@@ -34,6 +36,4 @@ public class AttackingEventHandler {
         // Sau khi đánh, vẫn giữ ATTACKING hoặc chuyển về SEARCHING tùy ý bạn
         // ai.setStateIfNot(AIState.SEARCHING);
     }
-
-
 }

@@ -2,11 +2,8 @@ package nro.server.realtime.system.boss;
 
 import lombok.Getter;
 import nro.server.realtime.core.ISystemBase;
-import nro.server.service.model.entity.ai.AIState;
+import nro.server.realtime.system.boss.disruptor.BossDisruptorEngine;
 import nro.server.service.model.entity.ai.boss.Boss;
-import nro.server.service.model.entity.ai.handler.AttackingEventHandler;
-import nro.server.service.model.entity.ai.handler.ChasingEventHandler;
-import nro.server.service.model.entity.ai.handler.SearchingEventHandler;
 import nro.server.system.LogServer;
 
 import java.util.HashMap;
@@ -53,26 +50,10 @@ public class BossAISystem implements ISystemBase {
         lock.readLock().lock();
         try {
             for (Boss boss : bosses.values()) {
-                try {
-                    this.onUpdate(boss);
-                } catch (Exception e) {
-                    LogServer.LogException("BossAISystem Error, Boss: " + boss.getId(), e);
-                }
+                BossDisruptorEngine.getInstance().submit(boss);
             }
         } finally {
             lock.readLock().unlock();
-        }
-    }
-
-    private void onUpdate(Boss boss) {
-        // Implement the logic to update the boss state
-        AIState aiState = boss.getState();
-        switch (aiState) {
-            case AIState.IDLE -> {
-            }
-            case AIState.SEARCHING -> SearchingEventHandler.handler(boss);
-            case AIState.CHASING -> ChasingEventHandler.handler(boss);
-            case AIState.ATTACKING -> AttackingEventHandler.handler(boss);
         }
     }
 

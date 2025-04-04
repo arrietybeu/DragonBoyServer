@@ -30,6 +30,4 @@ public abstract class AbstractAI extends Entity implements AI {
         }
         return null;
     }
-
-
 }

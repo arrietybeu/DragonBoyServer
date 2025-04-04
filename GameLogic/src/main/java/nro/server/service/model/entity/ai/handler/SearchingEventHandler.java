@@ -3,13 +3,15 @@ package nro.server.service.model.entity.ai.handler;
 import nro.consts.ConstTypeObject;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.AIState;
+import nro.server.service.model.entity.ai.AIStateHandler;
 import nro.server.service.model.entity.ai.AbstractAI;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 
-public class SearchingEventHandler {
+public class SearchingEventHandler implements AIStateHandler {
 
-    public static void handler(AbstractAI ai) {
+    @Override
+    public void handle(AbstractAI ai) {
         Area area = ai.getArea(); // hoặc boss.getArea()
         if (area == null) return;
 
