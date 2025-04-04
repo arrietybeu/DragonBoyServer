@@ -17,7 +17,7 @@ import nro.server.service.model.template.skill.SkillTemplate;
 import nro.server.system.LogServer;
 
 @Getter
-public class SkillManager implements IManager {
+public final class SkillManager implements IManager {
 
     @Getter
     private static SkillManager instance = new SkillManager();

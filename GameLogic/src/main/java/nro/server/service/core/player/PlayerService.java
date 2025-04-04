@@ -131,7 +131,8 @@ public class PlayerService {
 
     private void sendHaveDisciple(Player player) {
         try (Message message = new Message(-107)) {
-            message.writer().writeByte(player.getDisciple() == null ? 0 : 1);
+//            message.writer().writeByte(player.getDisciple() == null ? 0 : 1);
+            message.writer().writeByte(0);
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendDisciple: " + e.getMessage(), e);

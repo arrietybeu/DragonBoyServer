@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("ALL")
-public class SkillPaintManager implements IManager {
+public final class SkillPaintManager implements IManager {
 
     @Getter
     private static final SkillPaintManager instance = new SkillPaintManager();

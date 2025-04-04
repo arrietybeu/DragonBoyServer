@@ -9,7 +9,7 @@ import nro.server.service.model.entity.Entity;
 
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.pet.PetFollow;
-import nro.server.service.model.entity.ai.discpile.Disciple;
+
 import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
@@ -34,7 +34,6 @@ public class Player extends Entity {
     private final PlayerTransport playerTransport;
 
     private Clan clan;
-    private Disciple disciple;
     private PetFollow petFollow;
     private Instant createdAt;
     private PlayerAdministrator playerAdministrator;
@@ -161,7 +160,7 @@ public class Player extends Entity {
         return "Player{" + "session=" + session + ", playerCurrencies=" + playerCurrencies + ", playerPoints="
                 + points + ", playerTask=" + playerTask + ", fashion=" + fashion + ", playerSkill="
                 + skills + ", playerInventory=" + playerInventory + ", fusion=" + fusion
-                + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan + ", disciple=" + disciple
-                + ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
+                + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan +
+                 ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
     }
 }

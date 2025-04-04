@@ -30,6 +30,12 @@ public class ChangeAreaHandler implements IMessageProcessor {
                 return;
             }
             Area area = areaList.get(areaId);
+            if (area == null) {
+                ServerService.getInstance().sendChatGlobal(player.getSession(), null,
+                        "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
+                LogServer.LogException("ChangeAreaHandler: area is null " + areaId);
+                return;
+            }
             AreaService.getInstance().changeArea(player, area);
         } catch (Exception ex) {
             LogServer.LogException("ChangeAreaHandler: " + ex.getMessage(), ex);

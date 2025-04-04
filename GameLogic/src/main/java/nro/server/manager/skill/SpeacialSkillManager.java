@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class SpeacialSkillManager implements IManager {
+public final class SpeacialSkillManager implements IManager {
 
     @Getter
     private static SpeacialSkillManager instance = new SpeacialSkillManager();

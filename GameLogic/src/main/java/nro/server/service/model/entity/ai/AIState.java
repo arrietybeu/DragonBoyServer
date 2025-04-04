@@ -5,6 +5,9 @@ public enum AIState {
     // đứng yên, không làm gì
     IDLE,
 
+    // tìm kiếm mục tiêu trong map
+    SEARCHING,
+
     // đuổi theo mục tiêu đang được target
     CHASING,
 
@@ -27,6 +30,9 @@ public enum AIState {
     TAUNTING,
 
     // chết mất tiu
-    DEAD
+    DEAD,
+
+    // boss rời khỏi map (khi bị chết || trong trường hợp nếu thời gian lâu không tìm thấy người chơi)
+    LEAVING_MAP,
 
 }

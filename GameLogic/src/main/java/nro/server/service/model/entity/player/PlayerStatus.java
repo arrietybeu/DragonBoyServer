@@ -12,6 +12,8 @@ public class PlayerStatus {
 
     private final Player player;
 
+    private boolean isInVisible;
+
     private int indexMenu;
     private boolean isLockMove;
     private long lastTimeLive;

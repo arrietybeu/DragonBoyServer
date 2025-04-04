@@ -230,7 +230,7 @@ public class PlayerPoints extends Points {
                 return;
             }
             player.setTeleport(1);
-            AreaService.getInstance().gotoMap(this.player, newMap, x, y);
+            AreaService.getInstance().gotoMap(this.player, newMap.getArea(-1), x, y);
         } catch (Exception ex) {
             LogServer.LogException("returnTownFromDead: " + ex.getMessage());
             ex.printStackTrace();

@@ -1,5 +1,7 @@
 package nro.utils;
 
+import org.json.JSONArray;
+
 import java.text.Normalizer;
 import java.util.SplittableRandom;
 import java.util.concurrent.Executors;
@@ -74,5 +76,4 @@ public class Util {
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);
         return normalized.replaceAll("\\p{M}", "");
     }
-
 }

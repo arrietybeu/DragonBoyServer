@@ -1,5 +1,6 @@
 package nro.server.manager;
 
+import nro.server.manager.entity.BossManager;
 import nro.server.manager.resources.PartManager;
 import nro.server.manager.resources.ResourcesManager;
 import nro.server.manager.skill.SkillManager;
@@ -30,6 +31,7 @@ public final class ManagerRegistry {
         MANAGERS.add(MagicTreeManager.getInstance());
         MANAGERS.add(ItemMapManager.getInstance());
         MANAGERS.add(ShopManager.getInstance());
+        MANAGERS.add(BossManager.getInstance());
 //        MANAGERS.add(LuaManager.getInstance());
     }
 

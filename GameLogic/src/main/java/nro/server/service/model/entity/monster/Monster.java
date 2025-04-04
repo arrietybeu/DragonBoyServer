@@ -6,7 +6,6 @@ import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
 import nro.server.realtime.system.monster.MonsterUpdateSystem;
 import nro.server.service.model.entity.Entity;
-import nro.server.service.model.entity.ai.discpile.Disciple;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.entity.player.Player;
@@ -172,8 +171,6 @@ public class Monster extends Entity {
                     long exp = player.getPoints().getPotentialPointsAttack(this, damage);
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
                     player.getPlayerStatus().setLastTimeAddExp(ms);
-                }
-                case Disciple disciple -> {
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + entity.getName());
             }

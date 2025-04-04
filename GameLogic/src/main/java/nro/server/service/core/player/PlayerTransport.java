@@ -32,7 +32,6 @@ public class PlayerTransport {
         int gender = owner.getGender();
 
         if (beforeTransport != null) {
-            beforeTransport.setName("Về chỗ cũ: " + beforeTransport.getName());
             this.transports.add(beforeTransport);
         }
 
@@ -48,11 +47,7 @@ public class PlayerTransport {
             var lastTimeTransport = player.getPlayerStatus().getLastTimeTransport();
             if (ms - lastTimeTransport < 10000) {
                 long remainingTime = (10000 - (ms - lastTimeTransport)) / 1000;
-                ServerService.getInstance().sendChatGlobal(
-                        player.getSession(), null,
-                        String.format("Vui lòng đợi %d giây để sử dụng lại", remainingTime),
-                        false
-                );
+                ServerService.getInstance().sendChatGlobal(player.getSession(), null, String.format("Vui lòng đợi %d giây để sử dụng lại", remainingTime), false);
                 return;
             }
             List<Transport> transports = player.getPlayerTransport().getTransports();
@@ -77,7 +72,7 @@ public class PlayerTransport {
 
     private void saveCurrentLocationAsBefore(Player player, Transport transport) {
         Transport before = new Transport();
-        String mapName = player.getArea().getMap().getName();
+        String mapName = "Về chỗ cũ: " + player.getArea().getMap().getName();
         before.setName(mapName);
         before.setMapIds(new short[]{(short) player.getArea().getMap().getId()});
         before.setPlanetName(transport.getPlanetName());

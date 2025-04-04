@@ -292,7 +292,7 @@ public class PlayerLoader {
     }
 
     private Area getValidArea(short mapID) {
-        return MapManager.getInstance().findMapById(mapID).getArea();
+        return MapManager.getInstance().findMapById(mapID).getArea(-1);
     }
 
     private void loadPlayerMagicTree(Player player, Connection connection) throws SQLException {

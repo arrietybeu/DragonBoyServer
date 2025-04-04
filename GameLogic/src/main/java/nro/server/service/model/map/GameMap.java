@@ -118,11 +118,13 @@ public class GameMap {
         return waypoint;
     }
 
-    public Area getArea() {
-        List<Area> areas = this.areas;
-        for (Area area : areas) {
+
+    public Area getArea(int id) {
+        for (Area area : this.areas) {
             if (area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers()) {
-                return area;
+                if (id < 0 || area.getId() == id) {
+                    return area;
+                }
             }
         }
         return null;
