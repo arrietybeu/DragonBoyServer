@@ -27,7 +27,6 @@ import nro.server.system.LogServer;
 // @SuppressWarnings("ALL")
 @Getter
 @Setter
-@ToString
 public final class Session {
 
     private static AtomicInteger baseId = new AtomicInteger(0);

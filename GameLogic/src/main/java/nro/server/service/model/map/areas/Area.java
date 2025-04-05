@@ -4,6 +4,7 @@ import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.Entity;
+import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
@@ -47,30 +48,36 @@ public class Area {
 
 
     public void addPlayer(Entity entity) {
-        switch (entity) {
-            case Player player -> {
-                this.lock.writeLock().lock();
-                try {
+        this.lock.writeLock().lock();
+        try {
+            switch (entity) {
+                case Player player -> {
                     if (this.entitys.size() >= this.maxPlayers) {
                         LogServer.LogException("Zone is full: " + this.id);
                         return;
                     }
-
                     if (this.entitys.containsKey(player.getId())) {
                         AreaService.getInstance().playerExitArea(player);
                     }
-
                     this.entitys.put(player.getId(), player);
-                } catch (Exception ex) {
-                    LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
-                } finally {
-                    this.lock.writeLock().unlock();
+                }
+
+                case Boss boss -> {
+                    if (this.entitys.containsKey(boss.getId())) {
+                        AreaService.getInstance().playerExitArea(boss);
+                    }
+                    this.entitys.put(boss.getId(), boss);
+                }
+                default -> {
+                    LogServer.LogException("addPlayer: Invalid entity type: " + entity.getTypeObject());
                 }
             }
-            default -> {
-                LogServer.LogException("addPlayer: Invalid entity type: " + entity.getTypeObject());
-            }
+        } catch (Exception ex) {
+            LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
+        } finally {
+            this.lock.writeLock().unlock();
         }
+
     }
 
     public void removePlayer(Entity entity) {
@@ -105,6 +112,15 @@ public class Area {
         return result;
     }
 
+    public Collection<Boss> getBossByType(int typeObject) {
+        List<Boss> result = new ArrayList<>();
+        for (Entity obj : this.entitys.values()) {
+            if (obj.getTypeObject() == typeObject && obj instanceof Boss boss) {
+                result.add(boss);
+            }
+        }
+        return result;
+    }
 
     public Map<Integer, Entity> getAllEntityInArea() {
         this.lock.readLock().lock();

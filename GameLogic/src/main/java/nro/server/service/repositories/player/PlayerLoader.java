@@ -268,10 +268,10 @@ public class PlayerLoader {
                     mapID = (short) (21 + player.getGender());
                 }
 
-                Area gameMap = getValidArea(mapID);
+                Area gameMap = getValidArea(mapID, player);
                 if (gameMap == null) {
                     resetPlayerLocation(player);
-                    gameMap = getValidArea((short) (21 + player.getGender()));
+                    gameMap = getValidArea((short) (21 + player.getGender()), player);
                 }
 
                 player.setX(x);
@@ -291,8 +291,8 @@ public class PlayerLoader {
         player.setY((short) 336);
     }
 
-    private Area getValidArea(short mapID) {
-        return MapManager.getInstance().findMapById(mapID).getArea(-1);
+    private Area getValidArea(short mapID, Player player) {
+        return MapManager.getInstance().findMapById(mapID).getArea(-1, player);
     }
 
     private void loadPlayerMagicTree(Player player, Connection connection) throws SQLException {

@@ -5,6 +5,7 @@ import nro.consts.ConstTypeObject;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.Entity;
+import nro.server.service.model.entity.Fusion;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.Waypoint;
@@ -20,6 +21,7 @@ import nro.server.service.core.player.PlayerService;
 
 import java.io.DataOutputStream;
 import java.util.Map;
+import java.util.Objects;
 
 public class AreaService {
 
@@ -34,6 +36,7 @@ public class AreaService {
                 // Hiện tại chỉ xử lý Player
                 if (plInZone != entity) {
                     // Gửi thông tin Player đang có mặt cho entity (người mới vào)
+                    System.out.println("player in are: " + plInZone.getName() + " entity : " + entity.getName());
                     this.addPlayer(entity, plInZone);
                 }
             }
@@ -56,14 +59,9 @@ public class AreaService {
             Map<Integer, Entity> players = entity.getArea().getAllEntityInArea();
 
             for (Entity obj : players.values()) {
-                switch (obj) {
-                    case Player plInZone -> {
-                        if (plInZone != entity) {
-                            // Gửi thông tin entity cho player đang ở trong zone
-                            this.addPlayer(plInZone, entity);
-                        }
-                    }
-                    default -> LogServer.LogException("sendLiveObjectInfoToOthers: Not Object: " + entity);
+                if (obj != entity) {
+                    // Gửi thông tin entity cho player đang ở trong zone
+                    this.addPlayer(obj, entity);
                 }
             }
 
@@ -74,28 +72,37 @@ public class AreaService {
 
 
     private void addPlayer(Entity entity, Entity isMe) {
-        Player me = (Player) isMe;
-        try (Message message = new Message(-5)) {
-            DataOutputStream data = message.writer();
-            Fashion fashion = entity.getFashion();
-            data.writeInt(entity.getId());
+        if (Objects.requireNonNull(isMe) instanceof Player me) {
+            System.out.println("addPlayer: " + entity.getName() + " to " + me.getName());
+            try (Message message = new Message(-5)) {
+                DataOutputStream data = message.writer();
+                Fashion fashion = entity.getFashion();
+                data.writeInt(entity.getId());
 
-            Clan clan = entity.getArea().getAllEntityInArea().get(entity.getId()) != null ? ((Player) entity).getClan() : null;
-            data.writeInt(clan != null ? clan.getId() : -1);
-            if (this.writePlayerInfo(entity, data, fashion)) {
-                data.writeByte(entity.getTeleport());
-                data.writeByte(entity.getSkills().isMonkey() ? 1 : 0);
-                data.writeShort(fashion.getMount());
+                Clan clan = null;
+                if (entity instanceof Player player) {
+                    clan = player.getClan();
+                }
+                data.writeInt(clan != null ? clan.getId() : -1);
+
+                if (this.writePlayerInfo(entity, data, fashion)) {
+                    data.writeByte(entity.getTeleport());
+                    data.writeByte(entity.getSkills().isMonkey() ? 1 : 0);
+                    data.writeShort(fashion.getMount());
+                }
+
+                data.writeByte(fashion.getFlagPk());
+
+                Fusion fusion = entity.getFusion();
+                data.writeByte(fusion != null && fusion.getTypeFusion() != 0 ? 1 : 0);
+
+                data.writeShort(entity.getFashion().getAura());
+                data.writeByte(entity.getFashion().getEffSetItem());
+                data.writeShort(entity.getFashion().getIdHat());
+                me.sendMessage(message);
+            } catch (Exception ex) {
+                LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
             }
-
-            data.writeByte(fashion.getFlagPk());
-            data.writeByte(entity.getFusion().getTypeFusion() != 0 ? 1 : 0);
-            data.writeShort(entity.getFashion().getAura());
-            data.writeByte(entity.getFashion().getEffSetItem());
-            data.writeShort(entity.getFashion().getIdHat());
-            me.sendMessage(message);
-        } catch (Exception ex) {
-            LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
         }
     }
 
@@ -107,6 +114,7 @@ public class AreaService {
         data.writeByte(entity.getGender());
         data.writeByte(entity.getGender());
         data.writeShort(fashion.getHead());
+        System.out.println("writePlayerInfo: " + entity.getName() + " head: " + fashion.getHead());
         data.writeUTF(entity.getName());
         data.writeLong(entity.getPoints().getCurrentHP());
         data.writeLong(entity.getPoints().getMaxHP());
@@ -161,7 +169,7 @@ public class AreaService {
                 serverService.sendChatGlobal(player.getSession(), null, "Bạn chưa thể đến khu vực này", false);
                 return;
             }
-            Area newArea = newMap.getArea(-1);
+            Area newArea = newMap.getArea(-1, player);
             if (newArea == null) {
                 this.keepPlayerInSafeZone(player, waypoint);
                 serverService.sendChatGlobal(player.getSession(), null, "Khu vực đã đầy!", false);
@@ -259,6 +267,7 @@ public class AreaService {
     public void playerExitArea(Entity entity) {
         try {
             Area area = entity.getArea();
+            if (area == null) return;
             if (area.getAllEntityInArea().containsKey(entity.getId())) {
                 this.sendTeleport(entity);
                 this.sendRemovePlayerExitArea(entity);
@@ -344,7 +353,7 @@ public class AreaService {
                 return;
             }
 
-            Area newArea = newMap.getArea(-1);
+            Area newArea = newMap.getArea(-1, player);
             if (newArea == null) {
                 serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
                 return;

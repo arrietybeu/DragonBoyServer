@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstMap;
 import nro.consts.ConstTypeObject;
+import nro.server.service.model.entity.Entity;
+import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.map.decorates.BgItem;
@@ -119,12 +121,19 @@ public class GameMap {
     }
 
 
-    public Area getArea(int id) {
+    public Area getArea(int id, Entity entity) {
         for (Area area : this.areas) {
-            if (area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers()) {
+            if (entity instanceof Player) {
+                if (area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers() &&
+                        (id < 0 || area.getId() == id)) {
+                    return area;
+                }
+            } else if (entity instanceof Boss) {
                 if (id < 0 || area.getId() == id) {
                     return area;
                 }
+            } else {
+                LogServer.LogException("Not support entity: " + entity.getClass().getSimpleName());
             }
         }
         return null;

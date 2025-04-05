@@ -20,7 +20,6 @@ public class MonsterSystemDispatcher implements IDispatcherBase {
     private final List<ISystemBase> systems = new ArrayList<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-
     @Override
     public void start() {
         registerSystems();
@@ -33,7 +32,6 @@ public class MonsterSystemDispatcher implements IDispatcherBase {
 
     private void registerSystems() {
         systems.add(MonsterUpdateSystem.getInstance());
-
         // TODO add system new to here
     }
 

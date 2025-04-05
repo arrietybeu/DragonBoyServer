@@ -35,4 +35,7 @@ public enum AIState {
     // boss rời khỏi map (khi bị chết || trong trường hợp nếu thời gian lâu không tìm thấy người chơi)
     LEAVING_MAP,
 
+    // boss.area == null thì vào map
+    GO_TO_MAP,
+
 }

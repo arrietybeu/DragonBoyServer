@@ -1,10 +1,8 @@
 package nro.server.service.model.entity;
 
-import lombok.Getter;
 import lombok.Setter;
 
 @Setter
-@Getter
 public abstract class Fashion {
 
     protected byte flagPk = 0;
@@ -16,5 +14,23 @@ public abstract class Fashion {
     protected short aura = -1;
     protected byte effSetItem = -1;
     protected short idHat = -1;
+
+    public abstract byte getFlagPk();
+
+    public abstract short getHead();
+
+    public abstract short getBody();
+
+    public abstract short getLeg();
+
+    public abstract short getMount();
+
+    public abstract short getFlagBag();
+
+    public abstract short getAura();
+
+    public abstract byte getEffSetItem();
+
+    public abstract short getIdHat();
 
 }

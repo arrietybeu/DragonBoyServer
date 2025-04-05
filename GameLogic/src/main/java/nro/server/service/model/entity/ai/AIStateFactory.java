@@ -1,13 +1,11 @@
 package nro.server.service.model.entity.ai;
 
-import nro.server.service.model.entity.ai.handler.AttackingEventHandler;
-import nro.server.service.model.entity.ai.handler.ChasingEventHandler;
-import nro.server.service.model.entity.ai.handler.SearchingEventHandler;
+import nro.server.service.model.entity.ai.handler.*;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-public class AIStateManager {
+public class AIStateFactory {
 
     private static final Map<AIState, AIStateHandler> handlers = new EnumMap<>(AIState.class);
 
@@ -15,8 +13,8 @@ public class AIStateManager {
         handlers.put(AIState.SEARCHING, new AttackingEventHandler());
         handlers.put(AIState.CHASING, new ChasingEventHandler());
         handlers.put(AIState.ATTACKING, new SearchingEventHandler());
-        handlers.put(AIState.IDLE, ai -> {
-        });
+        handlers.put(AIState.GO_TO_MAP, new GoToMapEventHandler());
+        handlers.put(AIState.IDLE, new IdleEventHandler());
     }
 
     public static AIStateHandler getHandler(AIState state) {

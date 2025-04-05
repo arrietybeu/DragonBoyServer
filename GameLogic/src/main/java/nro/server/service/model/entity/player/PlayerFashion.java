@@ -16,6 +16,11 @@ public class PlayerFashion extends Fashion {
     }
 
     @Override
+    public byte getFlagPk() {
+        return 0;
+    }
+
+    @Override
     public short getHead() {
         try {
             PlayerInventory playerInventory = this.player.getPlayerInventory();
@@ -33,11 +38,10 @@ public class PlayerFashion extends Fashion {
                     }
                 }
             }
-            return head;
+            return super.head;
         } catch (Exception exception) {
             LogServer.LogException("Fashion.getHead: " + exception.getMessage(), exception);
-
-            return head;
+            return super.head;
         }
     }
 
