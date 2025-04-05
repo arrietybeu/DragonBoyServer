@@ -5,6 +5,7 @@ import lombok.Setter;
 import nro.consts.ConstError;
 import nro.consts.ConstItem;
 import nro.consts.ConstUseItem;
+import nro.server.service.core.map.AreaService;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.system.LogServer;
@@ -393,13 +394,17 @@ public class PlayerInventory {
 
     private void sendInfoAfterEquipItem() {
         this.player.getPoints().calculateStats();
+        this.player.getFashion().updateFashion();
         InventoryService inventoryService = InventoryService.getInstance();
+        AreaService areaService = AreaService.getInstance();
         PlayerService playerService = PlayerService.getInstance();
         inventoryService.sendItemToBags(this.player, 0);
         inventoryService.sendItemToBodys(this.player);
-        playerService.sendPlayerBody(this.player);
         playerService.sendPointForMe(this.player);
         ItemService.getInstance().sendFlagBag(this.player);
+        areaService.sendLoadPlayerInArea(player);// -30 ~ 7
+        playerService.sendPlayerBody(this.player);
+        areaService.sendSpeedPlayerInArea(player);//-30 ~ 8
     }
 
     private void _______________FIND_ITEM_____________() {

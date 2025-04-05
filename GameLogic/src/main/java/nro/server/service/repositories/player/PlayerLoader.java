@@ -60,7 +60,7 @@ public class PlayerLoader {
         player.setId(resultSet.getInt("id"));
         player.setName(resultSet.getString("name"));
         player.setGender(resultSet.getByte("gender"));
-        player.getFashion().setHead(resultSet.getShort("head"));
+        player.getFashion().setHeadDefault(resultSet.getShort("head"));
         player.getPlayerInventory().setItemBagSize(resultSet.getByte("max_bag_size"));
         player.getPlayerInventory().setItemBoxSize(resultSet.getByte("max_box_size"));
 
@@ -94,6 +94,8 @@ public class PlayerLoader {
 
         // Load Point
         player.getPoints().calculateStats();
+
+        player.getFashion().updateFashion();
 
         this.registerToEntityComponentSystem(player);
 

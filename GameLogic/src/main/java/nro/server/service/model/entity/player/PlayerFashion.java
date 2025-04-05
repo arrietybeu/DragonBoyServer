@@ -16,134 +16,75 @@ public class PlayerFashion extends Fashion {
     }
 
     @Override
-    public byte getFlagPk() {
-        return 0;
-    }
-
-    @Override
-    public short getHead() {
+    public void updateFashion() {
         try {
-            PlayerInventory playerInventory = this.player.getPlayerInventory();
-            var index = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
-            if (playerInventory != null) {
-                List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(index) != null && itemsBody.get(index).getTemplate() != null) {
-                    short head = itemsBody.get(index).getTemplate().head();
-                    if (head != -1) {
-                        return head;
-                    }
-                    short part = itemsBody.get(index).getTemplate().part();
-                    if (part != -1) {
-                        return part;
-                    }
+            PlayerInventory inventory = this.player.getPlayerInventory();
+            List<Item> itemsBody = inventory != null ? inventory.getItemsBody() : null;
+
+            // reset fashion
+            this.head = this.body = this.leg = this.mount = this.flagBag = -1;
+
+            int indexCaiTrang = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
+            int indexAo = ConstItem.TYPE_AO;
+            int indexQuan = ConstItem.TYPE_QUAN;
+
+            if (itemsBody != null) {
+                // Head
+                if (itemsBody.get(indexCaiTrang) != null && itemsBody.get(indexCaiTrang).getTemplate() != null) {
+                    var template = itemsBody.get(indexCaiTrang).getTemplate();
+                    short h = template.head();
+                    this.head = (h != -1) ? h : template.part();
+
                 }
-            }
-            return super.head;
-        } catch (Exception exception) {
-            LogServer.LogException("Fashion.getHead: " + exception.getMessage(), exception);
-            return super.head;
-        }
-    }
+                // set head default
+                if (this.head == -1) {
+                    this.head = this.headDefault;
+                }
 
-    @Override
-    public short getBody() {
-        try {
-            PlayerInventory playerInventory = this.player.getPlayerInventory();
-            var index = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
-            if (playerInventory != null) {
-                List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(index) != null && itemsBody.get(index).getTemplate() != null) {
-                    short body = itemsBody.get(index).getTemplate().body();
-                    if (body != -1) {
-                        return body;
+
+                // Ưu tiên body từ cải trang
+                if (itemsBody.get(indexCaiTrang) != null && itemsBody.get(indexCaiTrang).getTemplate() != null) {
+                    short b = itemsBody.get(indexCaiTrang).getTemplate().body();
+                    if (b != -1) {
+                        this.body = b;
                     }
                 }
-                if (itemsBody.getFirst() != null && itemsBody.getFirst().getTemplate() != null) {
-                    return itemsBody.getFirst().getTemplate().part();
-                }
-            }
-            return -1;
-        } catch (Exception exception) {
-            LogServer.LogException("Fashion.getBody: " + exception.getMessage(), exception);
-            return -1;
-        }
-    }
 
-    @Override
-    public short getLeg() {
-        try {
-            PlayerInventory playerInventory = this.player.getPlayerInventory();
-            var index = ConstItem.TYPE_CAI_TRANG_OR_AVATAR;
-            var indexQuan = ConstItem.TYPE_QUAN;
-            if (playerInventory != null) {
-                List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(index) != null && itemsBody.get(index).getTemplate() != null) {
-                    short leg = itemsBody.get(index).getTemplate().leg();
-                    if (leg != -1) {
-                        return leg;
-                    }
+                // Fallback: lấy từ item áo thật sự nếu chưa có
+                if (this.body == -1 && itemsBody.size() > indexAo && itemsBody.get(indexAo) != null
+                        && itemsBody.get(indexAo).getTemplate() != null) {
+                    this.body = itemsBody.get(indexAo).getTemplate().body();
                 }
-                if (itemsBody.get(indexQuan) != null && itemsBody.get(indexQuan).getTemplate() != null) {
-                    return itemsBody.get(indexQuan).getTemplate().part();
-                }
-            }
-            return -1;
-        } catch (Exception exception) {
-            LogServer.LogException("Fashion.getLeg: " + exception.getMessage(), exception);
-            return -1;
-        }
-    }
 
-    @Override
-    public short getMount() {
-        try {
-            PlayerInventory playerInventory = this.player.getPlayerInventory();
-            if (playerInventory != null) {
-                List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(9) != null && itemsBody.get(9).getTemplate() != null) {
-                    return itemsBody.get(9).getTemplate().id();
+                // Leg
+                if (itemsBody.get(indexCaiTrang) != null && itemsBody.get(indexCaiTrang).getTemplate() != null) {
+                    short l = itemsBody.get(indexCaiTrang).getTemplate().leg();
+                    if (l != -1) this.leg = l;
                 }
-            }
-            return -1;
-        } catch (Exception exception) {
-            LogServer.LogException("Fashion.getMount: " + exception.getMessage(), exception);
-            return -1;
-        }
-    }
 
-    @Override
-    public short getFlagBag() {
-        try {
-            PlayerInventory playerInventory = this.player.getPlayerInventory();
-            if (playerInventory != null) {
-                List<Item> itemsBody = playerInventory.getItemsBody();
-                if (itemsBody.get(8) != null && itemsBody.get(8).getTemplate() != null) {
-                    return itemsBody.get(8).getTemplate().part();
+                if (this.leg == -1 && itemsBody.get(indexQuan) != null && itemsBody.get(indexQuan).getTemplate() != null) {
+                    this.leg = itemsBody.get(indexQuan).getTemplate().leg();
+                }
+
+                // Mount
+                if (itemsBody.size() > 9 && itemsBody.get(9) != null && itemsBody.get(9).getTemplate() != null) {
+                    this.mount = itemsBody.get(9).getTemplate().id();
+                }
+
+                // FlagBag
+                if (itemsBody.size() > 8 && itemsBody.get(8) != null && itemsBody.get(8).getTemplate() != null) {
+                    this.flagBag = itemsBody.get(8).getTemplate().part();
                 }
             }
+
             var taskMain = this.player.getPlayerTask().getTaskMain();
-            if (taskMain.getId() == 3 && taskMain.getIndex() == 2) return 28;
+            if (this.flagBag == -1 && taskMain.getId() == 3 && taskMain.getIndex() == 2) {
+                this.flagBag = 28;
+            }
 
-        } catch (Exception exception) {
-            LogServer.LogException("Fashion.getFlagBag: " + exception.getMessage(), exception);
-            return -1;
+        } catch (Exception e) {
+            LogServer.LogException("PlayerFashion.updateFashion: " + e.getMessage(), e);
         }
-        return -1;
-    }
-
-    @Override
-    public short getAura() {
-        return -1;
-    }
-
-    @Override
-    public byte getEffSetItem() {
-        return -1;
-    }
-
-    @Override
-    public short getIdHat() {
-        return -1;
     }
 
 }

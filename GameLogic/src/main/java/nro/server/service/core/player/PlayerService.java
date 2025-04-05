@@ -183,7 +183,7 @@ public class PlayerService {
             out.writeShort(player.getFashion().getBody());
             out.writeShort(player.getFashion().getLeg());
             out.writeByte(player.getSkills().isMonkey() ? 1 : 0);
-            player.sendMessage(message);
+            player.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception e) {
             LogServer.LogException("Error sendPlayerBody: " + e.getMessage(), e);
         }
@@ -562,6 +562,7 @@ public class PlayerService {
             LogServer.LogException("sendEntityChangerTypePlayerKill: " + e.getMessage(), e);
         }
     }
+
 
     /**
      * Xử lý logic tạo nhân vật trong cơ sở dữ liệu.

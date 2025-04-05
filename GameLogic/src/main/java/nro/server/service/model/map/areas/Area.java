@@ -59,6 +59,7 @@ public class Area {
                     if (this.entitys.containsKey(player.getId())) {
                         AreaService.getInstance().playerExitArea(player);
                     }
+
                     this.entitys.put(player.getId(), player);
                 }
 
@@ -77,7 +78,6 @@ public class Area {
         } finally {
             this.lock.writeLock().unlock();
         }
-
     }
 
     public void removePlayer(Entity entity) {

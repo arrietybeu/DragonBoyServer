@@ -38,15 +38,15 @@ public class PlayerSkills extends Skills {
     @Override
     public void useSkill(Entity target) {
         try {
-            if (!this.skillSelect.isReady()) {
-                // Gửi thông báo cho client biết đang hồi chiêu
-                var notify = "Kỹ năng đang hồi chiêu: " + skillSelect.getCooldownRemaining() + "ms";
-                ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, notify, false);
-                return;
-            }
+//            if (!this.skillSelect.isReady()) {
+//                // Gửi thông báo cho client biết đang hồi chiêu
+//                var notify = "Kỹ năng đang hồi chiêu: " + skillSelect.getCooldownRemaining() + "ms";
+//                ServerService.getInstance().sendChatGlobal(this.player.getSession(), null, notify, false);
+//                return;
+//            }
 
             // Đánh dấu đã dùng
-            this.skillSelect.markUsedNow();
+//            this.skillSelect.markUsedNow();
 
             switch (this.skillSelect.getTemplate().getType()) {
                 case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);

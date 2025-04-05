@@ -16,6 +16,7 @@ public final class BossFactory {
 
     private final Map<Integer, Class<? extends Boss>> bossClassMap = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     public void init(String basePackage) {
         try {
             Reflections reflections = new Reflections(basePackage);

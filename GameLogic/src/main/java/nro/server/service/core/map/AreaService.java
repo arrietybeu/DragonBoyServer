@@ -1,6 +1,7 @@
 package nro.server.service.core.map;
 
 import lombok.Getter;
+import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.clan.Clan;
@@ -35,8 +36,7 @@ public class AreaService {
             for (Entity plInZone : entities.values()) {
                 // Hiện tại chỉ xử lý Player
                 if (plInZone != entity) {
-                    // Gửi thông tin Player đang có mặt cho entity (người mới vào)
-                    System.out.println("player in are: " + plInZone.getName() + " entity : " + entity.getName());
+                    // gửi thông tin Player đang có mặt cho entity (người mới vào)
                     this.addPlayer(entity, plInZone);
                 }
             }
@@ -71,21 +71,16 @@ public class AreaService {
     }
 
 
-    private void addPlayer(Entity entity, Entity isMe) {
-        if (Objects.requireNonNull(isMe) instanceof Player me) {
-            System.out.println("addPlayer: " + entity.getName() + " to " + me.getName());
+    private void addPlayer(Entity entity, Entity receiver) {
+        if (receiver instanceof Player me) {
             try (Message message = new Message(-5)) {
                 DataOutputStream data = message.writer();
                 Fashion fashion = entity.getFashion();
+
                 data.writeInt(entity.getId());
+                data.writeInt(getClanId(entity));
 
-                Clan clan = null;
-                if (entity instanceof Player player) {
-                    clan = player.getClan();
-                }
-                data.writeInt(clan != null ? clan.getId() : -1);
-
-                if (this.writePlayerInfo(entity, data, fashion)) {
+                if (writePlayerInfo(entity, data, fashion)) {
                     data.writeByte(entity.getTeleport());
                     data.writeByte(entity.getSkills().isMonkey() ? 1 : 0);
                     data.writeShort(fashion.getMount());
@@ -96,14 +91,39 @@ public class AreaService {
                 Fusion fusion = entity.getFusion();
                 data.writeByte(fusion != null && fusion.getTypeFusion() != 0 ? 1 : 0);
 
-                data.writeShort(entity.getFashion().getAura());
-                data.writeByte(entity.getFashion().getEffSetItem());
-                data.writeShort(entity.getFashion().getIdHat());
+                data.writeShort(fashion.getAura());// @char.idAuraEff = msg.reader().readShort();
+                data.writeByte(fashion.getEffSetItem());// @char.idEff_Set_Item = msg.reader().readSByte();
+                data.writeShort(fashion.getIdHat());// @char.idHat = msg.reader().readShort();
+
                 me.sendMessage(message);
             } catch (Exception ex) {
                 LogServer.LogException("addPlayer: " + ex.getMessage(), ex);
             }
         }
+    }
+
+    public void sendLoadPlayerInArea(Entity entity) {
+        try (Message message = new Message(-30)) {
+            DataOutputStream data = message.writer();
+            data.writeByte(ConstMsgSubCommand.LOAD_CHAR_IN_MAP);
+            Fashion fashion = entity.getFashion();
+            data.writeInt(entity.getId());
+            data.writeInt(getClanId(entity));
+            writePlayerInfo(entity, data, fashion);
+            data.writeShort(fashion.getAura());// @char.idAuraEff = msg.reader().readShort();
+            data.writeByte(fashion.getEffSetItem());// @char.idEff_Set_Item = msg.reader().readSByte();
+            data.writeShort(fashion.getIdHat());// @char.idHat = msg.reader().readShort();
+            entity.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendLoadPlayerInArea: " + ex.getMessage(), ex);
+        }
+    }
+
+    private int getClanId(Entity entity) {
+        if (entity instanceof Player player && player.getClan() != null) {
+            return player.getClan().getId();
+        }
+        return -1;
     }
 
     private boolean writePlayerInfo(Entity entity, DataOutputStream data, Fashion fashion) throws Exception {
@@ -114,7 +134,6 @@ public class AreaService {
         data.writeByte(entity.getGender());
         data.writeByte(entity.getGender());
         data.writeShort(fashion.getHead());
-        System.out.println("writePlayerInfo: " + entity.getName() + " head: " + fashion.getHead());
         data.writeUTF(entity.getName());
         data.writeLong(entity.getPoints().getCurrentHP());
         data.writeLong(entity.getPoints().getMaxHP());
@@ -128,6 +147,18 @@ public class AreaService {
         data.writeShort(entity.getPoints().getEff5BuffMp());
         data.writeByte(0);
         return true;
+    }
+
+    public void sendSpeedPlayerInArea(Entity player) {
+        try (Message message = new Message(-30)) {
+            DataOutputStream data = message.writer();
+            data.writeByte(ConstMsgSubCommand.UPDATE_CHAR_SPEED);
+            data.writeInt(player.getId());
+            data.writeByte(player.getPoints().getMovementSpeed());
+            player.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendSpeedPlayerInArea: " + ex.getMessage(), ex);
+        }
     }
 
     public void playerMove(Entity entity) {
