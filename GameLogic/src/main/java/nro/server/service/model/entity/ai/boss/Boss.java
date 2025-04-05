@@ -22,6 +22,8 @@ public abstract class Boss extends AbstractAI {
     // thời gian không có người chơi thì biến mất (giây)
     protected int afkTimeout;
 
+    private byte spawnType;
+
     public Boss(int id, BossPoints bossPoint, BossFashion bossFashion, BossSkill bossSkill) {
         this.setTypeObject(ConstTypeObject.TYPE_BOSS);
         this.setCurrentState(AIState.IDLE);

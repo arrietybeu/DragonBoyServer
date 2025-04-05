@@ -7,27 +7,32 @@ import nro.server.service.model.entity.ai.AIStateHandler;
 import nro.server.service.model.entity.ai.AbstractAI;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
+import nro.server.system.LogServer;
 
 public class SearchingEventHandler implements AIStateHandler {
 
     @Override
     public void handle(AbstractAI ai) {
-        Area area = ai.getArea(); // hoặc boss.getArea()
-        if (area == null) return;
+        try {
+            Area area = ai.getArea(); // hoặc boss.getArea()
+            if (area == null) return;
 
-        // tìm người chơi gần nhất
-        Player nearestPlayer = findNearestPlayer(ai, area);
+            // tìm người chơi gần nhất
+            Player nearestPlayer = findNearestPlayer(ai, area);
 
-        // nếu tìm thấy người chơi thì chuyển trạng thái của boss sang đuổi, còn nếu không tìm thấy là đứng im
-        if (nearestPlayer != null) {
-            ai.setEntityTarget(nearestPlayer);
-            ai.setState(AIState.CHASING);
-        } else {
-            ai.setState(AIState.IDLE);
+            // nếu tìm thấy người chơi thì chuyển trạng thái của boss sang đuổi, còn nếu không tìm thấy là đứng im
+            if (nearestPlayer != null) {
+                ai.setEntityTarget(nearestPlayer);
+                ai.setState(AIState.CHASING);
+            } else {
+                ai.setState(AIState.IDLE);
+            }
+        } catch (Exception e) {
+            LogServer.LogException("SearchingEventHandler.handle: " + e.getMessage(), e);
         }
     }
 
-    private static Player findNearestPlayer(Entity boss, Area area) {
+    private Player findNearestPlayer(Entity boss, Area area) {
         Player nearest = null;
         int minDistance = Integer.MAX_VALUE;
 
@@ -42,6 +47,5 @@ public class SearchingEventHandler implements AIStateHandler {
         }
         return nearest;
     }
-
 
 }

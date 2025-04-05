@@ -14,7 +14,6 @@ public class ChasingEventHandler implements AIStateHandler {
     public void handle(AbstractAI ai) {
         try {
             Player target = ai.getEntityTargetAsPlayer();
-
             System.out.println("ChasingEventHandler.handle: " + ai.getName() + " chasing target: " + (target != null ? target.getName() : "null"));
             // target không còn hoặc không hợp lệ
             if (target == null || target.getPoints().isDead() || target.getArea() != ai.getArea()) {

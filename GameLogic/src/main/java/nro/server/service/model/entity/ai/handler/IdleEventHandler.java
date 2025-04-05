@@ -13,6 +13,10 @@ public class IdleEventHandler implements AIStateHandler {
             Boss boss = (Boss) ai;
             if (boss.getArea() == null) {
                 boss.setState(AIState.GO_TO_MAP);
+                return;
+            }
+            if (boss.getEntityTarget() == null) {
+                boss.setState(AIState.SEARCHING);
             }
         } catch (Exception e) {
             LogServer.LogException("IdleEventHandler.handle: " + e.getMessage(), e);

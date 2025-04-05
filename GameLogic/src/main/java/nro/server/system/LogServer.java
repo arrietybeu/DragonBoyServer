@@ -144,4 +144,8 @@ public class LogServer {
     public static void LogInit(String message) {
         log("Init", "\033[0;32m", message);
     }
+
+    public static void LogInfo(String message) {
+        log("Info", "\033[0;36m", message);
+    }
 }

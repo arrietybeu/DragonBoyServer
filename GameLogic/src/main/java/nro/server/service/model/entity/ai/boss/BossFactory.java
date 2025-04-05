@@ -1,6 +1,12 @@
 package nro.server.service.model.entity.ai.boss;
 
 import lombok.Getter;
+import nro.consts.ConstBoss;
+import nro.server.manager.entity.BossManager;
+import nro.server.realtime.system.boss.BossAISystem;
+import nro.server.service.core.map.AreaService;
+import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
 import org.reflections.Reflections;
 
@@ -28,7 +34,7 @@ public final class BossFactory {
                     bossClassMap.put(annotation.value(), (Class<? extends Boss>) clazz);
                 }
             }
-            LogServer.LogWarning("Loaded Boss Types: " + bossClassMap.keySet());
+//            LogServer.LogWarning("Loaded Boss Types: " + bossClassMap.keySet());
         } catch (Exception e) {
             LogServer.LogException("BossFactory.init error", e);
         }
@@ -47,6 +53,25 @@ public final class BossFactory {
             LogServer.LogException("BossFactory.createBoss error for id: " + bossId, e);
         }
         return null;
+    }
+
+    public void trySpawnSpecialBossInArea(Player player, Area area, int bossId) {
+        try {
+            Boss boss = BossManager.getInstance().getBossById(bossId);
+            if (boss == null) {
+                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Boss not found for id: " + bossId);
+                return;
+            }
+            if (area == null) {
+                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area not found for player: " + player.getName());
+                return;
+            }
+            boss.setArea(area);
+            AreaService.getInstance().changerMapByShip(boss, area.getMap().getId(), player.getX(), player.getY(), 1, area);
+            BossAISystem.getInstance().register(boss);
+        } catch (Exception exception) {
+            LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", exception);
+        }
     }
 
 }

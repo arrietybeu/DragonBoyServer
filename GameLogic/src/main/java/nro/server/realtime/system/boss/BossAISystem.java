@@ -10,10 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+
 public class BossAISystem implements ISystemBase {
 
     @Getter
     private static final BossAISystem instance = new BossAISystem();
+    @Getter
     private final Map<Integer, Boss> bosses = new HashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -43,6 +45,11 @@ public class BossAISystem implements ISystemBase {
                 lock.writeLock().unlock();
             }
         }
+    }
+
+    @Override
+    public void removeAll() {
+        this.bosses.clear();
     }
 
     @Override

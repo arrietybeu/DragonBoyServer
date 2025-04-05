@@ -45,6 +45,11 @@ public class ItemMapSystem implements ISystemBase {
     }
 
     @Override
+    public void removeAll() {
+        this.areas.clear();
+    }
+
+    @Override
     public void update() {
         long now = System.currentTimeMillis();
         lock.writeLock().lock();

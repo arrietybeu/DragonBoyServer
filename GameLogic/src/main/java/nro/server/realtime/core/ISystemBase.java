@@ -6,6 +6,8 @@ public interface ISystemBase {
 
     void unregister(Object object);
 
+    void removeAll();
+
     void update();
 
     int size();

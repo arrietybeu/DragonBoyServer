@@ -46,7 +46,6 @@ public class Area {
         this.npcList = new ArrayList<>();
     }
 
-
     public void addPlayer(Entity entity) {
         this.lock.writeLock().lock();
         try {

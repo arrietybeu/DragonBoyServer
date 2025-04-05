@@ -50,6 +50,11 @@ public class PlayerSystem implements ISystemBase {
     }
 
     @Override
+    public void removeAll() {
+        this.players.clear();
+    }
+
+    @Override
     public void update() {
         lock.readLock().lock();
         try {

@@ -44,6 +44,11 @@ public class MonsterUpdateSystem implements ISystemBase {
     }
 
     @Override
+    public void removeAll() {
+        this.monsters.clear();
+    }
+
+    @Override
     public void update() {
         lock.readLock().lock();
         try {

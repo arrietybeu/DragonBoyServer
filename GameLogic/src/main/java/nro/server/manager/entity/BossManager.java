@@ -1,6 +1,7 @@
 package nro.server.manager.entity;
 
 import lombok.Getter;
+import nro.consts.ConstBoss;
 import nro.server.config.ConfigDB;
 import nro.server.config.ConfigServer;
 import nro.server.manager.IManager;
@@ -48,6 +49,8 @@ public final class BossManager implements IManager {
     @Override
     public void clear() {
         // TODO clear all boss data
+        BossAISystem.getInstance().removeAll();
+        bosses.clear();
     }
 
     private void loadBoss() {
@@ -62,6 +65,7 @@ public final class BossManager implements IManager {
                 int afkTimeOut = rs.getInt("afk_time_out");
                 short x = rs.getShort("x");
                 short y = rs.getShort("y");
+                byte spawnType = rs.getByte("spawn_type");
 
                 JSONArray mapsIdArray = (JSONArray) JSONValue.parse(mapsId);
 
@@ -79,15 +83,17 @@ public final class BossManager implements IManager {
                     boss.setRespawnTime(respawnTime);
                     boss.setAfkTimeout(afkTimeOut);
                     boss.setMapsId(new int[mapsIdArray.size()]);
+                    boss.setSpawnType(spawnType);
                     for (int i = 0; i < mapsIdArray.size(); i++) {
                         boss.getMapsId()[i] = Short.parseShort(mapsIdArray.get(i).toString());
                     }
-                    BossAISystem.getInstance().register(boss);
+                    if (spawnType == ConstBoss.BOSS_SPAWN_TYPE_NORMAL) {
+                        BossAISystem.getInstance().register(boss);
+                    }
                     bosses.put(bossId, boss);
-                    LogServer.LogInit("Loaded Boss: " + boss.getName());
+//                    LogServer.LogInit("Loaded Boss: " + boss.getName());
                 }
             }
-
         } catch (Exception e) {
             LogServer.LogException("BossManager.init() error: " + e.getMessage(), e);
         }
@@ -134,4 +140,11 @@ public final class BossManager implements IManager {
         return bossSkill;
     }
 
+    public Boss getBossById(int bossId) {
+        return bosses.get(bossId);
+    }
+
+    public int size() {
+        return bosses.size();
+    }
 }

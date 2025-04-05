@@ -1,10 +1,9 @@
 package nro.server.service.core.social;
 
 import lombok.Getter;
-import nro.consts.ConstPlayer;
-import nro.consts.ConstShop;
-import nro.consts.ConstTypeObject;
-import nro.consts.ConstsCmd;
+import nro.consts.*;
+import nro.server.manager.entity.BossManager;
+import nro.server.realtime.system.boss.BossAISystem;
 import nro.server.realtime.system.item.ItemMapSystem;
 import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.core.dragon.DragonService;
@@ -14,6 +13,8 @@ import nro.server.service.core.economy.ShopService;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.player.InventoryService;
 import nro.server.service.model.entity.Entity;
+import nro.server.service.model.entity.ai.boss.Boss;
+import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.GameMap;
@@ -197,6 +198,10 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "tau77" -> {
+                    BossFactory.getInstance().trySpawnSpecialBossInArea(playerChat, playerChat.getArea(), ConstBoss.TAU_PAY_PAY);
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Spawn Boss: " + ConstBoss.TAU_PAY_PAY, false);
+                }
                 case "spam_drop" -> {
                     int itemIdMap;
                     int x = playerChat.getX();
@@ -263,6 +268,16 @@ public class ChatService {
                     String content = threadInfo + playerLocation + systemInfo;
                     NpcService.getInstance().sendNpcTalkUI(playerChat, 5, content, -1);
                 }
+                case "info_boss" -> {
+                    String bossState = "";
+                    for (var boss : BossAISystem.getInstance().getBosses().values()) {
+                        bossState += "Boss: " + boss.getName() + " - State: " + boss.getState() + "\n";
+                    }
+                    String content = "Boss core size: " + BossAISystem.getInstance().size() + "\n" +
+                            "Boss size: " + BossManager.getInstance().size() + "\n"
+                            + bossState;
+                    ServerService.dialogMessage(playerChat.getSession(), content);
+                }
                 case "reload_map" -> {
                     ManagerRegistry.reloadManager(MapManager.class);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
@@ -287,6 +302,7 @@ public class ChatService {
                     var infoArea = "Player Size: " + playerMapSize + "\nitemMapSize: " + itemMapSize + "\nmonsterSize: " + monsterSize + "\nnpcSize: " + npcSize;
                     ServerService.dialogMessage(playerChat.getSession(), infoArea);
                 }
+
                 case "remove_bag" -> {
                     playerChat.getPlayerInventory().removeAllItemBag();
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Remove Bag Thành Công", false);

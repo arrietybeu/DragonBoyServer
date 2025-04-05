@@ -10,9 +10,9 @@ public class AIStateFactory {
     private static final Map<AIState, AIStateHandler> handlers = new EnumMap<>(AIState.class);
 
     static {
-        handlers.put(AIState.SEARCHING, new AttackingEventHandler());
+        handlers.put(AIState.SEARCHING, new SearchingEventHandler());
         handlers.put(AIState.CHASING, new ChasingEventHandler());
-        handlers.put(AIState.ATTACKING, new SearchingEventHandler());
+        handlers.put(AIState.ATTACKING, new AttackingEventHandler());
         handlers.put(AIState.GO_TO_MAP, new GoToMapEventHandler());
         handlers.put(AIState.IDLE, new IdleEventHandler());
     }

@@ -29,7 +29,6 @@ public class GoToMapEventHandler implements AIStateHandler {
                 System.out.println("GoToMapEventHandler.handle: " + boss.getName() + " go to map: " + mapId);
                 AreaService.getInstance().gotoMap(boss, newArea, boss.getX(), boss.getY());
                 ai.setState(AIState.SEARCHING);
-                System.out.println("set state: " + AIState.SEARCHING);
             }
         } catch (Exception ex) {
             LogServer.LogException("GoToMapEventHandler.handle: " + ex.getMessage(), ex);

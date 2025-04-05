@@ -14,9 +14,10 @@ public class AttackingEventHandler implements AIStateHandler {
     @Override
     public void handle(AbstractAI ai) {
         try {
-
             Boss boss = (Boss) ai;
             if (boss == null) return;
+
+            System.out.println("AttackingEventHandler.handle: " + boss.getName() + " attacking target: " + (boss.getEntityTarget() != null ? boss.getEntityTarget().getName() : "null"));
             Player target = boss.getEntityTargetAsPlayer();
 
             // neu target mất hoặc chết hoặc khác map → về SEARCHING

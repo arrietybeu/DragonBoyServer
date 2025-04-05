@@ -1,6 +1,7 @@
 package nro.server.service.core.map;
 
 import lombok.Getter;
+import nro.consts.ConstBoss;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.system.ServerService;
@@ -8,6 +9,7 @@ import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Fusion;
 import nro.server.service.model.entity.ai.boss.Boss;
+import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.Waypoint;
 import nro.server.service.model.map.areas.Area;
@@ -230,6 +232,7 @@ public class AreaService {
                 if (this.transferEntity(player, goArea, (short) goX, (short) goY)) {
                     player.getPlayerTask().checkDoneTaskGoMap();
                     DropItemMap.dropMissionItems(player);
+
                 }
             }
             case Boss boss -> this.transferEntity(boss, goArea, (short) goX, (short) goY);
@@ -375,22 +378,28 @@ public class AreaService {
         }
     }
 
-    public void changerMapByShip(Player player, int mapId, int x, int y, int typeTele) {
+    public void changerMapByShip(Entity entity, int mapId, int x, int y, int typeTele, Area... area) {
         try {
-            GameMap newMap = MapManager.getInstance().findMapById(mapId);
-            ServerService serverService = ServerService.getInstance();
-            if (newMap == null) {
-                serverService.sendChatGlobal(player.getSession(), null, "Map không tồn tại: " + mapId, false);
-                return;
-            }
+            switch (entity) {
+                case Player player -> {
+                    GameMap newMap = MapManager.getInstance().findMapById(mapId);
+                    ServerService serverService = ServerService.getInstance();
+                    if (newMap == null) {
+                        serverService.sendChatGlobal(player.getSession(), null, "Map không tồn tại: " + mapId, false);
+                        return;
+                    }
 
-            Area newArea = newMap.getArea(-1, player);
-            if (newArea == null) {
-                serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
-                return;
+                    Area newArea = newMap.getArea(-1, player);
+                    if (newArea == null) {
+                        serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
+                        return;
+                    }
+                    player.setTeleport(typeTele);
+                    AreaService.getInstance().gotoMap(player, newArea, x, y);
+                }
+                case Boss boss -> AreaService.getInstance().gotoMap(boss, area[0], x, y);
+                default -> LogServer.LogException("changerMapByShip: Not Entity :" + entity.getName());
             }
-            player.setTeleport(typeTele);
-            AreaService.getInstance().gotoMap(player, newArea, x, y);
         } catch (Exception ex) {
             LogServer.LogException("changerMapByShip: " + ex.getMessage(), ex);
         }
