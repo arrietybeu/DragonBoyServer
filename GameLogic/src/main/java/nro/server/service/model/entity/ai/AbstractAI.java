@@ -28,7 +28,6 @@ public abstract class AbstractAI extends Entity implements AI {
 
     public Player getEntityTargetAsPlayer() {
         if (this.entityTarget instanceof Player player) {
-            System.out.println("getEntityTargetAsPlayer: " + this.entityTarget.getName());
 
             // kiểm tra xem player có trong map không
             if (player.getArea() != this.getArea()) {

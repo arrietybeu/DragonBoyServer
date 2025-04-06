@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.*;
 
+import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.npc.Npc;
@@ -259,7 +260,16 @@ public class PlayerTask {
                     if (this.player.getX() >= 635) this.doneTask(0, 0);
                 }
                 case ConstMap.NHA_GOHAN, ConstMap.NHA_MOORI, ConstMap.NHA_BROLY -> this.doneTask(0, 1);
-                case ConstMap.RUNG_KARIN -> this.doneTask(8, 3);
+                case ConstMap.RUNG_KARIN -> {
+                    this.doneTask(8, 3);
+
+                    if (this.taskMain.getId() == 9 && this.taskMain.getIndex() == 1) {
+                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player,
+                                this.player.getArea(), ConstBoss.TAU_PAY_PAY);
+                    }
+                }
+
+
             }
         } catch (Exception e) {
             LogServer.LogException("PlayerTask checkDoneTaskGoMap - " + e.getMessage(), e);

@@ -17,7 +17,7 @@ public class AttackingEventHandler implements AIStateHandler {
             Boss boss = (Boss) ai;
             if (boss == null) return;
 
-            Player target = boss.getEntityTargetAsPlayer();
+                Player target = boss.getEntityTargetAsPlayer();
 
             if (target == null) {
                 if (boss.isAutoDespawn()) {

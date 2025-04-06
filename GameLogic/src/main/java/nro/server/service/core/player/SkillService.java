@@ -17,7 +17,7 @@ public class SkillService {
     @Getter
     private static final SkillService instance = new SkillService();
 
-    public void sendEntityAttackMonster(Entity entity, int mobId) {
+    public void sendEntityAttackMonster(Player entity, int mobId) {
         try (Message message = new Message(54)) {
             DataOutputStream writer = message.writer();
             writer.writeInt(entity.getId());

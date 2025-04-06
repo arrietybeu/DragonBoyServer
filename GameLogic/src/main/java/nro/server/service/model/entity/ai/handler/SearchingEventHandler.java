@@ -36,7 +36,7 @@ public class SearchingEventHandler implements AIStateHandler {
         Player nearest = null;
         int minDistance = Integer.MAX_VALUE;
 
-        for (Entity entity : area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
+        for (Entity entity : area.getEntitysByType(ConstTypeObject.TYPE_PLAYER)) {
             if (entity instanceof Player player) {
                 if (!player.getPoints().isDead() && !player.getPlayerStatus().isInVisible()) {
                     int distance = Math.abs(player.getX() - boss.getX());

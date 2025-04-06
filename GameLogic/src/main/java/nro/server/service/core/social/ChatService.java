@@ -13,7 +13,6 @@ import nro.server.service.core.economy.ShopService;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.player.InventoryService;
 import nro.server.service.model.entity.Entity;
-import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
@@ -295,8 +294,8 @@ public class ChatService {
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Task Manager Thành Công", false);
                 }
                 case "area_check" -> {
-                    var playerMapSize = playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
-                    var bossSize = playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_BOSS).size();
+                    var playerMapSize = playerChat.getArea().getEntitysByType(ConstTypeObject.TYPE_PLAYER).size();
+                    var bossSize = playerChat.getArea().getEntitysByType(ConstTypeObject.TYPE_BOSS).size();
                     var playerSizeAllArea = MapManager.getInstance().checkAllPlayerInGame();
                     var itemMapSize = playerChat.getArea().getItemsMap().size();
                     var monsterSize = playerChat.getArea().getMonsters().size();

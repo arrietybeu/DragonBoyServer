@@ -101,10 +101,10 @@ public class Area {
         }
     }
 
-    public Collection<Entity> getPlayersByType(int typeObject) {
+    public Collection<Entity> getEntitysByType(int typeObject) {
         List<Entity> result = new ArrayList<>();
         for (Entity obj : this.entitys.values()) {
-            switch (typeObject) {
+            switch (obj.getTypeObject()) {
                 case ConstTypeObject.TYPE_PLAYER -> {
                     if (obj.getTypeObject() == typeObject && obj instanceof Player player) {
                         result.add(player);
@@ -144,15 +144,14 @@ public class Area {
             return;
         this.lock.readLock().lock();
         try {
-            this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(entity -> {
-                if (entity instanceof Player player) {
-                    if (exclude == null || player != exclude) {
-                        try {
-                            player.sendMessage(message);
-                        } catch (Exception e) {
-                            LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone "
-                                    + this.id + " - " + e.getMessage(), e);
-                        }
+            this.getEntitysByType(ConstTypeObject.TYPE_PLAYER).forEach(entity -> {
+                if (exclude == null || entity != exclude) {
+                    try {
+                        Player player = (Player) entity;
+                        player.sendMessage(message);
+                    } catch (Exception e) {
+                        LogServer.LogException("Error sending message to player ID: " + entity.getId() + " in zone "
+                                + this.id + " - " + e.getMessage(), e);
                     }
                 }
             });

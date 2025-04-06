@@ -4,7 +4,6 @@ import nro.consts.ConstMsgNotMap;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
-import nro.server.manager.MapManager;
 import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
@@ -43,7 +42,7 @@ public class MapService {
             List<Area> areas = player.getArea().getMap().getAreas();
             data.writeByte(areas.size());
             for (Area area : areas) {
-                int slPlayer = area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
+                int slPlayer = area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size();
                 data.writeByte(area.getId());
                 data.writeByte(slPlayer < 5 ? 0 : slPlayer < 8 ? 1 : 2);// 0 blue || 1 yellow || 2 red
                 data.writeByte(slPlayer);

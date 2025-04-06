@@ -1,15 +1,12 @@
 package nro.server.service.core.map;
 
 import lombok.Getter;
-import nro.consts.ConstBoss;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.system.ServerService;
-import nro.server.service.model.clan.Clan;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Fusion;
 import nro.server.service.model.entity.ai.boss.Boss;
-import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.Waypoint;
 import nro.server.service.model.map.areas.Area;
@@ -24,7 +21,6 @@ import nro.server.service.core.player.PlayerService;
 
 import java.io.DataOutputStream;
 import java.util.Map;
-import java.util.Objects;
 
 public class AreaService {
 
@@ -232,7 +228,6 @@ public class AreaService {
                 if (this.transferEntity(player, goArea, (short) goX, (short) goY)) {
                     player.getPlayerTask().checkDoneTaskGoMap();
                     DropItemMap.dropMissionItems(player);
-
                 }
             }
             case Boss boss -> this.transferEntity(boss, goArea, (short) goX, (short) goY);
@@ -252,7 +247,7 @@ public class AreaService {
                         return false;
                     }
 
-                    if (newArea.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
+                    if (newArea.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size() >= newArea.getMaxPlayers()) {
                         this.keepPlayerInSafeZone(player, null);
                         serverService.sendChatGlobal(player.getSession(), null, "Khu vực đầy", false);
                         return false;

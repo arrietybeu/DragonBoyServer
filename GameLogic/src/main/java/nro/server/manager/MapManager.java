@@ -470,7 +470,7 @@ public final class MapManager implements IManager {
         int size = 0;
         for (GameMap map : this.gameMaps.values()) {
             for (Area area : map.getAreas()) {
-                size += area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
+                size += area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size();
             }
         }
         return size;

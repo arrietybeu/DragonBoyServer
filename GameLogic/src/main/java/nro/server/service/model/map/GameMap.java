@@ -124,7 +124,7 @@ public class GameMap {
     public Area getArea(int id, Entity entity) {
         for (Area area : this.areas) {
             if (entity instanceof Player) {
-                if (area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers() &&
+                if (area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers() &&
                         (id < 0 || area.getId() == id)) {
                     return area;
                 }

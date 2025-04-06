@@ -30,8 +30,7 @@ public class BossAISystem implements ISystemBase {
                 }
                 bosses.put(boss.getId(), boss);
             } finally {
-                lock.writeLock().unlock();
-            }
+                lock.writeLock().unlock
         }
     }
 

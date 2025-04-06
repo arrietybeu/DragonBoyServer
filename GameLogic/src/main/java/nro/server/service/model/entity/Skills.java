@@ -59,6 +59,7 @@ public abstract class Skills {
             // Đánh dấu đã dùng
             this.skillSelect.markUsedNow();
 
+
             switch (this.skillSelect.getTemplate().getType()) {
                 case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);
                 case ConstSkill.SKILL_SUPPORT -> { /* TODO */ }
