@@ -28,12 +28,10 @@ public abstract class AbstractAI extends Entity implements AI {
 
     public Player getEntityTargetAsPlayer() {
         if (this.entityTarget instanceof Player player) {
+            System.out.println("getEntityTargetAsPlayer: " + this.entityTarget.getName());
+
             // kiểm tra xem player có trong map không
             if (player.getArea() != this.getArea()) {
-                return null;
-            }
-            // kiểm tra xem player có chết không
-            if (player.getPoints().isDead()) {
                 return null;
             }
             if (this.getArea().getPlayer(player.getId()) == null) {
@@ -42,5 +40,11 @@ public abstract class AbstractAI extends Entity implements AI {
             return player;
         }
         return null;
+    }
+
+    public boolean isValidTarget(Entity target) {
+        if (target == null) return true;
+        if (target.getPoints().isDead()) return true;
+        return target.getArea() != this.getArea();
     }
 }

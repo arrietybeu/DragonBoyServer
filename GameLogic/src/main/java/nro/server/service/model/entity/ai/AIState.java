@@ -38,4 +38,7 @@ public enum AIState {
     // boss.area == null thì vào map
     GO_TO_MAP,
 
+    // boss đứng im chat
+    CHAT,
+
 }

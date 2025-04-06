@@ -3,6 +3,7 @@ package nro.server.manager;
 import lombok.Getter;
 import nro.consts.ConstMap;
 import nro.consts.ConstPlayer;
+import nro.consts.ConstTypeObject;
 import nro.server.service.model.map.TileMap;
 import nro.server.service.model.map.Waypoint;
 import nro.server.service.model.map.areas.Area;
@@ -462,6 +463,17 @@ public final class MapManager implements IManager {
 
     public int sizeMap() {
         return this.gameMaps.size();
+    }
+
+
+    public int checkAllPlayerInGame() {
+        int size = 0;
+        for (GameMap map : this.gameMaps.values()) {
+            for (Area area : map.getAreas()) {
+                size += area.getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
+            }
+        }
+        return size;
     }
 
     public String getNameMapHomeByGender(int gender) {

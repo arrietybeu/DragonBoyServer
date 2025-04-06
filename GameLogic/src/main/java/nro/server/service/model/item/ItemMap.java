@@ -52,7 +52,7 @@ public class ItemMap extends Entity {
     }
 
     @Override
-    public long handleAttack(Player player, int type, long damage) {
+    public long handleAttack(Entity player, int type, long damage) {
         return 0;
     }
 

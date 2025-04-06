@@ -121,7 +121,7 @@ public class Player extends Entity {
     }
 
     @Override
-    public long handleAttack(Player player, int type, long damage) {
+    public long handleAttack(Entity player, int type, long damage) {
 //        System.out.println("Player.handleAttack: " + player.getName() + " " + damage);
         if (this.points.isDead()) {
             this.points.setDie();

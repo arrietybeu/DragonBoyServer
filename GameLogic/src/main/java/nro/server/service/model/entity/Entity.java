@@ -56,7 +56,7 @@ public abstract class Entity {
     }
 
 
-    public abstract long handleAttack(Player player, int type, long damage);
+    public abstract long handleAttack(Entity entity, int type, long damage);
 
     public abstract void dispose();
 

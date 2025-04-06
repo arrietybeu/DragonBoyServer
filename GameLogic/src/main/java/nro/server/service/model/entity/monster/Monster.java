@@ -48,49 +48,54 @@ public class Monster extends Entity {
     }
 
     @Override
-    public long handleAttack(final Player plAttack, int type, long damage) {
-        this.lock.writeLock().lock();
-        try {
-            if (this.point.isDead()) return 0;
+    public long handleAttack(final Entity entity, int type, long damage) {
+        if (entity instanceof Player plAttack) {
+            if (this.attackers.contains(plAttack)) {
+                this.lock.writeLock().lock();
+                try {
+                    if (this.point.isDead()) return 0;
 
-            this.attackers.add(plAttack);
+                    this.attackers.add(plAttack);
 
-            // Kiem tra dame
-            if (type != 1) {
-                // mộc nhân thì giới hạn dame là 10
-                if (this.templateId == 0 && damage >= 10) damage = 10;
+                    // Kiem tra dame
+                    if (type != 1) {
+                        // mộc nhân thì giới hạn dame là 10
+                        if (this.templateId == 0 && damage >= 10) damage = 10;
 
-                // nếu dame lớn hơn máu của quái thì khi trừ máu của quái, quái sẽ còn 1 máu tránh sốc dame lớn
-                if (this.point.getHp() == this.point.getMaxHp() && damage >= this.point.getHp()) {
-                    damage = this.point.getHp() - 1;
+                        // nếu dame lớn hơn máu của quái thì khi trừ máu của quái, quái sẽ còn 1 máu tránh sốc dame lớn
+                        if (this.point.getHp() == this.point.getMaxHp() && damage >= this.point.getHp()) {
+                            damage = this.point.getHp() - 1;
+                        }
+                    }
+
+                    // send effect skill attack monster
+                    SkillService.getInstance().sendEntityAttackMonster(plAttack, this.getId());
+
+                    if (damage >= this.point.getHp()) damage = this.point.getHp();
+
+                    // tru hp cua monster
+                    this.point.subHp(damage);
+
+                    this.handleCreateExpEntityAttackMob(plAttack, damage);
+
+                    // kiem tra monster chet
+                    if (this.point.isDead()) {
+                        this.setDie(plAttack, damage);
+                        plAttack.getPlayerTask().checkDoneTaskKKillMonster(this);
+                    } else {
+                        boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
+                        MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
+                    }
+                    return damage;
+                } catch (Exception exception) {
+                    LogServer.LogException("Monster handleAttack: " + exception.getMessage(), exception);
+                    return 0;
+                } finally {
+                    this.lock.writeLock().unlock();
                 }
             }
-
-            // send effect skill attack monster
-            SkillService.getInstance().sendEntityAttackMonster(plAttack, this.getId());
-
-            if (damage >= this.point.getHp()) damage = this.point.getHp();
-
-            // tru hp cua monster
-            this.point.subHp(damage);
-
-            this.handleCreateExpEntityAttackMob(plAttack, damage);
-
-            // kiem tra monster chet
-            if (this.point.isDead()) {
-                this.setDie(plAttack, damage);
-                plAttack.getPlayerTask().checkDoneTaskKKillMonster(this);
-            } else {
-                boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
-                MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
-            }
-            return damage;
-        } catch (Exception exception) {
-            LogServer.LogException("Monster handleAttack: " + exception.getMessage(), exception);
-            return 0;
-        } finally {
-            this.lock.writeLock().unlock();
         }
+        return 0;
     }
 
     public void setLive() {
@@ -152,11 +157,12 @@ public class Monster extends Entity {
     }
 
     private Player playerCanAttack() {
-        for (Player player : this.area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
-            if (player == null) continue;
-            if (player.getPoints().isDead()) continue;
-            if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 80) {
-                return player;
+        for (Entity entity : this.area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
+            if (entity instanceof Player player) {
+                if (player.getPoints().isDead()) continue;
+                if (Util.getDistance(this.getX(), this.getY(), player.getX(), player.getY()) < 80) {
+                    return player;
+                }
             }
         }
         return null;

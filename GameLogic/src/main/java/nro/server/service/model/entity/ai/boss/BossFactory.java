@@ -40,12 +40,12 @@ public final class BossFactory {
         }
     }
 
-    public Boss createBoss(int bossId, BossPoints points, BossFashion fashion, BossSkill skills) {
+    public Boss createBoss(int bossId, BossPoints points, BossFashion fashion) {
         try {
             Class<? extends Boss> clazz = bossClassMap.get(bossId);
             if (clazz != null) {
-                Constructor<? extends Boss> constructor = clazz.getConstructor(int.class, BossPoints.class, BossFashion.class, BossSkill.class);
-                return constructor.newInstance(bossId, points, fashion, skills);
+                Constructor<? extends Boss> constructor = clazz.getConstructor(int.class, BossPoints.class, BossFashion.class);
+                return constructor.newInstance(bossId, points, fashion);
             } else {
                 LogServer.LogWarning("Unknown bossId: " + bossId);
             }

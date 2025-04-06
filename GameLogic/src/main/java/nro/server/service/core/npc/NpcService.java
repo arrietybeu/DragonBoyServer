@@ -133,8 +133,7 @@ public class NpcService {
             }
             player.sendMessage(message);
         } catch (Exception ex) {
-            LogServer.LogException("loadMagicTree: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("loadMagicTree: " + ex.getMessage(), ex);
         }
     }
 

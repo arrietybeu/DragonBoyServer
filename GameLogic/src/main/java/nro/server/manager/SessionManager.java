@@ -51,7 +51,6 @@ public final class SessionManager {
 
         } catch (Exception e) {
             LogServer.LogException("Error getSession: " + e.getMessage());
-            e.printStackTrace();
         } finally {
             this.lock.readLock().unlock();
         }

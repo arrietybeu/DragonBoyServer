@@ -7,53 +7,57 @@ import nro.server.service.model.template.entity.SkillInfo;
 
 public class BossSkill extends Skills {
 
+    public BossSkill(Entity owner) {
+        super(owner);
+    }
+
     @Override
     public void entityAttackMonster(Monster monster) {
-
+        super.entityAttackMonster(monster);
     }
 
     @Override
     public void useSkill(Entity target) {
-
+        super.useSkill(target);
     }
 
     @Override
     public void useSkillTarget(Entity target) {
-
+        super.useSkillTarget(target);
     }
 
     @Override
     public void useSkillNotForcus() {
-
+        super.useSkillNotForcus();
     }
 
     @Override
     public SkillInfo getSkillById(int id) {
-        return null;
+        return super.getSkillById(id);
     }
 
     @Override
     public void selectSkill(int skillId) {
-
+        super.selectSkill(skillId);
     }
 
     @Override
     public SkillInfo getSkillDefaultByGender(int gender) {
-        return null;
+        return super.getSkillDefaultByGender(gender);
     }
 
     @Override
     public void addSkill(SkillInfo skill) {
-
+        super.addSkill(skill);
     }
 
     @Override
     public void removeSkill(SkillInfo skill) {
-
+        super.removeSkill(skill);
     }
 
     @Override
     public int getSkillLevel(int skillTemplateId) {
-        return 0;
+        return super.getSkillLevel(skillTemplateId);
     }
 }

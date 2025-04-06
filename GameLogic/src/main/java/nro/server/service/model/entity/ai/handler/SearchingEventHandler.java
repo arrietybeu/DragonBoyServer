@@ -18,7 +18,7 @@ public class SearchingEventHandler implements AIStateHandler {
             if (area == null) return;
 
             // tìm người chơi gần nhất
-            Player nearestPlayer = findNearestPlayer(ai, area);
+            Player nearestPlayer = this.findNearestPlayer(ai, area);
 
             // nếu tìm thấy người chơi thì chuyển trạng thái của boss sang đuổi, còn nếu không tìm thấy là đứng im
             if (nearestPlayer != null) {
@@ -36,12 +36,14 @@ public class SearchingEventHandler implements AIStateHandler {
         Player nearest = null;
         int minDistance = Integer.MAX_VALUE;
 
-        for (Player player : area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
-            if (!player.getPoints().isDead() && !player.getPlayerStatus().isInVisible()) {
-                int distance = Math.abs(player.getX() - boss.getX());
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearest = player;
+        for (Entity entity : area.getPlayersByType(ConstTypeObject.TYPE_PLAYER)) {
+            if (entity instanceof Player player) {
+                if (!player.getPoints().isDead() && !player.getPlayerStatus().isInVisible()) {
+                    int distance = Math.abs(player.getX() - boss.getX());
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        nearest = player;
+                    }
                 }
             }
         }

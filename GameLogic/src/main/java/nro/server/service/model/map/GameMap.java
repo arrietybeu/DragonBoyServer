@@ -184,4 +184,5 @@ public class GameMap {
         return this.typeMap == ConstMap.MAP_OFFLINE;
     }
 
+
 }

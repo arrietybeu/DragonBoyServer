@@ -66,14 +66,15 @@ public final class BossManager implements IManager {
                 short x = rs.getShort("x");
                 short y = rs.getShort("y");
                 byte spawnType = rs.getByte("spawn_type");
+                boolean isAutoSpawn = rs.getByte("auto_despawn") == 1;
 
                 JSONArray mapsIdArray = (JSONArray) JSONValue.parse(mapsId);
 
                 BossPoints points = loadBossPoints(rs);
                 BossFashion fashion = loadBossFashion(rs);
-                BossSkill skills = loadBossSkills(bossId, gender);
 
-                Boss boss = BossFactory.getInstance().createBoss(bossId, points, fashion, skills);
+
+                Boss boss = BossFactory.getInstance().createBoss(bossId, points, fashion);
                 if (boss != null) {
                     boss.setId(bossId);
                     boss.setName(name);
@@ -84,12 +85,15 @@ public final class BossManager implements IManager {
                     boss.setAfkTimeout(afkTimeOut);
                     boss.setMapsId(new int[mapsIdArray.size()]);
                     boss.setSpawnType(spawnType);
+                    boss.setAutoDespawn(isAutoSpawn);
                     for (int i = 0; i < mapsIdArray.size(); i++) {
                         boss.getMapsId()[i] = Short.parseShort(mapsIdArray.get(i).toString());
                     }
                     if (spawnType == ConstBoss.BOSS_SPAWN_TYPE_NORMAL) {
                         BossAISystem.getInstance().register(boss);
                     }
+                    BossSkill skills = loadBossSkills(boss);
+                    boss.setSkills(skills);
                     bosses.put(bossId, boss);
 //                    LogServer.LogInit("Loaded Boss: " + boss.getName());
                 }
@@ -106,12 +110,10 @@ public final class BossManager implements IManager {
         points.setBaseDamage(rs.getInt("base_damage"));
         points.setBaseDefense(rs.getInt("base_defense"));
         points.setMovementSpeed(rs.getByte("speed"));
-
         points.setMaxHP(points.getBaseHP());
         points.setMaxMP(points.getBaseMP());
         points.setCurrentHp(points.getMaxHP());
         points.setCurrentMp(points.getMaxMP());
-
         return points;
     }
 
@@ -119,18 +121,19 @@ public final class BossManager implements IManager {
         return new BossFashion(rs.getShort("head"), rs.getShort("body"), rs.getShort("leg"), rs.getShort("mount"), rs.getShort("flag_bag"), rs.getShort("aura"), rs.getByte("eff_set_item"), rs.getShort("hat_id"));
     }
 
-    private BossSkill loadBossSkills(int bossId, int gender) throws SQLException {
-        BossSkill bossSkill = new BossSkill();
-        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_ENTITY); PreparedStatement ps = conn.prepareStatement(BOSS_SKILL_QUERY)) {
+    private BossSkill loadBossSkills(Boss boss) throws SQLException {
+        BossSkill bossSkill = new BossSkill(boss);
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_ENTITY);
+             PreparedStatement ps = conn.prepareStatement(BOSS_SKILL_QUERY)) {
 
-            ps.setInt(1, bossId);
+            ps.setInt(1, boss.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int skillId = rs.getInt("skill_id");
                     int level = rs.getInt("skill_level");
 
                     // Gọi từ hệ thống template của bạn
-                    SkillInfo skillInfo = SkillManager.getInstance().getSkillInfoByTemplateId((short) skillId, gender, level);
+                    SkillInfo skillInfo = SkillManager.getInstance().getSkillInfoByTemplateId((short) skillId, boss.getGender(), level);
                     if (skillInfo != null) {
                         bossSkill.addSkill(skillInfo);
                     }

@@ -17,11 +17,16 @@ public class AttackingEventHandler implements AIStateHandler {
             Boss boss = (Boss) ai;
             if (boss == null) return;
 
-            System.out.println("AttackingEventHandler.handle: " + boss.getName() + " attacking target: " + (boss.getEntityTarget() != null ? boss.getEntityTarget().getName() : "null"));
             Player target = boss.getEntityTargetAsPlayer();
 
+            if (target == null) {
+                if (boss.isAutoDespawn()) {
+                    boss.dispose();
+                    return;
+                }
+            }
             // neu target mất hoặc chết hoặc khác map → về SEARCHING
-            if (target == null || target.getPoints().isDead() || target.getArea() != ai.getArea()) {
+            if (ai.isValidTarget(target)) {
                 boss.setEntityTarget(null);
                 boss.setState(AIState.SEARCHING);
                 return;
@@ -35,9 +40,17 @@ public class AttackingEventHandler implements AIStateHandler {
                 return;
             }
 
-            // TODO: Kiểm tra cooldown tại đây (sẽ thêm sau)
-
             // Gọi kỹ năng đang chọn (hoặc bạn có thể random skill nếu muốn)
+            if (boss.getSkills() == null) {
+                return;
+            }
+
+            boss.getSkills().selectRandomSkill();
+
+            if (boss.getSkills().getSkillSelect() == null) {
+                return;
+            }
+
             boss.getSkills().useSkill(target);
 
             // Sau khi đánh, vẫn giữ ATTACKING hoặc chuyển về SEARCHING tùy ý bạn
@@ -46,4 +59,6 @@ public class AttackingEventHandler implements AIStateHandler {
             LogServer.LogException("AttackingEventHandler.handle: " + e.getMessage(), e);
         }
     }
+
+
 }

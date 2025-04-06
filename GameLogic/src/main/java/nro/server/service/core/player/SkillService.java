@@ -43,14 +43,14 @@ public class SkillService {
         }
     }
 
-    public void sendUseSkillNotFocus(Player player, int type, int skillId, int second) {
+    public void sendUseSkillNotFocus(Entity entity, int type, int skillId, int second) {
         try (Message message = new Message(ConstsCmd.SKILL_NOT_FOCUS)) {
             DataOutputStream writer = message.writer();
             writer.writeByte(type);
-            writer.writeInt(player.getId());
+            writer.writeInt(entity.getId());
             writer.writeShort(skillId);
             writer.writeShort(second);
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception e) {
             LogServer.LogException("SkillService: sendUseSkillNotFocus: " + e.getMessage(), e);
         }
@@ -66,6 +66,28 @@ public class SkillService {
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("SkillService: sendCooldownSkill: " + e.getMessage(), e);
+        }
+    }
+
+    public void sendEntityAttackEntity(Entity enttiyAttack, Entity entityTarget, long damage, boolean isCritical) {
+        try (Message message = new Message(ConstsCmd.PLAYER_ATTACK_PLAYER)) {
+            DataOutputStream writer = message.writer();
+            writer.writeInt(enttiyAttack.getId());
+            // send skill id để client paint skill
+            writer.writeByte(enttiyAttack.getSkills().getSkillSelect().getSkillId());
+            writer.writeByte(1);// list id entity target
+            writer.writeInt(entityTarget.getId());
+
+            // write is continue attack
+            writer.writeByte(1);// continue attack
+            writer.writeByte(enttiyAttack.getSkills().getTypSkill());// type skill
+            writer.writeLong(damage);
+
+            writer.writeBoolean(entityTarget.getPoints().isDead());
+            writer.writeBoolean(isCritical);
+            enttiyAttack.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception e) {
+            LogServer.LogException("SkillService: sendEntityAttackEntity: " + e.getMessage(), e);
         }
     }
 

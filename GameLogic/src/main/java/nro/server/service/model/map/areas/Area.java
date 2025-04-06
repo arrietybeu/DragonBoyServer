@@ -101,11 +101,20 @@ public class Area {
         }
     }
 
-    public Collection<Player> getPlayersByType(int typeObject) {
-        List<Player> result = new ArrayList<>();
+    public Collection<Entity> getPlayersByType(int typeObject) {
+        List<Entity> result = new ArrayList<>();
         for (Entity obj : this.entitys.values()) {
-            if (obj.getTypeObject() == typeObject && obj instanceof Player player) {
-                result.add(player);
+            switch (typeObject) {
+                case ConstTypeObject.TYPE_PLAYER -> {
+                    if (obj.getTypeObject() == typeObject && obj instanceof Player player) {
+                        result.add(player);
+                    }
+                }
+                case ConstTypeObject.TYPE_BOSS -> {
+                    if (obj.getTypeObject() == typeObject && obj instanceof Boss boss) {
+                        result.add(boss);
+                    }
+                }
             }
         }
         return result;
@@ -135,13 +144,15 @@ public class Area {
             return;
         this.lock.readLock().lock();
         try {
-            this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(player -> {
-                if (exclude == null || player != exclude) {
-                    try {
-                        player.sendMessage(message);
-                    } catch (Exception e) {
-                        LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone "
-                                + this.id + " - " + e.getMessage(), e);
+            this.getPlayersByType(ConstTypeObject.TYPE_PLAYER).forEach(entity -> {
+                if (entity instanceof Player player) {
+                    if (exclude == null || player != exclude) {
+                        try {
+                            player.sendMessage(message);
+                        } catch (Exception e) {
+                            LogServer.LogException("Error sending message to player ID: " + player.getId() + " in zone "
+                                    + this.id + " - " + e.getMessage(), e);
+                        }
                     }
                 }
             });

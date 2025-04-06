@@ -4,37 +4,42 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstTypeObject;
 import nro.server.realtime.system.boss.BossAISystem;
+import nro.server.service.core.map.AreaService;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.ai.AbstractAI;
-import nro.server.service.model.entity.player.Player;
 
 @Setter
 @Getter
 public abstract class Boss extends AbstractAI {
 
+    private String textChat;
+
+    private boolean isAutoDespawn;
+
     protected long lastTimeIdle;
     protected long lastTimeAttack;
     protected long lastTimeMove;
 
+    // thời gian không có người chơi thì biến mất (giây)
+    protected int afkTimeout;
+    public int tickAfkTimeout;
+
+    protected byte spawnType;
+
     // mảng chứa các id map để boss có thể xuất hiện
     protected int[] mapsId;
 
-    // thời gian không có người chơi thì biến mất (giây)
-    protected int afkTimeout;
-
-    private byte spawnType;
-
-    public Boss(int id, BossPoints bossPoint, BossFashion bossFashion, BossSkill bossSkill) {
+    public Boss(int id, BossPoints bossPoint, BossFashion bossFashion) {
         this.setTypeObject(ConstTypeObject.TYPE_BOSS);
         this.setCurrentState(AIState.IDLE);
         this.setId(id);
         this.points = bossPoint;
         this.fashion = bossFashion;
-        this.skills = bossSkill;
     }
 
     @Override
-    public long handleAttack(Player player, int type, long damage) {
+    public long handleAttack(Entity entity, int type, long damage) {
 
         if (this.points.isDead()) {
             this.points.setDie();
@@ -52,6 +57,8 @@ public abstract class Boss extends AbstractAI {
 
     @Override
     public void dispose() {
+        this.tickAfkTimeout = 0;
+        AreaService.getInstance().playerExitArea(this);
         BossAISystem.getInstance().unregister(this);
     }
 

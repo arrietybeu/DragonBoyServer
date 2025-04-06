@@ -296,10 +296,12 @@ public class ChatService {
                 }
                 case "area_check" -> {
                     var playerMapSize = playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_PLAYER).size();
+                    var bossSize = playerChat.getArea().getPlayersByType(ConstTypeObject.TYPE_BOSS).size();
+                    var playerSizeAllArea = MapManager.getInstance().checkAllPlayerInGame();
                     var itemMapSize = playerChat.getArea().getItemsMap().size();
                     var monsterSize = playerChat.getArea().getMonsters().size();
                     var npcSize = playerChat.getArea().getNpcList().size();
-                    var infoArea = "Player Size: " + playerMapSize + "\nitemMapSize: " + itemMapSize + "\nmonsterSize: " + monsterSize + "\nnpcSize: " + npcSize;
+                    var infoArea = "Player Size: " + playerMapSize + "\nBoss size: " + bossSize + "\nSize player all area: " + playerSizeAllArea + "\nitemMapSize: " + itemMapSize + "\nmonsterSize: " + monsterSize + "\nnpcSize: " + npcSize;
                     ServerService.dialogMessage(playerChat.getSession(), infoArea);
                 }
 
