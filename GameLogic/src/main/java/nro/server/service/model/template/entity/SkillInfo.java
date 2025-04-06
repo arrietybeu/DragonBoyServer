@@ -57,4 +57,8 @@ public class SkillInfo {
         this.lastTimeUseThisSkill = System.currentTimeMillis();
     }
 
+    public SkillInfo copy() {
+        return new SkillInfo();
+    }
+
 }

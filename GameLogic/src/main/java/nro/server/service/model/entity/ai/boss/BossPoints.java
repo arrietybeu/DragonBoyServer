@@ -1,14 +1,35 @@
 package nro.server.service.model.entity.ai.boss;
 
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Points;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.template.item.ItemOption;
 
 public class BossPoints extends Points {
 
+    public BossPoints(Entity entity) {
+        super(entity);
+    }
+
+    @Override
+    public BossPoints copy(Entity boss) {
+        BossPoints copy = new BossPoints(boss);
+        copy.setBaseHP(this.baseHP);
+        copy.setBaseMP(this.baseMP);
+        copy.setBaseDamage(this.baseDamage);
+        copy.setBaseDefense(this.baseDefense);
+        copy.setMovementSpeed(this.movementSpeed);
+        copy.setMaxHP(copy.getBaseHP());
+        copy.setMaxMP(copy.getBaseMP());
+        copy.setCurrentHp(copy.getMaxHP());
+        copy.setCurrentMp(copy.getMaxMP());
+        copy.setCurrentDamage(copy.getBaseDamage());
+        return copy;
+    }
+
     @Override
     public long getDameAttack() {
-        return 0;
+        return super.getDameAttack();
     }
 
     @Override
@@ -34,7 +55,7 @@ public class BossPoints extends Points {
 
     @Override
     public long getDameSkill() {
-        return 0;
+        return super.getDameSkill();
     }
 
     @Override

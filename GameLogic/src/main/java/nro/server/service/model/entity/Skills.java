@@ -59,7 +59,6 @@ public abstract class Skills {
             // Đánh dấu đã dùng
             this.skillSelect.markUsedNow();
 
-
             switch (this.skillSelect.getTemplate().getType()) {
                 case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);
                 case ConstSkill.SKILL_SUPPORT -> { /* TODO */ }
@@ -71,27 +70,29 @@ public abstract class Skills {
     }
 
     public void useSkillTarget(Entity target) {
-        switch (this.skillSelect.getTemplate().getId()) {
-            case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> {
-                switch (target) {
-                    // case Boss đánh người chơi
-                    case Player plTarget -> {
-                        long dame = this.owner.getPoints().getBaseDamage();
-                        System.out.println("Skills.useSkillTarget: " + this.owner.getName() + " attacking player: " + plTarget.getName() + " with damage: " + dame);
-                        plTarget.handleAttack(this.owner, 0, dame);
-                        SkillService.getInstance().sendEntityAttackEntity(this.owner, plTarget, dame, true);
+        try {
+            switch (this.skillSelect.getTemplate().getId()) {
+                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> {
+                    switch (target) {
+                        // case Boss đánh người chơi
+                        case Player plTarget -> {
+                            long dame = this.owner.getPoints().getDameAttack();
+                            plTarget.handleAttack(this.owner, 0, dame);
+                            SkillService.getInstance().sendEntityAttackEntity(this.owner, plTarget, dame, true);
+                        }
+                        case Monster monster -> {
+                            long dame = this.owner.getPoints().getDameAttack();
+                            monster.handleAttack(this.owner, 0, dame);
+                        }
+                        case Boss boss -> {
+                        }
+                        default ->
+                                LogServer.LogException("useSkillTarget player name:" + owner.getName() + " error: target not monster");
                     }
-                    case Monster monster -> {
-                        long dame = this.owner.getPoints().getDameAttack();
-                        monster.handleAttack(this.owner, 0, dame);
-                    }
-                    case Boss boss -> {
-
-                    }
-                    default ->
-                            LogServer.LogException("useSkillTarget player name:" + owner.getName() + " error: target not monster");
                 }
             }
+        } catch (Exception ex) {
+            LogServer.LogException("useSkillTarget player name:" + owner.getName() + " error: " + ex.getMessage(), ex);
         }
     }
 
@@ -181,5 +182,7 @@ public abstract class Skills {
             default -> 0;
         };
     }
+
+    public abstract Skills copy(Entity entity);
 
 }

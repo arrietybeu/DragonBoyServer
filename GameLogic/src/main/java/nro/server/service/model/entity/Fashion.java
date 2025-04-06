@@ -18,4 +18,6 @@ public abstract class Fashion {
 
     public abstract void updateFashion();
 
+    public abstract Fashion copy();
+
 }

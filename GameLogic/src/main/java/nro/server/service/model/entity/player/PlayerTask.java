@@ -268,8 +268,6 @@ public class PlayerTask {
                                 this.player.getArea(), ConstBoss.TAU_PAY_PAY);
                     }
                 }
-
-
             }
         } catch (Exception e) {
             LogServer.LogException("PlayerTask checkDoneTaskGoMap - " + e.getMessage(), e);

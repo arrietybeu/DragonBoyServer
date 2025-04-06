@@ -17,7 +17,7 @@ public class AttackingEventHandler implements AIStateHandler {
             Boss boss = (Boss) ai;
             if (boss == null) return;
 
-                Player target = boss.getEntityTargetAsPlayer();
+            Player target = boss.getEntityTargetAsPlayer();
 
             if (target == null) {
                 if (boss.isAutoDespawn()) {
@@ -59,6 +59,5 @@ public class AttackingEventHandler implements AIStateHandler {
             LogServer.LogException("AttackingEventHandler.handle: " + e.getMessage(), e);
         }
     }
-
 
 }

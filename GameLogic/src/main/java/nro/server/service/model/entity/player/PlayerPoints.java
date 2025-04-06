@@ -7,6 +7,7 @@ import nro.server.config.ConfigServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;
 import nro.server.manager.MapManager;
+import nro.server.service.model.entity.Entity;
 import nro.server.system.LogServer;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.player.PlayerService;
@@ -15,7 +16,6 @@ import nro.server.service.model.entity.Points;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.map.GameMap;
-import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.service.model.template.item.ItemOption;
 import nro.utils.Util;
 
@@ -25,33 +25,14 @@ public class PlayerPoints extends Points {
 
     private final Player player;
 
-    public PlayerPoints(Player player) {
-        this.player = player;
+    public PlayerPoints(Entity entity) {
+        super(entity);
+        player = (Player) this.getOwner();
     }
 
     @Override
-    public long getDameAttack() {
-        long dame = this.getCurrentDamage();
-        long dameSkill = this.getDameSkill();
-        if (dameSkill != 0) {
-            dame = dame * dameSkill / 100;
-        }
-        if (dame <= 0) dame = 1;
-        return dame;
-    }
-
-    @Override
-    public long getDameSkill() {
-        try {
-            SkillInfo skillSelect = this.player.getSkills().getSkillSelect();
-            return switch (skillSelect.getTemplate().getId()) {
-                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> skillSelect.getDamage();
-                default -> 0;
-            };
-        } catch (Exception ex) {
-            LogServer.LogException(" getSkillDamageMultiplier: " + ex.getMessage(), ex);
-            return 0;
-        }
+    public Points copy(Entity entity) {
+        return null;
     }
 
     @Override

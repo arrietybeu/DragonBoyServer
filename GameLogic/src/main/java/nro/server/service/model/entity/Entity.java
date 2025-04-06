@@ -3,7 +3,6 @@ package nro.server.service.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 
 @Getter

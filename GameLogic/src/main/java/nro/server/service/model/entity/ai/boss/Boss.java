@@ -30,17 +30,17 @@ public abstract class Boss extends AbstractAI {
     // mảng chứa các id map để boss có thể xuất hiện
     protected int[] mapsId;
 
-    public Boss(int id, BossPoints bossPoint, BossFashion bossFashion) {
+    public Boss(int id, BossFashion bossFashion) {
         this.setTypeObject(ConstTypeObject.TYPE_BOSS);
         this.setCurrentState(AIState.IDLE);
         this.setId(id);
-        this.points = bossPoint;
         this.fashion = bossFashion;
     }
 
     @Override
     public long handleAttack(Entity entity, int type, long damage) {
 
+        System.out.println("Boss.handleAttack: " + this.getName() + " received damage: " + damage);
         if (this.points.isDead()) {
             this.points.setDie();
             return 0;

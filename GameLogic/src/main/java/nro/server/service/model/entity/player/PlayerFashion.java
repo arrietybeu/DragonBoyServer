@@ -87,4 +87,9 @@ public class PlayerFashion extends Fashion {
         }
     }
 
+    @Override
+    public Fashion copy() {
+        return null;
+    }
+
 }

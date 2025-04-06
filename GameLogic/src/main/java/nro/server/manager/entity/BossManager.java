@@ -5,9 +5,12 @@ import nro.consts.ConstBoss;
 import nro.server.config.ConfigDB;
 import nro.server.config.ConfigServer;
 import nro.server.manager.IManager;
+import nro.server.manager.MapManager;
 import nro.server.manager.skill.SkillManager;
 import nro.server.realtime.system.boss.BossAISystem;
+import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.ai.boss.*;
+import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.service.repositories.DatabaseFactory;
 import nro.server.system.LogServer;
@@ -20,12 +23,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public final class BossManager implements IManager {
 
     @Getter
     private static final BossManager instance = new BossManager();
-    private final Map<Integer, Boss> bosses = new HashMap<>();
+    private final Map<Integer, Boss> bossTemplates = new HashMap<>();
 
     private static final String BOSS_DATA_QUERY = "SELECT * FROM boss_data";
     private static final String BOSS_SKILL_QUERY = "SELECT * FROM boss_skills WHERE boss_id = ?";
@@ -50,7 +54,7 @@ public final class BossManager implements IManager {
     public void clear() {
         // TODO clear all boss data
         BossAISystem.getInstance().removeAll();
-        bosses.clear();
+        bossTemplates.clear();
     }
 
     private void loadBoss() {
@@ -70,11 +74,8 @@ public final class BossManager implements IManager {
 
                 JSONArray mapsIdArray = (JSONArray) JSONValue.parse(mapsId);
 
-                BossPoints points = loadBossPoints(rs);
                 BossFashion fashion = loadBossFashion(rs);
-
-
-                Boss boss = BossFactory.getInstance().createBoss(bossId, points, fashion);
+                Boss boss = BossFactory.getInstance().createBoss(bossId, fashion);
                 if (boss != null) {
                     boss.setId(bossId);
                     boss.setName(name);
@@ -89,13 +90,24 @@ public final class BossManager implements IManager {
                     for (int i = 0; i < mapsIdArray.size(); i++) {
                         boss.getMapsId()[i] = Short.parseShort(mapsIdArray.get(i).toString());
                     }
-                    if (spawnType == ConstBoss.BOSS_SPAWN_TYPE_NORMAL) {
-                        BossAISystem.getInstance().register(boss);
-                    }
+
+                    BossPoints points = loadBossPoints(boss, rs);
                     BossSkill skills = loadBossSkills(boss);
+                    boss.setPoints(points);
                     boss.setSkills(skills);
-                    bosses.put(bossId, boss);
-//                    LogServer.LogInit("Loaded Boss: " + boss.getName());
+                    bossTemplates.put(bossId, boss);
+
+                    if (spawnType == ConstBoss.BOSS_SPAWN_TYPE_NORMAL) {
+                        Area defaultArea = Objects.requireNonNull(MapManager.getInstance().findMapById(boss.getMapsId()[0])).getArea(-1, null);
+                        Boss activeBoss = BossFactory.getInstance().createBossFromTemplate(bossId, boss.getX(), boss.getY(), defaultArea);
+                        if (activeBoss != null) {
+                            AreaService.getInstance().changerMapByShip(activeBoss, defaultArea.getMap().getId(), activeBoss.getX(), activeBoss.getY(), 1, defaultArea);
+                            BossAISystem.getInstance().register(activeBoss);
+                        } else {
+                            LogServer.LogException("BossManager.loadBoss() error: Boss " + boss.getName() + " spawn failed!");
+                        }
+                    }
+                    LogServer.LogInit("Loaded Boss: " + boss.getName() + " with ID: " + boss.getId() + " spawn Type: " + spawnType);
                 }
             }
         } catch (Exception e) {
@@ -103,8 +115,8 @@ public final class BossManager implements IManager {
         }
     }
 
-    private BossPoints loadBossPoints(ResultSet rs) throws SQLException {
-        BossPoints points = new BossPoints();
+    private BossPoints loadBossPoints(Boss boss, ResultSet rs) throws SQLException {
+        BossPoints points = new BossPoints(boss);
         points.setBaseHP(rs.getInt("base_hp"));
         points.setBaseMP(rs.getInt("base_mp"));
         points.setBaseDamage(rs.getInt("base_damage"));
@@ -143,11 +155,11 @@ public final class BossManager implements IManager {
         return bossSkill;
     }
 
-    public Boss getBossById(int bossId) {
-        return bosses.get(bossId);
+    public Boss getTemplateById(int bossId) {
+        return bossTemplates.get(bossId);
     }
 
     public int size() {
-        return bosses.size();
+        return bossTemplates.size();
     }
 }

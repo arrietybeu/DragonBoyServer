@@ -16,6 +16,11 @@ public class BossFashion extends Fashion {
     }
 
     @Override
+    public BossFashion copy() {
+        return new BossFashion(head, body, leg, mount, flagBag, aura, effSetItem, idHat);
+    }
+
+    @Override
     public void updateFashion() {
     }
 }

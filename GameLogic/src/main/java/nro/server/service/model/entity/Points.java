@@ -2,13 +2,18 @@ package nro.server.service.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.consts.ConstSkill;
+import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.entity.monster.Monster;
+import nro.server.system.LogServer;
 
 @Getter
 @Setter
 @SuppressWarnings("ALL")
 public abstract class Points {
+
+    protected final Entity owner;
 
     // chỉ số cơ bản, chỉ số gốc
     protected int baseHP, baseMP;
@@ -45,6 +50,10 @@ public abstract class Points {
 
     protected boolean isHaveMount;
 
+    public Points(Entity entity) {
+        this.owner = entity;
+    }
+
     public boolean isDead() {
         return this.currentHP <= 0;
     }
@@ -68,8 +77,22 @@ public abstract class Points {
         }
     }
 
+    /* copy các chỉ số hiện tại (currentHP, currentMP, currentDamage...) sang một đối tượng mới
+     * @return một đối tượng Points mới với các chỉ số hiện tại đã được sao chép
+     */
+    public abstract Points copy(Entity entity);
+
     /// tính toán sát thương cuối cùng khi tấn công (đã áp dụng kỹ năng nếu có)
-    public abstract long getDameAttack();
+    public long getDameAttack() {
+        long dame = this.getCurrentDamage();
+
+        long dameSkill = this.getDameSkill();
+        if (dameSkill != 0) {
+            dame = dame * dameSkill / 100;
+        }
+        if (dame <= 0) dame = 1;
+        return dame;
+    }
 
     /// call resetBaseStats + applyItemBonuses để cập nhật lại toàn bộ chỉ số hiện tại
     public abstract void calculateStats();
@@ -87,7 +110,19 @@ public abstract class Points {
     public abstract long getParamOption(long currentPoint, ItemOption option);
 
     /// tính sát thương kỹ năng
-    public abstract long getDameSkill();
+    public long getDameSkill() {
+        try {
+            SkillInfo skillSelect = this.owner.getSkills().getSkillSelect();
+            return switch (skillSelect.getTemplate().getId()) {
+                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK ->
+                        skillSelect.getDamage();
+                default -> 0;
+            };
+        } catch (Exception ex) {
+            LogServer.LogException(" getSkillDamageMultiplier: " + ex.getMessage(), ex);
+            return 0;
+        }
+    }
 
     /// add EXP (sức mạnh hoặc tiềm năng), theo type: 0 = Power, 1 = Potential, 2 = cả 2
     public abstract void addExp(int type, long exp);

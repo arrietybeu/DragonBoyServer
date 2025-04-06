@@ -1,7 +1,6 @@
 package nro.server.service.model.entity.ai.boss;
 
 import lombok.Getter;
-import nro.consts.ConstBoss;
 import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
 import nro.server.service.core.map.AreaService;
@@ -40,12 +39,12 @@ public final class BossFactory {
         }
     }
 
-    public Boss createBoss(int bossId, BossPoints points, BossFashion fashion) {
+    public Boss createBoss(int bossId, BossFashion fashion) {
         try {
             Class<? extends Boss> clazz = bossClassMap.get(bossId);
             if (clazz != null) {
-                Constructor<? extends Boss> constructor = clazz.getConstructor(int.class, BossPoints.class, BossFashion.class);
-                return constructor.newInstance(bossId, points, fashion);
+                Constructor<? extends Boss> constructor = clazz.getConstructor(int.class, BossFashion.class);
+                return constructor.newInstance(bossId, fashion);
             } else {
                 LogServer.LogWarning("Unknown bossId: " + bossId);
             }
@@ -57,20 +56,64 @@ public final class BossFactory {
 
     public void trySpawnSpecialBossInArea(Player player, Area area, int bossId) {
         try {
-            Boss boss = BossManager.getInstance().getBossById(bossId);
-            if (boss == null) {
-                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Boss not found for id: " + bossId);
-                return;
-            }
             if (area == null) {
-                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area not found for player: " + player.getName());
+                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area is null for player: " + player.getName());
                 return;
             }
-            boss.setArea(area);
-            AreaService.getInstance().changerMapByShip(boss, area.getMap().getId(), player.getX(), player.getY(), 1, area);
+
+            Boss boss = this.createBossFromTemplate(bossId, player.getX(), player.getY(), area);
+            if (boss == null) return;
+
+            AreaService.getInstance().changerMapByShip(boss, area.getMap().getId(), boss.getX(), boss.getY(), 1, area);
             BossAISystem.getInstance().register(boss);
-        } catch (Exception exception) {
-            LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", exception);
+
+        } catch (Exception e) {
+            LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", e);
+        }
+    }
+
+
+    public Boss createBossFromTemplate(int bossId, int x, int y, Area area) {
+        try {
+            Boss template = BossManager.getInstance().getTemplateById(bossId);
+            if (template == null) {
+                LogServer.LogException("BossFactory.createBossFromTemplate: Template not found for id: " + bossId);
+                return null;
+            }
+
+
+            BossFashion fashion = (BossFashion) template.getFashion().copy();
+
+
+            if (fashion == null) {
+                LogServer.LogException("Copy failed for Boss components: fashion is null (bossId = " + bossId + ")");
+                return null;
+            }
+
+            Boss boss = this.createBoss(template.getId(), fashion);
+            if (boss == null) {
+                LogServer.LogException("Failed to create boss clone for id: " + bossId);
+                return null;
+            }
+            BossPoints points = (BossPoints) template.getPoints().copy(boss);
+            BossSkill skills = (BossSkill) template.getSkills().copy(boss);
+            boss.setName(template.getName());
+            boss.setGender(template.getGender());
+            boss.setSkills(skills);
+            boss.setPoints(points);
+            boss.setRespawnTime(template.getRespawnTime());
+            boss.setAfkTimeout(template.getAfkTimeout());
+            boss.setAutoDespawn(template.isAutoDespawn());
+            boss.setTextChat(template.getTextChat());
+            boss.setMapsId(template.getMapsId().clone());
+            boss.setSpawnType(template.getSpawnType());
+            boss.setX((short) x);
+            boss.setY((short) y);
+            boss.setArea(area);
+            return boss;
+        } catch (Exception e) {
+            LogServer.LogException("BossFactory.createBossFromTemplate error", e);
+            return null;
         }
     }
 
