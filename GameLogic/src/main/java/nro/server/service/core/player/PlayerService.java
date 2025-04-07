@@ -551,18 +551,18 @@ public class PlayerService {
         }
     }
 
-    public void sendEntityChangerTypePlayerKill(Entity entity, int type) {
+    public void sendEntityChangerTypePlayerKill(Entity entity) {
+        System.out.println("sendEntityChangerTypePlayerKill: " + entity.getName() + " type: " + entity.getTypePk());
         try (Message message = new Message(ConstsCmd.SUB_COMMAND)) {
             DataOutputStream write = message.writer();
             write.writeByte(ConstMsgSubCommand.UPDATE_CHAR_PK_TYPE);
             write.writeInt(entity.getId());
-            write.writeByte(type);
+            write.writeByte(entity.getTypePk());
             entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception e) {
             LogServer.LogException("sendEntityChangerTypePlayerKill: " + e.getMessage(), e);
         }
     }
-
 
     /**
      * Xử lý logic tạo nhân vật trong cơ sở dữ liệu.

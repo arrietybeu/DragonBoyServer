@@ -38,7 +38,6 @@ public class AreaService {
                     this.addPlayer(entity, plInZone);
                 }
             }
-
             this.sendLiveObjectInfoToOthers(entity);
 
         } catch (Exception ex) {
@@ -287,7 +286,6 @@ public class AreaService {
             entity.setX(x);
             entity.setY(y);
             this.sendInfoAllLiveObjectsTo(entity);
-
         } catch (Exception ex) {
             LogServer.LogException("entityEnterArea: " + ex.getMessage(), ex);
         }
@@ -301,6 +299,8 @@ public class AreaService {
                 this.sendTeleport(entity);
                 this.sendRemovePlayerExitArea(entity);
                 area.removePlayer(entity);
+            } else {
+                LogServer.LogWarning("playerExitArea: Entity not in area: " + entity.getId());
             }
         } catch (Exception ex) {
             LogServer.LogException("playerExitArea: " + ex.getMessage(), ex);

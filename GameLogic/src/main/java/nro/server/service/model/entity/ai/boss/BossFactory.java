@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
 import nro.server.service.core.map.AreaService;
+import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
@@ -54,24 +55,21 @@ public final class BossFactory {
         return null;
     }
 
-    public void trySpawnSpecialBossInArea(Player player, Area area, int bossId) {
+    public void trySpawnSpecialBossInArea(Player player, Area area, int x, int y, int bossId) {
         try {
             if (area == null) {
-                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area is null for player: " + player.getName());
+                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area is null for boss id: " + bossId);
                 return;
             }
 
-            Boss boss = this.createBossFromTemplate(bossId, player.getX(), player.getY(), area);
+            Boss boss = this.createBossFromTemplate(bossId, x, y, area);
             if (boss == null) return;
-
-            AreaService.getInstance().changerMapByShip(boss, area.getMap().getId(), boss.getX(), boss.getY(), 1, area);
+            boss.setEntityTarget(player);
             BossAISystem.getInstance().register(boss);
-
         } catch (Exception e) {
             LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", e);
         }
     }
-
 
     public Boss createBossFromTemplate(int bossId, int x, int y, Area area) {
         try {
@@ -81,9 +79,7 @@ public final class BossFactory {
                 return null;
             }
 
-
             BossFashion fashion = (BossFashion) template.getFashion().copy();
-
 
             if (fashion == null) {
                 LogServer.LogException("Copy failed for Boss components: fashion is null (bossId = " + bossId + ")");
@@ -110,6 +106,7 @@ public final class BossFactory {
             boss.setX((short) x);
             boss.setY((short) y);
             boss.setArea(area);
+            boss.setController(template.getController());
             return boss;
         } catch (Exception e) {
             LogServer.LogException("BossFactory.createBossFromTemplate error", e);

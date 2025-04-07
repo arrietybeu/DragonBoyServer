@@ -3,6 +3,7 @@ package nro.server.service.model.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nro.server.service.core.player.PlayerService;
 import nro.server.service.model.map.areas.Area;
 
 @Getter
@@ -54,6 +55,12 @@ public abstract class Entity {
         return BIRD_NAMES[gender];
     }
 
+    public void changeTypePlayerKill(int typePk) {
+        if (typePk < 0 || typePk > 3) return;
+        if (this.typePk == typePk) return;
+        this.typePk = (byte) typePk;
+        PlayerService.getInstance().sendEntityChangerTypePlayerKill(this);
+    }
 
     public abstract long handleAttack(Entity entity, int type, long damage);
 

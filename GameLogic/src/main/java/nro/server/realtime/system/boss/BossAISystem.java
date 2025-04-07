@@ -6,8 +6,8 @@ import nro.server.realtime.system.boss.disruptor.BossDisruptorEngine;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.system.LogServer;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
@@ -15,8 +15,9 @@ public class BossAISystem implements ISystemBase {
 
     @Getter
     private static final BossAISystem instance = new BossAISystem();
+
     @Getter
-    private final Map<Integer, Boss> bosses = new HashMap<>();
+    private final List<Boss> bosses = new ArrayList<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
@@ -24,23 +25,25 @@ public class BossAISystem implements ISystemBase {
         if (object instanceof Boss boss) {
             lock.writeLock().lock();
             try {
-                if (bosses.containsKey(boss.getId())) {
-                    LogServer.LogException("Boss " + boss.getId() + " is already registered!");
-                    return;
-                }
-                bosses.put(boss.getId(), boss);
+//                boolean exists = bosses.stream().anyMatch(b -> b.getId() == boss.getId());
+//                if (exists) {
+//                    LogServer.LogWarning("Boss " + boss.getId() + " is already registered!");
+//                }
+                bosses.add(boss);
             } finally {
                 lock.writeLock().unlock();
             }
         }
     }
 
+
     @Override
     public void unregister(Object object) {
         if (object instanceof Boss boss) {
             lock.writeLock().lock();
             try {
-                bosses.remove(boss.getId());
+//                bosses.removeIf(b -> b.getId() == boss.getId());
+                bosses.remove(boss);
             } finally {
                 lock.writeLock().unlock();
             }
@@ -49,14 +52,19 @@ public class BossAISystem implements ISystemBase {
 
     @Override
     public void removeAll() {
-        this.bosses.clear();
+        lock.writeLock().lock();
+        try {
+            bosses.clear();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public void update() {
         lock.readLock().lock();
         try {
-            for (Boss boss : bosses.values()) {
+            for (Boss boss : bosses) {
                 BossDisruptorEngine.getInstance().submit(boss);
             }
         } finally {
@@ -66,6 +74,23 @@ public class BossAISystem implements ISystemBase {
 
     @Override
     public int size() {
-        return bosses.size();
+        lock.readLock().lock();
+        try {
+            return bosses.size();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public Boss getBossById(int bossId) {
+        lock.readLock().lock();
+        try {
+            return bosses.stream()
+                    .filter(boss -> boss.getId() == bossId)
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 }

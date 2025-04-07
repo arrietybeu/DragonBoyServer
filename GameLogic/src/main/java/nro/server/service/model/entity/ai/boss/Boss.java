@@ -8,14 +8,18 @@ import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.ai.AbstractAI;
+import nro.server.service.model.entity.player.Player;
 
 @Setter
 @Getter
 public abstract class Boss extends AbstractAI {
 
-    private String textChat;
+    private String textChat = "";
+    private Player lastPlayerTarget;
+    protected BossAIController controller;
 
     private boolean isAutoDespawn;
+    protected boolean isBossInMap = false;
 
     protected long lastTimeIdle;
     protected long lastTimeAttack;
@@ -24,7 +28,6 @@ public abstract class Boss extends AbstractAI {
     // thời gian không có người chơi thì biến mất (giây)
     protected int afkTimeout;
     public int tickAfkTimeout;
-
     protected byte spawnType;
 
     // mảng chứa các id map để boss có thể xuất hiện
@@ -55,11 +58,20 @@ public abstract class Boss extends AbstractAI {
         return damage;
     }
 
+    public boolean isValidBossAfkTimeout() {
+        return this.afkTimeout >= 0 && this.tickAfkTimeout > this.afkTimeout;
+    }
+
+    public void setLastPlayerTarget(Player player) {
+        if (lastPlayerTarget == null) {
+            this.lastPlayerTarget = player;
+        }
+    }
+
     @Override
     public void dispose() {
-        this.tickAfkTimeout = 0;
-        AreaService.getInstance().playerExitArea(this);
         BossAISystem.getInstance().unregister(this);
+        AreaService.getInstance().playerExitArea(this);
     }
 
     @Override

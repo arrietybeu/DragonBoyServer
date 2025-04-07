@@ -18,6 +18,7 @@ import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.core.player.TaskService;
 import nro.server.service.core.item.DropItemMap;
+import nro.utils.Util;
 
 @Setter
 @Getter
@@ -264,8 +265,7 @@ public class PlayerTask {
                     this.doneTask(8, 3);
 
                     if (this.taskMain.getId() == 9 && this.taskMain.getIndex() == 1) {
-                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player,
-                                this.player.getArea(), ConstBoss.TAU_PAY_PAY);
+                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
                     }
                 }
             }

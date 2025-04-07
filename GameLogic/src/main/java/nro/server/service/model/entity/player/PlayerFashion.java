@@ -41,7 +41,6 @@ public class PlayerFashion extends Fashion {
                     this.head = this.headDefault;
                 }
 
-
                 // Ưu tiên body từ cải trang
                 if (itemsBody.get(indexCaiTrang) != null && itemsBody.get(indexCaiTrang).getTemplate() != null) {
                     short b = itemsBody.get(indexCaiTrang).getTemplate().body();
@@ -50,9 +49,8 @@ public class PlayerFashion extends Fashion {
                     }
                 }
 
-                // Fallback: lấy từ item áo thật sự nếu chưa có
-                if (this.body == -1 && itemsBody.size() > indexAo && itemsBody.get(indexAo) != null
-                        && itemsBody.get(indexAo).getTemplate() != null) {
+                // fallback: lấy từ item áo thật sự nếu chưa có
+                if (this.body == -1 && itemsBody.get(indexAo) != null && itemsBody.get(indexAo).getTemplate() != null) {
                     this.body = itemsBody.get(indexAo).getTemplate().body();
                 }
 

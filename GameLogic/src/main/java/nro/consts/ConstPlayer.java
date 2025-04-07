@@ -7,6 +7,10 @@ public class ConstPlayer {
     public static final byte NAMEC = 1;
     public static final byte XAYDA = 2;
 
+    // =================== Type Player Kill ===================//
+
+    public static final byte TYPE_PLAYER_KILL_NONE = 0;
+
     // =================== Teleport ===================//
 
     public static final byte TELEPORT_DEFAULT = 0;

@@ -198,7 +198,7 @@ public class ChatService {
             }
             switch (text) {
                 case "tau77" -> {
-                    BossFactory.getInstance().trySpawnSpecialBossInArea(playerChat, playerChat.getArea(), ConstBoss.TAU_PAY_PAY);
+                    BossFactory.getInstance().trySpawnSpecialBossInArea(playerChat, playerChat.getArea(), playerChat.getX(), playerChat.getY(), ConstBoss.TAU_PAY_PAY);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Spawn Boss: " + ConstBoss.TAU_PAY_PAY, false);
                 }
                 case "spam_drop" -> {
@@ -269,7 +269,7 @@ public class ChatService {
                 }
                 case "info_boss" -> {
                     String bossState = "";
-                    for (var boss : BossAISystem.getInstance().getBosses().values()) {
+                    for (var boss : BossAISystem.getInstance().getBosses()) {
                         bossState += "Boss: " + boss.getName() + " - State: " + boss.getState() + "\n";
                     }
                     String content = "Boss core size: " + BossAISystem.getInstance().size() + "\n" +
