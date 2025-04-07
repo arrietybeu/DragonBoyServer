@@ -93,8 +93,10 @@ public class PlayerService {
         serverService.sendGameNotify(player);// 50
         this.sendCaptionForPlayer(player);// -41
         player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
-        DropItemMap.dropMissionItems(player);
         SkillService.getInstance().sendSkillCooldown(player);
+
+        DropItemMap.dropMissionItems(player);
+        player.getPlayerTask().checkDoneTaskGoMap();
     }
 
     private void sendCaptionForPlayer(Player player) {
@@ -553,7 +555,6 @@ public class PlayerService {
     }
 
     public void sendEntityChangerTypePlayerKill(Entity entity) {
-        System.out.println("sendEntityChangerTypePlayerKill: " + entity.getName() + " type: " + entity.getTypePk());
         try (Message message = new Message(ConstsCmd.SUB_COMMAND)) {
             DataOutputStream write = message.writer();
             write.writeByte(ConstMsgSubCommand.UPDATE_CHAR_PK_TYPE);

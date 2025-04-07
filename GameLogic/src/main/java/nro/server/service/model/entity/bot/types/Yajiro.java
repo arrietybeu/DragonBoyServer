@@ -12,6 +12,11 @@ public class Yajiro extends Bot {
     }
 
     @Override
+    protected void onDie(Entity killer) {
+
+    }
+
+    @Override
     public void dispose() {
     }
 }

@@ -18,7 +18,6 @@ public class EntityAttackEntityHandler implements IMessageProcessor {
             var playerID = message.reader().readInt();
             var playerTarget = player.getArea().getAllEntity(playerID);
             if (playerTarget == null) return;
-            System.out.println("playerTarget: " + playerTarget.getId());
             player.getSkills().useSkill(playerTarget);
         } catch (Exception e) {
             LogServer.LogException("AttackingEventHandler.process: " + e.getMessage(), e);

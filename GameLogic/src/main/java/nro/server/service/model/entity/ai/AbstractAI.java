@@ -15,6 +15,7 @@ public abstract class AbstractAI extends Entity implements AI {
 
     // thời gian hồi sinh sau khi chết
     protected int respawnTime;
+    public int tickAfkTimeout;
 
     private long stateStartTime;        // thời điểm bắt đầu vào state
     private long requiredStateDelay = 0; // thời gian phải chờ trước khi được phép đổi state
@@ -31,6 +32,7 @@ public abstract class AbstractAI extends Entity implements AI {
         this.currentState = newState;
         this.stateStartTime = System.currentTimeMillis();
         this.requiredStateDelay = 0;
+        this.tickAfkTimeout = 0;
         this.nextState = null;
         LogServer.LogInfo("AI State changed: " + this.getName() + " -> " + newState);
     }
@@ -57,13 +59,16 @@ public abstract class AbstractAI extends Entity implements AI {
         this.currentState = state;
         this.stateStartTime = System.currentTimeMillis();
         this.requiredStateDelay = delayMillis;
+        this.tickAfkTimeout = 0;
         this.nextState = nextState;
+        LogServer.LogInfo("onEnterStateWithDelay: " + this.getName() + " -> " + state + " with delay: " + delayMillis);
     }
 
     public synchronized void onEnterState(AIState state) {
         this.currentState = state;
         this.stateStartTime = System.currentTimeMillis();
         this.requiredStateDelay = 0;
+        this.tickAfkTimeout = 0;
         this.nextState = null;
     }
 

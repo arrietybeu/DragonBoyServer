@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
 import nro.server.service.core.map.AreaService;
+import nro.server.service.model.entity.Points;
 import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
@@ -55,6 +56,32 @@ public final class BossFactory {
         return null;
     }
 
+    public void trySpawnSpecialBossInAreaToPointsPlayer(Player player, Area area, int x, int y, int bossId) {
+        try {
+            if (area == null) {
+                LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area is null for boss id: " + bossId);
+                return;
+            }
+
+            Boss boss = this.createBossFromTemplate(bossId, x, y, area);
+            if (boss == null) return;
+            boss.setEntityTarget(player);
+
+            Points points = boss.getPoints();
+
+            long newHp = points.getMaxHP() + player.getPoints().getCurrentDamage() * 3;
+            long newDamage = points.getCurrentDamage() + player.getPoints().getMaxHP() * 3;
+
+            boss.getPoints().setMaxHP(newHp);
+            boss.getPoints().setCurrentHp(newHp);
+            boss.getPoints().setCurrentDamage(newDamage);
+
+            BossAISystem.getInstance().register(boss);
+        } catch (Exception e) {
+            LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", e);
+        }
+    }
+
     public void trySpawnSpecialBossInArea(Player player, Area area, int x, int y, int bossId) {
         try {
             if (area == null) {
@@ -65,6 +92,12 @@ public final class BossFactory {
             Boss boss = this.createBossFromTemplate(bossId, x, y, area);
             if (boss == null) return;
             boss.setEntityTarget(player);
+
+            long newHp = player.getPoints().getMaxHP() * 2;
+
+            boss.getPoints().setMaxHP(newHp);
+            boss.getPoints().setCurrentHp(newHp);
+
             BossAISystem.getInstance().register(boss);
         } catch (Exception e) {
             LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", e);

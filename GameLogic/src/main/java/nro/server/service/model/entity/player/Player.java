@@ -125,6 +125,10 @@ public class Player extends Entity {
         return super.handleAttack(entityAttack, entityTarget, type, damage);
     }
 
+    @Override
+    protected void onDie(Entity killer) {
+    }
+
     public boolean isAdministrator() {
         return this.session.getUserInfo().isAdmin();
     }

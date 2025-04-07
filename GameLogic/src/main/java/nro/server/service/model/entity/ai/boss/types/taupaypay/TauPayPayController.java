@@ -16,6 +16,7 @@ public class TauPayPayController extends BossAIController {
 
     private static final int ATTACK_RANGE = 60;
     private static final long CHAT_DURATION = 10_000;
+    private static final String[] THACH_THUC = new String[]{"Tuổi lồn", "Tuổi con cặc", "Tuổi buồi"};
 
     @Override
     public void handleIdle(Boss boss) {
@@ -24,12 +25,18 @@ public class TauPayPayController extends BossAIController {
                 boss.setState(AIState.GO_TO_MAP);
                 return;
             }
-            if (boss.getEntityTarget() == null) {
-                boss.setState(AIState.SEARCHING);
-            }
+
             boss.tickAfkTimeout++;
             if (boss.isValidBossAfkTimeout()) {
                 boss.dispose();
+            }
+
+            if (boss.getEntityTarget() == null) {
+                if (boss.getNextState() != AIState.SEARCHING) {
+                    boss.onEnterStateWithDelay(AIState.IDLE, 5000, AIState.SEARCHING);
+                    return;
+                }
+                boss.trySwitchToNextState();
             }
         } catch (Exception e) {
             LogServer.LogException("IdleEventHandler.handle: " + e.getMessage(), e);
@@ -45,19 +52,20 @@ public class TauPayPayController extends BossAIController {
 
             // target không còn hoặc không hợp lệ
             if (target == null) {
-                if (boss.getLastPlayerTarget() != null) {
-                    boss.getLastPlayerTarget().changeTypePlayerKill(0);
-                    boss.setLastPlayerTarget(null);
-                }
                 if (boss.isAutoDespawn()) {
                     boss.dispose();
                     return;
                 }
-            }
-            if (boss.isValidTarget(target)) {
-                boss.setEntityTarget(null);
-                boss.setState(AIState.SEARCHING);
-                boss.changeTypePlayerKill(0);
+                if (boss.getLastPlayerTarget() != null) {
+                    boss.getLastPlayerTarget().changeTypePlayerKill(0);
+                    boss.setLastPlayerTarget(null);
+                }
+                if (boss.isValidTarget(target)) {
+                    boss.setEntityTarget(null);
+                    boss.setState(AIState.SEARCHING);
+                    boss.changeTypePlayerKill(0);
+                    return;
+                }
                 return;
             }
             boss.changeTypePlayerKill(3);
@@ -80,6 +88,7 @@ public class TauPayPayController extends BossAIController {
     public void handleAttacking(Boss boss) {
         try {
             if (boss == null) return;
+            if (boss.getPoints().isDead()) return;
 
             Player target = boss.getEntityTargetAsPlayer();
 
@@ -95,7 +104,7 @@ public class TauPayPayController extends BossAIController {
             }
             // neu target mất hoặc chết hoặc khác map → về SEARCHING
             if (boss.isValidTarget(target)) {
-                boss.setEntityTarget(null);
+//                boss.setEntityTarget(null);
                 boss.setState(AIState.SEARCHING);
                 return;
             }
@@ -217,10 +226,18 @@ public class TauPayPayController extends BossAIController {
                 boss.setEntityTarget(nearestPlayer);
                 boss.setState(AIState.CHASING);
             } else {
-                if (boss.isAutoDespawn()) {
-                    boss.dispose();
-                    return;
+                boss.changeTypePlayerKill(0);
+                if (boss.getLastPlayerTarget() != null) {
+                    boss.getLastPlayerTarget().changeTypePlayerKill(0);
+                    if (!boss.getLastPlayerTarget().getArea().equals(boss.getArea())) {
+                        boss.dispose();
+                        return;
+                    }
+                    boss.setLastPlayerTarget(null);
                 }
+                boss.setEntityTarget(null);
+                String chat = THACH_THUC[Util.nextInt(0, THACH_THUC.length - 1)];
+                ChatService.getInstance().chatMap(boss, chat);
                 boss.setState(AIState.IDLE);
             }
         } catch (Exception e) {

@@ -80,7 +80,7 @@ public class Monster extends Entity {
                 // kiem tra monster chet
                 if (this.point.isDead()) {
                     this.setDie(plAttack, damage);
-                    plAttack.getPlayerTask().checkDoneTaskKKillMonster(this);
+
                 } else {
                     boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
                     MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
@@ -94,6 +94,13 @@ public class Monster extends Entity {
             }
         }
         return 0;
+    }
+
+    @Override
+    protected void onDie(Entity killer) {
+        if (killer instanceof Player player) {
+            player.getPlayerTask().checkDoneTaskKKillMonster(this);
+        }
     }
 
     public void setLive() {

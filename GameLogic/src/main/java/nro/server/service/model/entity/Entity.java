@@ -76,17 +76,20 @@ public abstract class Entity {
             }
             this.points.subCurrentHp(damage);
 
+            SkillService.getInstance().sendEntityAttackEntity(entityAttack, entityTarget, damage, true);
+
             if (this.points.isDead()) {
                 this.points.setDie();
-                return 0;
+                this.onDie(entityAttack);
             }
-            SkillService.getInstance().sendEntityAttackEntity(entityAttack, entityTarget, damage, true);
             return damage;
         } finally {
             this.lock.writeLock().unlock();
         }
     }
 
-    public abstract void dispose();
+    protected abstract void onDie(Entity killer);
+
+    protected abstract void dispose();
 
 }

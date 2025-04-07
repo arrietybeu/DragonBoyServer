@@ -224,7 +224,8 @@ public class PlayerTask {
                     Npc npc = NpcFactory.getNpc(ConstNpc.BO_MONG);
                     String content = "Hắn sắp đến đây, hãy giúp ta tiêu diệt hắn";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 457, 0, ConstBoss.TAU_PAY_PAY);
+                    BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 457, 0, ConstBoss.TAU_PAY_PAY);
+                    this.doneTask(9, 1);
                 }
             }
         } catch (Exception ex) {
@@ -265,7 +266,7 @@ public class PlayerTask {
                 case ConstMap.RUNG_KARIN -> {
                     this.doneTask(8, 3);
                     if (this.taskMain.getId() == 9 && this.taskMain.getIndex() == 1) {
-                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
+                        BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
                     }
                 }
             }
@@ -330,6 +331,12 @@ public class PlayerTask {
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask checkDoneTaskKKillMonster - " + ex.getMessage(), ex);
+        }
+    }
+
+    public void checkDoneTaskKillBoss(int bossId) {
+        switch (bossId) {
+            case ConstBoss.TAU_PAY_PAY -> this.doneTask(9, 1);
         }
     }
 

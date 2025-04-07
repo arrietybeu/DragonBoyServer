@@ -57,6 +57,11 @@ public class ItemMap extends Entity {
     }
 
     @Override
+    protected void onDie(Entity killer) {
+
+    }
+
+    @Override
     public void dispose() {
     }
 }

@@ -30,7 +30,7 @@ public abstract class Boss extends AbstractAI {
 
     // thời gian không có người chơi thì biến mất (giây)
     protected int afkTimeout;
-    public int tickAfkTimeout;
+
     protected byte spawnType;
     protected byte typeLeaveMap;
 
@@ -45,11 +45,12 @@ public abstract class Boss extends AbstractAI {
     }
 
     @Override
-    public synchronized long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
+    public long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
         return super.handleAttack(entityAttack, entityTarget, type, damage);
     }
 
     public boolean isValidBossAfkTimeout() {
+//        System.out.println("tickAfkTimeout: " + this.tickAfkTimeout + " afkTimeout: " + this.afkTimeout);
         return this.afkTimeout >= 0 && this.tickAfkTimeout > this.afkTimeout;
     }
 
@@ -58,6 +59,9 @@ public abstract class Boss extends AbstractAI {
             this.lastPlayerTarget = player;
         }
     }
+
+    @Override
+    public abstract void onDie(Entity entity);
 
     @Override
     public void dispose() {
