@@ -1,4 +1,4 @@
-package nro.server.service.model.entity.ai.boss.types.taupaypay;
+package nro.server.service.model.entity.ai.boss.types.tau_pay_pay;
 
 import nro.server.manager.MapManager;
 import nro.server.service.core.map.AreaService;
@@ -235,10 +235,19 @@ public class TauPayPayController extends BossAIController {
                     }
                     boss.setLastPlayerTarget(null);
                 }
+
                 boss.setEntityTarget(null);
                 String chat = THACH_THUC[Util.nextInt(0, THACH_THUC.length - 1)];
                 ChatService.getInstance().chatMap(boss, chat);
-                boss.setState(AIState.IDLE);
+
+                if (boss.getEntityTarget() == null) {
+                    if (boss.getNextState() != AIState.IDLE) {
+                        boss.onEnterStateWithDelay(AIState.SEARCHING, 5000, AIState.IDLE);
+                        return;
+                    }
+                    boss.trySwitchToNextState();
+                }
+
             }
         } catch (Exception e) {
             LogServer.LogException("SearchingEventHandler.handle: " + e.getMessage(), e);
@@ -248,7 +257,7 @@ public class TauPayPayController extends BossAIController {
     @Override
     public void handleLeavingMap(Boss boss) {
         try {
-            boss.setTeleport(1);
+            boss.setTeleport(boss.getTypeLeaveMap());
             boss.dispose();
         } catch (Exception exception) {
             LogServer.LogException("MoveEventHandler.handleLeavingMap: " + exception.getMessage(), exception);

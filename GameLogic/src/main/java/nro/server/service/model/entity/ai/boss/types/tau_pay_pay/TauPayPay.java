@@ -1,4 +1,4 @@
-package nro.server.service.model.entity.ai.boss.types.taupaypay;
+package nro.server.service.model.entity.ai.boss.types.tau_pay_pay;
 
 import nro.consts.ConstBoss;
 import nro.server.service.model.entity.Entity;

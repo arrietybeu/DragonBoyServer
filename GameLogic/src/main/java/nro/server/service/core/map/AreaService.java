@@ -3,6 +3,7 @@ package nro.server.service.core.map;
 import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
+import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Fusion;
@@ -218,7 +219,17 @@ public class AreaService {
     }
 
     public void changeArea(Player player, Area newArea) {
+        long time = System.currentTimeMillis();
+        if (time - player.getPlayerStatus().getLastTimeChangeArea() < 10000) {
+            NpcService.getInstance().sendNpcTalkUI(player, 5, "Chưa thể chuyển khu vực lúc này vui lòng chờ " + (10 - (time - player.getPlayerStatus().getLastTimeChangeArea()) / 1000) + " giây nữa", -1);
+            return;
+        }
+        if (player.getArea().equals(newArea)) {
+            ServerService.getInstance().sendHideWaitDialog(player);
+            return;
+        }
         this.transferEntity(player, newArea, player.getX(), player.getY());
+        player.getPlayerStatus().setLastTimeChangeArea(time);
     }
 
     public void gotoMap(Entity object, Area goArea, int goX, int goY) {

@@ -57,25 +57,29 @@ public final class BossFactory {
     }
 
     public void trySpawnSpecialBossInAreaToPointsPlayer(Player player, Area area, int x, int y, int bossId) {
+        System.out.println("trySpawnSpecialBossInAreaToPointsPlayer");
         try {
             if (area == null) {
                 LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area is null for boss id: " + bossId);
                 return;
             }
 
-            Boss boss = this.createBossFromTemplate(bossId, x, y, area);
+            Boss boss = this.createBossFromTemplate(bossId);
             if (boss == null) return;
             boss.setEntityTarget(player);
 
             Points points = boss.getPoints();
 
-            long newHp = points.getMaxHP() + player.getPoints().getCurrentDamage() * 3;
-            long newDamage = points.getCurrentDamage() + player.getPoints().getMaxHP() * 3;
+            long newHp = points.getMaxHP() + player.getPoints().getCurrentDamage() * 2 / 3;
+            long newDamage = points.getCurrentDamage() + player.getPoints().getMaxHP() * 2 / 3;
 
             boss.getPoints().setMaxHP(newHp);
             boss.getPoints().setCurrentHp(newHp);
             boss.getPoints().setCurrentDamage(newDamage);
 
+            boss.setX((short) x);
+            boss.setY((short) y);
+            boss.setArea(area);
             BossAISystem.getInstance().register(boss);
         } catch (Exception e) {
             LogServer.LogException("BossFactory.trySpawnSpecialBossInArea error", e);
@@ -89,7 +93,7 @@ public final class BossFactory {
                 return;
             }
 
-            Boss boss = this.createBossFromTemplate(bossId, x, y, area);
+            Boss boss = this.createBossFromTemplate(bossId);
             if (boss == null) return;
             boss.setEntityTarget(player);
 
@@ -97,6 +101,9 @@ public final class BossFactory {
 
             boss.getPoints().setMaxHP(newHp);
             boss.getPoints().setCurrentHp(newHp);
+            boss.setX((short) x);
+            boss.setY((short) y);
+            boss.setArea(area);
 
             BossAISystem.getInstance().register(boss);
         } catch (Exception e) {
@@ -104,7 +111,7 @@ public final class BossFactory {
         }
     }
 
-    public Boss createBossFromTemplate(int bossId, int x, int y, Area area) {
+    public Boss createBossFromTemplate(int bossId) {
         try {
             Boss template = BossManager.getInstance().getTemplateById(bossId);
             if (template == null) {
@@ -136,9 +143,8 @@ public final class BossFactory {
             boss.setTextChat(template.getTextChat());
             boss.setMapsId(template.getMapsId().clone());
             boss.setSpawnType(template.getSpawnType());
-            boss.setX((short) x);
-            boss.setY((short) y);
-            boss.setArea(area);
+            boss.setX(template.getX());
+            boss.setY(template.getY());
             boss.setController(template.getController());
             boss.setTypeLeaveMap(template.getTypeLeaveMap());
             return boss;

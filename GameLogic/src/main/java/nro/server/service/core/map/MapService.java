@@ -5,6 +5,7 @@ import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
 import nro.server.service.core.player.PlayerTransport;
+import nro.server.service.core.system.ServerService;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.Waypoint;
@@ -36,6 +37,7 @@ public class MapService {
     }
 
     public void sendListUIArea(Player player) {
+
         try (Message message = new Message(29)) {
             DataOutputStream data = message.writer();
 
@@ -87,7 +89,8 @@ public class MapService {
             output.writeByte(area.getMap().getPlanetId());
             output.writeByte(area.getMap().getTileId());
             output.writeByte(area.getMap().getBgId());
-            output.writeByte(area.getMap().getTypeMap());
+//            output.writeByte(area.getMap().getTypeMap());
+            output.writeByte(0);
             output.writeUTF(area.getMap().getName());
             output.writeByte(area.getId());
             this.loadInfoMap(player, output);

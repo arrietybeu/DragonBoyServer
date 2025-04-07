@@ -39,6 +39,7 @@ public class ConstMap {
     public static final short VACH_NUI_MOORI = 43;
     public static final short VAC_NUI_KAKAROT = 44;
 
+    public static final short THAP_KARIN = 46;
     public static final short RUNG_KARIN = 47;
 
 }

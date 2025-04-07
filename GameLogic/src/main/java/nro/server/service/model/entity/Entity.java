@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nro.server.service.core.player.PlayerService;
 import nro.server.service.core.player.SkillService;
+import nro.server.service.model.entity.ai.boss.Boss;
+import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -76,7 +78,13 @@ public abstract class Entity {
             }
             this.points.subCurrentHp(damage);
 
-            SkillService.getInstance().sendEntityAttackEntity(entityAttack, entityTarget, damage, true);
+            switch (entityAttack) {
+                case Boss boss -> SkillService.getInstance().sendEntityAttackEntity(entityAttack, boss, damage, true);
+                case Player player ->
+                        SkillService.getInstance().sendEntityAttackEntity(entityAttack, player, damage, true);
+                default -> {
+                }
+            }
 
             if (this.points.isDead()) {
                 this.points.setDie();

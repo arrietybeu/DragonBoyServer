@@ -100,9 +100,12 @@ public final class BossManager implements IManager {
                     bossTemplates.put(bossId, boss);
 
                     if (spawnType == ConstBoss.BOSS_SPAWN_TYPE_NORMAL) {
-                        Area defaultArea = Objects.requireNonNull(MapManager.getInstance().findMapById(boss.getMapsId()[0])).getArea(-1, null);
-                        Boss activeBoss = BossFactory.getInstance().createBossFromTemplate(bossId, boss.getX(), boss.getY(), defaultArea);
+                        Area defaultArea = Objects.requireNonNull(MapManager.getInstance().findMapById(boss.getMapsId()[0])).getArea(-1, boss);
+                        Boss activeBoss = BossFactory.getInstance().createBossFromTemplate(bossId);
                         if (activeBoss != null) {
+                            activeBoss.setX(boss.getX());
+                            activeBoss.setY(boss.getY());
+                            activeBoss.setArea(defaultArea);
                             AreaService.getInstance().changerMapByShip(activeBoss, defaultArea.getMap().getId(), activeBoss.getX(), activeBoss.getY(), 1, defaultArea);
                             BossAISystem.getInstance().register(activeBoss);
                         } else {

@@ -281,6 +281,10 @@ public class ChatService {
                     ManagerRegistry.reloadManager(MapManager.class);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
                 }
+                case "reload_boss"->{
+                    ManagerRegistry.reloadManager(BossManager.class);
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Load Boss Manager Thành Công", false);
+                }
                 case "reload_shop" -> {
                     ManagerRegistry.reloadManager(ShopManager.class);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Item Shop Manager Thành Công", false);

@@ -10,5 +10,6 @@ public class ConstBoss {
 
     ///  ====================== BOSS_ID ========================///
 
+    public static final int THAN_MEO_KARIN = -89;
     public static final int TAU_PAY_PAY = -92;
 }

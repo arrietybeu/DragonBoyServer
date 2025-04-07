@@ -36,6 +36,10 @@ public class ChangeAreaHandler implements IMessageProcessor {
                 LogServer.LogException("ChangeAreaHandler: area is null " + areaId);
                 return;
             }
+            if (area.getMap().isMapOffline()) {
+                ServerService.dialogMessage(player.getSession(), "Không thể đổi khu vực trong map này");
+                return;
+            }
             AreaService.getInstance().changeArea(player, area);
         } catch (Exception ex) {
             LogServer.LogException("ChangeAreaHandler: " + ex.getMessage(), ex);

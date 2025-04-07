@@ -22,6 +22,7 @@ public class PlayerStatus {
     private long lastTimePickItem;
     private long lastTimeAddExp;
     private long lastTimeTransport;
+    private long lastTimeChangeArea;
 
     private int idItemTask;
     private byte typeTransport;

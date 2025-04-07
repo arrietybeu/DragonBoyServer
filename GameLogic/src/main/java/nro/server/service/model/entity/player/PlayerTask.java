@@ -41,8 +41,6 @@ public class PlayerTask {
         try {
             if (!checkTaskInfo(taskId, index)) return false;
 
-            this.addDoneSubTask();
-
             NpcService npcService = NpcService.getInstance();
             var npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
             var mapName = MapManager.getInstance().getNameMapHomeByGender(player.getGender());
@@ -58,6 +56,9 @@ public class PlayerTask {
                 case 8 -> this.handlerTaskEight(index, npcService);
                 case 9 -> this.handlerTaskNine(index, npcService);
             }
+
+            this.addDoneSubTask();
+
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
             return false;
@@ -227,6 +228,15 @@ public class PlayerTask {
                     BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 457, 0, ConstBoss.TAU_PAY_PAY);
                     this.doneTask(9, 1);
                 }
+                case 3 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.THAN_MEO_KARIN);
+                    String content = "Có phải ngươi vừa chiến đấu với Tàu Pảy Pảy không?" +
+                            "\nTa tuy mù nhưng có thể đọc được ý nghĩ của ngươi" +
+                            "\nNgươi chưa phải là đối thủ của hắn đâu" +
+                            "\nTìm ta là đúng rồi, để ta dạy ngươi vài chiêu, nhưng phải chăm chỉ mới học được đấy nhé" +
+                            "\nNgươi sẵn sàng luyện tập chưa";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
             }
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask handleTaskNine - " + ex.getMessage(), ex);
@@ -263,10 +273,16 @@ public class PlayerTask {
                     if (this.player.getX() >= 635) this.doneTask(0, 0);
                 }
                 case ConstMap.NHA_GOHAN, ConstMap.NHA_MOORI, ConstMap.NHA_BROLY -> this.doneTask(0, 1);
+                case ConstMap.THAP_KARIN -> this.doneTask(9, 2);
                 case ConstMap.RUNG_KARIN -> {
                     this.doneTask(8, 3);
-                    if (this.taskMain.getId() == 9 && this.taskMain.getIndex() == 1) {
+                    if (this.taskMain.getId() >= 9 && this.taskMain.getId() <= 10 && this.taskMain.getIndex() <= 1) {
                         BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
+                        this.doneTask(9, 1);
+                        break;
+                    }
+                    if (this.taskMain.getId() == 10 && this.taskMain.getIndex() == 2) {
+                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
                     }
                 }
             }
@@ -283,6 +299,7 @@ public class PlayerTask {
                             || this.doneTask(7, 3) || this.doneTask(8, 2);
             case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
             case ConstNpc.BO_MONG -> this.doneTask(9, 0);
+            case ConstNpc.THAN_MEO_KARIN -> this.doneTask(9, 3);
             default -> false;
         };
     }
@@ -336,7 +353,7 @@ public class PlayerTask {
 
     public void checkDoneTaskKillBoss(int bossId) {
         switch (bossId) {
-            case ConstBoss.TAU_PAY_PAY -> this.doneTask(9, 1);
+            case ConstBoss.TAU_PAY_PAY -> this.doneTask(9, 2);
         }
     }
 
