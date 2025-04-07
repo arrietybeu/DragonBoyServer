@@ -52,13 +52,12 @@ public class ItemMap extends Entity {
     }
 
     @Override
-    public synchronized long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
+    public synchronized long handleAttack(Entity entityAttack, int type, long damage) {
         return 0;
     }
 
     @Override
     protected void onDie(Entity killer) {
-
     }
 
     @Override

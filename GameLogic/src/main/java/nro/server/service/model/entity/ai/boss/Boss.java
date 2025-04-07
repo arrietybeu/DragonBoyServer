@@ -45,8 +45,8 @@ public abstract class Boss extends AbstractAI {
     }
 
     @Override
-    public long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
-        return super.handleAttack(entityAttack, entityTarget, type, damage);
+    public long handleAttack(Entity entityAttack, int type, long damage) {
+        return super.handleAttack(entityAttack, type, damage);
     }
 
     public boolean isValidBossAfkTimeout() {

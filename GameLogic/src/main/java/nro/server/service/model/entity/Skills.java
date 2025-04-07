@@ -77,15 +77,15 @@ public abstract class Skills {
                         // case Boss đánh người chơi
                         case Player plTarget -> {
                             long dame = this.owner.getPoints().getDameAttack();
-                            plTarget.handleAttack(this.owner, plTarget, 0, dame);
+                            plTarget.handleAttack(this.owner, 0, dame);
                         }
                         case Monster monster -> {
                             long dame = this.owner.getPoints().getDameAttack();
-                            monster.handleAttack(this.owner, monster, 0, dame);
+                            monster.handleAttack(this.owner, 0, dame);
                         }
                         case Boss boss -> {
                             long dame = this.owner.getPoints().getDameAttack();
-                            boss.handleAttack(this.owner, boss, 0, dame);
+                            boss.handleAttack(this.owner, 0, dame);
                         }
                         default ->
                                 LogServer.LogException("useSkillTarget player name:" + owner.getName() + " error: target not monster");
@@ -107,7 +107,7 @@ public abstract class Skills {
                         Map<Integer, Monster> monstersCopy = new HashMap<>(this.owner.getArea().getMonsters());
                         for (Monster monster : monstersCopy.values()) {
                             long dame = this.owner.getPoints().getMaxHP();
-                            monster.handleAttack(this.owner, monster, 1, dame);
+                            monster.handleAttack(this.owner, 1, dame);
                         }
                         owner.getPoints().setDie();
                     });

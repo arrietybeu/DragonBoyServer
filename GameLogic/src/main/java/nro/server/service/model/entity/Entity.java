@@ -69,7 +69,7 @@ public abstract class Entity {
         PlayerService.getInstance().sendEntityChangerTypePlayerKill(this);
     }
 
-    public long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
+    public long handleAttack(Entity entityAttack, int type, long damage) {
         this.lock.writeLock().lock();
         try {
             if (this.points.isDead()) {
@@ -79,9 +79,9 @@ public abstract class Entity {
             this.points.subCurrentHp(damage);
 
             switch (entityAttack) {
-                case Boss boss -> SkillService.getInstance().sendEntityAttackEntity(entityAttack, boss, damage, true);
+                case Boss boss -> SkillService.getInstance().sendEntityAttackEntity(boss, this, damage, true);
                 case Player player ->
-                        SkillService.getInstance().sendEntityAttackEntity(entityAttack, player, damage, true);
+                        SkillService.getInstance().sendEntityAttackEntity(player, this, damage, true);
                 default -> {
                 }
             }
