@@ -98,12 +98,16 @@ public class LogServer {
     }
 
     public static void LogException(String message, Exception... e) {
-        if (e.length > 0) {
-            e[0].printStackTrace();
+        try {
+            if (e.length > 0) {
+                e[0].printStackTrace();
 //            log("Error", "\033[1;31m", message + "\n=> " + Arrays.toString(e[0].getStackTrace()));
-            OpenUIChatBug(message, e);
-        } else {
-            log("Error", "\033[1;31m", message);
+                OpenUIChatBug(message, e);
+            } else {
+                log("Error", "\033[1;31m", message);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

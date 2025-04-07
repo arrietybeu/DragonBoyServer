@@ -13,7 +13,6 @@ public abstract class BossAIController {
 
     public void update(Boss boss) {
         if (boss == null) return;
-
         switch (boss.getState()) {
             case IDLE -> handleIdle(boss);
             case SEARCHING -> handleSearching(boss);
@@ -22,18 +21,21 @@ public abstract class BossAIController {
             case GO_TO_MAP -> handleGoToMap(boss);
             case CHAT -> handleChat(boss);
             case DEAD -> handleDeath(boss);
+            case LEAVING_MAP -> handleLeavingMap(boss);
             default -> LogServer.LogWarning("Unknown boss state: " + boss.getState());
         }
     }
 
-    public void goToPlayer(Entity entity, Entity target) {
+    public void goToPlayer(Boss boss, Entity target) {
+        if (boss == null || target == null) return;
+        if (boss.isLockMove()) return;
         try {
             var yTarget = target.getY();
-            int direction = entity.getX() - target.getX() < 0 ? 1 : -1;
+            int direction = boss.getX() - target.getX() < 0 ? 1 : -1;
             int move = Util.nextInt(50, 100);
-            entity.setX((short) (entity.getX() + (direction == 1 ? move : -move)));
-            entity.setY(yTarget);
-            AreaService.getInstance().playerMove(entity);
+            boss.setX((short) (boss.getX() + (direction == 1 ? move : -move)));
+            boss.setY(yTarget);
+            AreaService.getInstance().playerMove(boss);
         } catch (Exception exception) {
             LogServer.LogException("MoveEventHandler.goToPlayer: " + exception.getMessage(), exception);
         }
@@ -70,5 +72,7 @@ public abstract class BossAIController {
     public abstract void handleDeath(Boss boss);
 
     public abstract void handleSearching(Boss boss);
+
+    public abstract void handleLeavingMap(Boss boss);
 
 }

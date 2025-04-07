@@ -91,4 +91,17 @@ public class SkillService {
         }
     }
 
+    public void sendSkillCooldown(Player player) {
+        try (Message message = new Message(ConstsCmd.UPDATE_COOLDOWN)) {
+            DataOutputStream writer = message.writer();
+            for (SkillInfo skillInfo : player.getSkills().getSkills()) {
+                writer.writeShort(skillInfo.getSkillId());
+                writer.writeInt((int) skillInfo.getCooldownRemaining());
+            }
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("SkillService: sendSkillCooldown: " + e.getMessage(), e);
+        }
+    }
+
 }

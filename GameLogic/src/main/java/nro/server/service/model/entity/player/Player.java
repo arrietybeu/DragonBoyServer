@@ -121,20 +121,8 @@ public class Player extends Entity {
     }
 
     @Override
-    public long handleAttack(Entity player, int type, long damage) {
-//        System.out.println("Player.handleAttack: " + player.getName() + " " + damage);
-        if (this.points.isDead()) {
-            this.points.setDie();
-            return 0;
-        }
-
-        this.points.subCurrentHp(damage);
-
-        if (this.points.isDead()) {
-            this.points.setDie();
-        }
-
-        return damage;
+    public synchronized long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
+        return super.handleAttack(entityAttack, entityTarget, type, damage);
     }
 
     public boolean isAdministrator() {
@@ -161,6 +149,6 @@ public class Player extends Entity {
                 + points + ", playerTask=" + playerTask + ", fashion=" + fashion + ", playerSkill="
                 + skills + ", playerInventory=" + playerInventory + ", fusion=" + fusion
                 + ", createdAt=" + createdAt + ", area=" + area + ", clan=" + clan +
-                 ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
+                ", role=" + role + ", activePoint=" + activePoint + ", rank=" + rank + '}';
     }
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import nro.server.controller.Controller;
+import nro.server.controller.MessageController;
 import nro.consts.ConstsCmd;
 import nro.server.controller.MessageProcessorRegistry;
 import nro.server.realtime.core.DispatcherRegistry;
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public final class ServerManager {
 
     private ServerSocket serverSocket;
-    private final Controller controller = new Controller();
+    private final MessageController messageController = new MessageController();
     private static ServerManager instance;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(2);
     private volatile boolean running;
@@ -77,7 +77,7 @@ public final class ServerManager {
 
             while (this.running && this.serverSocket != null && !this.serverSocket.isClosed()) {
                 try {
-                    new Session(this.serverSocket.accept(), controller);
+                    new Session(this.serverSocket.accept(), messageController);
                 } catch (SocketException se) {
                     if (!this.running) {
                         LogServer.DebugLogic("Server stopped gracefully.");

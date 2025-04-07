@@ -9,7 +9,7 @@ import nro.server.service.core.system.ServerService;
 /**
  * @author Arriety
  */
-public class Controller {
+public class MessageController {
 
     public void handleMessage(Session session, Message message) {
         long st = System.currentTimeMillis();

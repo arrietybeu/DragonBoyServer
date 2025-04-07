@@ -114,7 +114,7 @@ public abstract class Points {
         try {
             SkillInfo skillSelect = this.owner.getSkills().getSkillSelect();
             return switch (skillSelect.getTemplate().getId()) {
-                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK ->
+                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO ->
                         skillSelect.getDamage();
                 default -> 0;
             };

@@ -7,7 +7,7 @@ import nro.server.service.model.entity.player.Player;
 public class Yajiro extends Bot {
 
     @Override
-    public long handleAttack(Entity player, int type, long damage) {
+    public synchronized long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
         return 0;
     }
 

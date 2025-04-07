@@ -101,6 +101,15 @@ public class Area {
         }
     }
 
+    public Entity getAllEntity(int id) {
+        this.lock.readLock().lock();
+        try {
+            return this.entitys.get(id);
+        } finally {
+            this.lock.readLock().unlock();
+        }
+    }
+
     public Collection<Entity> getEntitysByType(int typeObject) {
         List<Entity> result = new ArrayList<>();
         for (Entity obj : this.entitys.values()) {

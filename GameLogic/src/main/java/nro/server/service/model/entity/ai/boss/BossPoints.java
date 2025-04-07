@@ -1,7 +1,9 @@
 package nro.server.service.model.entity.ai.boss;
 
+import nro.server.service.core.player.PlayerService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Points;
+import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.template.item.ItemOption;
 
@@ -28,24 +30,23 @@ public class BossPoints extends Points {
     }
 
     @Override
-    public long getDameAttack() {
-        return super.getDameAttack();
-    }
-
-    @Override
     public void calculateStats() {
+        System.out.println("BossPoints.calculateStats");
     }
 
     @Override
     public void resetBaseStats() {
+        System.out.println("BossPoints.resetBaseStats");
     }
 
     @Override
     public void reduceMPWhenFlying() {
+        System.out.println("BossPoints.reduceMPWhenFlying");
     }
 
     @Override
     public void applyItemBonuses() {
+        System.out.println("BossPoints.applyItemBonuses");
     }
 
     @Override
@@ -54,32 +55,37 @@ public class BossPoints extends Points {
     }
 
     @Override
-    public long getDameSkill() {
-        return super.getDameSkill();
-    }
-
-    @Override
     public void addExp(int type, long exp) {
+        System.out.println("BossPoints.addExp");
     }
 
     @Override
     public void subExp(int type, long exp) {
+        System.out.println("BossPoints.subExp");
     }
 
     @Override
     public void returnTownFromDead() {
+        System.out.println("BossPoints.returnTownFromDead");
     }
 
     @Override
     public void setDie() {
+        this.currentHP = 0;
+        if (owner instanceof Boss boss) {
+            boss.setLockMove(true);
+            boss.setState(AIState.DEAD);
+        }
     }
 
     @Override
     public void setLive() {
+        System.out.println("BossPoints.setLive");
     }
 
     @Override
     public void upPotentialPoint(int type, int point) {
+        System.out.println("BossPoints.upPotentialPoint");
     }
 
     @Override
@@ -89,6 +95,7 @@ public class BossPoints extends Points {
 
     @Override
     public void healPlayer() {
+        System.out.println("BossPoints.healPlayer");
     }
 
     @Override

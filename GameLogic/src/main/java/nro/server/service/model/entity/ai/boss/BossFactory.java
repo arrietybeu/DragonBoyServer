@@ -107,6 +107,7 @@ public final class BossFactory {
             boss.setY((short) y);
             boss.setArea(area);
             boss.setController(template.getController());
+            boss.setTypeLeaveMap(template.getTypeLeaveMap());
             return boss;
         } catch (Exception e) {
             LogServer.LogException("BossFactory.createBossFromTemplate error", e);

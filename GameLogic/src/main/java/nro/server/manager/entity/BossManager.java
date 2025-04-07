@@ -71,6 +71,7 @@ public final class BossManager implements IManager {
                 short y = rs.getShort("y");
                 byte spawnType = rs.getByte("spawn_type");
                 boolean isAutoSpawn = rs.getByte("auto_despawn") == 1;
+                byte typeLeave = rs.getByte("type_leaving_map");
 
                 JSONArray mapsIdArray = (JSONArray) JSONValue.parse(mapsId);
 
@@ -87,6 +88,7 @@ public final class BossManager implements IManager {
                     boss.setMapsId(new int[mapsIdArray.size()]);
                     boss.setSpawnType(spawnType);
                     boss.setAutoDespawn(isAutoSpawn);
+                    boss.setTypeLeaveMap(typeLeave);
                     for (int i = 0; i < mapsIdArray.size(); i++) {
                         boss.getMapsId()[i] = Short.parseShort(mapsIdArray.get(i).toString());
                     }

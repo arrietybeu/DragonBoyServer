@@ -12,7 +12,6 @@ public class BossAIEventHandler implements EventHandler<BossAIEvent> {
             Boss boss = event.boss;
             if (boss == null) return;
             if (boss.getController() != null) {
-                System.out.println("BossAIEventHandler.onEvent: " + boss.getName() + " - " + boss.getState());
                 boss.getController().update(boss);
             }
         } catch (Exception e) {

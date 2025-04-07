@@ -25,10 +25,14 @@ public abstract class Boss extends AbstractAI {
     protected long lastTimeAttack;
     protected long lastTimeMove;
 
+    protected long lastAttackTime = 0;
+    protected long attackCooldown = 700;
+
     // thời gian không có người chơi thì biến mất (giây)
     protected int afkTimeout;
     public int tickAfkTimeout;
     protected byte spawnType;
+    protected byte typeLeaveMap;
 
     // mảng chứa các id map để boss có thể xuất hiện
     protected int[] mapsId;
@@ -41,21 +45,8 @@ public abstract class Boss extends AbstractAI {
     }
 
     @Override
-    public long handleAttack(Entity entity, int type, long damage) {
-
-        System.out.println("Boss.handleAttack: " + this.getName() + " received damage: " + damage);
-        if (this.points.isDead()) {
-            this.points.setDie();
-            return 0;
-        }
-
-        this.points.subCurrentHp(damage);
-
-        if (this.points.isDead()) {
-            this.points.setDie();
-        }
-
-        return damage;
+    public synchronized long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
+        return super.handleAttack(entityAttack, entityTarget, type, damage);
     }
 
     public boolean isValidBossAfkTimeout() {

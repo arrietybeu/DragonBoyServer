@@ -39,9 +39,9 @@ public class ConstSkill {
 
     // skill id
     public static final byte DRAGON = 0;
+    public static final byte KAMEJOKO = 1;
     public static final byte DEMON = 2;
     public static final byte GALICK = 4;
     public static final byte TU_PHAT_NO = 14;
-
 
 }

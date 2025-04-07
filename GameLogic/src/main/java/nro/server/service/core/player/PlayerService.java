@@ -94,6 +94,7 @@ public class PlayerService {
         this.sendCaptionForPlayer(player);// -41
         player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
         DropItemMap.dropMissionItems(player);
+        SkillService.getInstance().sendSkillCooldown(player);
     }
 
     private void sendCaptionForPlayer(Player player) {

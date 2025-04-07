@@ -20,6 +20,8 @@ public abstract class AbstractAI extends Entity implements AI {
     private long requiredStateDelay = 0; // thời gian phải chờ trước khi được phép đổi state
     private AIState nextState = null;    // state tiếp theo khi hết delay
 
+    protected boolean isLockMove;
+
     public final boolean isInState(AIState state) {
         return currentState == state;
     }

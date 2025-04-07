@@ -113,6 +113,13 @@ public class TauPayPayController extends BossAIController {
                 return;
             }
 
+            long now = System.currentTimeMillis();
+            if (now - boss.getLastAttackTime() < boss.getAttackCooldown()) {
+                return;
+            }
+
+            boss.setLastAttackTime(now);
+
             boss.getSkills().selectRandomSkill();
 
             if (boss.getSkills().getSkillSelect() == null) {
@@ -182,6 +189,18 @@ public class TauPayPayController extends BossAIController {
 
     @Override
     public void handleDeath(Boss boss) {
+        try {
+            if (boss == null) return;
+            if (boss.getLastPlayerTarget() != null) {
+                boss.getLastPlayerTarget().changeTypePlayerKill(0);
+                boss.setLastPlayerTarget(null);
+            }
+            //111
+            ChatService.getInstance().chatMap(boss, "Khá lắm hẹn ngày tái ngộ");
+            boss.setState(AIState.LEAVING_MAP);
+        } catch (Exception e) {
+            LogServer.LogException("DeathEventHandler.handle: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -206,6 +225,16 @@ public class TauPayPayController extends BossAIController {
             }
         } catch (Exception e) {
             LogServer.LogException("SearchingEventHandler.handle: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void handleLeavingMap(Boss boss) {
+        try {
+            boss.setTeleport(1);
+            boss.dispose();
+        } catch (Exception exception) {
+            LogServer.LogException("MoveEventHandler.handleLeavingMap: " + exception.getMessage(), exception);
         }
     }
 

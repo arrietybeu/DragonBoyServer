@@ -56,7 +56,7 @@ public abstract class Skills {
                 return;
             }
 
-            // Đánh dấu đã dùng
+            // tick đã dùng
             this.skillSelect.markUsedNow();
 
             switch (this.skillSelect.getTemplate().getType()) {
@@ -72,19 +72,20 @@ public abstract class Skills {
     public void useSkillTarget(Entity target) {
         try {
             switch (this.skillSelect.getTemplate().getId()) {
-                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK -> {
+                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO -> {
                     switch (target) {
                         // case Boss đánh người chơi
                         case Player plTarget -> {
                             long dame = this.owner.getPoints().getDameAttack();
-                            plTarget.handleAttack(this.owner, 0, dame);
-                            SkillService.getInstance().sendEntityAttackEntity(this.owner, plTarget, dame, true);
+                            plTarget.handleAttack(this.owner, plTarget, 0, dame);
                         }
                         case Monster monster -> {
                             long dame = this.owner.getPoints().getDameAttack();
-                            monster.handleAttack(this.owner, 0, dame);
+                            monster.handleAttack(this.owner, monster, 0, dame);
                         }
                         case Boss boss -> {
+                            long dame = this.owner.getPoints().getDameAttack();
+                            boss.handleAttack(this.owner, boss, 0, dame);
                         }
                         default ->
                                 LogServer.LogException("useSkillTarget player name:" + owner.getName() + " error: target not monster");
@@ -97,18 +98,23 @@ public abstract class Skills {
     }
 
     public void useSkillNotForcus() {
-        switch (this.skillSelect.getTemplate().getId()) {
-            case ConstSkill.TU_PHAT_NO -> {
-                SkillService.getInstance().sendUseSkillNotFocus(this.owner, 7, skillSelect.getSkillId(), 3000);
-                Util.delay(3, () -> {
-                    Map<Integer, Monster> monstersCopy = new HashMap<>(this.owner.getArea().getMonsters());
-                    for (Monster monster : monstersCopy.values()) {
-                        long dame = this.owner.getPoints().getMaxHP();
-                        monster.handleAttack(this.owner, 1, dame);
+        try {
+
+            switch (this.skillSelect.getTemplate().getId()) {
+                case ConstSkill.TU_PHAT_NO -> {
+                    SkillService.getInstance().sendUseSkillNotFocus(this.owner, 7, skillSelect.getSkillId(), 3000);
+                    Util.delay(3, () -> {
+                        Map<Integer, Monster> monstersCopy = new HashMap<>(this.owner.getArea().getMonsters());
+                        for (Monster monster : monstersCopy.values()) {
+                            long dame = this.owner.getPoints().getMaxHP();
+                            monster.handleAttack(this.owner, monster, 1, dame);
+                        }
                         owner.getPoints().setDie();
-                    }
-                });
+                    });
+                }
             }
+        } catch (Exception exception) {
+            LogServer.LogException("useSkillNotForcus player name:" + owner.getName() + " error: " + exception.getMessage(), exception);
         }
     }
 
@@ -117,6 +123,12 @@ public abstract class Skills {
     }
 
     public void selectSkill(int skillId) {
+        System.out.println("selectSkill skillId: " + skillId);
+        if (skillSelect != null) {
+            if (skillSelect.getTemplate().getId() == skillId) {
+                return;
+            }
+        }
         try {
             for (SkillInfo skillInfo : this.skills) {
                 if (skillInfo.getTemplate().getId() == -1) continue;

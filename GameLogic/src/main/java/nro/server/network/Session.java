@@ -11,8 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import nro.server.controller.Controller;
+import nro.server.controller.MessageController;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.template.entity.ClientInfo;
 import nro.server.service.model.template.entity.SessionInfo;
@@ -33,7 +32,7 @@ public final class Session {
 
     private static final int MAX_ID = Integer.MAX_VALUE - 1;
 
-    private final Controller controller;
+    private final MessageController messageController;
     private final ClientInfo clientInfo;
     private final SessionInfo sessionInfo;
 
@@ -46,10 +45,10 @@ public final class Session {
     private UserInfo userInfo;
     private Player player;
 
-    public Session(Socket socket, Controller controller) {
+    public Session(Socket socket, MessageController messageController) {
         this.clientInfo = new ClientInfo();
         this.sessionInfo = new SessionInfo();
-        this.controller = controller;
+        this.messageController = messageController;
         try {
             this.sessionInfo.setId(getBaseId());
             this.sessionInfo.setConnected(true);
@@ -205,7 +204,7 @@ public final class Session {
      * đọc/ghi message.</li>
      * <li>{@code list_msg}: Xóa tất cả tin nhắn trong hàng đợi và giải phóng bộ
      * nhớ.</li>
-     * <li>{@link Controller} và {@link ClientInfo}: Đặt về {@code null} để giải
+     * <li>{@link MessageController} và {@link ClientInfo}: Đặt về {@code null} để giải
      * phóng tài nguyên.</li>
      * <li>{@link UserInfo}: Loại bỏ người dùng khỏi {@link UserManager} và giải
      * phóng tài nguyên.</li>

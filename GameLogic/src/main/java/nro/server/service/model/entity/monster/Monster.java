@@ -48,8 +48,8 @@ public class Monster extends Entity {
     }
 
     @Override
-    public long handleAttack(final Entity entity, int type, long damage) {
-        if (entity instanceof Player plAttack) {
+    public synchronized long handleAttack(Entity entityAttack, Entity entityTarget, int type, long damage) {
+        if (entityAttack instanceof Player plAttack) {
             this.lock.writeLock().lock();
             try {
                 if (this.point.isDead()) return 0;
@@ -147,7 +147,7 @@ public class Monster extends Entity {
     private long constDame(Player player) {
         // TODO bù trừ dame
         long dame = this.point.getDameGoc();
-        return player.handleAttack(player, 0, dame);
+        return player.handleAttack(player, this, 0, dame);
     }
 
     private boolean isMonsterAttack() {

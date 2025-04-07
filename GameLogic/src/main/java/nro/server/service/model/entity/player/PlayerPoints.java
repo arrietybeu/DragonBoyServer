@@ -220,6 +220,7 @@ public class PlayerPoints extends Points {
 
     @Override
     public void setDie() {
+        System.out.println("PlayerPoints.setDie: " + this.player.getName() + " die");
         // TODO xử lý khi chết
         // set lai location
         // lock move,
