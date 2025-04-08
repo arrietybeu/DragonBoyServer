@@ -7,26 +7,29 @@ import nro.server.service.model.entity.npc.ANpcHandler;
 import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 
-@ANpcHandler({ConstNpc.QUY_LAO_KAME})
-public class QuyLaoKame extends Npc {
+@ANpcHandler({ConstNpc.SANTA})
+public class Santa extends Npc {
 
-    public QuyLaoKame(int tempId, int status, int mapId, int cx, int cy, int avatar) {
+    public Santa(int tempId, int status, int mapId, int cx, int cy, int avatar) {
         super(tempId, status, mapId, cx, cy, avatar);
     }
 
     @Override
     public void openMenu(Player player) {
-        if (player.getPlayerTask().checkDoneTaskTalkNpc(this)) return;
-        String npcSay = "Ngươi muốn có thêm ngọc thì chịu khó làm vài nhiệm vụ sẽ được ngọc thưởng";
+        String npcSay = "Xin chào, ta có một số vật phẩm đặc biệt cậu có muốn xem không?";
         NpcService.getInstance().createMenu(
                 player, this.getTempId(), ConstMenu.BASE_MENU, npcSay,
-                "Nạp Ngọc",
-                "Nhận ngọc\nMiễn phí",
-                "Nhiệm vụ\nhằng ngày"
+                "Cửa\nhàng",
+                "Mở rộng\nHành trang\nRương đồ",
+                "Nhập mã\nquà tặng",
+                "Cửa hàng\nHạn sử dụng",
+                "Tiệm\nHớt tóc",
+                "Danh\nhiệu"
         );
     }
 
     @Override
     public void openUIConfirm(Player player, int select) {
+
     }
 }

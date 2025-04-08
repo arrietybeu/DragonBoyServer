@@ -74,6 +74,18 @@ public class ConstItem {
 
     public static final short DUA_BE = 78;
 
+    public static final int SACH_KAMEJOKO_LV1 = 94;
+
+    public static final int SACH_MASENKO_LV1 = 101;
+
+    public static final int SACH_ANTOMIC_LV1 = 108;
+
+    public static final int THAI_DUONG_HA_SAN_LV1 = 115;
+
+    public static final int SACH_HOC_TRI_THUONG_LV1 = 122;
+
+    public static final int TAI_TAO_NANG_LUONG_LV1 = 129;
+
     public static final short VANG_1 = 188;
 
     public static final short VANG_2 = 189;
@@ -88,8 +100,25 @@ public class ConstItem {
 
     public static final short SOCOLA = 516;
 
-    public  static final short TU_DONG_LUYEN_TAP_CAP_1 = 521;
+    public static final short TU_DONG_LUYEN_TAP_CAP_1 = 521;
 
     public static final short QUA_TRUNG = 568;
+
+
+    public static int getIdItemTaskEleven(int gender) {
+        return switch (gender) {
+            case ConstPlayer.NAMEC -> ConstItem.SACH_MASENKO_LV1;
+            case ConstPlayer.XAYDA -> ConstItem.SACH_ANTOMIC_LV1;
+            default -> ConstItem.SACH_KAMEJOKO_LV1;
+        };
+    }
+
+    public static String getIdItemTaskEleven2(int gender) {
+        return switch (gender) {
+            case ConstPlayer.NAMEC -> "Sách học Trị thương lv1";
+            case ConstPlayer.XAYDA -> "Tái tạo năng lượng lv1";
+            default -> "Thái Dương Hạ San lv1";
+        };
+    }
 
 }

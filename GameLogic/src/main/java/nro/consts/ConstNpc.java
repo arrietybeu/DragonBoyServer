@@ -187,4 +187,12 @@ public class ConstNpc {
             default -> ConstNpc.BUNMA;
         };
     }
+
+    public static int GetNpcSpecial(int gender) {
+        return switch (gender) {
+            case ConstPlayer.NAMEC -> ConstNpc.TRUONG_LAO_GURU;
+            case ConstPlayer.XAYDA -> ConstNpc.VUA_VEGETA;
+            default -> ConstNpc.QUY_LAO_KAME;
+        };
+    }
 }

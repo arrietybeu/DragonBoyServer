@@ -57,6 +57,7 @@ public class PlayerTask {
                 case 8 -> this.handlerTaskEight(index, npcService);
                 case 9 -> this.handlerTaskNine(index, npcService);
                 case 10 -> this.handlerTaskTen(index, npcService);
+                case 11 -> this.handlerTaskEleven(index, npcService, npcName);
             }
 
             this.addDoneSubTask();
@@ -254,8 +255,6 @@ public class PlayerTask {
                             "\nĐó là sư phụ ta Vua Vegeta, ngài rất thích đọc truyện Đôrêmon, con hãy đem tới cho ngài" +
                             "\nNhất định ngài sẽ thu nhận con làm đệ tử, con ráng học thành tài nhé";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    Item ngocRong = ItemFactory.getInstance().createItemOptionsBase(ConstItem.NGOC_RONG_7_SAO);
-                    player.getPlayerInventory().addItemBag(ngocRong);
                 }
                 case 3 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
@@ -263,12 +262,36 @@ public class PlayerTask {
                             "\nĐó là sư phụ ta Vua Vegeta, ngài rất thích đọc truyện Đôrêmon, con hãy đem tới cho ngài" +
                             "\nNhất định ngài sẽ thu nhận con làm đệ tử, con ráng học thành tài nhé";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
-                    Item truyenDoraemon = ItemFactory.getInstance().createItemOptionsBase(ConstItem.TRUYEN_TRANH);
-                    player.getPlayerInventory().addItemBag(truyenDoraemon);
-                    Item tuDongLuyenTap = ItemFactory.getInstance().createItemOptionsBase(ConstItem.TU_DONG_LUYEN_TAP_CAP_1);
-                    serverService.sendChatGlobal(player.getSession(), null, "Bạn đã nhận được Tự động luyện tập", false);
-                    player.getPlayerInventory().addItemBag(tuDongLuyenTap);
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 70_000);
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskNine - " + ex.getMessage(), ex);
+        }
+    }
+
+    public void handlerTaskEleven(int index, NpcService npcService, String npcHomeName) {
+        try {
+            ServerService serverService = ServerService.getInstance();
+            switch (index) {
+                case 1 -> {
+                    String sach2 = ConstItem.getIdItemTaskEleven2(player.getGender());
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetNpcSpecial(this.getPlayer().getGender()));
+                    String content = String.format("Con là ai tìm ta có việc gì?" +
+                            "\nThì ra con là %s cháu của ông %s, muốn ta dạy võ công cho con?" +
+                            "\nHơ Hơ HƠ có cái máu lồn nè con" +
+                            "\nTặng ta truyện Đôraê mông hả, thôi cũng được đi nhưng con phải chịu khó nha" +
+                            "\nĐây là chiêu thức độ quyền của ta, con cầm lấy cuốn bí kíp này mà học" +
+                            "\nGiờ con hãy tham gia bang hội đi, có đồng đội học mau thành tài hơn" +
+                            "\nCon hãy cùng các thành viên trong bang tiêu diệt cho ta 45 con Heo rừng, 45 con Heo da xanh và 45 con Heo Xayda" +
+                            "\nTa sẽ có phần thưởng cho cả bang" +
+                            "\nNhiệm vụ này rất khó khăn, ta cho con cuốn %s", this.getPlayer().getName(), npcHomeName, sach2);
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+
+                    Item truyen = player.getPlayerInventory().findItemInBag(ConstItem.TRUYEN_TRANH);
+                    if (truyen != null && truyen.getQuantity() >= 1) {
+                        player.getPlayerInventory().subQuantityItemAllInventory(truyen, truyen.getQuantity());
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -318,6 +341,7 @@ public class PlayerTask {
                         BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
                     }
                 }
+                case ConstMap.DAO_KAME, ConstMap.DAO_GURU, ConstMap.VACH_NUI_DEN -> this.doneTask(11, 0);
             }
         } catch (Exception e) {
             LogServer.LogException("PlayerTask checkDoneTaskGoMap - " + e.getMessage(), e);
@@ -333,6 +357,7 @@ public class PlayerTask {
             case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
             case ConstNpc.BO_MONG -> this.doneTask(9, 0) || this.doneTask(10, 2);
             case ConstNpc.THAN_MEO_KARIN -> this.doneTask(9, 3);
+            case ConstNpc.QUY_LAO_KAME, ConstNpc.TRUONG_LAO_GURU, ConstNpc.VUA_VEGETA -> this.doneTask(11, 1);
             default -> false;
         };
     }
@@ -464,8 +489,9 @@ public class PlayerTask {
                     taskService.sendTaskMain(player);
                 }
             }
-
             taskService.sendTaskMainUpdate(player);
+
+            TaskManager.getInstance().rewardTask(player);
         } catch (Exception exception) {
             LogServer.LogException("PlayerTask addDoneSubTask - " + exception.getMessage(), exception);
         }

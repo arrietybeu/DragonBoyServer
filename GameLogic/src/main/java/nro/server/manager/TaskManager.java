@@ -153,14 +153,16 @@ public final class TaskManager implements IManager {
         }
     }
 
-    public boolean rewardTask(Player player, int taskId, int taskIndex) {
+    public boolean rewardTask(Player player) {
+        var taskId = player.getPlayerTask().getTaskMain().getId();
+        var taskIndex = player.getPlayerTask().getTaskMain().getIndex();
         for (ItemTaskReward reward : taskRewardMap) {
-            if (reward.taskId == taskId && reward.taskIndex == taskIndex && reward.gender == player.getGender()) {
+            if (reward.taskId == taskId && reward.taskIndex == taskIndex && (reward.gender == player.getGender() || reward.gender == -1)) {
+                System.out.println("reward Item: " + reward.itemId);
                 Item item = ItemFactory.getInstance().createItemOptionsBase(reward.itemId());
                 String name = item.getTemplate().name();
                 player.getPlayerInventory().addItemBag(item);
                 ServerService.getInstance().sendChatGlobal(player.getSession(), null, String.format("Bạn nhận được %s", name), false);
-                return true;
             }
         }
 //        LogServer.LogWarning("Không tìm thấy phần thưởng cho Task ID " + taskId + ", Task Index " + taskIndex + " và giới tính " + player.getGender());

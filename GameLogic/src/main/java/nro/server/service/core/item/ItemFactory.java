@@ -1,6 +1,8 @@
 package nro.server.service.core.item;
 
 import lombok.Getter;
+import nro.consts.ConstItem;
+import nro.consts.ConstPlayer;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemShop;
 import nro.server.service.model.template.item.ItemOption;
@@ -41,6 +43,8 @@ public class ItemFactory {
         this.initBaseOptions(itemShop);
         return itemShop;
     }
+
+
 
     public Item createItemNull() {
         return new Item();
@@ -120,5 +124,6 @@ public class ItemFactory {
         ItemTemplate item = itemManager.getItemTemplates().get((short) itemId);
         return item != null && item.type() == 6;
     }
+
 
 }

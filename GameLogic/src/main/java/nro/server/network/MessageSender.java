@@ -68,10 +68,10 @@ public final class MessageSender {
                         } catch (Exception e) {
                             SessionManager.getInstance().kickSession(this.session);
                         }
-                    }
-                    try {
-                        Thread.sleep(100L);
-                    } catch (InterruptedException ignored) {
+                        try {
+                            Thread.sleep(10L);
+                        } catch (InterruptedException ignored) {
+                        }
                     }
                 });
             }
