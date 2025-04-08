@@ -29,8 +29,8 @@ public class QuestGiver extends Npc {
             }
             case 1 -> text = "Nhanh lên, ra ngoài Làng Aru đánh ngã 5 mộc nhân!";
             case 2 -> text = "Ta đói lắm rồi, con mau đi thu thập đùi gà";
-            case 4 -> text = "Con đi mau lên dân làng đang gặp nguy hiểm";
-            case 7, 8 -> text = "Con đã tìm thấy ngọc rồng chưa?";
+            case 4, 5, 6 -> text = "Con đi mau lên dân làng đang gặp nguy hiểm";
+            case 7, 8, 9, 10 -> text = "Con đã tìm thấy ngọc rồng chưa?";
             default -> text = "Con cố gắng theo " + npcName + " học thành tài, đừng lo lắng cho ta.";
         }
         NpcService.getInstance().sendNpcTalkUI(player, this.getTempId(), text, this.getAvatar());

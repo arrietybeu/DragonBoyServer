@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Getter
 @SuppressWarnings("ALL")
@@ -49,6 +50,8 @@ public final class MapManager implements IManager {
     private final List<Transport> transports = new ArrayList<>();
     private byte[] BackgroundMapData;
     private byte[] TileSetData;
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     private final String SELECT_MAP_TRANSPORT = "SELECT * FROM `map_transport` ORDER BY index_row";
 
@@ -546,28 +549,58 @@ public final class MapManager implements IManager {
         }
     }
 
-    public void removeMapOffline(Player player) throws Exception {
-        int playerId = player.getId();
-        Area area = playerOfflineAreas.remove(playerId);
-        if (area != null) {
-            GameMap map = area.getMap();
-            map.getAreas().remove(area);
+    public void removeMapOffline(Player player) {
+        this.lock.readLock().lock();
+        try {
+            int playerId = player.getId();
+            Area area = playerOfflineAreas.remove(playerId);
+            if (area != null) {
+                GameMap map = area.getMap();
+                map.getAreas().remove(area);
+            }
+        } catch (Exception exception) {
+            LogServer.LogException("Error removeMapOffline: " + exception.getMessage(), exception);
+        } finally {
+            this.lock.readLock().unlock();
         }
     }
 
-    public Area createOfflineArea(Player player, Area templateArea) throws Exception {
-        int playerId = player.getId();
-        Area area = templateArea.cloneArea(playerId);
-        playerOfflineAreas.put(playerId, area);
-        return area;
+    public Area createOfflineArea(Player player, Area templateArea) {
+        this.lock.writeLock().lock();
+        try {
+            int playerId = player.getId();
+            Area area = templateArea.cloneArea(playerId);
+            playerOfflineAreas.put(playerId, area);
+            return area;
+        } catch (Exception exception) {
+            LogServer.LogException("Error createOfflineArea: " + exception.getMessage(), exception);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+        return null;
     }
 
     public Area getOfflineArea(Player player) {
-        return playerOfflineAreas.get(player.getId());
+        this.lock.readLock().lock();
+        try {
+            return playerOfflineAreas.get(player.getId());
+        } catch (Exception exception) {
+            LogServer.LogException("Error getOfflineArea: " + exception.getMessage(), exception);
+        } finally {
+            this.lock.readLock().unlock();
+        }
+        return null;
     }
 
     public void clearAll() {
-        playerOfflineAreas.clear();
+        this.lock.writeLock().lock();
+        try {
+            playerOfflineAreas.clear();
+        } catch (Exception exception) {
+            LogServer.LogException("Error clearAll: " + exception.getMessage(), exception);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
     }
 
 }

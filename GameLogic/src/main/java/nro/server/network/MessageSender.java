@@ -64,15 +64,14 @@ public final class MessageSender {
                                 // System.out.println("send msg: " + message.getCommand() + " " +
                                 // message.getData().length);
                                 this.doSendMessage(message);
-                            } else {
-                                try {
-                                    Thread.sleep(10L);
-                                } catch (InterruptedException ignored) {
-                                }
                             }
                         } catch (Exception e) {
                             SessionManager.getInstance().kickSession(this.session);
                         }
+                    }
+                    try {
+                        Thread.sleep(100L);
+                    } catch (InterruptedException ignored) {
                     }
                 });
             }

@@ -2,8 +2,10 @@ package nro.server.service.core.player;
 
 import lombok.Getter;
 import nro.consts.ConstsCmd;
+import nro.server.manager.MapManager;
 import nro.server.service.model.entity.player.Player;
 import nro.server.network.Message;
+import nro.server.service.model.map.Waypoint;
 import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
@@ -62,6 +64,35 @@ public class TaskService {
             player.sendMessage(message);
         } catch (Exception e) {
             LogServer.LogException("Error sendTaskMainUpdate: " + e.getMessage(), e);
+        }
+    }
+
+    public void sendSupportTask(Player player) {
+        // TODO logic tìm map nữa làm sau
+        var taskMain = player.getPlayerTask().getTaskMain();
+        if (taskMain == null) return;
+
+        var subNames = taskMain.getSubNameList();
+        if (subNames == null) return;
+
+        var subName = subNames.get(taskMain.getIndex());
+        if (subName == null) return;
+        if (subName.getMapIdByGender(player.getGender()) == -1) return;
+
+        System.out.println("map go: " + subName.getMapIdByGender(player.getGender()));
+
+        Waypoint waypoint = player.getArea().getMap().getWapointByGoMap(subName.getMapIdByGender(player.getGender()));
+        if (waypoint == null) return;
+
+        try (Message message = new Message(43);
+             DataOutputStream writer = message.writer()) {
+            writer.writeShort(subName.getCount());
+
+            writer.writeShort(waypoint.getMinX());
+            writer.writeShort(waypoint.getMinY());
+            player.sendMessage(message);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendSupportTask: " + e.getMessage(), e);
         }
     }
 }

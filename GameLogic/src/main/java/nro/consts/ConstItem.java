@@ -70,6 +70,8 @@ public class ConstItem {
 
     public static final short DUI_HEO_XAYDA = 75;
 
+    public static final short TRUYEN_TRANH = 85;
+
     public static final short DUA_BE = 78;
 
     public static final short VANG_1 = 188;
@@ -85,6 +87,8 @@ public class ConstItem {
     public static final short RUBY = 861;
 
     public static final short SOCOLA = 516;
+
+    public  static final short TU_DONG_LUYEN_TAP_CAP_1 = 521;
 
     public static final short QUA_TRUNG = 568;
 

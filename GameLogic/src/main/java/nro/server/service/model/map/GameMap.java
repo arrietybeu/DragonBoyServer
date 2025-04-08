@@ -106,6 +106,15 @@ public class GameMap {
         return this.getWaypointBase(player);
     }
 
+    public Waypoint getWapointByGoMap(int idMapGo) {
+        for (Waypoint waypoint : this.waypoints) {
+            if (waypoint.getGoMap() == idMapGo) {
+                return waypoint;
+            }
+        }
+        return null;
+    }
+
     private Waypoint getWaypointBase(Player player) {
         Waypoint waypoint = new Waypoint();
         waypoint.setGoMap(21 + player.getGender());

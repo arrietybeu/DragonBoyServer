@@ -111,12 +111,6 @@ public class ChatService {
                 serverService.sendChatGlobal(playerChat.getSession(), null, "SET EXP: " + exp, false);
                 return;
             }
-            if (text.startsWith("gt ")) {
-                long exp = this.getNumber(text);
-                playerChat.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
-                serverService.sendChatGlobal(playerChat.getSession(), null, "SET EXP: " + exp, false);
-                return;
-            }
             if (text.startsWith("it ")) {
                 var parse = this.getArrayString(text);
                 if (parse.length >= 3) {

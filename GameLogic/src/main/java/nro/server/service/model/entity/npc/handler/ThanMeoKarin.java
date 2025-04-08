@@ -91,8 +91,11 @@ public class ThanMeoKarin extends Npc {
                 case ConstMenu.MENU_CHALLENGE_CAT_BOSS -> {
                     switch (select) {
                         case 0 -> {
-                            // TODO create boss
-                            BossFactory.getInstance().trySpawnSpecialBossInArea(player, player.getArea(), this.getX(), this.getY(), ConstBoss.TAU_PAY_PAY);
+                            this.turnOnHideNpc(player, true);
+                            BossFactory.getInstance().trySpawnSpecialBossInArea(player, player.getArea(), this.getX(), this.getY(), ConstBoss.THAN_MEO_KARIN);
+                        }
+                        case 1 -> {
+                            // TODO không làm gì cạ
                         }
                     }
                 }

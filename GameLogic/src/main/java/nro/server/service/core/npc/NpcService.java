@@ -1,7 +1,9 @@
 package nro.server.service.core.npc;
 
 import lombok.Getter;
+import nro.consts.ConstsCmd;
 import nro.server.service.core.system.ServerService;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.model.entity.player.Player;
@@ -36,6 +38,7 @@ public class NpcService {
             return;
         }
 
+        if (npc.isHide()) return;
         npc.openMenu(player);
     }
 
@@ -45,6 +48,7 @@ public class NpcService {
             ServerService.getInstance().sendHideWaitDialog(player);
             return;
         }
+        if (npc.isHide()) return;
         npc.openUIConfirm(player, select);
     }
 
@@ -134,6 +138,17 @@ public class NpcService {
             player.sendMessage(message);
         } catch (Exception ex) {
             LogServer.LogException("loadMagicTree: " + ex.getMessage(), ex);
+        }
+    }
+
+    public void sendHideNpcInArea(Entity entity, Npc npc) {
+        try (Message message = new Message(ConstsCmd.NPC_ADD_REMOVE)) {
+            DataOutputStream writer = message.writer();
+            writer.writeByte(npc.getTempId());
+            writer.writeByte(npc.isHide() ? 0 : 1);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception ex) {
+            LogServer.LogException("sendHideNpcInArea: " + ex.getMessage() + " for npc id: " + npc.getTempId(), ex);
         }
     }
 

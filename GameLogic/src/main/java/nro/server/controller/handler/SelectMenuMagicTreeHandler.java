@@ -23,14 +23,17 @@ public class SelectMenuMagicTreeHandler implements IMessageProcessor {
 
             if (npcId == 4) {
                 Npc npc = player.getArea().getNpcById(npcId);
+                if (npc == null) {
+                    ServerService.getInstance().sendHideWaitDialog(player);
+                    return;
+                }
                 npc.openUIConfirm(player, select);
                 return;
             }
 
             ServerService.getInstance().sendHideWaitDialog(player);
         } catch (Exception ex) {
-            LogServer.LogException("SelectMenuMagicTreeHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("SelectMenuMagicTreeHandler: " + ex.getMessage(), ex);
         }
     }
 }

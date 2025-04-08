@@ -2,6 +2,7 @@ package nro.server.service.model.entity.npc;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.entity.player.Player;
 import nro.server.system.LogServer;
@@ -20,6 +21,7 @@ public abstract class Npc {
     private int x;
     private int y;
     private int tempId;
+    private boolean isHide;
 
     public Npc(int tempId, int status, int mapId, int cx, int cy, int avatar) {
         this.tempId = tempId;
@@ -33,12 +35,16 @@ public abstract class Npc {
 
     public Npc cloneNpc(int npcId, int status, int mapId, int x, int y, int avatar) {
         try {
-            return this.getClass().getDeclaredConstructor(int.class, int.class, int.class, int.class, int.class, int.class)
-                    .newInstance(npcId, status, mapId, x, y, avatar);
+            return this.getClass().getDeclaredConstructor(int.class, int.class, int.class, int.class, int.class, int.class).newInstance(npcId, status, mapId, x, y, avatar);
         } catch (Exception e) {
             LogServer.LogException("Error cloning NPC: " + e.getMessage(), e);
         }
         return null;
+    }
+
+    public void turnOnHideNpc(Entity entity, boolean isHide) {
+        this.isHide = isHide;
+        NpcService.getInstance().sendHideNpcInArea(entity, this);
     }
 
     public abstract void openMenu(Player player);

@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.npc.NpcService;
+import nro.server.service.core.player.TaskService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Fusion;
@@ -370,6 +371,7 @@ public class AreaService {
             playerService.sendStamina(player);
             playerService.sendCurrencyHpMp(player);
             MapService.getInstance().sendMapInfo(player);// -24
+//            TaskService.getInstance().sendSupportTask(player);
         } catch (Exception ex) {
             LogServer.LogException("Error send Message Changer Map: " + ex.getMessage() + " player:  " + player.getId(), ex);
         }

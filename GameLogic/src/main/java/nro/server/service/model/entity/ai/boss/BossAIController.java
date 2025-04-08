@@ -4,6 +4,7 @@ package nro.server.service.model.entity.ai.boss;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.Entity;
+import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
@@ -59,7 +60,30 @@ public abstract class BossAIController {
         return nearest;
     }
 
-    public abstract void handleIdle(Boss boss);
+    public void handleIdle(Boss boss) {
+        try {
+            if (boss.getArea() == null || !boss.isBossInMap()) {
+                boss.setState(AIState.GO_TO_MAP);
+                return;
+            }
+
+            boss.tickAfkTimeout++;
+            if (boss.isValidBossAfkTimeout()) {
+                boss.dispose();
+            }
+
+            // nếu player target bằng null thì boss sẽ chuyển sang state SEARCHING trong 5s
+            if (boss.getEntityTarget() == null) {
+                if (boss.getNextState() != AIState.SEARCHING) {
+                    boss.onEnterStateWithDelay(AIState.IDLE, 2000, AIState.SEARCHING);
+                    return;
+                }
+                boss.trySwitchToNextState();
+            }
+        } catch (Exception exception) {
+            LogServer.LogException("IdleEventHandler.handle: " + exception.getMessage(), exception);
+        }
+    }
 
     public abstract void handleChasing(Boss boss);
 
@@ -73,6 +97,13 @@ public abstract class BossAIController {
 
     public abstract void handleSearching(Boss boss);
 
-    public abstract void handleLeavingMap(Boss boss);
+    public void handleLeavingMap(Boss boss) {
+        try {
+            boss.setTeleport(boss.getTypeLeaveMap());
+            boss.dispose();
+        } catch (Exception exception) {
+            LogServer.LogException("MoveEventHandler.handleLeavingMap: " + exception.getMessage(), exception);
+        }
+    }
 
 }

@@ -14,54 +14,31 @@ import nro.utils.Util;
 
 public class TauPayPayController extends BossAIController {
 
-    private static final int ATTACK_RANGE = 60;
     private static final long CHAT_DURATION = 10_000;
     private static final String[] THACH_THUC = new String[]{"Tuổi lồn", "Tuổi con cặc", "Tuổi buồi"};
 
     @Override
     public void handleIdle(Boss boss) {
-        try {
-            if (boss.getArea() == null || !boss.isBossInMap()) {
-                boss.setState(AIState.GO_TO_MAP);
-                return;
-            }
-
-            boss.tickAfkTimeout++;
-            if (boss.isValidBossAfkTimeout()) {
-                boss.dispose();
-            }
-
-            if (boss.getEntityTarget() == null) {
-                if (boss.getNextState() != AIState.SEARCHING) {
-                    boss.onEnterStateWithDelay(AIState.IDLE, 5000, AIState.SEARCHING);
-                    return;
-                }
-                boss.trySwitchToNextState();
-            }
-        } catch (Exception e) {
-            LogServer.LogException("IdleEventHandler.handle: " + e.getMessage(), e);
-        }
+        super.handleIdle(boss);
     }
 
     @Override
     public void handleChasing(Boss boss) {
         try {
+            // lấy player mà boss target
             Player target = boss.getEntityTargetAsPlayer();
 
+            // set player vừa nãy được boss target
             boss.setLastPlayerTarget(target);
 
-            // target không còn hoặc không hợp lệ
             if (target == null) {
+                // nếu không có player nào target thì boss sẽ chuyển sang trạng thái tìm kiếm
                 if (boss.getLastPlayerTarget() != null) {
                     boss.getLastPlayerTarget().changeTypePlayerKill(0);
                     boss.setLastPlayerTarget(null);
                 }
-                if (boss.isValidTarget(target)) {
-                    boss.setEntityTarget(null);
-                    boss.setState(AIState.SEARCHING);
-                    boss.changeTypePlayerKill(0);
-                    return;
-                }
+                boss.setState(AIState.SEARCHING);
+                boss.changeTypePlayerKill(0);
                 if (boss.isAutoDespawn()) {
                     boss.dispose();
                     return;
@@ -73,7 +50,7 @@ public class TauPayPayController extends BossAIController {
             int distance = Math.abs(boss.getX() - target.getX());
 
             // neu đủ gần → chuyển sang đánh
-            if (distance <= ATTACK_RANGE) {
+            if (distance <= 50) {
                 boss.setState(AIState.ATTACKING);
             } else {
                 // di chuyển về phía target
@@ -112,7 +89,7 @@ public class TauPayPayController extends BossAIController {
             int distance = Math.abs(boss.getX() - target.getX());
 
             // neu target quá xa → quay lại chase
-            if (distance > ATTACK_RANGE) {
+            if (distance > 50) {
                 boss.setState(AIState.CHASING);
                 return;
             }
@@ -171,12 +148,6 @@ public class TauPayPayController extends BossAIController {
     @Override
     public void handleChat(Boss boss) {
         try {
-//                    if (boss.getTextChat().isEmpty()) {
-//                        boss.setState(AIState.SEARCHING);
-//                    } else {
-//                        ChatService.getInstance().chatMap(ai, boss.getTextChat());
-//                    }
-
             Player target = boss.getEntityTargetAsPlayer();
             if (target == null) {
                 if (boss.getLastPlayerTarget() != null) {
@@ -231,6 +202,7 @@ public class TauPayPayController extends BossAIController {
             if (nearestPlayer != null) {
                 boss.setEntityTarget(nearestPlayer);
                 boss.setState(AIState.CHASING);
+                nearestPlayer.getPlayerTask().doneTask(9, 1);
             } else {
                 boss.changeTypePlayerKill(0);
                 if (boss.getLastPlayerTarget() != null) {
@@ -257,16 +229,6 @@ public class TauPayPayController extends BossAIController {
             }
         } catch (Exception e) {
             LogServer.LogException("SearchingEventHandler.handle: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void handleLeavingMap(Boss boss) {
-        try {
-            boss.setTeleport(boss.getTypeLeaveMap());
-            boss.dispose();
-        } catch (Exception exception) {
-            LogServer.LogException("MoveEventHandler.handleLeavingMap: " + exception.getMessage(), exception);
         }
     }
 

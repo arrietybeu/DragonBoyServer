@@ -3,6 +3,7 @@ package nro.server.service.model.item;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import nro.consts.ConstItem;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.template.item.ItemTemplate;
 import org.json.simple.JSONArray;
@@ -103,7 +104,7 @@ public class Item implements AutoCloseable {
     }
 
     public boolean isItemMount() {
-        return this.template.type() == 23 || this.template.type() == 24;
+        return this.template.type() == ConstItem.TYPE_MOUNT || this.template.type() == ConstItem.TYPE_MOUNT_VIP;
     }
 
     public void dispose() {

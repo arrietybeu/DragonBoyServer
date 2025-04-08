@@ -96,10 +96,6 @@ public final class BossFactory {
             if (boss == null) return;
             boss.setEntityTarget(player);
 
-            long newHp = player.getPoints().getMaxHP() * 2;
-
-            boss.getPoints().setMaxHP(newHp);
-            boss.getPoints().setCurrentHp(newHp);
             boss.setX((short) x);
             boss.setY((short) y);
             boss.setArea(area);

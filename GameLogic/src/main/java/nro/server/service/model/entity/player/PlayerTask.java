@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.*;
 
+import nro.server.service.core.item.ItemFactory;
 import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.monster.Monster;
@@ -18,10 +19,10 @@ import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.core.player.TaskService;
 import nro.server.service.core.item.DropItemMap;
-import nro.utils.Util;
 
 @Setter
 @Getter
+@SuppressWarnings("ALL")
 public class PlayerTask {
 
     private final Player player;
@@ -55,6 +56,7 @@ public class PlayerTask {
                 case 7 -> this.handleTaskSeven(index, npcService);
                 case 8 -> this.handlerTaskEight(index, npcService);
                 case 9 -> this.handlerTaskNine(index, npcService);
+                case 10 -> this.handlerTaskTen(index, npcService);
             }
 
             this.addDoneSubTask();
@@ -226,7 +228,6 @@ public class PlayerTask {
                     String content = "Hắn sắp đến đây, hãy giúp ta tiêu diệt hắn";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
                     BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 457, 0, ConstBoss.TAU_PAY_PAY);
-                    this.doneTask(9, 1);
                 }
                 case 3 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.THAN_MEO_KARIN);
@@ -236,6 +237,38 @@ public class PlayerTask {
                             "\nTìm ta là đúng rồi, để ta dạy ngươi vài chiêu, nhưng phải chăm chỉ mới học được đấy nhé" +
                             "\nNgươi sẵn sàng luyện tập chưa";
                     npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("PlayerTask handleTaskNine - " + ex.getMessage(), ex);
+        }
+    }
+
+    public void handlerTaskTen(int index, NpcService npcService) {
+        try {
+            ServerService serverService = ServerService.getInstance();
+            switch (index) {
+                case 2 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.BO_MONG);
+                    String content = "Ta thật sự hãnh diện về con. Giờ ta không còn gì để dạy cho con, nhưng có người còn giỏi hơn ta" +
+                            "\nĐó là sư phụ ta Vua Vegeta, ngài rất thích đọc truyện Đôrêmon, con hãy đem tới cho ngài" +
+                            "\nNhất định ngài sẽ thu nhận con làm đệ tử, con ráng học thành tài nhé";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                    Item ngocRong = ItemFactory.getInstance().createItemOptionsBase(ConstItem.NGOC_RONG_7_SAO);
+                    player.getPlayerInventory().addItemBag(ngocRong);
+                }
+                case 3 -> {
+                    Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
+                    String content = "Ta thật sự hãnh diện về con. Giờ ta không còn gì để dạy cho con, nhưng có người còn giỏi hơn ta" +
+                            "\nĐó là sư phụ ta Vua Vegeta, ngài rất thích đọc truyện Đôrêmon, con hãy đem tới cho ngài" +
+                            "\nNhất định ngài sẽ thu nhận con làm đệ tử, con ráng học thành tài nhé";
+                    npcService.sendNpcTalkUI(player, npc.getTempId(), content, npc.getAvatar());
+                    Item truyenDoraemon = ItemFactory.getInstance().createItemOptionsBase(ConstItem.TRUYEN_TRANH);
+                    player.getPlayerInventory().addItemBag(truyenDoraemon);
+                    Item tuDongLuyenTap = ItemFactory.getInstance().createItemOptionsBase(ConstItem.TU_DONG_LUYEN_TAP_CAP_1);
+                    serverService.sendChatGlobal(player.getSession(), null, "Bạn đã nhận được Tự động luyện tập", false);
+                    player.getPlayerInventory().addItemBag(tuDongLuyenTap);
+                    player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, 70_000);
                 }
             }
         } catch (Exception ex) {
@@ -276,12 +309,12 @@ public class PlayerTask {
                 case ConstMap.THAP_KARIN -> this.doneTask(9, 2);
                 case ConstMap.RUNG_KARIN -> {
                     this.doneTask(8, 3);
-                    if (this.taskMain.getId() >= 9 && this.taskMain.getId() <= 10 && this.taskMain.getIndex() <= 1) {
+                    if (this.taskMain.getId() == 9 && this.taskMain.getIndex() >= 1 || this.taskMain.getId() == 10 && this.taskMain.getIndex() == 0) {
                         BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
                         this.doneTask(9, 1);
                         break;
                     }
-                    if (this.taskMain.getId() == 10 && this.taskMain.getIndex() == 2) {
+                    if (this.taskMain.getId() == 10 && this.taskMain.getIndex() == 1) {
                         BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
                     }
                 }
@@ -296,9 +329,9 @@ public class PlayerTask {
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS ->
                     this.doneTask(0, 2) || this.doneTask(0, 5) || this.doneTask(1, 1)
                             || this.doneTask(2, 1) || this.doneTask(3, 2) || this.doneTask(4, 3)
-                            || this.doneTask(7, 3) || this.doneTask(8, 2);
+                            || this.doneTask(7, 3) || this.doneTask(8, 2) || this.doneTask(10, 3);
             case ConstNpc.BUNMA, ConstNpc.DENDE, ConstNpc.APPULE -> this.doneTask(7, 2);
-            case ConstNpc.BO_MONG -> this.doneTask(9, 0);
+            case ConstNpc.BO_MONG -> this.doneTask(9, 0) || this.doneTask(10, 2);
             case ConstNpc.THAN_MEO_KARIN -> this.doneTask(9, 3);
             default -> false;
         };
@@ -353,7 +386,8 @@ public class PlayerTask {
 
     public void checkDoneTaskKillBoss(int bossId) {
         switch (bossId) {
-            case ConstBoss.TAU_PAY_PAY -> this.doneTask(9, 2);
+            case ConstBoss.TAU_PAY_PAY -> this.doneTask(10, 1);
+            case ConstBoss.THAN_MEO_KARIN -> this.doneTask(10, 0);
         }
     }
 

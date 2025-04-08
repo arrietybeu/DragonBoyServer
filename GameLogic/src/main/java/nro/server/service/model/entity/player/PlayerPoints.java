@@ -79,7 +79,7 @@ public class PlayerPoints extends Points {
             for (Item item : itemsBody) {
                 if (item == null || item.getTemplate() == null) continue;
 
-                if (item.isItemMount() && item.getTemplate().part() >= 0) {
+                if (item.isItemMount()) {
                     this.isHaveMount = true;
                 }
 
