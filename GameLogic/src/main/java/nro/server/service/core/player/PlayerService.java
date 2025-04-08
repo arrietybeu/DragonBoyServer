@@ -11,7 +11,6 @@ import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
-import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.Points;
 import nro.server.service.model.task.TaskMain;
@@ -69,7 +68,7 @@ public class PlayerService {
     private void onPlayerLoginSuccess(Player player) {
         if (!player.getSession().getSessionInfo().isLogin()) return;
         player.getSession().getSessionInfo().setLoadData(true);
-        player.getArea().addPlayer(player);
+        player.getArea().addEntity(player);
         ServerService serverService = ServerService.getInstance();
         this.sendSelectSkillShortCut(player, "KSkill");
         this.sendSelectSkillShortCut(player, "OSkill");
@@ -496,11 +495,11 @@ public class PlayerService {
                                 }
                             }
                         }
-                        ItemService.getInstance().sendPickItemMap(player, itemMap.getId(), itemType, quantity, notify);
-                        this.sendPLayerPickItemMap(player, itemMap.getId());
-                        player.getArea().removeItemMap(itemMap.getId());
                     }
                 }
+                ItemService.getInstance().sendPickItemMap(player, itemMap.getId(), itemType, quantity, notify);
+                this.sendPLayerPickItemMap(player, itemMap.getId());
+                player.getArea().removeItemMap(itemMap.getId());
             }
         } catch (Exception ex) {
             LogServer.LogException("pickItem: " + ex.getMessage(), ex);

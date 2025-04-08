@@ -24,9 +24,9 @@ import java.util.List;
 public class PlayerInventory {
 
     private final Player player;
-    private final List<Item> itemsBody;
-    private final List<Item> itemsBag;
-    private final List<Item> itemsBox;
+    private List<Item> itemsBody;
+    private List<Item> itemsBag;
+    private List<Item> itemsBox;
 
     private int itemBodySize;
     private int itemBagSize;
@@ -493,5 +493,14 @@ public class PlayerInventory {
             item.dispose();
             item = null;
         }
+    }
+
+    public void dispose() {
+        this.itemsBody.clear();
+        this.itemsBag.clear();
+        this.itemsBox.clear();
+        this.itemsBag = null;
+        this.itemsBody = null;
+        this.itemsBox = null;
     }
 }

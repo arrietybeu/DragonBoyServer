@@ -52,10 +52,6 @@ public class TauPayPayController extends BossAIController {
 
             // target không còn hoặc không hợp lệ
             if (target == null) {
-                if (boss.isAutoDespawn()) {
-                    boss.dispose();
-                    return;
-                }
                 if (boss.getLastPlayerTarget() != null) {
                     boss.getLastPlayerTarget().changeTypePlayerKill(0);
                     boss.setLastPlayerTarget(null);
@@ -64,6 +60,10 @@ public class TauPayPayController extends BossAIController {
                     boss.setEntityTarget(null);
                     boss.setState(AIState.SEARCHING);
                     boss.changeTypePlayerKill(0);
+                    return;
+                }
+                if (boss.isAutoDespawn()) {
+                    boss.dispose();
                     return;
                 }
                 return;
@@ -148,12 +148,18 @@ public class TauPayPayController extends BossAIController {
     public void handleGoToMap(Boss boss) {
         try {
             if (boss == null) return;
-            if (boss.isInState(AIState.GO_TO_MAP) || boss.getArea() == null && !boss.isBossInMap()) {
+            if (boss.getArea() == null && !boss.isBossInMap()) {
                 int mapId = boss.getMapsId()[Util.nextInt(0, boss.getMapsId().length)];
                 GameMap mapNew = MapManager.getInstance().findMapById(mapId);
                 if (mapNew == null) return;
                 Area newArea = mapNew.getArea(-1, boss);
                 AreaService.getInstance().changerMapByShip(boss, mapNew.getId(), boss.getX(), boss.getY(), 1, newArea);
+                boss.setBossInMap(true);
+                boss.setState(AIState.CHAT);
+                return;
+            }
+            if (boss.getArea() != null && !boss.isBossInMap()) {
+                AreaService.getInstance().changerMapByShip(boss, boss.getArea().getMap().getId(), boss.getX(), boss.getY(), 1, boss.getArea());
                 boss.setBossInMap(true);
                 boss.setState(AIState.CHAT);
             }

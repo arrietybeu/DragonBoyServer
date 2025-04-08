@@ -4,7 +4,6 @@ import lombok.Getter;
 import nro.server.realtime.core.ISystemBase;
 import nro.server.realtime.system.boss.disruptor.BossDisruptorEngine;
 import nro.server.service.model.entity.ai.boss.Boss;
-import nro.server.system.LogServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +24,6 @@ public class BossAISystem implements ISystemBase {
         if (object instanceof Boss boss) {
             lock.writeLock().lock();
             try {
-//                boolean exists = bosses.stream().anyMatch(b -> b.getId() == boss.getId());
-//                if (exists) {
-//                    LogServer.LogWarning("Boss " + boss.getId() + " is already registered!");
-//                }
                 bosses.add(boss);
             } finally {
                 lock.writeLock().unlock();
@@ -42,7 +37,6 @@ public class BossAISystem implements ISystemBase {
         if (object instanceof Boss boss) {
             lock.writeLock().lock();
             try {
-//                bosses.removeIf(b -> b.getId() == boss.getId());
                 bosses.remove(boss);
             } finally {
                 lock.writeLock().unlock();

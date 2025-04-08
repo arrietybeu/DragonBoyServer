@@ -197,6 +197,10 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "off_size" -> {
+                    String content = "Map Offline size: " + MapManager.getInstance().getPlayerOfflineAreas().size();
+                    ServerService.dialogMessage(playerChat.getSession(), content);
+                }
                 case "tau77" -> {
                     BossFactory.getInstance().trySpawnSpecialBossInArea(playerChat, playerChat.getArea(), playerChat.getX(), playerChat.getY(), ConstBoss.TAU_PAY_PAY);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Spawn Boss: " + ConstBoss.TAU_PAY_PAY, false);
@@ -281,7 +285,7 @@ public class ChatService {
                     ManagerRegistry.reloadManager(MapManager.class);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Map Manager Thành Công", false);
                 }
-                case "reload_boss"->{
+                case "reload_boss" -> {
                     ManagerRegistry.reloadManager(BossManager.class);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Load Boss Manager Thành Công", false);
                 }

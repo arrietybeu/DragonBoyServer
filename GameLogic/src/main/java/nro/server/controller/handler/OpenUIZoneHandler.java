@@ -17,8 +17,8 @@ public class OpenUIZoneHandler implements IMessageProcessor {
         Player player = session.getPlayer();
         if (player == null) return;
         try {
-            if (player.getArea().getMap().isMapOffline()) {
-                ServerService.dialogMessage(player.getSession(), "Không thể đổi khu vực trong map này");
+            if (player.getArea().getMap().isMapOffline() && !session.getUserInfo().isAdmin()) {
+                ServerService.dialogMessage(session, "Không thể đổi khu vực trong map này");
                 return;
             }
             MapService.getInstance().sendListUIArea(player);

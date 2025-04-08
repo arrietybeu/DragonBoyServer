@@ -57,7 +57,6 @@ public final class BossFactory {
     }
 
     public void trySpawnSpecialBossInAreaToPointsPlayer(Player player, Area area, int x, int y, int bossId) {
-        System.out.println("trySpawnSpecialBossInAreaToPointsPlayer");
         try {
             if (area == null) {
                 LogServer.LogException("BossFactory.trySpawnSpecialBossInArea: Area is null for boss id: " + bossId);
@@ -70,8 +69,8 @@ public final class BossFactory {
 
             Points points = boss.getPoints();
 
-            long newHp = points.getMaxHP() + player.getPoints().getCurrentDamage() * 2 / 3;
-            long newDamage = points.getCurrentDamage() + player.getPoints().getMaxHP() * 2 / 3;
+            long newHp = points.getMaxHP() + player.getPoints().getBaseDamage() * 2L / 3;
+            long newDamage = points.getCurrentDamage() + player.getPoints().getBaseHP() * 2L / 3;
 
             boss.getPoints().setMaxHP(newHp);
             boss.getPoints().setCurrentHp(newHp);

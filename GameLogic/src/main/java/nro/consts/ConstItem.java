@@ -72,6 +72,12 @@ public class ConstItem {
 
     public static final short DUA_BE = 78;
 
+    public static final short VANG_1 = 188;
+
+    public static final short VANG_2 = 189;
+
+    public static final short VANG_3 = 190;
+
     public static final short GOI_10_VIEN_CAPSULE = 193;
 
     public static final short VIEN_CAPSULE_DAC_BIET = 194;

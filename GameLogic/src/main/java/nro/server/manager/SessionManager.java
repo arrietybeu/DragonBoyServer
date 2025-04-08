@@ -165,9 +165,9 @@ public final class SessionManager {
         Player player = session.getPlayer();
         if (player != null) {
             // save data player va giai phong du lieu khi player da vao game
-            player.dispose();
             PlayerUpdate.getInstance().savePlayer(player);
             AccountRepository.updateAccountLogout(session.getUserInfo());
+            player.dispose();
         }
     }
 

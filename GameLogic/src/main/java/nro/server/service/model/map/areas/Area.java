@@ -5,6 +5,7 @@ import nro.consts.ConstTypeObject;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.boss.Boss;
+import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
@@ -46,7 +47,7 @@ public class Area {
         this.npcList = new ArrayList<>();
     }
 
-    public void addPlayer(Entity entity) {
+    public void addEntity(Entity entity) {
         this.lock.writeLock().lock();
         try {
             switch (entity) {
@@ -268,4 +269,18 @@ public class Area {
         }
     }
 
+    public void initNpc() {
+        for (var npc : this.map.getNpcs()) {
+            Npc npcArea = NpcFactory.createNpc(npc.npcId(), npc.status(), this.map.getId(), npc.x(), npc.y(), npc.avatar());
+            if (npcArea == null) continue;
+            this.getNpcList().add(npcArea);
+        }
+    }
+
+    public Area cloneArea(int areaId) {
+        Area area = new Area(this.map, areaId, this.maxPlayers);
+        area.setMonsters(new HashMap<>(this.monsters));
+        area.initNpc();
+        return area;
+    }
 }

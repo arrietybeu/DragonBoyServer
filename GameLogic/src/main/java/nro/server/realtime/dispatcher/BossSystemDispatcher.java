@@ -24,7 +24,7 @@ public class BossSystemDispatcher implements IDispatcherBase {
     @Override
     public void start() {
         registerSystems();
-        scheduler.scheduleAtFixedRate(this::tick, 0, 100, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this::tick, 0, 300, TimeUnit.MILLISECONDS);
     }
 
     private void registerSystems() {

@@ -219,7 +219,7 @@ public class PlayerPoints extends Points {
     }
 
     @Override
-    public void setDie() {
+    public void setDie(Entity killer) {
         System.out.println("PlayerPoints.setDie: " + this.player.getName() + " die");
         // TODO xử lý khi chết
         // set lai location
@@ -228,10 +228,12 @@ public class PlayerPoints extends Points {
         // huy skill
         this.currentHP = 0;
         this.player.getPlayerStatus().setLockMove(true);
+        this.player.onDie(killer);
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendCurrencyHpMp(this.player);
         playerService.sendPlayerDie(this.player);
         playerService.sendPlayerDeathToArea(this.player);
+
     }
 
     @Override

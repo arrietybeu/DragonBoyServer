@@ -238,6 +238,7 @@ public class AreaService {
                 if (this.transferEntity(player, goArea, (short) goX, (short) goY)) {
                     player.getPlayerTask().checkDoneTaskGoMap();
                     DropItemMap.dropMissionItems(player);
+                    MapManager.getInstance().removeOfflineArea(player);
                 }
             }
             case Boss boss -> this.transferEntity(boss, goArea, (short) goX, (short) goY);
@@ -292,7 +293,7 @@ public class AreaService {
             this.playerExitArea(entity);
 
             // add entity vào area mới
-            newArea.addPlayer(entity);
+            newArea.addEntity(entity);
             entity.setArea(newArea);
             entity.setX(x);
             entity.setY(y);
@@ -336,6 +337,7 @@ public class AreaService {
                 safeX = 120;
                 System.out.println("khong tim thay waypoint");
                 safeY = 336;
+                player.setTeleport(0);
             } else {
                 safeX = (short) (waypoint.getMinX() - 40);
                 if (safeX < 0) safeX = (short) (waypoint.getMinX() + 50);

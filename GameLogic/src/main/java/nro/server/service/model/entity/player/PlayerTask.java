@@ -437,4 +437,8 @@ public class PlayerTask {
         }
     }
 
+    public void dispose() {
+        this.taskMain = null;
+    }
+
 }

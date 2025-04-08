@@ -70,7 +70,7 @@ public class BossPoints extends Points {
     }
 
     @Override
-    public void setDie() {
+    public void setDie(Entity killer) {
         this.currentHP = 0;
         if (owner instanceof Boss boss) {
             boss.setLockMove(true);

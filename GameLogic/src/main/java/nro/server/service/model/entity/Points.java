@@ -134,7 +134,7 @@ public abstract class Points {
     public abstract void returnTownFromDead();
 
     /// đánh dấu chết, lock di chuyển, hủy skill, thông báo cho khu vực
-    public abstract void setDie();
+    public abstract void setDie(Entity killer);
 
     /// hồi sinh hoàn toàn, mở khóa di chuyển, gửi trạng thái về client
     public abstract void setLive();

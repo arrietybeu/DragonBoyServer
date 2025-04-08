@@ -17,7 +17,7 @@ import java.util.List;
 public class PlayerTransport {
 
     private final Player owner;
-    private final List<Transport> transports;
+    private List<Transport> transports;
     private Transport beforeTransport;
 
     public PlayerTransport(Player owner) {
@@ -79,6 +79,12 @@ public class PlayerTransport {
         before.setX(transport.getX());
         before.setY(transport.getY());
         player.getPlayerTransport().setBeforeTransport(before);
+    }
+
+    public void dispose() {
+        this.transports.clear();
+        this.transports = null;
+        this.beforeTransport = null;
     }
 
 

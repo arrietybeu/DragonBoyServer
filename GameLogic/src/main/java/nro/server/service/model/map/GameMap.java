@@ -4,8 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstMap;
 import nro.consts.ConstTypeObject;
+import nro.server.manager.MapManager;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.boss.Boss;
+import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.map.decorates.BgItem;
@@ -16,6 +18,7 @@ import nro.server.service.model.template.NpcTemplate;
 import nro.server.system.LogServer;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 @Getter
@@ -42,6 +45,7 @@ public class GameMap {
     private final List<BackgroudEffect> backgroudEffects;
     private final List<NpcTemplate.NpcInfo> npcs;
 
+
     private List<Area> areas;
 
     // id, name, planetId, tileId, isMapDouble, status, bgId, bgType, bgItems,
@@ -66,16 +70,6 @@ public class GameMap {
         this.npcs = npcs;
         for (Waypoint wp : waypoints) {
             waypointMap.computeIfAbsent((int) wp.getMinX(), k -> new ArrayList<>()).add(wp);
-        }
-    }
-
-    public void initNpc() {
-        for (Area area : this.areas) {
-            for (var npc : this.npcs) {
-                Npc npcArea = NpcFactory.createNpc(npc.npcId(), npc.status(), this.id, npc.x(), npc.y(), npc.avatar());
-                if (npcArea == null) continue;
-                area.getNpcList().add(npcArea);
-            }
         }
     }
 
@@ -120,21 +114,29 @@ public class GameMap {
         return waypoint;
     }
 
-
     public Area getArea(int id, Entity entity) {
-        for (Area area : this.areas) {
-            if (entity instanceof Player) {
-                if (area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers() &&
-                        (id < 0 || area.getId() == id)) {
-                    return area;
+        try {
+            for (Area area : this.areas) {
+                if (entity instanceof Player player) {
+                    if (area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size() < area.getMaxPlayers() &&
+                            (id < 0 || area.getId() == id)) {
+                        if (area.getMap().typeMap == ConstMap.MAP_OFFLINE) {
+                            MapManager mapManager = MapManager.getInstance();
+                            mapManager.createOfflineArea(player, area);
+                            return mapManager.getOfflineArea(player);
+                        }
+                        return area;
+                    }
+                } else if (entity instanceof Boss) {
+                    if (id < 0 || area.getId() == id) {
+                        return area;
+                    }
+                } else {
+                    LogServer.LogException("Not support entity: " + entity.getClass().getSimpleName());
                 }
-            } else if (entity instanceof Boss) {
-                if (id < 0 || area.getId() == id) {
-                    return area;
-                }
-            } else {
-                LogServer.LogException("Not support entity: " + entity.getClass().getSimpleName());
             }
+        } catch (Exception ex) {
+            LogServer.LogException("Error getArea: " + ex.getMessage(), ex);
         }
         return null;
     }

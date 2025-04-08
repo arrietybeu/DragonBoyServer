@@ -97,7 +97,7 @@ public class MapService {
             output.writeByte(area.getMap().getIsMapDouble());
             player.sendMessage(message);
         } catch (Exception e) {
-            LogServer.LogException("Error sendMapInfo: " + e.getMessage());
+            LogServer.LogException("Error sendMapInfo: " + e.getMessage(), e);
         }
     }
 

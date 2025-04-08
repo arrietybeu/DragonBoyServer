@@ -25,19 +25,19 @@ public class ChangeAreaHandler implements IMessageProcessor {
             var areaId = message.reader().readByte();
             List<Area> areaList = player.getArea().getMap().getAreas();
             if (areaId <= 0 && areaId >= areaList.size()) {
-                ServerService.getInstance().sendChatGlobal(player.getSession(), null,
+                ServerService.getInstance().sendChatGlobal(session, null,
                         "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
                 return;
             }
             Area area = areaList.get(areaId);
             if (area == null) {
-                ServerService.getInstance().sendChatGlobal(player.getSession(), null,
+                ServerService.getInstance().sendChatGlobal(session, null,
                         "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
                 LogServer.LogException("ChangeAreaHandler: area is null " + areaId);
                 return;
             }
-            if (area.getMap().isMapOffline()) {
-                ServerService.dialogMessage(player.getSession(), "Không thể đổi khu vực trong map này");
+            if (area.getMap().isMapOffline() && !session.getUserInfo().isAdmin()) {
+                ServerService.dialogMessage(session, "Không thể đổi khu vực trong map này");
                 return;
             }
             AreaService.getInstance().changeArea(player, area);

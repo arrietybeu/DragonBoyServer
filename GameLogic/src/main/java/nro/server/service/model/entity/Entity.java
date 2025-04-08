@@ -73,7 +73,7 @@ public abstract class Entity {
         this.lock.writeLock().lock();
         try {
             if (this.points.isDead()) {
-                this.points.setDie();
+                this.points.setDie(entityAttack);
                 return 0;
             }
             this.points.subCurrentHp(damage);
@@ -87,8 +87,8 @@ public abstract class Entity {
             }
 
             if (this.points.isDead()) {
-                this.points.setDie();
-                this.onDie(entityAttack);
+                this.points.setDie(entityAttack);
+
             }
             return damage;
         } finally {

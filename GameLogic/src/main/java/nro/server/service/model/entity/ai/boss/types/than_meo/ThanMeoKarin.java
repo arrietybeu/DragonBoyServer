@@ -5,6 +5,7 @@ import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.boss.ABossHandler;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.entity.ai.boss.BossFashion;
+import nro.server.service.model.entity.player.Player;
 
 @ABossHandler(ConstBoss.THAN_MEO_KARIN)
 public class ThanMeoKarin extends Boss {
@@ -16,5 +17,8 @@ public class ThanMeoKarin extends Boss {
 
     @Override
     public void onDie(Entity entity) {
+        if (entity instanceof Player player) {
+            player.getPlayerTask().checkDoneTaskKillBoss(this.getId());
+        }
     }
 }

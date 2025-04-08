@@ -25,7 +25,7 @@ import java.util.Map;
 @SuppressWarnings("ALL")
 public abstract class Skills {
 
-    protected final List<SkillInfo> skills;
+    protected List<SkillInfo> skills;
     protected final Entity owner;
     protected boolean isMonkey;
     protected byte[] skillShortCut;
@@ -109,7 +109,7 @@ public abstract class Skills {
                             long dame = this.owner.getPoints().getMaxHP();
                             monster.handleAttack(this.owner, 1, dame);
                         }
-                        owner.getPoints().setDie();
+                        owner.getPoints().setDie(owner);
                     });
                 }
             }
@@ -123,7 +123,6 @@ public abstract class Skills {
     }
 
     public void selectSkill(int skillId) {
-        System.out.println("selectSkill skillId: " + skillId);
         if (skillSelect != null) {
             if (skillSelect.getTemplate().getId() == skillId) {
                 return;
@@ -196,5 +195,12 @@ public abstract class Skills {
     }
 
     public abstract Skills copy(Entity entity);
+
+    public void dispose() {
+        this.skills.clear();
+        this.skills = null;
+        this.skillSelect = null;
+        this.skillShortCut = null;
+    }
 
 }

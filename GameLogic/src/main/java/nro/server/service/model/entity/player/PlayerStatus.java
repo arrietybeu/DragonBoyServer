@@ -35,4 +35,7 @@ public class PlayerStatus {
         return this.indexMenu == ConstMenu.BASE_MENU;
     }
 
+    public void dispose() {
+    }
+
 }

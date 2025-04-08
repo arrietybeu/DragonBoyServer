@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.consts.ConstMap;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
+import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.TileMap;
 import nro.server.service.model.map.Waypoint;
 import nro.server.service.model.map.areas.Area;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 @SuppressWarnings("ALL")
@@ -41,6 +43,7 @@ public final class MapManager implements IManager {
     @Getter
     private static final MapManager instance = new MapManager();
     private final Map<Integer, GameMap> gameMaps = new HashMap<>();
+    private final Map<Integer, Area> playerOfflineAreas = new ConcurrentHashMap<>();
     private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
     private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
     private final List<Transport> transports = new ArrayList<>();
@@ -103,15 +106,14 @@ public final class MapManager implements IManager {
 
                 GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems,
                         effects, waypoints, tileMap, npcs);
+
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
-                mapTemplate.initNpc();
                 this.gameMaps.put(id, mapTemplate);
             }
 
             // LogServer.LogInit("MapManager init size: " + this.gameMaps.size());
         } catch (Exception e) {
-            e.printStackTrace();
-            LogServer.LogException("Error loadMap: " + e.getMessage());
+            LogServer.LogException("Error loadMap: " + e.getMessage(), e);
         }
     }
 
@@ -146,6 +148,7 @@ public final class MapManager implements IManager {
         for (int i = 0; i < zone; i++) {
             Area area = new Area(map, i, maxPlayer);
             area.setMonsters(this.loadMonsters(connection, area));
+            area.initNpc();
             areas.add(area);
         }
         return areas;
@@ -169,7 +172,7 @@ public final class MapManager implements IManager {
                 }
             }
         } catch (SQLException e) {
-            LogServer.LogException("Error loadMonsters: " + e.getMessage());
+            LogServer.LogException("Error loadMonsters: " + e.getMessage(), e);
         }
         return monsters;
     }
@@ -191,7 +194,7 @@ public final class MapManager implements IManager {
                 }
             }
         } catch (SQLException e) {
-            LogServer.LogException("Error loadNpcs: " + e.getMessage());
+            LogServer.LogException("Error loadNpcs: " + e.getMessage(), e);
         }
         return npcs;
     }
@@ -218,7 +221,7 @@ public final class MapManager implements IManager {
                 }
             }
         } catch (SQLException e) {
-            LogServer.LogException("Error loadWaypoints: " + e.getMessage());
+            LogServer.LogException("Error loadWaypoints: " + e.getMessage(), e);
         }
         return waypoints;
     }
@@ -531,6 +534,40 @@ public final class MapManager implements IManager {
             }
         }
         return mapName;
+    }
+
+    public void removeOfflineArea(Player player) {
+        try {
+            if (player.getArea().getMap().getTypeMap() != ConstMap.MAP_OFFLINE) {
+                this.removeMapOffline(player);
+            }
+        } catch (Exception exception) {
+            LogServer.LogException("Error removeOfflineArea: " + exception.getMessage(), exception);
+        }
+    }
+
+    public void removeMapOffline(Player player) throws Exception {
+        int playerId = player.getId();
+        Area area = playerOfflineAreas.remove(playerId);
+        if (area != null) {
+            GameMap map = area.getMap();
+            map.getAreas().remove(area);
+        }
+    }
+
+    public Area createOfflineArea(Player player, Area templateArea) throws Exception {
+        int playerId = player.getId();
+        Area area = templateArea.cloneArea(playerId);
+        playerOfflineAreas.put(playerId, area);
+        return area;
+    }
+
+    public Area getOfflineArea(Player player) {
+        return playerOfflineAreas.get(player.getId());
+    }
+
+    public void clearAll() {
+        playerOfflineAreas.clear();
     }
 
 }
