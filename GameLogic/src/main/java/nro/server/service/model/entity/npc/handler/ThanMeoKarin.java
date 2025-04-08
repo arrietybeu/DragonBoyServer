@@ -56,9 +56,7 @@ public class ThanMeoKarin extends Npc {
                         case 0 -> {
                             // TODO create menu đăng ký tập tự động
                         }
-                        case 1 -> {
-                            // TODO create menu tập luyện với thần mèo
-                        }
+                        case 1 -> playerSendChallengeCatBoss(player);
                         case 2 -> {
                             // TODO create menu tập luyện với Yajiro
                         }
@@ -90,10 +88,7 @@ public class ThanMeoKarin extends Npc {
                 }
                 case ConstMenu.MENU_CHALLENGE_CAT_BOSS -> {
                     switch (select) {
-                        case 0 -> {
-                            this.turnOnHideNpc(player, true);
-                            BossFactory.getInstance().trySpawnSpecialBossInArea(player, player.getArea(), this.getX(), this.getY(), ConstBoss.THAN_MEO_KARIN);
-                        }
+                        case 0 -> playerSendChallengeCatBoss(player);
                         case 1 -> {
                             // TODO không làm gì cạ
                         }
@@ -103,5 +98,10 @@ public class ThanMeoKarin extends Npc {
                 }
             }
         }
+    }
+
+    private void playerSendChallengeCatBoss(Player player) {
+        this.turnOnHideNpc(player, true);
+        BossFactory.getInstance().trySpawnSpecialBossInArea(player, player.getArea(), this.getX(), this.getY(), ConstBoss.THAN_MEO_KARIN);
     }
 }
