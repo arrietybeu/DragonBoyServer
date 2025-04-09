@@ -43,9 +43,8 @@ public class PlayerCreator {
             }
         } catch (SQLException e) {
             connection.rollback();
-            e.printStackTrace();
             LogServer.LogException(String.format("Error Create Player - AccountID: %d, Name: %s, gender: %d. Error: %s",
-                    accountId, name, gender, e.getMessage()));
+                    accountId, name, gender, e.getMessage()), e);
             return false;
         } finally {
             connection.setAutoCommit(true);

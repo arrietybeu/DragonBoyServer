@@ -7,7 +7,6 @@ import nro.consts.ConstMenu;
 
 @Getter
 @Setter
-@ToString
 public class PlayerStatus {
 
     private final Player player;

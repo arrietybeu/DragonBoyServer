@@ -8,7 +8,7 @@ import java.util.Set;
 import org.reflections.Reflections;
 import nro.server.system.LogServer;
 
-public class NpcFactory {
+public final class NpcFactory {
 
     private static final Map<Integer, Npc> npcMap = new HashMap<>();
 

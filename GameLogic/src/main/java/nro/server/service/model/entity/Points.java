@@ -77,7 +77,7 @@ public abstract class Points {
         }
     }
 
-    /* copy các chỉ số hiện tại (currentHP, currentMP, currentDamage...) sang một đối tượng mới
+    /** copy các chỉ số hiện tại (currentHP, currentMP, currentDamage...) sang một đối tượng mới
      * @return một đối tượng Points mới với các chỉ số hiện tại đã được sao chép
      */
     public abstract Points copy(Entity entity);

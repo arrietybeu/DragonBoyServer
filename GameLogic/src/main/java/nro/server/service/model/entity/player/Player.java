@@ -114,7 +114,6 @@ public class Player extends Entity {
                                 "Đã xảy ra lỗi\nvui lòng thao tác lại", false);
                         return;
                     }
-
                     if (index == 0 || lastChangeTime + 60000 <= currentTime) {
                         itemService.sendImageFlag(this, index, ItemManager.getInstance().findFlagId(index).icon());
                     }
@@ -166,7 +165,6 @@ public class Player extends Entity {
             if (this.playerAdministrator != null) {
                 this.playerAdministrator = null;
             }
-
             if (this.playerMagicTree != null) {
                 this.playerMagicTree = null;
             }

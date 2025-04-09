@@ -18,8 +18,7 @@ public class ChangePrivateMapHandler implements IMessageProcessor {
             if (player == null) return;
             AreaService.getInstance().playerChangerMapByWayPoint(player);
         } catch (Exception ex) {
-            LogServer.LogException("ChangerMapHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("ChangerMapHandler: " + ex.getMessage(), ex);
         }
     }
 

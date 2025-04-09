@@ -31,7 +31,6 @@ public class BossAISystem implements ISystemBase {
         }
     }
 
-
     @Override
     public void unregister(Object object) {
         if (object instanceof Boss boss) {

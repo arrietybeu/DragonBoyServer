@@ -27,6 +27,8 @@ public class PlayerSystem implements ISystemBase {
                     return;
                 }
                 players.add(player);
+            } catch (Exception exception) {
+                LogServer.LogException("PlayerSystem error for player: " + player.getId(), exception);
             } finally {
                 lock.writeLock().unlock();
             }
@@ -43,6 +45,8 @@ public class PlayerSystem implements ISystemBase {
                     return;
                 }
                 players.remove(player);
+            } catch (Exception exception) {
+                LogServer.LogException("PlayerSystem error for player: " + player.getId(), exception);
             } finally {
                 lock.writeLock().unlock();
             }
@@ -67,6 +71,8 @@ public class PlayerSystem implements ISystemBase {
                     LogServer.LogException("PlayerSystem error for player: " + player.getId(), e);
                 }
             }
+        } catch (Exception e) {
+            LogServer.LogException("PlayerSystem update error", e);
         } finally {
             lock.readLock().unlock();
         }

@@ -125,15 +125,6 @@ public final class MessageSender {
     }
 
     private byte writeKey(byte b) {
-        // byte i = (byte)
-        // ((this.session.getSessionInfo().getKeys()[session.getSessionInfo().curW++] &
-        // 255) ^ (b & 255));
-        // if (session.getSessionInfo().curW >=
-        // this.session.getSessionInfo().getKeys().length) {
-        // session.getSessionInfo().curW %= (byte)
-        // this.session.getSessionInfo().getKeys().length;
-        // }
-        // return i;
         var curW = session.getSessionInfo().curW;
         var keys = session.getSessionInfo().getKeys();
         final byte i = (byte) ((keys[curW++] & 0xFF) ^ (b & 0xFF));

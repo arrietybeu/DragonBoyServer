@@ -54,7 +54,7 @@ public final class MessageReceiver {
                         return;
                     }
                     try {
-                        Thread.sleep(5);
+                        Thread.sleep(15);
                     } catch (InterruptedException ex) {
                     }
                 }
@@ -64,6 +64,7 @@ public final class MessageReceiver {
             LogServer.LogException("Error startReadMessage: " + e.getMessage());
         }
     }
+
 
     private Message readMessage() throws IOException {
         final boolean sendKeyComplete = session.getClientInfo().isSendKeyComplete();

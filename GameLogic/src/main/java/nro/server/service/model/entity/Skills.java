@@ -21,7 +21,6 @@ import java.util.Map;
 
 @Getter
 @Setter
-@ToString
 @SuppressWarnings("ALL")
 public abstract class Skills {
 

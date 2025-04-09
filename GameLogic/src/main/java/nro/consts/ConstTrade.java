@@ -14,5 +14,4 @@ public class ConstTrade {
 
     public static final byte SUSSCESS_TRADE = 7;
 
-
 }

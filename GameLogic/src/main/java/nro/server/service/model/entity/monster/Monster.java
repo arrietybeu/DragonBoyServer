@@ -157,7 +157,7 @@ public class Monster extends Entity {
         return player.handleAttack(this, 0, dame);
     }
 
-    private boolean isMonsterAttack() {
+    public boolean isMonsterAttack() {
         return this.info.getType() != 0 && this.status.getStatus() != 0 && !this.point.isDead();
     }
 

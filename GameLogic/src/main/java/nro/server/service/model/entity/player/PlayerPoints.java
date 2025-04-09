@@ -2,7 +2,6 @@ package nro.server.service.model.entity.player;
 
 import nro.consts.ConstOption;
 import nro.consts.ConstPlayer;
-import nro.consts.ConstSkill;
 import nro.server.config.ConfigServer;
 import nro.server.manager.CaptionManager;
 import nro.server.manager.ItemManager;

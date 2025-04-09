@@ -34,8 +34,7 @@ public class AreaService {
             Map<Integer, Entity> entities = entity.getArea().getAllEntityInArea();
 
             for (Entity plInZone : entities.values()) {
-                // Hiện tại chỉ xử lý Player
-                if (plInZone != entity) {
+                if(plInZone.getId() != entity.getId()) {
                     // gửi thông tin Player đang có mặt cho entity (người mới vào)
                     this.addPlayer(entity, plInZone);
                 }
@@ -63,7 +62,6 @@ public class AreaService {
                     this.addPlayer(obj, entity);
                 }
             }
-
         } catch (Exception ex) {
             LogServer.LogException("sendPlayerInfoToAllInArea: " + ex.getMessage(), ex);
         }

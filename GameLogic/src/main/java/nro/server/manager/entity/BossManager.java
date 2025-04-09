@@ -92,7 +92,6 @@ public final class BossManager implements IManager {
                     for (int i = 0; i < mapsIdArray.size(); i++) {
                         boss.getMapsId()[i] = Short.parseShort(mapsIdArray.get(i).toString());
                     }
-
                     BossPoints points = loadBossPoints(boss, rs);
                     BossSkill skills = loadBossSkills(boss);
                     boss.setPoints(points);
