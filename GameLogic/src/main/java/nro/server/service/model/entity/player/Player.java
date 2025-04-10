@@ -15,6 +15,7 @@ import nro.server.service.model.entity.pet.PetFollow;
 
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
+import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
@@ -25,6 +26,7 @@ import nro.server.service.core.system.ServerService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Getter
 @Setter

@@ -20,7 +20,7 @@ public class MapTrasportHandler implements IMessageProcessor {
             var selected = message.reader().readByte();
             switch (player.getPlayerStatus().getTypeTransport()) {
                 case ConstPlayer.TYPE_TRANSPORT_CAPSULE ->
-                        player.getPlayerTransport().playerTransport(player, selected);
+                        player.getPlayerTransport().playerTransport(selected);
             }
 
         } catch (Exception exception) {

@@ -4,13 +4,12 @@ import lombok.Getter;
 import nro.consts.ConstTrade;
 import nro.consts.ConstsCmd;
 import nro.server.network.Message;
+import nro.server.realtime.system.player.TradeSystem;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.item.Item;
 import nro.server.system.LogServer;
 
 import java.io.DataOutputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TradeService {
@@ -18,33 +17,44 @@ public class TradeService {
     @Getter
     private static final TradeService instance = new TradeService();
 
-    @Getter
-    private final Map<Integer, TradeSession> tradeSessions = new HashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public void sendTransactionToType(Player player, int type) {
+    /**
+     * Gửi thông điệp giao dịch đến người chơi
+     *
+     * @param player  người chơi gửi
+     * @param opponent người chơi nhận
+     * @param type    loại giao dịch
+     */
+    public void sendTransactionToType(Player player, Player opponent, int type) {
         try (Message message = new Message(ConstsCmd.GIAO_DICH)) {
             DataOutputStream writer = message.writer();
             writer.writeByte(type);
             writer.writeInt(player.getId());
-            player.sendMessage(message);
+            opponent.sendMessage(message);
         } catch (Exception exception) {
             LogServer.LogException("Error sendTransactionToType: " + exception.getMessage(), exception);
         }
     }
 
+    /**
+     *
+     * @param p1 player gửi yêu cầu
+     * @param p2 player nhận yêu cầu
+     * @return true nếu thành công
+     */
     public boolean requestTrade(Player p1, Player p2) {
         this.lock.writeLock().lock();
         try {
             if (p1.equals(p2)) return false;
 //            if (tradeSessions.containsKey(p1.getId()) || tradeSessions.containsKey(p2.getId())) return false;
 
+            var tradeSessions = TradeSystem.getInstance().getTradeSessions();
             var session = new TradeSession(p1, p2);
             tradeSessions.put(p1.getId(), session);
             tradeSessions.put(p2.getId(), session);
 
-            this.sendTransactionToType(p1, ConstTrade.TRANSACTION_REQUEST);
-            this.sendTransactionToType(p2, ConstTrade.TRANSACTION_REQUEST);
+            this.sendTransactionToType(p1, p2, ConstTrade.TRANSACTION_REQUEST);
 
             return true;
         } catch (Exception e) {
@@ -58,7 +68,7 @@ public class TradeService {
     public TradeSession getSession(Player player) {
         this.lock.readLock().lock();
         try {
-            return tradeSessions.get(player.getId());
+            return TradeSystem.getInstance().getTradeSessions().get(player.getId());
         } finally {
             this.lock.readLock().unlock();
         }
@@ -67,6 +77,8 @@ public class TradeService {
     public void cancelTrade(Player player) {
         this.lock.writeLock().lock();
         try {
+            var tradeSessions = TradeSystem.getInstance().getTradeSessions();
+
             TradeSession session = tradeSessions.remove(player.getId());
             if (session != null) {
                 tradeSessions.remove(session.getOpponent(player).getId());
@@ -82,7 +94,7 @@ public class TradeService {
     public void lockTrade(Player player) {
         this.lock.writeLock().lock();
         try {
-            TradeSession session = getSession(player);
+            TradeSession session = this.getSession(player);
             if (session != null) {
                 session.lock(player);
                 if (session.isBothLocked()) {

@@ -6,7 +6,6 @@ import nro.server.controller.APacketHandler;
 import nro.server.controller.IMessageProcessor;
 import nro.server.service.core.economy.TradeService;
 import nro.server.service.core.economy.TradeSession;
-import nro.server.service.core.player.PlayerService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.item.Item;
 import nro.server.system.LogServer;
@@ -32,9 +31,8 @@ public class TradeHandler implements IMessageProcessor {
                     int opponentId = message.reader().readInt();
                     opponent = player.getArea().getPlayer(opponentId);
                     if (opponent != null) {
-                        System.out.println("player opponent: " + opponent.getName() + "player: " + player.getName());
                         if (!TradeService.getInstance().requestTrade(player, opponent)) {
-                            ServerService.getInstance().sendChatGlobal(session, null, "Đối phương đã có giao dịch khác", false);
+                            ServerService.getInstance().sendChatGlobal(session, null, "Vui lòng đợi 1 lát nữa", false);
                         }
                     }
                 }

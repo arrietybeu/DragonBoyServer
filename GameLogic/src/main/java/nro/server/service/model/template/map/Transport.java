@@ -2,18 +2,19 @@ package nro.server.service.model.template.map;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.server.service.model.map.areas.Area;
 
 @Getter
 @Setter
 public class Transport {
 
+    private Area areeBefore;
     private String name;
     private String[] planetName;
     private short[] mapIds;
 
     private int x;
     private int y;
-
 
     public String getPlanetNameByGender(int gender) {
         if (planetName.length == 0) {

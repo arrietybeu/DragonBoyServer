@@ -6,9 +6,10 @@ import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
 import nro.server.realtime.system.item.ItemMapSystem;
 import nro.server.realtime.system.player.PlayerSystem;
+import nro.server.realtime.system.player.TradeSystem;
 import nro.server.service.core.dragon.DragonService;
-import nro.server.service.core.economy.TradeService;
 import nro.server.service.core.npc.NpcService;
+import nro.server.service.core.system.CaptchaService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.core.economy.ShopService;
 import nro.server.service.core.map.AreaService;
@@ -191,6 +192,18 @@ public class ChatService {
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Call Dragon: " + type, false);
                 return;
             }
+            if (text.startsWith("cc ")) {
+                int type = (int) this.getNumber(text);
+
+                if (type == -1) {
+                    serverService.sendChatGlobal(playerChat.getSession(), null, "Type không hợp lệ: " + text, false);
+                    return;
+                }
+                // 0 hide ,  MobCapcha.isAttack = true;,  MobCapcha.explode = true;
+                CaptchaService.getInstance().sendCaptcha(playerChat, type);
+                serverService.sendChatGlobal(playerChat.getSession(), null, "Send Capcha to type: " + type, false);
+                return;
+            }
             switch (text) {
                 case "off_size" -> {
                     String content = "Map Offline size: " + MapManager.getInstance().getPlayerOfflineAreas().size();
@@ -251,8 +264,8 @@ public class ChatService {
                     ServerService.dialogMessage(playerChat.getSession(), infoNpcSize);
                 }
 
-                case "trade" ->{
-                    int sizeSessionTrade = TradeService.getInstance().getTradeSessions().size();
+                case "trade" -> {
+                    int sizeSessionTrade = TradeSystem.getInstance().getTradeSessions().size();
                     String infoTradeSize = "Trade Size: " + sizeSessionTrade;
                     ServerService.dialogMessage(playerChat.getSession(), infoTradeSize);
                 }

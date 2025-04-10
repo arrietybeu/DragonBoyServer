@@ -34,13 +34,12 @@ public class AreaService {
             Map<Integer, Entity> entities = entity.getArea().getAllEntityInArea();
 
             for (Entity plInZone : entities.values()) {
-                if(plInZone.getId() != entity.getId()) {
+                if (plInZone.getId() != entity.getId()) {
                     // gửi thông tin Player đang có mặt cho entity (người mới vào)
                     this.addPlayer(entity, plInZone);
                 }
             }
             this.sendLiveObjectInfoToOthers(entity);
-
         } catch (Exception ex) {
             LogServer.LogException("sendInfoAllPlayerInArea: " + ex.getMessage(), ex);
         }
@@ -71,8 +70,8 @@ public class AreaService {
     private void addPlayer(Entity entity, Entity receiver) {
         if (receiver instanceof Player me) {
             try (Message message = new Message(-5)) {
-                DataOutputStream data = message.writer();
                 Fashion fashion = entity.getFashion();
+                DataOutputStream data = message.writer();
 
                 data.writeInt(entity.getId());
                 data.writeInt(getClanId(entity));
@@ -397,13 +396,23 @@ public class AreaService {
                         return;
                     }
 
+                    Area areaFocus = area.length > 0 ? area[0] : null;
+                    if (areaFocus != null) {
+                        System.out.println("areaFocus: " + areaFocus.getId());
+                        player.setTeleport(typeTele);
+                        AreaService.getInstance().gotoMap(player, areaFocus, x, y);
+                        break;
+                    }
+
                     Area newArea = newMap.getArea(-1, player);
                     if (newArea == null) {
                         serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
                         return;
                     }
+
                     player.setTeleport(typeTele);
                     AreaService.getInstance().gotoMap(player, newArea, x, y);
+
                 }
                 case Boss boss -> AreaService.getInstance().gotoMap(boss, area[0], x, y);
                 default -> LogServer.LogException("changerMapByShip: Not Entity :" + entity.getName());
@@ -412,6 +421,5 @@ public class AreaService {
             LogServer.LogException("changerMapByShip: " + ex.getMessage(), ex);
         }
     }
-
 
 }

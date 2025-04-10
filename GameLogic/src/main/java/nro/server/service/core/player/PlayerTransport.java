@@ -6,6 +6,7 @@ import nro.server.manager.MapManager;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 
@@ -32,6 +33,7 @@ public class PlayerTransport {
         int gender = owner.getGender();
 
         if (beforeTransport != null) {
+
             this.transports.add(beforeTransport);
         }
 
@@ -41,26 +43,32 @@ public class PlayerTransport {
         }
     }
 
-    public void playerTransport(Player player, int index) {
+    public void playerTransport(int index) {
         long ms = System.currentTimeMillis();
         try {
-            var lastTimeTransport = player.getPlayerStatus().getLastTimeTransport();
+            var lastTimeTransport = owner.getPlayerStatus().getLastTimeTransport();
             if (ms - lastTimeTransport < 10000) {
                 long remainingTime = (10000 - (ms - lastTimeTransport)) / 1000;
-                ServerService.getInstance().sendChatGlobal(player.getSession(), null, String.format("Vui lòng đợi %d giây để sử dụng lại", remainingTime), false);
+                ServerService.getInstance().sendChatGlobal(owner.getSession(), null, String.format("Vui lòng đợi %d giây để sử dụng lại", remainingTime), false);
                 return;
             }
-            List<Transport> transports = player.getPlayerTransport().getTransports();
+            List<Transport> transports = owner.getPlayerTransport().getTransports();
 
             if (!isValidIndex(index, transports)) return;// check index
 
             Transport destination = transports.get(index);
-            this.saveCurrentLocationAsBefore(player, destination);
+            short mapId = destination.getMapIdByGender(owner.getGender());
 
-            short mapId = destination.getMapIdByGender(player.getGender());
-            AreaService.getInstance().changerMapByShip(player, mapId, destination.getX(), destination.getY(), 1);
+            if (destination.getAreeBefore() != null) {
+                AreaService.getInstance().changerMapByShip(owner, mapId, destination.getX(), destination.getY(), 1, destination.getAreeBefore());
+            } else {
+                this.saveCurrentLocationAsBefore(owner, destination);
+            }
+            AreaService.getInstance().changerMapByShip(owner, mapId, destination.getX(), destination.getY(), 1, destination.getAreeBefore());
+
             transports.clear();
-            player.getPlayerStatus().setLastTimeTransport(System.currentTimeMillis());
+
+            owner.getPlayerStatus().setLastTimeTransport(System.currentTimeMillis());
         } catch (Exception ex) {
             LogServer.LogException("playerTransport: " + ex.getMessage(), ex);
         }
@@ -72,12 +80,14 @@ public class PlayerTransport {
 
     private void saveCurrentLocationAsBefore(Player player, Transport transport) {
         Transport before = new Transport();
-        String mapName = "Về chỗ cũ: " + player.getArea().getMap().getName();
+        Area area = player.getArea();
+        String mapName = "Về chỗ cũ: " + area.getMap().getName();
         before.setName(mapName);
-        before.setMapIds(new short[]{(short) player.getArea().getMap().getId()});
+        before.setMapIds(new short[]{(short) area.getMap().getId()});
         before.setPlanetName(transport.getPlanetName());
         before.setX(transport.getX());
         before.setY(transport.getY());
+        before.setAreeBefore(area);
         player.getPlayerTransport().setBeforeTransport(before);
     }
 
