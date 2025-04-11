@@ -34,6 +34,8 @@ public class ConstOption {
 
     public static final short KI_K = 23;
 
+    public static final short KHONG_GIAO_DICH = 30;
+
     public static final short DEFENSE = 47;
 
     public static final short HP_KI = 48;

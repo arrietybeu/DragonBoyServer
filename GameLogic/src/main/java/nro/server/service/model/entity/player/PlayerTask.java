@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.*;
 
-import nro.server.service.core.item.ItemFactory;
 import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.monster.Monster;
@@ -422,7 +421,7 @@ public class PlayerTask {
 
     public void checkDoneTaskConfirmMenuNpc(int npcId) throws RuntimeException {
         if (npcId == ConstNpc.DAU_THAN) {
-            if (player.getPlayerStatus().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
+            if (player.getPlayerState().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
                 this.doneTask(0, 4);
             }
         }

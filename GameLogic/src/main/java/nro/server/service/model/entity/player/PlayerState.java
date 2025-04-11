@@ -2,19 +2,21 @@ package nro.server.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import nro.consts.ConstMenu;
+import nro.server.service.core.economy.TradeService;
 
 @Getter
 @Setter
-public class PlayerStatus {
+public class PlayerState {
 
     private final Player player;
 
-    private boolean isInVisible;
+    private byte typeTransport;
 
+    private int idTrade;
     private int indexMenu;
-    private boolean isLockMove;
+    private int idItemTask;
+
     private long lastTimeLive;
     private long lastTimeChangeFlag;
     private long lastTimeChangeMap;
@@ -23,10 +25,10 @@ public class PlayerStatus {
     private long lastTimeTransport;
     private long lastTimeChangeArea;
 
-    private int idItemTask;
-    private byte typeTransport;
+    private boolean isInVisible;
+    private boolean isLockMove;
 
-    public PlayerStatus(Player player) {
+    public PlayerState(Player player) {
         this.player = player;
     }
 
@@ -35,6 +37,7 @@ public class PlayerStatus {
     }
 
     public void dispose() {
+        TradeService.getInstance().cancelTrade(player);
     }
 
 }

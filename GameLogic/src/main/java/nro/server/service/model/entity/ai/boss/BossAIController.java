@@ -48,7 +48,7 @@ public abstract class BossAIController {
 
         for (Entity entity : area.getEntitysByType(ConstTypeObject.TYPE_PLAYER)) {
             if (entity instanceof Player player) {
-                if (!player.getPoints().isDead() && !player.getPlayerStatus().isInVisible()) {
+                if (!player.getPoints().isDead() && !player.getPlayerState().isInVisible()) {
                     int distance = Math.abs(player.getX() - boss.getX());
                     if (distance < minDistance) {
                         minDistance = distance;

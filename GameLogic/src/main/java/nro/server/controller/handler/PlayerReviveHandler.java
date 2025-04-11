@@ -16,15 +16,15 @@ public class PlayerReviveHandler implements IMessageProcessor {
         Player player = session.getPlayer();
         if (player == null) return;
         long time = System.currentTimeMillis();
-        if (player.getPlayerStatus().getLastTimeLive() + 5000 > time) {
+        if (player.getPlayerState().getLastTimeLive() + 5000 > time) {
             ServerService.getInstance().sendChatGlobal(player.getSession(), null,
-                    String.format("Bạn chỉ có thể hồi sinh tại chỗ sau %d giây nữa.", (player.getPlayerStatus().getLastTimeLive() + 5000 - time) / 1000), false);
+                    String.format("Bạn chỉ có thể hồi sinh tại chỗ sau %d giây nữa.", (player.getPlayerState().getLastTimeLive() + 5000 - time) / 1000), false);
             return;
         }
         try {
             if (player.getPlayerCurrencies().subCurrency(1)) {
                 if (player.getPoints().isDead()) {
-                    player.getPlayerStatus().setLastTimeLive(time);
+                    player.getPlayerState().setLastTimeLive(time);
                     player.getPoints().setLive();
                 }
             }

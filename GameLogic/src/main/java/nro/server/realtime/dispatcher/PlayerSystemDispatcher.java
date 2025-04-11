@@ -5,6 +5,7 @@ import nro.server.realtime.core.GameDispatcher;
 import nro.server.realtime.core.IDispatcherBase;
 import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.realtime.core.ISystemBase;
+import nro.server.realtime.system.player.TradeSystem;
 import nro.server.system.LogServer;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class PlayerSystemDispatcher implements IDispatcherBase {
 
     private void registerSystems() {
         systems.add(PlayerSystem.getInstance());
-
+        systems.add(TradeSystem.getInstance());
         // TODO add system new to here
         // systems.add(SkillCooldownSystem.getInstance());
     }
@@ -43,7 +44,6 @@ public class PlayerSystemDispatcher implements IDispatcherBase {
     @Override
     public void stop() {
         for (ISystemBase system : systems) {
-
             if (Objects.requireNonNull(system) instanceof PlayerSystem playerSystem) {
                 playerSystem.getPlayers().clear();
             } else {

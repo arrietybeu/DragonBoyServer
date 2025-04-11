@@ -12,6 +12,8 @@ public class ConstTrade {
 
     public static final byte LOCK_TRADE = 5;
 
+    public static final byte DONE_TRADE = 6;
+
     public static final byte SUSSCESS_TRADE = 7;
 
 }

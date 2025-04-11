@@ -145,7 +145,7 @@ public class PlayerMagicTree {
     private void addPeaHarvenst(int quantity) {
         try {
             var magicTreeLevel = MagicTreeManager.getInstance().getMagicTreeLevel(this.level);
-            Item pea = ItemFactory.getInstance().createItemNotOptionsBase(magicTreeLevel.itemId(), quantity);
+            Item pea = ItemFactory.getInstance().createItemNotOptionsBase(magicTreeLevel.itemId(), player.getId(), quantity);
             pea.addOption(magicTreeLevel.optionId(), magicTreeLevel.optionParam());
 
             String name = pea.getTemplate().name();

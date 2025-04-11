@@ -30,8 +30,10 @@ public class Area {
     private final int id;
     private final int maxPlayers;
 
+    private static final int UNSET_DELAY = Integer.MIN_VALUE;
     private final short MAX_ID = Short.MAX_VALUE - 1;
-    private final AtomicInteger idItemMap = new AtomicInteger(0);
+    private final AtomicInteger idItemMap = new AtomicInteger(UNSET_DELAY);
+
     private final GameMap map;
     private Map<Integer, Monster> monsters;
     private final Map<Integer, Entity> entitys;

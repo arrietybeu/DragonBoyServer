@@ -18,7 +18,7 @@ public class MapTrasportHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             var selected = message.reader().readByte();
-            switch (player.getPlayerStatus().getTypeTransport()) {
+            switch (player.getPlayerState().getTypeTransport()) {
                 case ConstPlayer.TYPE_TRANSPORT_CAPSULE ->
                         player.getPlayerTransport().playerTransport(selected);
             }

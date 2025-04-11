@@ -178,10 +178,10 @@ public class Monster extends Entity {
         try {
             switch (entity) {
                 case Player player -> {
-                    if (player.getPlayerStatus().getLastTimeAddExp() + 1000 > ms) return;
+                    if (player.getPlayerState().getLastTimeAddExp() + 1000 > ms) return;
                     long exp = player.getPoints().getPotentialPointsAttack(this, damage);
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
-                    player.getPlayerStatus().setLastTimeAddExp(ms);
+                    player.getPlayerState().setLastTimeAddExp(ms);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + entity.getName());
             }

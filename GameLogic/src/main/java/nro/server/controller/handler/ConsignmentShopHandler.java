@@ -28,7 +28,7 @@ public class ConsignmentShopHandler implements IMessageProcessor {
                     var moneyType = message.reader().readByte();
                     var money = message.reader().readInt();
 
-                    Item item = ItemFactory.getInstance().createItemOptionsBase(idItem);
+                    Item item = ItemFactory.getInstance().createItemOptionsBase(idItem, player.getId(), 1);
                     String name = item.getTemplate().name();
                     if (player.getPlayerInventory().addItemBag(item)) {
                         ServerService.getInstance().sendChatGlobal(session, null, "Nhận thành công " + name, false);

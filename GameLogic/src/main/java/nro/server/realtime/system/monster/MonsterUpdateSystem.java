@@ -59,7 +59,7 @@ public class MonsterUpdateSystem implements ISystemBase {
                             monster.setLive();
                         }
                     } else {
-                        if (!monster.isMonsterAttack()) return;
+                        if (!monster.isMonsterAttack()) continue;
                         if (Util.canDoWithTime(monster.getInfo().getLastTimeAttack(), 1000)) {
                             monster.attackPlayer();
                         }

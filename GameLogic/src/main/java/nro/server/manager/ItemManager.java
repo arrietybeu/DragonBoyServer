@@ -1,6 +1,7 @@
 package nro.server.manager;
 
 import lombok.Getter;
+import nro.consts.ConstItem;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.item.*;
@@ -94,6 +95,7 @@ public final class ItemManager implements IManager {
                     var body = resultSet.getShort("body");
                     var leg = resultSet.getShort("leg");
                     var options = resultSet.getString("options");
+                    boolean isTrade = resultSet.getByte("is_trade") == 1;
 
                     List<ItemOption> itemOptions = new ArrayList<>();
                     JSONArray dataArray = (JSONArray) JSONValue.parse(options);
@@ -107,7 +109,8 @@ public final class ItemManager implements IManager {
                         itemOptions.add(new ItemOption(idOption, param));
                     }
 
-                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, maxQuantity, powerRequire, head, body, leg, itemOptions);
+                    var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID,
+                            part, maxQuantity, powerRequire, head, body, leg, itemOptions, isTrade);
                     this.itemTemplates.put(id, itemTemplate);
                 }
                 this.setDataItemTemplate();
@@ -168,7 +171,7 @@ public final class ItemManager implements IManager {
                     int itemId = resultSet.getInt("item_id");
                     int icon = resultSet.getInt("icon");
 
-                    Item itemFlagBag = ItemFactory.getInstance().createItemOptionsBase(itemId);
+                    Item itemFlagBag = ItemFactory.getInstance().createItemOptionsBase(itemId, ConstItem.FLAG_BAG, 1);
                     Flag flag = new Flag(id, itemId, icon, itemFlagBag);
                     this.flags.add(flag);
                 }

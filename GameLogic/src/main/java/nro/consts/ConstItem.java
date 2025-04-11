@@ -2,6 +2,11 @@ package nro.consts;
 
 public class ConstItem {
 
+    // creator by id
+
+    public static final int SERVER = -300;
+    public static final int FLAG_BAG = -299;
+
     // Item status
 
     public static final byte TYPE_AO = 0;

@@ -4,7 +4,6 @@ import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.npc.NpcService;
-import nro.server.service.core.player.TaskService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Fusion;
@@ -203,14 +202,14 @@ public class AreaService {
                 return;
             }
 
-//            if (player.getPlayerStatus().getLastTimeChangeMap() + 5000 > System.currentTimeMillis()) {
+//            if (player.getPlayerState().getLastTimeChangeMap() + 5000 > System.currentTimeMillis()) {
 //                this.keepPlayerInSafeZone(player, waypoint);
 //                serverService.sendChatGlobal(player.getSession(), null, "Vui lòng chờ 5 giây để chuyển map", false);
 //                return;
 //            }
 
             this.gotoMap(player, newArea, waypoint.getGoX(), waypoint.getGoY());
-//            player.getPlayerStatus().setLastTimeChangeMap(System.currentTimeMillis());
+//            player.getPlayerState().setLastTimeChangeMap(System.currentTimeMillis());
         } catch (Exception ex) {
             LogServer.LogException("playerChangerMap: " + ex.getMessage(), ex);
         }
@@ -218,8 +217,8 @@ public class AreaService {
 
     public void changeArea(Player player, Area newArea) {
         long time = System.currentTimeMillis();
-        if (time - player.getPlayerStatus().getLastTimeChangeArea() < 10000) {
-            NpcService.getInstance().sendNpcTalkUI(player, 5, "Chưa thể chuyển khu vực lúc này vui lòng chờ " + (10 - (time - player.getPlayerStatus().getLastTimeChangeArea()) / 1000) + " giây nữa", -1);
+        if (time - player.getPlayerState().getLastTimeChangeArea() < 10000) {
+            NpcService.getInstance().sendNpcTalkUI(player, 5, "Chưa thể chuyển khu vực lúc này vui lòng chờ " + (10 - (time - player.getPlayerState().getLastTimeChangeArea()) / 1000) + " giây nữa", -1);
             return;
         }
         if (player.getArea().equals(newArea)) {
@@ -227,7 +226,7 @@ public class AreaService {
             return;
         }
         this.transferEntity(player, newArea, player.getX(), player.getY());
-        player.getPlayerStatus().setLastTimeChangeArea(time);
+        player.getPlayerState().setLastTimeChangeArea(time);
     }
 
     public void gotoMap(Entity object, Area goArea, int goX, int goY) {

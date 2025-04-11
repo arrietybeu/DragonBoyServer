@@ -54,7 +54,7 @@ public class NpcService {
 
     public void createMenu(Player player, int npcId, int indexMenu, String npcSay, String... menus) {
         try (Message message = new Message(32)) {
-            player.getPlayerStatus().setIndexMenu(indexMenu);
+            player.getPlayerState().setIndexMenu(indexMenu);
             DataOutputStream data = message.writer();
             data.writeShort(npcId);
             data.writeUTF(npcSay);

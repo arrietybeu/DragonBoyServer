@@ -15,7 +15,6 @@ import nro.server.service.model.entity.pet.PetFollow;
 
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
-import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;
 import nro.server.manager.ItemManager;
 import nro.server.network.Message;
@@ -26,7 +25,6 @@ import nro.server.service.core.system.ServerService;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Getter
 @Setter
@@ -37,7 +35,7 @@ public class Player extends Entity {
     private PlayerTask playerTask;
     private PlayerInventory playerInventory;
     private PlayerMagicTree playerMagicTree;
-    private PlayerStatus playerStatus;
+    private PlayerState playerState;
     private PlayerTransport playerTransport;
 
     private Clan clan;
@@ -56,7 +54,7 @@ public class Player extends Entity {
         this.playerTask = new PlayerTask(this);
         this.playerInventory = new PlayerInventory(this);
         this.playerMagicTree = new PlayerMagicTree(this);
-        this.playerStatus = new PlayerStatus(this);
+        this.playerState = new PlayerState(this);
         this.points = new PlayerPoints(this);
         this.fashion = new PlayerFashion(this);
         this.skills = new PlayerSkills(this);
@@ -82,7 +80,7 @@ public class Player extends Entity {
         try {
             ItemService itemService = ItemService.getInstance();
             long currentTime = System.currentTimeMillis();
-            long lastChangeTime = this.getPlayerStatus().getLastTimeChangeFlag();
+            long lastChangeTime = this.getPlayerState().getLastTimeChangeFlag();
             boolean isInvalidIndex = index < 0 || index >= ItemManager.getInstance().getFlags().size();
 
             switch (action) {
@@ -103,7 +101,7 @@ public class Player extends Entity {
                     }
 
                     if (index != 0) {
-                        this.getPlayerStatus().setLastTimeChangeFlag(currentTime);
+                        this.getPlayerState().setLastTimeChangeFlag(currentTime);
                     }
 
                     this.fashion.setFlagPk((byte) index);
@@ -140,7 +138,7 @@ public class Player extends Entity {
 
         int goldReceived = (int) (goldLost * 0.9); // hé hé hé trừ 10% đi
 
-        Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.VANG_1, goldReceived);
+        Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.VANG_1, this.getId(), goldReceived);
         ItemMap itemMap = new ItemMap(this.getArea(), this.getArea().increaseItemMapID(), this.getId(), item, this.getX(), this.getY(),
                 -1, true);
         ItemService.getInstance().sendDropItemMap(this, itemMap, false);
@@ -178,9 +176,9 @@ public class Player extends Entity {
                 this.playerTask.dispose();
                 this.playerTask = null;
             }
-            if (this.playerStatus != null) {
-                this.playerStatus.dispose();
-                this.playerStatus = null;
+            if (this.playerState != null) {
+                this.playerState.dispose();
+                this.playerState = null;
             }
             if (this.playerTransport != null) {
                 this.playerTransport.dispose();

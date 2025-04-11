@@ -196,7 +196,7 @@ public class PlayerPoints extends Points {
             if (!this.isDead()) return;
 
             this.currentHP = 1;
-            this.player.getPlayerStatus().setLockMove(false);
+            this.player.getPlayerState().setLockMove(false);
 
             short x = 400;
             short y = 5;
@@ -226,7 +226,7 @@ public class PlayerPoints extends Points {
         // cancel trade
         // huy skill
         this.currentHP = 0;
-        this.player.getPlayerStatus().setLockMove(true);
+        this.player.getPlayerState().setLockMove(true);
         this.player.onDie(killer);
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendCurrencyHpMp(this.player);
@@ -238,7 +238,7 @@ public class PlayerPoints extends Points {
     @Override
     public void setLive() {
         this.currentHP = this.maxHP;
-        this.player.getPlayerStatus().setLockMove(false);
+        this.player.getPlayerState().setLockMove(false);
         PlayerService playerService = PlayerService.getInstance();
         playerService.sendCurrencyHpMp(this.player);
         playerService.sendPlayerRevive(this.player);

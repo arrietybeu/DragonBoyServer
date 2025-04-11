@@ -21,10 +21,11 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class Item implements AutoCloseable {
 
+    private int creatorPlayerId = -1;
     private int quantity;
     private long createTime;
     private ItemTemplate template;
-    private final List<ItemOption> itemOptions;
+    private List<ItemOption> itemOptions;
 
     public Item() {
         this.itemOptions = new ArrayList<>();

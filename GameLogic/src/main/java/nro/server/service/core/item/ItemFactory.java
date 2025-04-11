@@ -19,18 +19,20 @@ public class ItemFactory {
 
     private final static ItemManager itemManager = ItemManager.getInstance();
 
-    public Item createItemNotOptionsBase(int tempId, int... quantitys) {
-        var quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
+    public Item createItemNotOptionsBase(int tempId, int creatorId, int quantity) {
+        if (quantity <= 0) {
+            quantity = 1;
+        }
         Item item = new Item();
+        item.setCreatorPlayerId(creatorId);
         item.setTemplate(getTemplate(tempId));
         item.setQuantity(quantity);
         item.setCreateTime(System.currentTimeMillis());
         return item;
     }
 
-    public Item createItemOptionsBase(int itemId, int... quantitys) {
-        var quantity = (quantitys.length > 0 && quantitys[0] > 0) ? quantitys[0] : 1;
-        Item item = this.createItemNotOptionsBase(itemId, quantity);
+    public Item createItemOptionsBase(int itemId, int creatorId, int quantity) {
+        Item item = this.createItemNotOptionsBase(itemId, creatorId, quantity);
         this.initBaseOptions(item);
         return item;
     }
@@ -44,21 +46,33 @@ public class ItemFactory {
         return itemShop;
     }
 
-
-
     public Item createItemNull() {
         return new Item();
     }
 
-    public Item clone(Item item) {
-        Item itemClone = new Item();
-        itemClone.setTemplate(item.getTemplate());
-        itemClone.setQuantity(item.getQuantity());
-        for (ItemOption io : item.getItemOptions()) {
-            itemClone.getItemOptions().add(io);
+    public Item clone(Item original) {
+
+        if (original == null || original.getTemplate() == null) {
+            return null;
         }
-        return itemClone;
+
+        Item clone = new Item();
+        clone.setTemplate(original.getTemplate());
+        clone.setQuantity(original.getQuantity());
+        clone.setCreateTime(original.getCreateTime());
+
+        List<ItemOption> optionClones = new ArrayList<>();
+        for (ItemOption option : original.getItemOptions()) {
+            ItemOption optionClone = new ItemOption();
+            optionClone.setId(option.getId());
+            optionClone.setParam(option.getParam());
+            optionClones.add(optionClone);
+        }
+
+        clone.setItemOptions(optionClones);
+        return clone;
     }
+
 
     public ItemTemplate getTemplate(int id) {
         return itemManager.getItemTemplates().get((short) id);
@@ -96,7 +110,7 @@ public class ItemFactory {
         short[] itemIds = itemIdsByClass[clazz];
 
         for (short itemId : itemIds) {
-            Item item = createItemOptionsBase(itemId);
+            Item item = createItemOptionsBase(itemId, ConstItem.SERVER, 1);
             if (item != null) {
                 items.add(item);
             } else {
@@ -110,7 +124,7 @@ public class ItemFactory {
         List<Item> items = new ArrayList<>();
 
         var itemId = 12;
-        Item item = createItemOptionsBase(itemId);
+        Item item = createItemOptionsBase(itemId, ConstItem.SERVER, 1);
         if (item != null) {
             items.add(item);
         } else {

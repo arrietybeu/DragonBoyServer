@@ -135,7 +135,7 @@ public class PlayerLoader {
 
     private int loadInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
         int maxRowIndex = 0;
-        String query = "SELECT temp_id, quantity, create_time, options, row_index FROM " + tableName +
+        String query = "SELECT temp_id, quantity, create_time, options, row_index, creator_id FROM " + tableName +
                 " WHERE player_id = ? ORDER BY row_index ASC";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -149,11 +149,12 @@ public class PlayerLoader {
                     long createTime = (timestamp != null) ? timestamp.getTime() : 0;
                     String optionsText = resultSet.getString("options");
                     int rowIndex = resultSet.getInt("row_index");
+                    int creatorId = resultSet.getInt("creator_id");
 
                     if (rowIndex > maxRowIndex) {
                         maxRowIndex = rowIndex + 1;
                     }
-                    Item item = (tempId != -1) ? ItemFactory.getInstance().createItemNotOptionsBase(tempId, quantity) : ItemFactory.getInstance().createItemNull();
+                    Item item = (tempId != -1) ? ItemFactory.getInstance().createItemNotOptionsBase(tempId, creatorId, quantity) : ItemFactory.getInstance().createItemNull();
                     if (tempId != -1) {
                         item.setCreateTime(createTime);
                         item.setJsonOptions(optionsText);

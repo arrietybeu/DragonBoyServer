@@ -161,39 +161,67 @@ public class PlayerUpdate {
     private void saveInventoryItems(Player player, Connection connection, String tableName, List<Item> inventory) throws SQLException {
         if (inventory.isEmpty()) return;
 
-        StringBuilder query = new StringBuilder("UPDATE " + tableName + " SET temp_id = CASE row_index ");
+        StringBuilder query = new StringBuilder("UPDATE " + tableName + " SET ");
 
+        // temp_id
+        query.append("temp_id = CASE row_index ");
         for (int index = 0; index < inventory.size(); index++) {
             query.append("WHEN ").append(index).append(" THEN ? ");
         }
-        query.append(" END, quantity = CASE row_index ");
+        query.append("END, ");
 
+        // quantity
+        query.append("quantity = CASE row_index ");
         for (int index = 0; index < inventory.size(); index++) {
             query.append("WHEN ").append(index).append(" THEN ? ");
         }
-        query.append(" END, options = CASE row_index ");
+        query.append("END, ");
 
+        // options
+        query.append("options = CASE row_index ");
         for (int index = 0; index < inventory.size(); index++) {
             query.append("WHEN ").append(index).append(" THEN ? ");
         }
-        query.append(" END WHERE player_id = ? AND row_index IN (");
+        query.append("END, ");
 
+        // creator_id
+        query.append("creator_id = CASE row_index ");
+        for (int index = 0; index < inventory.size(); index++) {
+            query.append("WHEN ").append(index).append(" THEN ? ");
+        }
+        query.append("END ");
+
+        // WHERE
+        query.append("WHERE player_id = ? AND row_index IN (");
         for (int index = 0; index < inventory.size(); index++) {
             query.append(index).append(index < inventory.size() - 1 ? ", " : ")");
         }
 
         try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
             int paramIndex = 1;
+
+            // temp_id
             for (Item item : inventory) {
                 statement.setInt(paramIndex++, item.getTemplate() == null ? -1 : item.getTemplate().id());
             }
+
+            // quantity
             for (Item item : inventory) {
                 statement.setInt(paramIndex++, item.getQuantity());
             }
+
+            // options (json)
             for (Item item : inventory) {
                 statement.setString(paramIndex++, item.getJsonOptions());
             }
-            statement.setInt(paramIndex++, player.getId());
+
+            // creator_id
+            for (Item item : inventory) {
+                statement.setInt(paramIndex++, item.getCreatorPlayerId());
+            }
+
+            // player_id
+            statement.setInt(paramIndex, player.getId());
 
             statement.executeUpdate();
         }

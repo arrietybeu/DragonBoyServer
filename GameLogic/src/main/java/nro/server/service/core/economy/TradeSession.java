@@ -1,6 +1,8 @@
 package nro.server.service.core.economy;
 
 import lombok.Getter;
+import lombok.Setter;
+import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.item.Item;
 
@@ -10,16 +12,33 @@ import java.util.List;
 @Getter
 public class TradeSession {
 
-    private final Player player1;
-    private final Player player2;
+    private static final int MAX_GOLD = 900_000_000;
+    private final int idTrade;
+
+    @Setter
+    private long createTime;
+
+    private int goldPlayer1;
+    private int goldPlayer2;
+
+    private boolean donePlayer1 = false;
+    private boolean donePlayer2 = false;
+
+    private Player player1;
+    private Player player2;
     private final List<Item> offerPlayer1 = new ArrayList<>();
     private final List<Item> offerPlayer2 = new ArrayList<>();
-    private boolean lockedPlayer1 = false;
-    private boolean lockedPlayer2 = false;
 
-    public TradeSession(Player p1, Player p2) {
+    public TradeSession(int id, Player p1, Player p2) {
+        this.idTrade = id;
         this.player1 = p1;
         this.player2 = p2;
+        this.setIdTradeForPlayer(id);
+    }
+
+    private void setIdTradeForPlayer(int id) {
+        this.player1.getPlayerState().setIdTrade(id);
+        this.player2.getPlayerState().setIdTrade(id);
     }
 
     public Player getOpponent(Player player) {
@@ -28,28 +47,67 @@ public class TradeSession {
 
     public void addItem(Player player, Item item) {
         if (player.equals(player1)) {
+            if (this.checkValidSize(offerPlayer1.size())) return;
             offerPlayer1.add(item);
         } else {
+            if (this.checkValidSize(offerPlayer2.size())) return;
             offerPlayer2.add(item);
         }
     }
 
-    public void lock(Player player) {
+    private boolean checkValidSize(int size) {
+        if (size > 10) {
+            ServerService.getInstance().sendChatGlobal(player1.getSession(), null, "Bạn chỉ có thể giao dịch tối đa 10 món đồ", false);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addGold(Player player, int gold) {
+        if (gold < 0) {
+            return false;
+        }
+        if (gold > MAX_GOLD) {
+            return false;
+        }
         if (player.equals(player1)) {
-            lockedPlayer1 = true;
+            goldPlayer1 = gold;
         } else {
-            lockedPlayer2 = true;
+            goldPlayer2 = gold;
+        }
+        return true;
+    }
+
+    public void done(Player player) {
+        if (player.equals(player1)) {
+            donePlayer1 = true;
+        } else {
+            donePlayer2 = true;
         }
     }
 
-    public boolean isBothLocked() {
-        return lockedPlayer1 && lockedPlayer2;
+    public boolean isBothDone() {
+        return donePlayer1 && donePlayer2;
     }
 
     public void reset() {
+        // clear list of items
         offerPlayer1.clear();
         offerPlayer2.clear();
-        lockedPlayer1 = false;
-        lockedPlayer2 = false;
+
+        donePlayer1 = false;
+        donePlayer2 = false;
+
+        if (player1 != null) {
+            player1.getPlayerState().setIdTrade(-1);
+            player1 = null;
+        }
+
+        if (player2 != null) {
+            player2.getPlayerState().setIdTrade(-1);
+            player2 = null;
+        }
+
+        createTime = 0;
     }
 }

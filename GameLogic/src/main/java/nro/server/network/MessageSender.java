@@ -5,6 +5,7 @@
 package nro.server.network;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -69,10 +70,11 @@ public final class MessageSender {
                             SessionManager.getInstance().kickSession(this.session);
                         }
                         try {
-                            Thread.sleep(10L);
+                            Thread.sleep(15L);
                         } catch (InterruptedException ignored) {
                         }
                     }
+                    SessionManager.getInstance().kickSession(this.session);
                 });
             }
         } catch (Exception e) {
@@ -124,7 +126,7 @@ public final class MessageSender {
         dos.flush();
     }
 
-    private byte writeKey(byte b) {
+    private byte writeKey(byte b) throws IOException {
         var curW = session.getSessionInfo().curW;
         var keys = session.getSessionInfo().getKeys();
         final byte i = (byte) ((keys[curW++] & 0xFF) ^ (b & 0xFF));
@@ -141,8 +143,7 @@ public final class MessageSender {
             }
             this.dos = null;
         } catch (Exception e) {
-            LogServer.LogException("Error close: " + e.getMessage());
-            e.printStackTrace();
+            LogServer.LogException("Error close: " + e.getMessage(), e);
         }
     }
 

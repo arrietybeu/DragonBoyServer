@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstError;
 import nro.consts.ConstItem;
+import nro.consts.ConstOption;
 import nro.consts.ConstUseItem;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.model.item.Item;
@@ -102,8 +103,7 @@ public class PlayerInventory {
                         for (Item itemInventory : items) {
                             if (itemInventory == null || itemInventory.getTemplate() == null) continue;
 
-                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id()
-                                    || !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
+                            if (itemInventory.getTemplate().id() != itemNew.getTemplate().id() || !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
                                 continue;
                             }
                             // kiểm tra số lượng item có vượt quá giới hạn không
@@ -407,7 +407,35 @@ public class PlayerInventory {
         areaService.sendSpeedPlayerInArea(player);//-30 ~ 8
     }
 
-    private void _______________FIND_ITEM_____________() {
+    public Item getItemTrade(int index, int quantity) {
+        if (index < 0 || index >= this.itemsBag.size()) {
+            return null;
+        }
+
+        Item item = this.itemsBag.get(index);
+        if (item == null || item.getTemplate() == null) {
+            return null;
+        }
+
+        if (item.getQuantity() < quantity && quantity > 99) {
+            return null;
+        }
+
+        if (!item.getTemplate().isTrade()) {
+            ServerService.dialogMessage(this.player.getSession(), String.format("Không thể giao dịch %s", item.getTemplate().name()));
+            return null;
+        }
+
+        boolean hasOption30 = this.doesItemHaveOptionId(item, ConstOption.KHONG_GIAO_DICH);
+        if (hasOption30) {
+            ServerService.dialogMessage(this.player.getSession(), String.format("Không thể giao dịch %s", item.getTemplate().name()));
+            return null;
+        }
+
+        return item;
+    }
+
+    private void _______________FIND_____________() {
     }
 
     public Item findItemInBag(int templateId) {
@@ -429,6 +457,10 @@ public class PlayerInventory {
             }
         }
         return -1;
+    }
+
+    public boolean doesItemHaveOptionId(Item item, int optionId) {
+        return item.getItemOptions().stream().anyMatch(itemOption -> itemOption.getId() == optionId);
     }
 
     private void _______________CHECK_______________() {
@@ -488,7 +520,6 @@ public class PlayerInventory {
 
     public void disposeItem(Item item) {
         // nro.utils.Util.getMethodCaller();
-
         if (item != null) {
             item.dispose();
             item = null;

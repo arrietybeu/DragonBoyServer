@@ -30,7 +30,7 @@ public class BunmaDendeAppule extends Npc {
 
     @Override
     public void openUIConfirm(Player player, int select) {
-        if (player.getPlayerStatus().isBaseMenu()) {
+        if (player.getPlayerState().isBaseMenu()) {
             switch (player.getArea().getMap().getId()) {
                 case ConstMap.LANG_ARU -> ShopService.getInstance().sendNornalShop(player, ConstShop.SHOP_BUNMA);
                 case ConstMap.LANG_MOORI -> ShopService.getInstance().sendNornalShop(player, ConstShop.SHOP_DENDE);

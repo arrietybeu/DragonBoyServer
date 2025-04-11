@@ -68,7 +68,7 @@ public class ChatService {
 
                 List<Item> resultList = new ArrayList<>();
                 for (var entry : ItemManager.getInstance().getItemTemplates().values()) {
-                    Item item = ItemFactory.getInstance().createItemOptionsBase(entry.id());
+                    Item item = ItemFactory.getInstance().createItemOptionsBase(entry.id(), playerChat.getId(), 1);
                     String itemName = item.getTemplate().name();
 
                     String itemNameNoAccent = Util.removeDiacritics(itemName).toLowerCase();
@@ -122,7 +122,7 @@ public class ChatService {
                         serverService.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
                         return;
                     }
-                    Item item = ItemFactory.getInstance().createItemOptionsBase(itemId, quantity);
+                    Item item = ItemFactory.getInstance().createItemOptionsBase(itemId, quantity, 1);
                     playerChat.getPlayerInventory().addItemBag(item);
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
                 } else {
@@ -151,7 +151,7 @@ public class ChatService {
                     serverService.sendChatGlobal(playerChat.getSession(), null, "Item không hợp lệ: " + text, false);
                     return;
                 }
-                Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap);
+                Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap, playerChat.getId(), 1);
                 ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getArea().increaseItemMapID(), playerChat.getId(), item, playerChat.getX(), playerChat.getY(), -1, true);
                 ItemService.getInstance().sendDropItemMap(playerChat, itemMap, true);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemIdMap, false);
@@ -217,7 +217,7 @@ public class ChatService {
                     int itemIdMap;
                     int x = playerChat.getX();
                     for (itemIdMap = 0; itemIdMap < 100; itemIdMap++) {
-                        Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap);
+                        Item item = ItemFactory.getInstance().createItemOptionsBase(itemIdMap, playerChat.getId(), 1);
                         ItemMap itemMap = new ItemMap(playerChat.getArea(), playerChat.getArea().increaseItemMapID(), playerChat.getId(), item, x + 10, playerChat.getY(), -1, true);
                         ItemService.getInstance().sendDropItemMap(playerChat, itemMap, true);
                     }
@@ -245,7 +245,7 @@ public class ChatService {
                     // for (int itemId = idMax - 10; itemId < idMax; itemId++) {
                     System.out.println("slot: " + playerChat.getPlayerInventory().getCountEmptyBag());
                     for (int itemId = 0; itemId < playerChat.getPlayerInventory().getCountEmptyBag(); itemId++) {
-                        Item item = ItemFactory.getInstance().createItemOptionsBase(itemId);
+                        Item item = ItemFactory.getInstance().createItemOptionsBase(itemId, playerChat.getId(), 1);
                         if (playerChat.getPlayerInventory().addItemBag(item)) {
                             serverService.sendChatGlobal(playerChat.getSession(), null, "Đã thêm item: " + itemId, false);
                         }

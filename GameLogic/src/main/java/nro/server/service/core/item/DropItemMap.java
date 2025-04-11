@@ -41,7 +41,7 @@ public class DropItemMap {
             case ConstMonster.KHUNG_LONG, ConstMonster.LON_LOI, ConstMonster.QUY_DAT -> {
                 if (playerTask.getTaskMain().getId() == 2) {
                     if (playerTask.getTaskMain().getIndex() != 0) return;
-                    Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.DUI_GA);
+                    Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.DUI_GA, player.getId(), 1);
                     ItemMap itemMap = new ItemMap(monster.getArea(), monster.getArea().increaseItemMapID(), player.getId(), item, monster.getX(), monster.getY(),
                             -1, true);
                     itemMaps.add(itemMap);
@@ -51,7 +51,7 @@ public class DropItemMap {
                 if (playerTask.getTaskMain().getId() == 8) {
                     if (playerTask.getTaskMain().getIndex() != 1) return;
                     if (Util.nextInt(100) < 10) {
-                        Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.NGOC_RONG_7_SAO);
+                        Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.NGOC_RONG_7_SAO, player.getId(), 1);
                         ItemMap itemMap = new ItemMap(
                                 monster.getArea(),
                                 monster.getArea().increaseItemMapID(),
@@ -83,9 +83,9 @@ public class DropItemMap {
 
                 if (!isTaskIdValid || !isIndexTaskValid) continue;
 
-                Item item = ItemFactory.getInstance().createItemOptionsBase(itemDropInfo.itemId());
-                player.getPlayerStatus().setIdItemTask(player.getArea().increaseItemMapID());
-                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerStatus().getIdItemTask(), player.getId(), item, itemDropInfo.x(), itemDropInfo.y(), -1, false);
+                Item item = ItemFactory.getInstance().createItemOptionsBase(itemDropInfo.itemId(), player.getId(), 1);
+                player.getPlayerState().setIdItemTask(player.getArea().increaseItemMapID());
+                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerState().getIdItemTask(), player.getId(), item, itemDropInfo.x(), itemDropInfo.y(), -1, false);
                 ItemService.getInstance().sendDropItemMap(player, itemMap, false);
             }
         }

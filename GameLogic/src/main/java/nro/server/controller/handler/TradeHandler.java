@@ -23,35 +23,50 @@ public class TradeHandler implements IMessageProcessor {
         try {
             var action = message.reader().readByte();
 
+            System.out.println("TRADE: " + action);
             Player opponent;
             TradeSession trade;
 
+            TradeService tradeService = TradeService.getInstance();
             switch (action) {
                 case ConstTrade.TRANSACTION_REQUEST -> {
                     int opponentId = message.reader().readInt();
-                    opponent = player.getArea().getPlayer(opponentId);
+                    opponent = this.getPlayerById(player, opponentId);
                     if (opponent != null) {
-                        if (!TradeService.getInstance().requestTrade(player, opponent)) {
+                        if (!tradeService.requestTrade(player, opponent)) {
                             ServerService.getInstance().sendChatGlobal(session, null, "Vui lòng đợi 1 lát nữa", false);
                         }
                     }
                 }
+                case ConstTrade.TRANSACTION_ACCEPT -> {
+                    int opponentId = message.reader().readInt();
+                    opponent = this.getPlayerById(player, opponentId);
+                    if (opponent == null) return;
+                    tradeService.acceptTrade(player, opponent);
+                }
+
                 case ConstTrade.SELECT_ITEM -> {
-                    short itemIndex = message.reader().readShort();
-                    trade = TradeService.getInstance().getSession(player);
-                    Item item = player.getPlayerInventory().getItemsBag().get(itemIndex);
-                    if (item != null && item.getTemplate() != null) {
-                        trade.addItem(player, item);
+                    short itemIndex = message.reader().readByte();
+                    int quantity = message.reader().readInt();
+                    if (itemIndex == -1) {
+                        tradeService.addGoldToTrade(player, quantity);
+                    } else {
+                        tradeService.addItemToTrade(player, itemIndex, quantity);
                     }
                 }
-                case ConstTrade.LOCK_TRADE -> TradeService.getInstance().lockTrade(player);
-                case ConstTrade.CANCLE_TRADE -> TradeService.getInstance().cancelTrade(player);
+
+                case ConstTrade.CANCLE_TRADE -> tradeService.cancelTrade(player);
+                case ConstTrade.LOCK_TRADE -> tradeService.lockTrade(player);
             }
 
         } catch (Exception e) {
             LogServer.LogException("TradeHandler: " + e.getMessage(), e);
             TradeService.getInstance().cancelTrade(session.getPlayer());
         }
+    }
+
+    private Player getPlayerById(Player player, int id) {
+        return player.getArea().getPlayer(id);
     }
 
 }
