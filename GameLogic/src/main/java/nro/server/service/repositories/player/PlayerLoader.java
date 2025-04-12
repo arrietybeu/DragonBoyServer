@@ -1,6 +1,5 @@
 package nro.server.service.repositories.player;
 
-import lombok.Getter;
 import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.map.areas.Area;
@@ -26,8 +25,13 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class PlayerLoader {
 
-    @Getter
-    private static final PlayerLoader instance = new PlayerLoader();
+    private static final class SingletonHolder {
+        private static final PlayerLoader instance = new PlayerLoader();
+    }
+
+    public static PlayerLoader getInstance() {
+        return PlayerLoader.SingletonHolder.instance;
+    }
 
     public Player loadPlayer(Session session) throws Exception {
         String query = "SELECT * FROM player WHERE account_id = ? LIMIT 1";

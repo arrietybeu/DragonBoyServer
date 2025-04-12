@@ -4,6 +4,7 @@ import lombok.Getter;
 import nro.consts.ConstShop;
 import nro.consts.ConstsCmd;
 import nro.server.manager.ShopManager;
+import nro.server.service.core.combat.MonsterService;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemShop;
 import nro.server.service.model.shop.Shop;
@@ -19,8 +20,13 @@ import java.util.List;
 
 public class ShopService {
 
-    @Getter
-    private static final ShopService instance = new ShopService();
+    private static final class SingletonHolder {
+        private static final ShopService instance = new ShopService();
+    }
+
+    public static ShopService getInstance() {
+        return ShopService.SingletonHolder.instance;
+    }
 
     public void sendNornalShop(Player player, int shopId) {
         Shop shop = ShopManager.getInstance().getShop(shopId);

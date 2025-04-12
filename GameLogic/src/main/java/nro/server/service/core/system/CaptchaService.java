@@ -1,6 +1,5 @@
 package nro.server.service.core.system;
 
-import lombok.Getter;
 import nro.consts.ConstsCmd;
 import nro.server.network.Message;
 import nro.server.service.model.entity.player.Player;
@@ -15,8 +14,13 @@ import java.util.List;
 
 public class CaptchaService {
 
-    @Getter
-    private static final CaptchaService instance = new CaptchaService();
+    private static final class SingletonHolder {
+        private static final CaptchaService instance = new CaptchaService();
+    }
+
+    public static CaptchaService getInstance() {
+        return CaptchaService.SingletonHolder.instance;
+    }
 
     public void sendCaptcha(Player player, int type) {
         try (Message message = new Message(ConstsCmd.MOB_CAPCHA)) {

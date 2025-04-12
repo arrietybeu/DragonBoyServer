@@ -1,6 +1,5 @@
 package nro.server.service.core.economy;
 
-import lombok.Getter;
 import nro.consts.ConstTrade;
 import nro.consts.ConstsCmd;
 import nro.server.network.Message;
@@ -18,8 +17,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TradeService {
 
-    @Getter
-    private static final TradeService instance = new TradeService();
+    private static final class SingletonHolder {
+        private static final TradeService instance = new TradeService();
+    }
+
+    public static TradeService getInstance() {
+        return TradeService.SingletonHolder.instance;
+    }
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -112,7 +116,6 @@ public class TradeService {
                     writer.writeShort(-1);
                     continue;
                 }
-
                 writer.writeShort(item.getTemplate().id());
                 writer.writeInt(item.getQuantity());
                 item.writeDataOptions(writer);
@@ -146,8 +149,7 @@ public class TradeService {
         try {
             TradeSession session = this.getSession(player);
             if (session != null) {
-                if (!session.addGold(player, gold)) {
-                }
+                session.addGold(player, gold);
             }
         } finally {
             this.lock.writeLock().unlock();
@@ -195,6 +197,29 @@ public class TradeService {
         }
     }
 
+    public void cancelTradeBySession(TradeSession session) {
+        this.lock.writeLock().lock();
+        try {
+            Player p1 = session.getPlayer1();
+            Player p2 = session.getPlayer2();
+            ServerService service = ServerService.getInstance();
+
+            if (p1 != null) {
+                this.sendCloseTransaction(p1);
+                service.sendChatGlobal(p1.getSession(), null, "Giao dịch bị hủy bỏ", false);
+            }
+            if (p2 != null) {
+                this.sendCloseTransaction(p2);
+                service.sendChatGlobal(p2.getSession(), null, "Giao dịch bị hủy bỏ", false);
+            }
+            session.reset();
+        } catch (Exception exception) {
+            LogServer.LogException("Error cancel trade: " + exception.getMessage(), exception);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+    }
+
     public void lockTrade(Player player) {
         this.lock.writeLock().lock();
         try {
@@ -204,9 +229,9 @@ public class TradeService {
                 Player player2 = session.getPlayer2();
                 if (player1 == null || player2 == null) return;
                 if (player.equals(player1)) {
-                    this.sendLockTransaction(player1, session.getGoldPlayer1(), session.getOfferPlayer1());
+                    this.sendLockTransaction(player2, session.getGoldPlayer1(), session.getOfferPlayer1());
                 } else if (player.equals(player2)) {
-                    this.sendLockTransaction(player2, session.getGoldPlayer2(), session.getOfferPlayer2());
+                    this.sendLockTransaction(player1, session.getGoldPlayer2(), session.getOfferPlayer2());
                 }
             }
         } finally {
@@ -221,7 +246,7 @@ public class TradeService {
             if (session != null) {
                 session.done(player);
                 if (session.isBothDone()) {
-                    completeTrade(session);
+                    this.completeTrade(session);
                 }
             }
         } finally {
@@ -236,8 +261,9 @@ public class TradeService {
             if (p1 == null || p2 == null) return;
 
             if (p1.getPlayerInventory().isBagFull() || p2.getPlayerInventory().isBagFull()) {
-                ServerService.getInstance().sendChatGlobal(p1.getSession(), null, "Túi đồ đã đầy, không thể giao dịch.", false);
-                ServerService.getInstance().sendChatGlobal(p2.getSession(), null, "Túi đồ đã đầy, không thể giao dịch.", false);
+                String cancelMessage = "Túi đồ đã đầy, không thể giao dịch.";
+                ServerService.getInstance().sendChatGlobal(p1.getSession(), null, cancelMessage, false);
+                ServerService.getInstance().sendChatGlobal(p2.getSession(), null, cancelMessage, false);
                 this.cancelTrade(p1);
                 return;
             }
@@ -256,9 +282,39 @@ public class TradeService {
                 checkValidateCompleteTrade(p1, p2, item, p2.getPlayerInventory(), p1.getPlayerInventory(), itemClone);
             }
 
-            this.cancelTrade(p1);
+            this.sendDoneTrade(p1);
         } catch (Exception exception) {
             LogServer.LogException("Error complete trade: " + exception.getMessage(), exception);
+        }
+    }
+
+    private void sendDoneTrade(Player player) {
+        this.lock.writeLock().lock();
+        try {
+            TradeSystem tradeSystem = TradeSystem.getInstance();
+            int tradeId = player.getPlayerState().getIdTrade();
+            if (tradeId < 0) return;
+
+            TradeSession session = tradeSystem.getTradeSessions().remove(tradeId);
+            if (session != null) {
+                Player p1 = session.getPlayer1();
+                Player p2 = session.getPlayer2();
+                ServerService service = ServerService.getInstance();
+                if (p1 != null) {
+                    this.sendCloseTransaction(p1);
+                    service.sendChatGlobal(p1.getSession(), null, "Giao dịch thành công", false);
+                }
+
+                if (p2 != null) {
+                    this.sendCloseTransaction(p2);
+                    service.sendChatGlobal(p2.getSession(), null, "Giao dịch thành công", false);
+                }
+                session.reset();
+            }
+        } catch (Exception exception) {
+            LogServer.LogException("Error cancel trade: " + exception.getMessage(), exception);
+        } finally {
+            this.lock.writeLock().unlock();
         }
     }
 
@@ -269,6 +325,10 @@ public class TradeService {
         if (item.getQuantity() <= 0 || item.getQuantity() > 99) {
             throw new RuntimeException("TradeService: completeTrade: item quantity invalid: " + item.getTemplate().id());
         }
+
+//        if (!senderInv.hasItemQuantity(item)) {
+//            throw new RuntimeException("Trade failed: player no longer has item");
+//        }
 
         senderInv.subQuantityItemsBag(item, item.getQuantity());
         receiverInv.addItemBag(cloneForReceiver);

@@ -7,8 +7,13 @@ import nro.server.system.LogServer;
 
 public class SpeacialSkillService {
 
-    @Getter
-    private static SpeacialSkillService instance = new SpeacialSkillService();
+    private static final class SingletonHolder {
+        private static final SpeacialSkillService instance = new SpeacialSkillService();
+    }
+
+    public static SpeacialSkillService getInstance() {
+        return SpeacialSkillService.SingletonHolder.instance;
+    }
 
     public void sendSpeacialSkill(Player player) {
         // SkillManager skillManager = SkillManager.getInstance();

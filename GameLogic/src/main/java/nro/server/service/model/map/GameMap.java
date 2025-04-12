@@ -7,18 +7,14 @@ import nro.consts.ConstTypeObject;
 import nro.server.manager.MapManager;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.boss.Boss;
-import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.map.decorates.BgItem;
-import nro.server.service.model.entity.npc.Npc;
-import nro.server.service.model.entity.npc.NpcFactory;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.template.NpcTemplate;
 import nro.server.system.LogServer;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 @Getter
@@ -103,10 +99,12 @@ public class GameMap {
         } catch (Exception ex) {
             LogServer.LogException("Error getWayPointInMap id: " + this.id + " name: " + this.name + ex.getMessage(), ex);
         }
-        return this.getWaypointBase(player);
+
+//        return this.getWaypointBase(player);
+        return null;
     }
 
-    public Waypoint getWapointByGoMap(int idMapGo) {
+    public Waypoint getWaypointByGoMap(int idMapGo) {
         for (Waypoint waypoint : this.waypoints) {
             if (waypoint.getGoMap() == idMapGo) {
                 return waypoint;

@@ -1,8 +1,6 @@
 package nro.server.service.core.item;
 
-import lombok.Getter;
 import nro.consts.ConstItem;
-import nro.consts.ConstPlayer;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemShop;
 import nro.server.service.model.template.item.ItemOption;
@@ -14,8 +12,13 @@ import java.util.List;
 
 public class ItemFactory {
 
-    @Getter
-    private final static ItemFactory instance = new ItemFactory();
+    private static final class SingletonHolder {
+        private static final ItemFactory instance = new ItemFactory();
+    }
+
+    public static ItemFactory getInstance() {
+        return ItemFactory.SingletonHolder.instance;
+    }
 
     private final static ItemManager itemManager = ItemManager.getInstance();
 

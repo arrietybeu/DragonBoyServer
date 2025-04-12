@@ -1,6 +1,5 @@
 package nro.server.service.core.player;
 
-import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstsCmd;
 import nro.server.service.model.entity.Entity;
@@ -14,8 +13,13 @@ import java.util.List;
 
 public class SkillService {
 
-    @Getter
-    private static final SkillService instance = new SkillService();
+    private static final class SingletonHolder {
+        private static final SkillService instance = new SkillService();
+    }
+
+    public static SkillService getInstance() {
+        return SkillService.SingletonHolder.instance;
+    }
 
     public void sendEntityAttackMonster(Player entity, int mobId) {
         try (Message message = new Message(54)) {

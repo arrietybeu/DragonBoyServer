@@ -408,6 +408,7 @@ public class PlayerInventory {
     }
 
     public Item getItemTrade(int index, int quantity) {
+        ServerService service = ServerService.getInstance();
         if (index < 0 || index >= this.itemsBag.size()) {
             return null;
         }
@@ -422,13 +423,13 @@ public class PlayerInventory {
         }
 
         if (!item.getTemplate().isTrade()) {
-            ServerService.dialogMessage(this.player.getSession(), String.format("Không thể giao dịch %s", item.getTemplate().name()));
+            service.sendChatGlobal(this.player.getSession(), null, String.format("Không thể giao dịch %s", item.getTemplate().name()), false);
             return null;
         }
 
         boolean hasOption30 = this.doesItemHaveOptionId(item, ConstOption.KHONG_GIAO_DICH);
         if (hasOption30) {
-            ServerService.dialogMessage(this.player.getSession(), String.format("Không thể giao dịch %s", item.getTemplate().name()));
+            service.sendChatGlobal(this.player.getSession(), null, String.format("Không thể giao dịch %s", item.getTemplate().name()), false);
             return null;
         }
 

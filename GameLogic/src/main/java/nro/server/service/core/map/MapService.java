@@ -4,8 +4,7 @@ import nro.consts.ConstMsgNotMap;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
-import nro.server.service.core.player.PlayerTransport;
-import nro.server.service.core.system.ServerService;
+import nro.server.service.model.entity.player.PlayerTransport;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.Waypoint;
@@ -28,12 +27,12 @@ public class MapService {
 
     private static final Message CLEAR_MAP_MESSAGE = new Message(-22);
 
-    public static final class InstanceHolder {
+    public static final class SingletonHolder {
         public static final MapService instance = new MapService();
     }
 
     public static MapService getInstance() {
-        return InstanceHolder.instance;
+        return MapService.SingletonHolder.instance;
     }
 
     public void sendListUIArea(Player player) {

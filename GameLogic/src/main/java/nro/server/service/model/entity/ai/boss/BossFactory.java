@@ -1,11 +1,8 @@
 package nro.server.service.model.entity.ai.boss;
 
-import lombok.Getter;
 import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
-import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.Points;
-import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
@@ -18,8 +15,13 @@ import java.util.Set;
 
 public final class BossFactory {
 
-    @Getter
-    private final static BossFactory instance = new BossFactory();
+    private static final class SingletonHolder {
+        private static final BossFactory instance = new BossFactory();
+    }
+
+    public static BossFactory getInstance() {
+        return BossFactory.SingletonHolder.instance;
+    }
 
     private final Map<Integer, Class<? extends Boss>> bossClassMap = new HashMap<>();
 

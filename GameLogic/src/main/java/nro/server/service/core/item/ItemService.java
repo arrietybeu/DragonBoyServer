@@ -1,6 +1,5 @@
 package nro.server.service.core.item;
 
-import lombok.Getter;
 import nro.consts.ConstItem;
 import nro.consts.ConstsCmd;
 import nro.server.service.model.item.ItemTime;
@@ -18,8 +17,13 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class ItemService {
 
-    @Getter
-    private static final ItemService instance = new ItemService();
+    private static final class SingletonHolder {
+        private static final ItemService instance = new ItemService();
+    }
+
+    public static ItemService getInstance() {
+        return ItemService.SingletonHolder.instance;
+    }
 
     public void sendShowListFlag(Player player) {
         try (Message message = new Message(-103);

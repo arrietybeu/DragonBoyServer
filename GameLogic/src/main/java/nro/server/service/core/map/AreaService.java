@@ -1,6 +1,5 @@
 package nro.server.service.core.map;
 
-import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
 import nro.server.service.core.npc.NpcService;
@@ -25,8 +24,14 @@ import java.util.Map;
 
 public class AreaService {
 
-    @Getter
-    public static final AreaService instance = new AreaService();
+    private static final class SingletonHolder {
+        private static final AreaService instance = new AreaService();
+    }
+
+    public static AreaService getInstance() {
+        return AreaService.SingletonHolder.instance;
+    }
+
 
     public void sendInfoAllLiveObjectsTo(Entity entity) {
         try {
@@ -178,7 +183,7 @@ public class AreaService {
 
             if (waypoint == null) {
                 this.keepPlayerInSafeZone(player, null);
-                serverService.sendChatGlobal(player.getSession(), null, "Không tìm thấy Waypoint", false);
+//                serverService.sendChatGlobal(player.getSession(), null, "vai lon?", false);
                 return;
             }
 

@@ -1,6 +1,5 @@
 package nro.server.service.repositories.player;
 
-import lombok.Getter;
 import nro.server.service.model.item.Item;
 import nro.server.system.LogServer;
 import nro.server.service.core.item.ItemFactory;
@@ -13,8 +12,13 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class PlayerCreator {
 
-    @Getter
-    private static final PlayerCreator instance = new PlayerCreator();
+    private static final class SingletonHolder {
+        private static final PlayerCreator instance = new PlayerCreator();
+    }
+
+    public static PlayerCreator getInstance() {
+        return PlayerCreator.SingletonHolder.instance;
+    }
 
     public boolean createPlayer(Connection connection, int accountId, String name, byte gender, int hair) throws SQLException {
         var ms = System.currentTimeMillis();

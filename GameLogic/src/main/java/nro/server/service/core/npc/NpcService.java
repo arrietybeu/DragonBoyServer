@@ -1,6 +1,5 @@
 package nro.server.service.core.npc;
 
-import lombok.Getter;
 import nro.consts.ConstsCmd;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
@@ -18,8 +17,13 @@ import java.util.List;
 
 public class NpcService {
 
-    @Getter
-    private static final NpcService instance = new NpcService();
+    private static final class SingletonHolder {
+        private static final NpcService instance = new NpcService();
+    }
+
+    public static NpcService getInstance() {
+        return NpcService.SingletonHolder.instance;
+    }
 
     public void openMenuNpc(Player player, int npcId) {
         Npc npc = player.getArea().getNpcById(npcId);

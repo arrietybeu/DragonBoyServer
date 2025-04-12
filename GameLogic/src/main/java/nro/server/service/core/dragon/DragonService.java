@@ -1,6 +1,5 @@
 package nro.server.service.core.dragon;
 
-import lombok.Getter;
 import nro.consts.ConstShenronDragon;
 import nro.consts.ConstsCmd;
 import nro.server.network.Message;
@@ -12,8 +11,13 @@ import java.io.DataOutputStream;
 
 public class DragonService {
 
-    @Getter
-    private static final DragonService instance = new DragonService();
+    private static final class SingletonHolder {
+        private static final DragonService instance = new DragonService();
+    }
+
+    public static DragonService getInstance() {
+        return DragonService.SingletonHolder.instance;
+    }
 
     public void sendShenronDragon(Player player, int type, boolean typeDragon) {
         try (Message message = new Message(ConstsCmd.CALL_DRAGON)) {

@@ -2,7 +2,6 @@ package nro.server.service.core.player;
 
 import lombok.Getter;
 import nro.consts.ConstsCmd;
-import nro.server.manager.MapManager;
 import nro.server.service.model.entity.player.Player;
 import nro.server.network.Message;
 import nro.server.service.model.map.Waypoint;
@@ -12,8 +11,13 @@ import java.io.DataOutputStream;
 
 public class TaskService {
 
-    @Getter
-    private static final TaskService instance = new TaskService();
+    private static final class SingletonHolder {
+        private static final TaskService instance = new TaskService();
+    }
+
+    public static TaskService getInstance() {
+        return TaskService.SingletonHolder.instance;
+    }
 
     public void sendTaskMain(Player player) {
 
@@ -81,7 +85,7 @@ public class TaskService {
 
         System.out.println("map go: " + subName.getMapIdByGender(player.getGender()));
 
-        Waypoint waypoint = player.getArea().getMap().getWapointByGoMap(subName.getMapIdByGender(player.getGender()));
+        Waypoint waypoint = player.getArea().getMap().getWaypointByGoMap(subName.getMapIdByGender(player.getGender()));
         if (waypoint == null) return;
 
         try (Message message = new Message(43);

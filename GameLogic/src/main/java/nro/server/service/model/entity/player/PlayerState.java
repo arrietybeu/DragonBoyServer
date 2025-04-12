@@ -26,7 +26,6 @@ public class PlayerState {
     private long lastTimeChangeArea;
 
     private boolean isInVisible;
-    private boolean isLockMove;
 
     public PlayerState(Player player) {
         this.player = player;

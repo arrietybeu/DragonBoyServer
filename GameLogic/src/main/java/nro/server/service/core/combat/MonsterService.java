@@ -1,6 +1,5 @@
 package nro.server.service.core.combat;
 
-import lombok.Getter;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
@@ -12,8 +11,13 @@ import java.util.List;
 
 public class MonsterService {
 
-    @Getter
-    private static final MonsterService instance = new MonsterService();
+    private static final class SingletonHolder {
+        private static final MonsterService instance = new MonsterService();
+    }
+
+    public static MonsterService getInstance() {
+        return MonsterService.SingletonHolder.instance;
+    }
 
     public void sendMonsterDie(Monster monster, long dame, boolean crit, List<ItemMap> itemMaps) {
         try (Message message = new Message(-12)) {

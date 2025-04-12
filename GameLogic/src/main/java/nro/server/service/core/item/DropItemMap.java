@@ -1,6 +1,5 @@
 package nro.server.service.core.item;
 
-import lombok.Getter;
 import nro.consts.ConstItem;
 import nro.consts.ConstMap;
 import nro.consts.ConstMonster;
@@ -17,8 +16,13 @@ import java.util.Map;
 
 public class DropItemMap {
 
-    @Getter
-    private static final DropItemMap instance = new DropItemMap();
+    private static final class SingletonHolder {
+        private static final DropItemMap instance = new DropItemMap();
+    }
+
+    public static DropItemMap getInstance() {
+        return DropItemMap.SingletonHolder.instance;
+    }
 
     private static final Map<Short, List<ItemDropInfo>> MAP_ITEM_DROPS = Map.of(
             ConstMap.NHA_GOHAN, List.of(new ItemDropInfo(ConstItem.DUI_GA_NUONG, 633, 315, 3, 0, false)),

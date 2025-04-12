@@ -1,6 +1,7 @@
 package nro.server.service.core.player;
 
 import lombok.Getter;
+import nro.server.service.core.npc.NpcService;
 import nro.server.system.LogServer;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.pet.PetFollow;
@@ -13,8 +14,13 @@ import java.util.concurrent.TimeUnit;
 
 public class PetFollowService {
 
-    @Getter
-    private static final PetFollowService instance = new PetFollowService();
+    private static final class SingletonHolder {
+        private static final PetFollowService instance = new PetFollowService();
+    }
+
+    public static PetFollowService getInstance() {
+        return PetFollowService.SingletonHolder.instance;
+    }
 
     private static final long CHECK_INTERVAL_SECONDS = 600;// 10 minutes
 

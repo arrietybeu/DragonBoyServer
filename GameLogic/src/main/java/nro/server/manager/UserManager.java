@@ -43,7 +43,7 @@ public final class UserManager {
         this.lock.writeLock().lock();
         try {
             if (!this.userMap.containsKey(user.getId())) {
-                LogServer.LogWarning("User not found: " + user.getId());
+//                LogServer.LogWarning("User not found: " + user.getId());
                 return;
             }
             this.userMap.remove(user.getId());

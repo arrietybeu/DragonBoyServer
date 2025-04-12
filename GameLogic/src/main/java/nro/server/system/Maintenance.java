@@ -17,6 +17,7 @@ public class Maintenance {
 
     @Getter
     private static final Maintenance instance = new Maintenance();
+
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private boolean isMaintenance = false;
     private int seconds = 0;

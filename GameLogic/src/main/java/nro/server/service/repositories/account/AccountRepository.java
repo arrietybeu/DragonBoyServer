@@ -2,6 +2,7 @@ package nro.server.service.repositories.account;
 
 import lombok.Getter;
 import nro.server.config.ConfigDB;
+import nro.server.service.model.resources.DataGame;
 import nro.server.service.repositories.DatabaseFactory;
 import nro.server.service.model.template.entity.UserInfo;
 import nro.server.manager.UserManager;
@@ -15,8 +16,13 @@ import java.sql.*;
 @SuppressWarnings("ALL")
 public class AccountRepository {
 
-    @Getter
-    private static final AccountRepository instance = new AccountRepository();
+    private static final class SingletonHolder {
+        private static final AccountRepository instance = new AccountRepository();
+    }
+
+    public static AccountRepository getInstance() {
+        return AccountRepository.SingletonHolder.instance;
+    }
 
     public boolean handleLogin(UserInfo userInfo) {
         try {

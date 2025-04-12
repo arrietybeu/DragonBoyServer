@@ -1,11 +1,10 @@
-package nro.server.service.core.player;
+package nro.server.service.model.entity.player;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.server.manager.MapManager;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.system.ServerService;
-import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.template.map.Transport;
 import nro.server.system.LogServer;

@@ -22,8 +22,13 @@ import java.util.function.Consumer;
 @SuppressWarnings("ALL")
 public class PlayerUpdate {
 
-    @Getter
-    private static final PlayerUpdate instance = new PlayerUpdate();
+    private static final class SingletonHolder {
+        private static final PlayerUpdate instance = new PlayerUpdate();
+    }
+
+    public static PlayerUpdate getInstance() {
+        return PlayerUpdate.SingletonHolder.instance;
+    }
 
     public void savePlayer(Player player) {
         SessionInfo sessionInfo = player.getSession().getSessionInfo();

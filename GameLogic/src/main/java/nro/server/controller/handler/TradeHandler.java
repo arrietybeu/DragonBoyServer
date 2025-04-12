@@ -23,9 +23,9 @@ public class TradeHandler implements IMessageProcessor {
         try {
             var action = message.reader().readByte();
 
-            System.out.println("TRADE: " + action);
             Player opponent;
-            TradeSession trade;
+
+            LogServer.LogInfo("TradeHandler: " + player.getName() + " - " + action);
 
             TradeService tradeService = TradeService.getInstance();
             switch (action) {
@@ -38,6 +38,7 @@ public class TradeHandler implements IMessageProcessor {
                         }
                     }
                 }
+
                 case ConstTrade.TRANSACTION_ACCEPT -> {
                     int opponentId = message.reader().readInt();
                     opponent = this.getPlayerById(player, opponentId);
@@ -56,7 +57,9 @@ public class TradeHandler implements IMessageProcessor {
                 }
 
                 case ConstTrade.CANCLE_TRADE -> tradeService.cancelTrade(player);
+
                 case ConstTrade.LOCK_TRADE -> tradeService.lockTrade(player);
+                case ConstTrade.SUSSCESS_TRADE -> tradeService.doneTrade(player);
             }
 
         } catch (Exception e) {

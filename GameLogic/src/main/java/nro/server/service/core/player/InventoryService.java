@@ -1,6 +1,5 @@
 package nro.server.service.core.player;
 
-import lombok.Getter;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.player.Player;
 import nro.server.network.Message;
@@ -11,8 +10,13 @@ import java.util.List;
 
 public class InventoryService {
 
-    @Getter
-    private static final InventoryService instance = new InventoryService();
+    private static final class SingletonHolder {
+        private static final InventoryService instance = new InventoryService();
+    }
+
+    public static InventoryService getInstance() {
+        return InventoryService.SingletonHolder.instance;
+    }
 
     public void sendFlagBag(Player player) {
         try (Message msg = new Message(-64)) {

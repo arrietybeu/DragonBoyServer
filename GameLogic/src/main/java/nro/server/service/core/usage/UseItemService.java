@@ -1,6 +1,5 @@
 package nro.server.service.core.usage;
 
-import lombok.Getter;
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstsCmd;
 import nro.server.service.model.entity.player.Player;
@@ -12,8 +11,13 @@ import java.io.DataOutputStream;
 
 public class UseItemService {
 
-    @Getter
-    private static final UseItemService instance = new UseItemService();
+    private static final class SingletonHolder {
+        private static final UseItemService instance = new UseItemService();
+    }
+
+    public static UseItemService getInstance() {
+        return UseItemService.SingletonHolder.instance;
+    }
 
     public void eventUseItem(Player player, int itemAction, int where, int index, String info) {
         try (Message message = new Message(ConstsCmd.USE_ITEM)) {

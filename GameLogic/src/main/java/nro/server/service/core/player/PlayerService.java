@@ -1,6 +1,5 @@
 package nro.server.service.core.player;
 
-import lombok.Getter;
 import nro.consts.ConstError;
 import nro.consts.ConstItem;
 import nro.consts.ConstMsgSubCommand;
@@ -42,8 +41,13 @@ import java.util.regex.Pattern;
 
 public class PlayerService {
 
-    @Getter
-    private static final PlayerService instance = new PlayerService();
+    private static final class SingletonHolder {
+        private static final PlayerService instance = new PlayerService();
+    }
+
+    public static PlayerService getInstance() {
+        return PlayerService.SingletonHolder.instance;
+    }
 
     private static final Message MESSAGE_REVIVE = new Message(-16);
 

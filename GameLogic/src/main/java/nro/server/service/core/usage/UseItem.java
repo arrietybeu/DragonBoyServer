@@ -1,6 +1,5 @@
 package nro.server.service.core.usage;
 
-import lombok.Getter;
 import nro.consts.ConstItem;
 import nro.consts.ConstUseItem;
 import nro.server.service.core.item.ItemFactory;
@@ -15,8 +14,13 @@ import java.util.List;
 
 public class UseItem {
 
-    @Getter
-    private static final UseItem instance = new UseItem();
+    private static final class SingletonHolder {
+        private static final UseItem instance = new UseItem();
+    }
+
+    public static UseItem getInstance() {
+        return UseItem.SingletonHolder.instance;
+    }
 
     public void useItem(Player player, byte type, byte where, byte index, short template) {
         try {

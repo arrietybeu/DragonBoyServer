@@ -24,15 +24,6 @@ import java.util.Scanner;
 
 public class CommandService {
 
-    private static CommandService instance;
-
-    public CommandService getInstance() {
-        if (instance == null) {
-            instance = new CommandService();
-        }
-        return instance;
-    }
-
     public static void ActiveCommandLine() {
         try {
             Scanner sc = new Scanner(System.in);

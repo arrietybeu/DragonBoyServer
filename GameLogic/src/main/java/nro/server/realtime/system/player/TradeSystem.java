@@ -2,7 +2,10 @@ package nro.server.realtime.system.player;
 
 import lombok.Getter;
 import nro.server.realtime.core.ISystemBase;
+import nro.server.service.core.economy.TradeService;
 import nro.server.service.core.economy.TradeSession;
+import nro.server.service.core.system.ServerService;
+import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
@@ -93,7 +96,7 @@ public final class TradeSystem implements ISystemBase {
                 for (Integer id : expiredSessions) {
                     TradeSession session = tradeSessions.remove(id);
                     if (session != null) {
-                        session.reset();
+                        TradeService.getInstance().cancelTradeBySession(session);
                     }
                 }
             } catch (Exception ex) {

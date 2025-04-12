@@ -17,8 +17,6 @@ public class PlayerMoveHandler implements IMessageProcessor {
             Player player = session.getPlayer();
             if (player == null) return;
 
-            if (player.getPlayerState().isLockMove()) return;
-
             byte isOnGround = message.reader().readByte();//  0: on ground, 1: in air
 
             if (isOnGround == 1) {

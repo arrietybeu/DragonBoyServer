@@ -1,6 +1,5 @@
 package nro.server.service.core.social;
 
-import lombok.Getter;
 import nro.consts.*;
 import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
@@ -37,8 +36,13 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class ChatService {
 
-    @Getter
-    private static final ChatService instance = new ChatService();
+    private static final class SingletonHolder {
+        private static final ChatService instance = new ChatService();
+    }
+
+    public static ChatService getInstance() {
+        return ChatService.SingletonHolder.instance;
+    }
 
     public void chatMap(Entity entity, String text) {
         try (Message message = new Message(ConstsCmd.CHAT_MAP)) {
@@ -205,6 +209,11 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "lock_move" -> {
+                    playerChat.setLockMove(!playerChat.isLockMove());
+                    String content = playerChat.isLockMove() ? "Đã khóa di chuyển" : "Mở khóa di chuyển";
+                    serverService.sendChatGlobal(playerChat.getSession(), null, content, false);
+                }
                 case "off_size" -> {
                     String content = "Map Offline size: " + MapManager.getInstance().getPlayerOfflineAreas().size();
                     ServerService.dialogMessage(playerChat.getSession(), content);

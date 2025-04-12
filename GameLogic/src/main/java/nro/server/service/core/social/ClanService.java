@@ -1,6 +1,5 @@
 package nro.server.service.core.social;
 
-import lombok.Getter;
 import nro.server.service.model.clan.Clan;
 import nro.server.service.model.clan.ClanMessage;
 import nro.server.service.model.entity.player.Player;
@@ -12,8 +11,13 @@ import java.util.List;
 
 public class ClanService {
 
-    @Getter
-    private static final ClanService instance = new ClanService();
+    private static final class SingletonHolder {
+        private static final ClanService instance = new ClanService();
+    }
+
+    public static ClanService getInstance() {
+        return ClanService.SingletonHolder.instance;
+    }
 
     public void sendListClan(Player player) {
         try (Message message = new Message(-47)) {

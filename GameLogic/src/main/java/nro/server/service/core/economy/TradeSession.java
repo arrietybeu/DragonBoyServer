@@ -63,19 +63,24 @@ public class TradeSession {
         return false;
     }
 
-    public boolean addGold(Player player, int gold) {
+    public void addGold(Player player, int gold) {
         if (gold < 0) {
-            return false;
+            return;
         }
+        if (player.getPlayerCurrencies().getGold() < gold) {
+            ServerService.getInstance().sendChatGlobal(player.getSession(), null, "Không đủ vàng để giao dịch", false);
+            return;
+        }
+
         if (gold > MAX_GOLD) {
-            return false;
+            return;
         }
+
         if (player.equals(player1)) {
             goldPlayer1 = gold;
         } else {
             goldPlayer2 = gold;
         }
-        return true;
     }
 
     public void done(Player player) {

@@ -14,13 +14,8 @@ import nro.server.system.LogServer;
 import nro.server.config.ConfigServer;
 import nro.server.manager.GameNotifyManager;
 import nro.server.manager.resources.PartManager;
-import nro.utils.CaptchaUtil;
-import nro.utils.FileNio;
 
 import java.io.DataOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Arriety
@@ -28,12 +23,12 @@ import java.util.List;
 
 public class ServerService {
 
-    private static final class InstanceHolder {
+    private static final class SingletonHolder {
         private static final ServerService instance = new ServerService();
     }
 
     public static ServerService getInstance() {
-        return InstanceHolder.instance;
+        return SingletonHolder.instance;
     }
 
     public void sendNotLoginResponse(Session session) {

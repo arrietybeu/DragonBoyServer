@@ -1,6 +1,7 @@
 package nro.server.service.core.system;
 
 import nro.consts.ConstMsgNotMap;
+import nro.server.service.core.social.ClanService;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.resources.Effect;
 import nro.server.service.model.resources.ImageByName;
@@ -26,13 +27,12 @@ public class ResourceService {
 
     private final Map<Integer, List<File>> cachedResources = new HashMap<>();
 
-    private static ResourceService instance;
+    private static final class SingletonHolder {
+        private static final ResourceService instance = new ResourceService();
+    }
 
     public static ResourceService getInstance() {
-        if (instance == null) {
-            instance = new ResourceService();
-        }
-        return instance;
+        return ResourceService.SingletonHolder.instance;
     }
 
     public void createData(Session session) {

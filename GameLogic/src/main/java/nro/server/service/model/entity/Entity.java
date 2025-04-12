@@ -18,18 +18,20 @@ public abstract class Entity {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-    protected int id;
-    private String name = "";
-    private int typeObject;
-
     private byte gender;
     private byte typePk;
-    private int teleport = 0;
-    private short mount = -1;
 
     protected short x;
     protected short y;
+    private short mount = -1;
 
+    protected int id;
+    private int typeObject;
+    private int teleport = 0;
+
+    private boolean isLockMove;
+
+    protected String name = "";
     protected Points points;
     protected Skills skills;
     protected Fusion fusion;
@@ -80,8 +82,7 @@ public abstract class Entity {
 
             switch (entityAttack) {
                 case Boss boss -> SkillService.getInstance().sendEntityAttackEntity(boss, this, damage, true);
-                case Player player ->
-                        SkillService.getInstance().sendEntityAttackEntity(player, this, damage, true);
+                case Player player -> SkillService.getInstance().sendEntityAttackEntity(player, this, damage, true);
                 default -> {
                 }
             }
@@ -99,5 +100,15 @@ public abstract class Entity {
     protected abstract void onDie(Entity killer);
 
     protected abstract void dispose();
+
+    public void setX(short x) {
+        if (this.isLockMove) return;
+        this.x = x;
+    }
+
+    public void setY(short y) {
+        if (this.isLockMove) return;
+        this.y = y;
+    }
 
 }

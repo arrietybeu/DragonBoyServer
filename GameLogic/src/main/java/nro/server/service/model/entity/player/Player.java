@@ -7,7 +7,6 @@ import nro.consts.ConstTypeObject;
 import nro.server.manager.MapManager;
 import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.core.item.ItemFactory;
-import nro.server.service.core.player.PlayerTransport;
 import nro.server.service.model.entity.Entity;
 
 import nro.server.service.model.clan.Clan;
