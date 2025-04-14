@@ -86,7 +86,6 @@ public class TradeService {
 
             this.sendTransactionToPlayerFocus(p1, p2, ConstTrade.TRANSACTION_ACCEPT);
             this.sendTransactionToPlayerFocus(p2, p1, ConstTrade.TRANSACTION_ACCEPT);
-
         } catch (Exception exception) {
             LogServer.LogException("Error accept trade: " + exception.getMessage(), exception);
         } finally {
@@ -134,7 +133,9 @@ public class TradeService {
                 Item original = player.getPlayerInventory().getItemTrade(index, quantity);
                 if (original != null) {
                     Item copy = ItemFactory.getInstance().clone(original);
-                    session.addItem(player, copy);
+                    if (!session.addItem(player, copy)) {
+                        this.cancelAddItem(player, index);
+                    }
                 } else {
                     this.cancelAddItem(player, index);
                 }
@@ -233,6 +234,7 @@ public class TradeService {
                 } else if (player.equals(player2)) {
                     this.sendLockTransaction(player1, session.getGoldPlayer2(), session.getOfferPlayer2());
                 }
+                session.lock(player);
             }
         } finally {
             this.lock.writeLock().unlock();

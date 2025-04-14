@@ -10,16 +10,16 @@ import nro.server.system.LogServer;
 @Getter
 public abstract class AbstractAI extends Entity implements AI {
 
-    private AIState currentState;
-    private Entity entityTarget;
+    protected AIState currentState;
+    protected Entity entityTarget;
 
     // thời gian hồi sinh sau khi chết
     protected int respawnTime;
     public int tickAfkTimeout;
 
-    private long stateStartTime;        // thời điểm bắt đầu vào state
-    private long requiredStateDelay = 0; // thời gian phải chờ trước khi được phép đổi state
-    private AIState nextState = null;    // state tiếp theo khi hết delay
+    protected long stateStartTime;        // thời điểm bắt đầu vào state
+    protected long requiredStateDelay = 0; // thời gian phải chờ trước khi được phép đổi state
+    protected AIState nextState = null;    // state tiếp theo khi hết delay
 
     protected boolean isLockMove;
 

@@ -101,7 +101,7 @@ public final class SkillManager implements IManager {
                     skill.setPoint(rs.getByte("point"));
                     skill.setPowRequire(rs.getLong("power_require"));
                     skill.setManaUse(rs.getInt("mana_use"));
-                    skill.setCoolDown(rs.getInt("cool_down"));
+                    skill.setBaseCooldown(rs.getInt("cool_down"));
                     skill.setDx(rs.getInt("dx"));
                     skill.setDy(rs.getInt("dy"));
                     skill.setMaxFight(rs.getInt("max_fight"));
@@ -144,7 +144,7 @@ public final class SkillManager implements IManager {
                         if (skillTemplate.getId() == skillId) {
                             SkillInfo skillInfo = skillTemplate.getSkillByTemplateId(skillId, currentLevel);
                             if (skillInfo.getPoint() == currentLevel) {
-                                return skillInfo;
+                                return skillInfo.copy();
                             }
                         }
                     }
@@ -165,7 +165,7 @@ public final class SkillManager implements IManager {
                         SkillInfo skillInfo = skillTemplate.getSkillById(skillId);
                         if (skillInfo == null) continue;
                         if (skillInfo.getSkillId() == skillId || skillInfo.getPoint() == currentLevel) {
-                            return skillInfo;
+                            return skillInfo.copy();
                         }
                     }
                 }

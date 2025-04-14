@@ -232,7 +232,6 @@ public class PlayerPoints extends Points {
         playerService.sendCurrencyHpMp(this.player);
         playerService.sendPlayerDie(this.player);
         playerService.sendPlayerDeathToArea(this.player);
-
     }
 
     @Override

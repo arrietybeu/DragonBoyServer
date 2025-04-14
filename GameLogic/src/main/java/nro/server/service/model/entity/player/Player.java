@@ -158,54 +158,36 @@ public class Player extends Entity {
     @Override
     public void dispose() {
         try {
+            this.unregisterFromEntityComponentSystem();
             if (this.session != null) {
                 this.session.setPlayer(null);
-            }
-            if (this.playerAdministrator != null) {
-                this.playerAdministrator = null;
-            }
-            if (this.playerMagicTree != null) {
-                this.playerMagicTree = null;
-            }
-            if (this.playerInventory != null) {
-                this.playerInventory.dispose();
-                this.playerInventory = null;
-            }
-            if (this.playerTask != null) {
-                this.playerTask.dispose();
-                this.playerTask = null;
-            }
-            if (this.playerState != null) {
-                this.playerState.dispose();
-                this.playerState = null;
-            }
-            if (this.playerTransport != null) {
-                this.playerTransport.dispose();
-                this.playerTransport = null;
-            }
-            if (this.playerCurrencies != null) {
-                this.playerCurrencies = null;
-            }
-            if (this.fashion != null) {
-                this.fashion = null;
-            }
-            if (this.skills != null) {
-                this.skills.dispose();
-                this.skills = null;
-            }
-            if (this.fusion != null) {
-                this.fusion = null;
-            }
-            if (this.petFollow != null) {
-                this.petFollow.dispose();
-                this.petFollow = null;
             }
 
             MapManager.getInstance().removeMapOffline(this);
             AreaService.getInstance().playerExitArea(this);
-            this.unregisterFromEntityComponentSystem();
-        } catch (Exception exception) {
-            LogServer.LogException("Error dispose player: " + exception.getMessage(), exception);
+
+            if (playerInventory != null) playerInventory.dispose();
+            if (playerTask != null) playerTask.dispose();
+            if (playerState != null) playerState.dispose();
+            if (playerTransport != null) playerTransport.dispose();
+            if (skills != null) skills.dispose();
+            if (petFollow != null) petFollow.dispose();
+
+            this.playerAdministrator = null;
+            this.playerMagicTree = null;
+            this.playerInventory = null;
+            this.playerTask = null;
+            this.playerState = null;
+            this.playerTransport = null;
+            this.playerCurrencies = null;
+            this.fashion = null;
+            this.skills = null;
+            this.fusion = null;
+            this.petFollow = null;
+            this.points = null;
+            this.area = null;
+        } catch (Exception ex) {
+            LogServer.LogException("Error disposing player: " + ex.getMessage(), ex);
         }
     }
 

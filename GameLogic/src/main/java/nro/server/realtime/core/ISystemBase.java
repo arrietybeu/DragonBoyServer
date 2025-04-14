@@ -12,8 +12,6 @@ public interface ISystemBase {
 
     int size();
 
-    default String name() {
-        return this.getClass().getSimpleName();
-    }
+    String name();
 
 }

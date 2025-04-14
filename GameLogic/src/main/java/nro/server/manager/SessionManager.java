@@ -148,8 +148,8 @@ public final class SessionManager {
         try {
             session.getSessionInfo().setConnected(false);
             this.dispose(session);// save data player
-            this.remove(session);// remove key session
             session.close();// close du lieu session khi da vao game
+            this.remove(session);// remove key session
         } catch (Exception e) {
             LogServer.LogException("Error kickSession: " + e.getMessage(), e);
         } finally {

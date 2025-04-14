@@ -68,7 +68,6 @@ public class Monster extends Entity {
                 }
 
                 // send effect skill attack monster
-                SkillService.getInstance().sendEntityAttackMonster(plAttack, this.getId());
 
                 if (damage >= this.point.getHp()) damage = this.point.getHp();
 
@@ -80,7 +79,6 @@ public class Monster extends Entity {
                 // kiem tra monster chet
                 if (this.point.isDead()) {
                     this.setDie(plAttack, damage);
-
                 } else {
                     boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
                     MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);

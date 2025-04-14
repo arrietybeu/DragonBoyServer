@@ -41,14 +41,14 @@ public class GameMap {
     private final List<BackgroudEffect> backgroudEffects;
     private final List<NpcTemplate.NpcInfo> npcs;
 
-
     private List<Area> areas;
 
     // id, name, planetId, tileId, isMapDouble, status, bgId, bgType, bgItems,
     // effects, waypoints, tileMap
-    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble, byte bgId, byte bgType,
-                   byte typeMap,
-                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects, List<Waypoint> waypoints, TileMap tileMap,
+    public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble,
+                   byte bgId, byte bgType, byte typeMap,
+                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
+                   List<Waypoint> waypoints, TileMap tileMap,
                    List<NpcTemplate.NpcInfo> npcs) {
         this.id = id;
         this.name = name;

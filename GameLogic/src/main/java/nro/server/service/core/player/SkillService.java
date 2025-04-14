@@ -21,7 +21,8 @@ public class SkillService {
         return SkillService.SingletonHolder.instance;
     }
 
-    public void sendEntityAttackMonster(Player entity, int mobId) {
+    public void sendEntityAttackMonster(Entity entity, int mobId) {
+        LogServer.LogInfo(" con");
         try (Message message = new Message(54)) {
             DataOutputStream writer = message.writer();
             writer.writeInt(entity.getId());

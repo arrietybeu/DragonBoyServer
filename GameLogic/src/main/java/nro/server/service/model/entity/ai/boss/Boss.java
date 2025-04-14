@@ -26,7 +26,6 @@ public abstract class Boss extends AbstractAI {
     protected long lastTimeMove;
 
     protected long lastAttackTime = 0;
-    protected long attackCooldown = 700;
 
     // thời gian không có người chơi thì biến mất (giây)
     protected int afkTimeout;
@@ -67,6 +66,19 @@ public abstract class Boss extends AbstractAI {
     public void dispose() {
         BossAISystem.getInstance().unregister(this);
         AreaService.getInstance().playerExitArea(this);
+
+        if (skills != null) skills.dispose();
+
+        this.entityTarget = null;
+        this.currentState = null;
+        this.nextState = null;
+        this.lastPlayerTarget = null;
+        this.controller = null;
+        this.fashion = null;
+        this.skills = null;
+        this.fusion = null;
+        this.points = null;
+        this.area = null;
     }
 
     @Override

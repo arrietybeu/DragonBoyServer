@@ -29,6 +29,7 @@ public class TradeHandler implements IMessageProcessor {
 
             TradeService tradeService = TradeService.getInstance();
             switch (action) {
+
                 case ConstTrade.TRANSACTION_REQUEST -> {
                     int opponentId = message.reader().readInt();
                     opponent = this.getPlayerById(player, opponentId);
@@ -59,6 +60,7 @@ public class TradeHandler implements IMessageProcessor {
                 case ConstTrade.CANCLE_TRADE -> tradeService.cancelTrade(player);
 
                 case ConstTrade.LOCK_TRADE -> tradeService.lockTrade(player);
+
                 case ConstTrade.SUSSCESS_TRADE -> tradeService.doneTrade(player);
             }
 

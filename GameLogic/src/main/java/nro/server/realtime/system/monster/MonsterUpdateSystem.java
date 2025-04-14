@@ -77,4 +77,9 @@ public class MonsterUpdateSystem implements ISystemBase {
     public int size() {
         return 0;
     }
+
+    @Override
+    public String name() {
+        return Class.class.getSimpleName();
+    }
 }

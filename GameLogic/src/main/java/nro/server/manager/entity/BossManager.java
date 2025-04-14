@@ -147,10 +147,12 @@ public final class BossManager implements IManager {
                 while (rs.next()) {
                     int skillId = rs.getInt("skill_id");
                     int level = rs.getInt("skill_level");
+                    long coolDown = rs.getLong("cool_down");
 
                     // Gọi từ hệ thống template của bạn
                     SkillInfo skillInfo = SkillManager.getInstance().getSkillInfoByTemplateId((short) skillId, boss.getGender(), level);
                     if (skillInfo != null) {
+                        skillInfo.setBaseCooldown(coolDown);
                         bossSkill.addSkill(skillInfo);
                     }
                 }

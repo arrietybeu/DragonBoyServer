@@ -95,22 +95,15 @@ public class TauPayPayController extends BossAIController {
             }
 
             // Gọi kỹ năng đang chọn (hoặc bạn có thể random skill nếu muốn)
-            if (boss.getSkills() == null) {
-                return;
-            }
-
-            long now = System.currentTimeMillis();
-            if (now - boss.getLastAttackTime() < boss.getAttackCooldown()) {
-                return;
-            }
-
-            boss.setLastAttackTime(now);
+            if (boss.getSkills() == null) return;
 
             boss.getSkills().selectRandomSkill();
 
-            if (boss.getSkills().getSkillSelect() == null) {
-                return;
-            }
+            if (boss.getSkills().getSkillSelect() == null) return;
+
+            long now = System.currentTimeMillis();
+            if (now - boss.getLastAttackTime() < boss.getSkills().getSkillSelect().getBaseCooldown()) return;
+            boss.setLastAttackTime(now);
 
             boss.getSkills().useSkill(target);
 

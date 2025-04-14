@@ -9,9 +9,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Util {
+    private static final SplittableRandom random = new SplittableRandom();
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(25);
-    private static final SplittableRandom random = new SplittableRandom();
 
     public static void delay(int delayTime, Runnable callback) {
         scheduler.schedule(callback, delayTime, TimeUnit.SECONDS);

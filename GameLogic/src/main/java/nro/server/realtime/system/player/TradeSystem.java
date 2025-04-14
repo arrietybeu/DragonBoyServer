@@ -117,4 +117,9 @@ public final class TradeSystem implements ISystemBase {
         }
     }
 
+    @Override
+    public String name() {
+        return Class.class.getSimpleName();
+    }
+
 }

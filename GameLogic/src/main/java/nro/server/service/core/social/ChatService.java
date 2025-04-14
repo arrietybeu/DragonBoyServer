@@ -8,6 +8,7 @@ import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.realtime.system.player.TradeSystem;
 import nro.server.service.core.dragon.DragonService;
 import nro.server.service.core.npc.NpcService;
+import nro.server.service.core.player.AdministratorService;
 import nro.server.service.core.system.CaptchaService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.core.economy.ShopService;
@@ -273,11 +274,7 @@ public class ChatService {
                     ServerService.dialogMessage(playerChat.getSession(), infoNpcSize);
                 }
 
-                case "trade" -> {
-                    int sizeSessionTrade = TradeSystem.getInstance().getTradeSessions().size();
-                    String infoTradeSize = "Trade Size: " + sizeSessionTrade;
-                    ServerService.dialogMessage(playerChat.getSession(), infoTradeSize);
-                }
+                case "trade" -> AdministratorService.getInstance().sendListUITrade(playerChat);
                 case "chat_vip" -> {
                     serverService.sendChatVip(playerChat, "mew mew");
                 }

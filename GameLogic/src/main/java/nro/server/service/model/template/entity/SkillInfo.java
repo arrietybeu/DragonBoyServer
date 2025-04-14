@@ -18,7 +18,9 @@ public class SkillInfo {
 
     private long powRequire;// sức mạnh yêu cầu
 
-    private int coolDown;// thời gian hồi chiêu
+    private long baseCooldown;// thời gian hồi chiêu
+
+    private long currentCooldown;
 
     private int dx;
 
@@ -44,21 +46,61 @@ public class SkillInfo {
 
     private String moreInfo;
 
+    // kiểm tra dùng đc skill chưa
     public boolean isReady() {
-        return System.currentTimeMillis() - lastTimeUseThisSkill >= coolDown;
+        return System.currentTimeMillis() - lastTimeUseThisSkill >= currentCooldown;
     }
 
+    // còn bao nhiêu ms để có thể dùng skill
     public long getCooldownRemaining() {
-        long remaining = coolDown - (System.currentTimeMillis() - lastTimeUseThisSkill);
-        return Math.max(0, remaining);
+        long passed = System.currentTimeMillis() - lastTimeUseThisSkill;
+        return Math.max(0, currentCooldown - passed);
     }
 
+    // call SKill
     public void markUsedNow() {
         this.lastTimeUseThisSkill = System.currentTimeMillis();
     }
 
+    // giảm thời gian hồi skill
+    public void reduceCooldown(long millis) {
+        this.lastTimeUseThisSkill -= millis;
+    }
+
+    // hồi ngay lập tức
+    public void resetCooldown() {
+        this.lastTimeUseThisSkill = 0;
+    }
+
+    public void applyCooldownRate(double rate) {
+        this.currentCooldown = (long) (this.baseCooldown * rate);
+    }
+
+    // cho skill ve mac dinh
+    public void restoreBaseCooldown() {
+        this.currentCooldown = this.baseCooldown;
+    }
+
     public SkillInfo copy() {
-        return new SkillInfo();
+        SkillInfo clone = new SkillInfo();
+        clone.skillId = this.skillId;
+        clone.point = this.point;
+        clone.powRequire = this.powRequire;
+        clone.baseCooldown = this.baseCooldown;
+        clone.currentCooldown = this.currentCooldown;
+        clone.dx = this.dx;
+        clone.dy = this.dy;
+        clone.maxFight = this.maxFight;
+        clone.manaUse = this.manaUse;
+        clone.damage = this.damage;
+        clone.price = this.price;
+        clone.curExp = this.curExp;
+        clone.lastTimeUseThisSkill = this.lastTimeUseThisSkill;
+        clone.paintCanNotUseSkill = this.paintCanNotUseSkill;
+        clone.template = this.template;
+        clone.options = this.options;
+        clone.moreInfo = this.moreInfo;
+        return clone;
     }
 
 }

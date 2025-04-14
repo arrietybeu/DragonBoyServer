@@ -2,6 +2,7 @@ package nro.server.controller.handler;
 
 import nro.server.controller.APacketHandler;
 import nro.server.controller.IMessageProcessor;
+import nro.server.service.core.map.AreaService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.player.Player;
 import nro.server.network.Message;
@@ -21,7 +22,7 @@ public class OpenUIZoneHandler implements IMessageProcessor {
                 ServerService.dialogMessage(session, "Không thể đổi khu vực trong map này");
                 return;
             }
-            MapService.getInstance().sendListUIArea(player);
+            AreaService.getInstance().sendListUIArea(player);
         } catch (Exception exception) {
             LogServer.LogException("OpenUIZoneHandler: " + exception.getMessage(), exception);
         }

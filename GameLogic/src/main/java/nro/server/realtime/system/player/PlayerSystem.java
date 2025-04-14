@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Getter
-public class PlayerSystem implements ISystemBase {
+public final class PlayerSystem implements ISystemBase {
 
     @Getter
     private static final PlayerSystem instance = new PlayerSystem();
@@ -37,7 +37,7 @@ public class PlayerSystem implements ISystemBase {
 
     @Override
     public void unregister(Object object) {
-        if ((object instanceof Player player)) {
+        if (object instanceof Player player) {
             lock.writeLock().lock();
             try {
                 if (!players.contains(player)) {
@@ -54,7 +54,7 @@ public class PlayerSystem implements ISystemBase {
     }
 
     @Override
-    public void removeAll() {
+    public synchronized void removeAll() {
         this.players.clear();
     }
 
@@ -79,8 +79,13 @@ public class PlayerSystem implements ISystemBase {
     }
 
     @Override
-    public int size() {
+    public synchronized int size() {
         return players.size();
+    }
+
+    @Override
+    public String name() {
+        return Class.class.getSimpleName();
     }
 
 }

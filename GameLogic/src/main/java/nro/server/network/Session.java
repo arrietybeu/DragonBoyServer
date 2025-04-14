@@ -257,7 +257,6 @@ public final class Session {
             if (this.player != null) {
                 this.player = null;
             }
-
         } catch (Exception e) {
             LogServer.LogException("Error during disconnect: " + e.getMessage(), e);
         }

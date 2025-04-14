@@ -37,7 +37,7 @@ public class NotMapHandler implements IMessageProcessor {
                 case 10:
                     Player player = session.getPlayer();
                     if (player != null && player.getArea() != null) {
-                        MapService.getInstance().requestMaptemplate(player);
+                        MapService.getInstance().requestMapTemplate(player);
                     }
                     break;
                 case 13:

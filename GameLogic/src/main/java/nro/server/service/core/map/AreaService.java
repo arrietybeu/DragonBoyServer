@@ -2,6 +2,7 @@ package nro.server.service.core.map;
 
 import nro.consts.ConstMsgSubCommand;
 import nro.consts.ConstTypeObject;
+import nro.consts.ConstsCmd;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
@@ -20,6 +21,7 @@ import nro.server.manager.MapManager;
 import nro.server.service.core.player.PlayerService;
 
 import java.io.DataOutputStream;
+import java.util.List;
 import java.util.Map;
 
 public class AreaService {
@@ -70,6 +72,29 @@ public class AreaService {
         }
     }
 
+    public void sendListUIArea(Player player) {
+        try (Message message = new Message(ConstsCmd.OPEN_UI_ZONE)) {
+            DataOutputStream data = message.writer();
+
+            List<Area> areas = player.getArea().getMap().getAreas();
+            data.writeByte(areas.size());
+            for (Area area : areas) {
+                int slPlayer = area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size();
+                data.writeByte(area.getId());
+                data.writeByte(slPlayer < 5 ? 0 : slPlayer < 8 ? 1 : 2);// 0 blue || 1 yellow || 2 red
+                data.writeByte(slPlayer);
+                data.writeByte(area.getMaxPlayers());
+                data.writeByte(1);
+                data.writeUTF("arriety dep zai");
+                data.writeInt(1);
+                data.writeUTF("nguyen ngu");
+                data.writeInt(100);
+            }
+            player.sendMessage(message);
+        } catch (Exception ex) {
+            LogServer.LogException("sendListUIArea: " + ex.getMessage(), ex);
+        }
+    }
 
     private void addPlayer(Entity entity, Entity receiver) {
         if (receiver instanceof Player me) {

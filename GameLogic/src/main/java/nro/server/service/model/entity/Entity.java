@@ -80,16 +80,8 @@ public abstract class Entity {
             }
             this.points.subCurrentHp(damage);
 
-            switch (entityAttack) {
-                case Boss boss -> SkillService.getInstance().sendEntityAttackEntity(boss, this, damage, true);
-                case Player player -> SkillService.getInstance().sendEntityAttackEntity(player, this, damage, true);
-                default -> {
-                }
-            }
-
             if (this.points.isDead()) {
                 this.points.setDie(entityAttack);
-
             }
             return damage;
         } finally {

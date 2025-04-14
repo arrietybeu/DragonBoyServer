@@ -75,6 +75,11 @@ public class BossAISystem implements ISystemBase {
         }
     }
 
+    @Override
+    public String name() {
+        return Class.class.getSimpleName();
+    }
+
     public Boss getBossById(int bossId) {
         lock.readLock().lock();
         try {

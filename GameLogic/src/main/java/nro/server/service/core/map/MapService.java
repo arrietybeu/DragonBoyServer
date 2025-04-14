@@ -2,7 +2,6 @@ package nro.server.service.core.map;
 
 import nro.consts.ConstMsgNotMap;
 import nro.consts.ConstPlayer;
-import nro.consts.ConstTypeObject;
 import nro.consts.ConstsCmd;
 import nro.server.service.model.entity.player.PlayerTransport;
 import nro.server.service.model.map.GameMap;
@@ -35,39 +34,15 @@ public class MapService {
         return MapService.SingletonHolder.instance;
     }
 
-    public void sendListUIArea(Player player) {
 
-        try (Message message = new Message(29)) {
-            DataOutputStream data = message.writer();
-
-            List<Area> areas = player.getArea().getMap().getAreas();
-            data.writeByte(areas.size());
-            for (Area area : areas) {
-                int slPlayer = area.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size();
-                data.writeByte(area.getId());
-                data.writeByte(slPlayer < 5 ? 0 : slPlayer < 8 ? 1 : 2);// 0 blue || 1 yellow || 2 red
-                data.writeByte(slPlayer);
-                data.writeByte(area.getMaxPlayers());
-                data.writeByte(1);
-                data.writeUTF("arriety dep zai");
-                data.writeInt(1);
-                data.writeUTF("nguyen ngu");
-                data.writeInt(100);
-            }
-            player.sendMessage(message);
-        } catch (Exception ex) {
-            LogServer.LogException("sendListUIArea: " + ex.getMessage(), ex);
-        }
-    }
-
-    public void requestMaptemplate(Player player) {
+    public void requestMapTemplate(Player player) {
         try (Message message = new Message(-28)) {
             DataOutputStream data = message.writer();
             GameMap map = player.getArea().getMap();
             data.writeByte(ConstMsgNotMap.REQUEST_MAP_TEMPLATE);
+
             data.writeByte(map.getTileMap().width());
             data.writeByte(map.getTileMap().height());
-
             for (int i = 0; i < map.getTileMap().tiles().length; i++) {
                 data.writeByte(map.getTileMap().tiles()[i]);
             }
