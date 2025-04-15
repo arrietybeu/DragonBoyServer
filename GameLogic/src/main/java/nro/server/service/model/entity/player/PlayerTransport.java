@@ -58,13 +58,14 @@ public class PlayerTransport {
             Transport destination = transports.get(index);
             short mapId = destination.getMapIdByGender(owner.getGender());
 
-            if (destination.getAreeBefore() != null) {
-                AreaService.getInstance().changerMapByShip(owner, mapId, destination.getX(), destination.getY(), 1, destination.getAreeBefore());
-            } else {
+            if (beforeTransport == null || destination != beforeTransport) {
                 this.saveCurrentLocationAsBefore(owner, destination);
+            } else {
+                this.beforeTransport = null;
             }
-            AreaService.getInstance().changerMapByShip(owner, mapId, destination.getX(), destination.getY(), 1, destination.getAreeBefore());
 
+            AreaService.getInstance().changerMapByShip(owner, mapId, destination.getX(), destination.getY(), 1,
+                    destination.getAreeBefore());
             transports.clear();
 
             owner.getPlayerState().setLastTimeTransport(System.currentTimeMillis());

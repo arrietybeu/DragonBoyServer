@@ -10,6 +10,7 @@ import nro.server.system.LogServer;
 @Getter
 public abstract class AbstractAI extends Entity implements AI {
 
+    protected AIState nextState = null;    // state tiếp theo khi hết delay
     protected AIState currentState;
     protected Entity entityTarget;
 
@@ -19,7 +20,6 @@ public abstract class AbstractAI extends Entity implements AI {
 
     protected long stateStartTime;        // thời điểm bắt đầu vào state
     protected long requiredStateDelay = 0; // thời gian phải chờ trước khi được phép đổi state
-    protected AIState nextState = null;    // state tiếp theo khi hết delay
 
     protected boolean isLockMove;
 
@@ -78,8 +78,8 @@ public abstract class AbstractAI extends Entity implements AI {
     }
 
     public void trySwitchToNextState() {
-        if (shouldSwitchToNextState()) {
-            onEnterState(nextState);
+        if (this.shouldSwitchToNextState()) {
+            this.onEnterState(nextState);
         }
     }
 
