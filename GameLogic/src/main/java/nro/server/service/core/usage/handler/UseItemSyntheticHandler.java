@@ -32,7 +32,7 @@ public class UseItemSyntheticHandler implements IUseItemHandler {
     }
 
     private void useCapsuleBayHandler(Player player) {
-        player.getPlayerState().setTypeTransport(ConstPlayer.TYPE_TRANSPORT_CAPSULE);
+        player.getPlayerContext().setTypeTransport(ConstPlayer.TYPE_TRANSPORT_CAPSULE);
         MapService.getInstance().sendMapTransport(player);
     }
 }

@@ -24,7 +24,7 @@ import nro.server.service.core.item.DropItemMap;
 @SuppressWarnings("ALL")
 public class PlayerTask {
 
-    private final Player player;
+    private Player player;
     private TaskMain taskMain;
 
     public PlayerTask(Player player) {
@@ -40,6 +40,8 @@ public class PlayerTask {
         if (this.player.getTypeObject() != ConstTypeObject.TYPE_PLAYER) return false;
         try {
             if (!checkTaskInfo(taskId, index)) return false;
+
+            this.addDoneSubTask();
 
             NpcService npcService = NpcService.getInstance();
             var npcName = ConstNpc.getNameNpcHouseByGender(player.getGender());
@@ -59,7 +61,8 @@ public class PlayerTask {
                 case 11 -> this.handlerTaskEleven(index, npcService, npcName);
             }
 
-            this.addDoneSubTask();
+            TaskService.getInstance().sendTaskMainUpdate(player);
+
 
         } catch (Exception ex) {
             LogServer.LogException("PlayerTask doneTask - " + ex.getMessage(), ex);
@@ -139,7 +142,10 @@ public class PlayerTask {
         try {
             switch (index) {
                 case 0 -> DropItemMap.dropMissionItems(player);
-                case 1 -> ItemService.getInstance().sendFlagBag(player);
+                case 1 -> {
+                    this.player.getFashion().updateFashion();
+                    ItemService.getInstance().sendFlagBag(player);
+                }
                 case 2 -> {
                     Npc npc = NpcFactory.getNpc(ConstNpc.GetIdNpcHomeByGender(player.getGender()));
                     var content = "Có em bé trong phi thuyền rơi xuống à, ta cứ tưởng là sao băng\n" + "Ta sẽ đặt đặt tên cho nó là Sôn Gô Ku, từ bây giờ nó s là thành viên trong gia đình ta\n" + "Ta mới nhận được tin có bầy mãnh thú xuất hiện tại Trạm phi thuyền\n" + "Bọn chúng vừa đổ bộ xuống Trái Đất để tr thù việc con cướp đùi gà của con chúng\n" + "Hãy dùng phi thuyền đến các hành tinh khác để giúp dân làng tại đó luôn nhé";
@@ -152,7 +158,8 @@ public class PlayerTask {
                     }
                 }
             }
-        } catch (Exception ex) {
+        } catch (
+                Exception ex) {
             LogServer.LogException("PlayerTask handleTaskThree - " + ex.getMessage(), ex);
         }
     }
@@ -309,9 +316,31 @@ public class PlayerTask {
                     return true;
                 }
             }
-            case ConstMap.VACH_NUI_ARU, ConstMap.VACH_NUI_MOORI, ConstMap.VAC_NUI_KAKAROT, ConstMap.THI_TRAN_MOORI,
-                 ConstMap.LANG_PLANT, ConstMap.THUNG_LUNG_TRE -> {
+            case ConstMap.VACH_NUI_ARU, ConstMap.VACH_NUI_MOORI, ConstMap.VAC_NUI_KAKAROT, ConstMap.THI_TRAN_MOORI -> {
                 if (this.taskMain.getId() <= 2) {
+                    return true;
+                }
+            }
+            case ConstMap.THUNG_LUNG_TRE, ConstMap.LANG_PLANT -> {
+                if (this.taskMain.getId() <= 3) {
+                    return true;
+                }
+            }
+            case ConstMap.RUNG_NAM, ConstMap.THUNG_LUNG_MAIMA, ConstMap.RUNG_NGUYEN_SINH -> {
+                if (this.taskMain.getId() < 7
+                        || (this.taskMain.getId() <= 7 && this.taskMain.getIndex() < 1)) {
+                    return true;
+                }
+            }
+            case ConstMap.RUNG_XUONG, ConstMap.VUC_MAIMA, ConstMap.RUNG_THONG_XAYDA -> {
+                if (this.taskMain.getId() < 8
+                        || (this.taskMain.getId() <= 8 && this.taskMain.getIndex() < 1)) {
+                    return true;
+                }
+            }
+            case ConstMap.THAP_KARIN, ConstMap.RUNG_KARIN -> {
+                if (this.taskMain.getId() < 8
+                        || (this.taskMain.getId() <= 8 && this.taskMain.getIndex() < 3)) {
                     return true;
                 }
             }
@@ -421,7 +450,7 @@ public class PlayerTask {
 
     public void checkDoneTaskConfirmMenuNpc(int npcId) throws RuntimeException {
         if (npcId == ConstNpc.DAU_THAN) {
-            if (player.getPlayerState().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
+            if (player.getPlayerContext().getIndexMenu() == ConstMenu.MENU_HARVEST_PEA) {
                 this.doneTask(0, 4);
             }
         }
@@ -488,8 +517,6 @@ public class PlayerTask {
                     taskService.sendTaskMain(player);
                 }
             }
-            taskService.sendTaskMainUpdate(player);
-
             TaskManager.getInstance().rewardTask(player);
         } catch (Exception exception) {
             LogServer.LogException("PlayerTask addDoneSubTask - " + exception.getMessage(), exception);
@@ -498,6 +525,7 @@ public class PlayerTask {
 
     public void dispose() {
         this.taskMain = null;
+        this.player = null;
     }
 
 }

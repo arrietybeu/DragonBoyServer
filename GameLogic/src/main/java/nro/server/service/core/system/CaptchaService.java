@@ -29,7 +29,7 @@ public class CaptchaService {
             // generate dynamic rules for the captcha
             CaptchaUtil.generateDynamicRules();
 
-            String sampleDigits = generateCaptchaDigits(CaptchaUtil.DIGITS_LENGTH);
+            String sampleDigits = generateCaptchaDigits();
             String captcha = this.shuffleDigits(sampleDigits);
 
             writer.writeByte(type);
@@ -47,11 +47,11 @@ public class CaptchaService {
         }
     }
 
-    private String generateCaptchaDigits(int length) {
+    private String generateCaptchaDigits() {
         List<Character> validDigits = new ArrayList<>(CaptchaUtil.REVERSE_MAP.keySet());
         Collections.shuffle(validDigits);
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length; i++) sb.append(validDigits.get(i));
+        for (int i = 0; i < CaptchaUtil.DIGITS_LENGTH; i++) sb.append(validDigits.get(i));
         return sb.toString();
     }
 

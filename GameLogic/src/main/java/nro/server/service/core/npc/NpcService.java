@@ -1,5 +1,6 @@
 package nro.server.service.core.npc;
 
+import nro.consts.ConstNpc;
 import nro.consts.ConstsCmd;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.Entity;
@@ -29,8 +30,8 @@ public class NpcService {
         Npc npc = player.getArea().getNpcById(npcId);
 
         if (npc == null) {
-            if (npcId == 54) {
-                Npc lyTieuNuong = NpcFactory.getNpc(54);
+            if (npcId == ConstNpc.LY_TIEU_NUONG) {
+                Npc lyTieuNuong = NpcFactory.getNpc(ConstNpc.LY_TIEU_NUONG);
                 if (lyTieuNuong != null) {
                     lyTieuNuong.openMenu(player);
                 } else {
@@ -41,7 +42,6 @@ public class NpcService {
             }
             return;
         }
-
         if (npc.isHide()) return;
         npc.openMenu(player);
     }
@@ -49,7 +49,15 @@ public class NpcService {
     public void confirmMenu(Player player, int npcId, int select) {
         Npc npc = player.getArea().getNpcById(npcId);
         if (npc == null) {
-            ServerService.getInstance().sendHideWaitDialog(player);
+            if (npcId == ConstNpc.CON_MEO) {
+                Npc conMeo = NpcFactory.getNpc(ConstNpc.CON_MEO);
+                if (conMeo == null) {
+                    throw new RuntimeException("Npc con mèo id: " + ConstNpc.CON_MEO + " không tồn tại");
+                }
+                conMeo.openUIConfirm(player, select);
+            } else {
+                ServerService.getInstance().sendHideWaitDialog(player);
+            }
             return;
         }
         if (npc.isHide()) return;
@@ -58,7 +66,7 @@ public class NpcService {
 
     public void createMenu(Player player, int npcId, int indexMenu, String npcSay, String... menus) {
         try (Message message = new Message(32)) {
-            player.getPlayerState().setIndexMenu(indexMenu);
+            player.getPlayerContext().setIndexMenu(indexMenu);
             DataOutputStream data = message.writer();
             data.writeShort(npcId);
             data.writeUTF(npcSay);
@@ -85,9 +93,6 @@ public class NpcService {
             LogServer.LogException("Error sendNpcTalkMessage: " + ex.getMessage());
             ex.printStackTrace();
         }
-    }
-
-    public void sendNpcChatForPlayer(Player player) {
     }
 
     public void sendNpcChatAllPlayerInArea(Player player, Npc npc, String text) {

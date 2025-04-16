@@ -45,7 +45,7 @@ public class PlayerTransport {
     public void playerTransport(int index) {
         long ms = System.currentTimeMillis();
         try {
-            var lastTimeTransport = owner.getPlayerState().getLastTimeTransport();
+            var lastTimeTransport = owner.getPlayerContext().getLastTimeTransport();
             if (ms - lastTimeTransport < 10000) {
                 long remainingTime = (10000 - (ms - lastTimeTransport)) / 1000;
                 ServerService.getInstance().sendChatGlobal(owner.getSession(), null, String.format("Vui lòng đợi %d giây để sử dụng lại", remainingTime), false);
@@ -68,7 +68,7 @@ public class PlayerTransport {
                     destination.getAreeBefore());
             transports.clear();
 
-            owner.getPlayerState().setLastTimeTransport(System.currentTimeMillis());
+            owner.getPlayerContext().setLastTimeTransport(System.currentTimeMillis());
         } catch (Exception ex) {
             LogServer.LogException("playerTransport: " + ex.getMessage(), ex);
         }

@@ -232,10 +232,12 @@ public class ThanMeoKarinController extends BossAIController {
 
     @Override
     public void handleLeavingMap(Boss boss) {
-        super.handleLeavingMap(boss); // xóa boss khỏi map
         // hiển thị npc lên
         Npc npc = boss.getArea().getNpcById(ConstNpc.THAN_MEO_KARIN);
         npc.turnOnHideNpc(boss, false);
+
+        // xóa boss khỏi map
+        super.handleLeavingMap(boss);
     }
 
 }

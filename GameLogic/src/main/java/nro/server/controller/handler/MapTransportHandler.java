@@ -10,7 +10,7 @@ import nro.server.service.model.entity.player.Player;
 import nro.server.system.LogServer;
 
 @APacketHandler(ConstsCmd.MAP_TRASPORT)
-public class MapTrasportHandler implements IMessageProcessor {
+public class MapTransportHandler implements IMessageProcessor {
 
     @Override
     public void process(Session session, Message message) {
@@ -18,14 +18,13 @@ public class MapTrasportHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             var selected = message.reader().readByte();
-            switch (player.getPlayerState().getTypeTransport()) {
+            switch (player.getPlayerContext().getTypeTransport()) {
                 case ConstPlayer.TYPE_TRANSPORT_CAPSULE ->
                         player.getPlayerTransport().playerTransport(selected);
             }
 
         } catch (Exception exception) {
-            LogServer.LogException("MapTrasportHandler: " + exception.getMessage(), exception);
+            LogServer.LogException("MapTransportHandler: " + exception.getMessage(), exception);
         }
     }
-
 }

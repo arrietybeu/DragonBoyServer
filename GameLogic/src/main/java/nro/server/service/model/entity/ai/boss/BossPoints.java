@@ -1,6 +1,5 @@
 package nro.server.service.model.entity.ai.boss;
 
-import nro.server.service.core.player.PlayerService;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.Points;
 import nro.server.service.model.entity.ai.AIState;

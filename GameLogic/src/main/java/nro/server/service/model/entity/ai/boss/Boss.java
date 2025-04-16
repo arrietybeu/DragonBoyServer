@@ -81,6 +81,13 @@ public abstract class Boss extends AbstractAI {
         this.area = null;
     }
 
+    public Player getLastPlayerTarget() {
+        if (lastPlayerTarget == null || lastPlayerTarget.getArea() == null) {
+            return null;
+        }
+        return lastPlayerTarget;
+    }
+
     @Override
     public AIState getState() {
         return this.getCurrentState();

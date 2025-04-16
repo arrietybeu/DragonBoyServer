@@ -5,7 +5,6 @@ import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
 import nro.server.realtime.system.item.ItemMapSystem;
 import nro.server.realtime.system.player.PlayerSystem;
-import nro.server.realtime.system.player.TradeSystem;
 import nro.server.service.core.dragon.DragonService;
 import nro.server.service.core.npc.NpcService;
 import nro.server.service.core.player.AdministratorService;
@@ -31,6 +30,7 @@ import nro.server.service.core.player.PlayerService;
 import nro.utils.FileNio;
 import nro.utils.Util;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -332,9 +332,25 @@ public class ChatService {
                     ServerService.dialogMessage(playerChat.getSession(), infoArea);
                 }
 
-                case "remove_bag" -> {
-                    playerChat.getPlayerInventory().removeAllItemBag();
-                    serverService.sendChatGlobal(playerChat.getSession(), null, "Remove Bag Thành Công", false);
+                case "clear" -> {
+                    var inventory = playerChat.getPlayerInventory();
+                    var npcSay = String.format("Bạn muốn clear inventory nào?" +
+                                    "\nBox size: %d/%d" +
+                                    "\nBag size: %d/%d" +
+                                    "\nBody size: %d/%d",
+                            inventory.getCountEmptyListItem(inventory.getItemsBox()),
+                            inventory.getItemsBox().size(),
+                            inventory.getCountEmptyListItem(inventory.getItemsBag()),
+                            inventory.getItemsBag().size(),
+                            inventory.getCountEmptyListItem(inventory.getItemsBody()),
+                            inventory.getItemsBody().size()
+                    );
+                    String[] menuOptions = {"Box", "Bag", "Body", "All", "Cancel"};
+                    NpcService.getInstance().createMenu(
+                            playerChat,
+                            ConstNpc.CON_MEO,
+                            ConstMenu.MENU_REMOVE_INVENTORY,
+                            npcSay, menuOptions);
                 }
                 default ->
                         serverService.sendChatGlobal(playerChat.getSession(), null, "Command không hợp lệ: " + text, false);

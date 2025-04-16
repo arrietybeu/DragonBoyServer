@@ -9,11 +9,6 @@ public class ConstSkill {
     public static final byte SKILL_NOT_FORCUS = 3;
     public static final byte SKILL_SPECIAL = 4;
 
-    // type use mana
-
-    public static final byte USE_QUANTITY_MANA = 0;
-    public static final byte USE_PERCENT_MANA = 1;
-    public static final byte USE_ALL_MANA = 2;
 
     // type skill not focus
     public static final byte NORMAL = 0;

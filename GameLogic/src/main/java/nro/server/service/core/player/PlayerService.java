@@ -516,7 +516,7 @@ public class PlayerService {
         String notify = null;
         var type = -1;
 
-        if (player.getArea().getMap().isMapHouseByGender(player.getGender()) && itemMapId == player.getPlayerState().getIdItemTask()) {
+        if (player.getArea().getMap().isMapHouseByGender(player.getGender()) && itemMapId == player.getPlayerContext().getIdItemTask()) {
             player.getPoints().healPlayer();
             notify = "Bạn vừa ăn Đùi gà nướng";
             isTask = true;
@@ -537,7 +537,7 @@ public class PlayerService {
 
     private boolean handleTaskPickItem(Player player, int itemMapId) {
         int idItem = ConstItem.DUA_BE;
-        if (player.getPlayerState().getIdItemTask() == itemMapId) {
+        if (player.getPlayerContext().getIdItemTask() == itemMapId) {
             Item duaBe = ItemFactory.getInstance().createItemOptionsBase(idItem, player.getId(), 1);
             if (!player.getPlayerInventory().addItemBag(duaBe)) return false;
             player.getPlayerTask().checkDoneTaskPickItem(idItem);

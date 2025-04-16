@@ -17,10 +17,10 @@ public class PlayerPickItemMapHandler implements IMessageProcessor {
         if (player == null) return;
         try {
             long time = System.currentTimeMillis();
-            if (time - player.getPlayerState().getLastTimePickItem() < 1000) return;
+            if (time - player.getPlayerContext().getLastTimePickItem() < 1000) return;
             var idItemMap = message.reader().readShort();
             PlayerService.getInstance().pickItem(player, idItemMap);
-            player.getPlayerState().setLastTimePickItem(time);
+            player.getPlayerContext().setLastTimePickItem(time);
         } catch (Exception e) {
             LogServer.LogException("PlayerPickItemMapHandler: " + e.getMessage(), e);
         }

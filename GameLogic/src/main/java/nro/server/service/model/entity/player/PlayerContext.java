@@ -7,7 +7,7 @@ import nro.server.service.core.economy.TradeService;
 
 @Getter
 @Setter
-public class PlayerState {
+public class PlayerContext {
 
     private final Player player;
 
@@ -27,7 +27,7 @@ public class PlayerState {
 
     private boolean isInVisible;
 
-    public PlayerState(Player player) {
+    public PlayerContext(Player player) {
         this.player = player;
     }
 

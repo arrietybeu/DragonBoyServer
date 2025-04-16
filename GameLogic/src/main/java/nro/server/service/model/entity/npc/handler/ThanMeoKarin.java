@@ -50,7 +50,7 @@ public class ThanMeoKarin extends Npc {
     public void openUIConfirm(Player player, int select) {
         if (player.getArea().getMap().getId() == ConstMap.THAP_KARIN) {
             String npcSay;
-            switch (player.getPlayerState().getIndexMenu()) {
+            switch (player.getPlayerContext().getIndexMenu()) {
                 case ConstMenu.BASE_MENU -> {
                     switch (select) {
                         case 0 -> {

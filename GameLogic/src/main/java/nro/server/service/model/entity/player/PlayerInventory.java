@@ -19,6 +19,8 @@ import nro.server.service.core.player.PlayerService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nro.server.service.model.entity.npc.handler.ConMeo.*;
+
 @Getter
 @Setter
 @SuppressWarnings("ALL")
@@ -192,11 +194,20 @@ public class PlayerInventory {
         LogServer.LogWarning("removeItem: Không tìm thấy item để xóa.");
     }
 
-    public void removeAllItemBag() {
-        for (int i = 0; i < this.itemsBag.size(); i++) {
-            this.itemsBag.set(i, ItemFactory.getInstance().createItemNull());
-        }
-        InventoryService.getInstance().sendItemToBags(player, 0);
+    public void removeAllItemInventory(int type) {
+        List<List<Item>> inventories = switch (type) {
+            case TYPE_BOX -> List.of(this.itemsBox);
+            case TYPE_BAG -> List.of(this.itemsBag);
+            case TYPE_BODY -> List.of(this.itemsBody);
+            case TYPE_ALL -> List.of(this.itemsBox, this.itemsBag, this.itemsBody);
+            default -> List.of();
+        };
+
+        inventories.forEach(inventory ->
+                inventory.replaceAll(item -> ItemFactory.getInstance().createItemNull())
+        );
+
+        this.sendInfoAfterEquipItem();
     }
 
     private void _______________THROW_ITEM______________() {
@@ -250,16 +261,19 @@ public class PlayerInventory {
 
     public void subQuantityItemsBag(Item item, int quantity) {
         this.subQuantityItem(this.getItemsBag(), item, quantity);
+        this.player.getFashion().updateFashion();
         InventoryService.getInstance().sendItemToBags(player, 0);
     }
 
     public void subQuantityItemsBody(Item item, int quantity) {
         this.subQuantityItem(this.getItemsBody(), item, quantity);
+        this.player.getFashion().updateFashion();
         InventoryService.getInstance().sendItemToBodys(player);
     }
 
     public void subQuantityItemsBox(Item item, int quantity) {
         this.subQuantityItem(this.getItemsBox(), item, quantity);
+        this.player.getFashion().updateFashion();
         InventoryService.getInstance().sendItemsBox(player, 0);
     }
 

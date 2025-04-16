@@ -3,11 +3,13 @@ package nro.server.service.core.item;
 import nro.consts.ConstItem;
 import nro.consts.ConstMap;
 import nro.consts.ConstMonster;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerTask;
+import nro.server.service.model.template.item.ItemOption;
 import nro.utils.Util;
 
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class DropItemMap {
     }
 
     public static DropItemMap getInstance() {
-        return DropItemMap.SingletonHolder.instance;
+        return SingletonHolder.instance;
     }
 
     private static final Map<Short, List<ItemDropInfo>> MAP_ITEM_DROPS = Map.of(
@@ -33,10 +35,15 @@ public class DropItemMap {
             ConstMap.VAC_NUI_KAKAROT, List.of(new ItemDropInfo(ConstItem.DUA_BE, 155, 288, 3, 1, true))
     );
 
-    public List<ItemMap> dropItemMapForMonster(Player player, Monster monster) {
-        List<ItemMap> itemMaps = new ArrayList<>();
-        this.dropItemMapToTask(player, monster, itemMaps);
-        return itemMaps;
+    public List<ItemMap> dropItemMapForMonster(Entity entity, Monster monster) {
+        switch (entity) {
+            case Player player -> {
+                List<ItemMap> itemMaps = new ArrayList<>();
+                this.dropItemMapToTask(player, monster, itemMaps);
+                return itemMaps;
+            }
+            default -> throw new IllegalStateException("dropItemMapForMonster: Unexpected value: " + entity);
+        }
     }
 
     private void dropItemMapToTask(Player player, Monster monster, List<ItemMap> itemMaps) {
@@ -88,8 +95,8 @@ public class DropItemMap {
                 if (!isTaskIdValid || !isIndexTaskValid) continue;
 
                 Item item = ItemFactory.getInstance().createItemOptionsBase(itemDropInfo.itemId(), player.getId(), 1);
-                player.getPlayerState().setIdItemTask(player.getArea().increaseItemMapID());
-                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerState().getIdItemTask(), player.getId(), item, itemDropInfo.x(), itemDropInfo.y(), -1, false);
+                player.getPlayerContext().setIdItemTask(player.getArea().increaseItemMapID());
+                ItemMap itemMap = new ItemMap(player.getArea(), player.getPlayerContext().getIdItemTask(), player.getId(), item, itemDropInfo.x(), itemDropInfo.y(), -1, false);
                 ItemService.getInstance().sendDropItemMap(player, itemMap, false);
             }
         }

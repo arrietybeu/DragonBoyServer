@@ -46,21 +46,7 @@ public abstract class Skills {
         }
     }
 
-    public void useSkill(Entity target) {
-        try {
-            if (!this.skillSelect.isReady()) return;
 
-            switch (this.skillSelect.getTemplate().getType()) {
-                case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);
-                case ConstSkill.SKILL_SUPPORT -> { /* TODO */ }
-                case ConstSkill.SKILL_NOT_FORCUS -> this.useSkillNotForcus();
-            }
-            // tick đã dùng
-            this.skillSelect.markUsedNow();
-        } catch (Exception ex) {
-            LogServer.LogException("useSkill player name:" + owner.getName() + " error: " + ex.getMessage());
-        }
-    }
 
     public void useSkillTarget(Entity target) {
         try {
@@ -180,6 +166,8 @@ public abstract class Skills {
         this.skillSelect = null;
         this.skillShortCut = null;
     }
+
+    public abstract void useSkill(Entity target);
 
     public abstract Skills copy(Entity entity);
 

@@ -63,7 +63,7 @@ public class TradeService {
     public boolean requestTrade(Player p1, Player p2) {
         try {
             if (p1.equals(p2)) return false;
-            if (p1.getPlayerState().getIdTrade() > 0 || p2.getPlayerState().getIdTrade() > 0) return false;
+            if (p1.getPlayerContext().getIdTrade() > 0 || p2.getPlayerContext().getIdTrade() > 0) return false;
             this.sendTransactionToPlayerFocus(p1, p2, ConstTrade.TRANSACTION_REQUEST);
             return true;
         } catch (Exception e) {
@@ -160,7 +160,7 @@ public class TradeService {
     public TradeSession getSession(Player player) {
         this.lock.readLock().lock();
         try {
-            int tradeId = player.getPlayerState().getIdTrade();
+            int tradeId = player.getPlayerContext().getIdTrade();
             if (tradeId < 0) return null;
             return TradeSystem.getInstance().getTradeSessions().get(tradeId);
         } finally {
@@ -172,7 +172,7 @@ public class TradeService {
         this.lock.writeLock().lock();
         try {
             TradeSystem tradeSystem = TradeSystem.getInstance();
-            int tradeId = player.getPlayerState().getIdTrade();
+            int tradeId = player.getPlayerContext().getIdTrade();
             if (tradeId < 0) return;
 
             TradeSession session = tradeSystem.getTradeSessions().remove(tradeId);
@@ -294,7 +294,7 @@ public class TradeService {
         this.lock.writeLock().lock();
         try {
             TradeSystem tradeSystem = TradeSystem.getInstance();
-            int tradeId = player.getPlayerState().getIdTrade();
+            int tradeId = player.getPlayerContext().getIdTrade();
             if (tradeId < 0) return;
 
             TradeSession session = tradeSystem.getTradeSessions().remove(tradeId);

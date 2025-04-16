@@ -225,6 +225,7 @@ public class AreaService {
                 serverService.sendChatGlobal(player.getSession(), null, "Bạn chưa thể đến khu vực này", false);
                 return;
             }
+
             Area newArea = newMap.getArea(-1, player);
             if (newArea == null) {
                 this.keepPlayerInSafeZone(player, waypoint);
@@ -232,14 +233,14 @@ public class AreaService {
                 return;
             }
 
-//            if (player.getPlayerState().getLastTimeChangeMap() + 5000 > System.currentTimeMillis()) {
+//            if (player.getPlayerContext().getLastTimeChangeMap() + 5000 > System.currentTimeMillis()) {
 //                this.keepPlayerInSafeZone(player, waypoint);
 //                serverService.sendChatGlobal(player.getSession(), null, "Vui lòng chờ 5 giây để chuyển map", false);
 //                return;
 //            }
 
             this.gotoMap(player, newArea, waypoint.getGoX(), waypoint.getGoY());
-//            player.getPlayerState().setLastTimeChangeMap(System.currentTimeMillis());
+//            player.getPlayerContext().setLastTimeChangeMap(System.currentTimeMillis());
         } catch (Exception ex) {
             LogServer.LogException("playerChangerMap: " + ex.getMessage(), ex);
         }
@@ -247,8 +248,8 @@ public class AreaService {
 
     public void changeArea(Player player, Area newArea) {
         long time = System.currentTimeMillis();
-        if (time - player.getPlayerState().getLastTimeChangeArea() < 10000) {
-            NpcService.getInstance().sendNpcTalkUI(player, 5, "Chưa thể chuyển khu vực lúc này vui lòng chờ " + (10 - (time - player.getPlayerState().getLastTimeChangeArea()) / 1000) + " giây nữa", -1);
+        if (time - player.getPlayerContext().getLastTimeChangeArea() < 10000) {
+            NpcService.getInstance().sendNpcTalkUI(player, 5, "Chưa thể chuyển khu vực lúc này vui lòng chờ " + (10 - (time - player.getPlayerContext().getLastTimeChangeArea()) / 1000) + " giây nữa", -1);
             return;
         }
         if (player.getArea().equals(newArea)) {
@@ -256,12 +257,14 @@ public class AreaService {
             return;
         }
         this.transferEntity(player, newArea, player.getX(), player.getY());
-        player.getPlayerState().setLastTimeChangeArea(time);
+        player.getPlayerContext().setLastTimeChangeArea(time);
     }
 
     public void gotoMap(Entity object, Area goArea, int goX, int goY) {
+
         switch (object) {
             case Player player -> {
+
                 if (this.transferEntity(player, goArea, (short) goX, (short) goY)) {
                     player.getPlayerTask().checkDoneTaskGoMap();
                     DropItemMap.dropMissionItems(player);
@@ -282,6 +285,11 @@ public class AreaService {
                     if (newArea == null) {
                         this.keepPlayerInSafeZone(player, null);
                         serverService.sendChatGlobal(player.getSession(), null, "Không có Area để vào", false);
+                        return false;
+                    }
+
+                    if (player.getPlayerTask().checkMapCanJoinToTask(newArea.getMap().getId())) {
+                        serverService.sendChatGlobal(player.getSession(), null, "Bạn chưa thể đến khu vực này", false);
                         return false;
                     }
 
@@ -427,7 +435,6 @@ public class AreaService {
 
                     Area areaFocus = area.length > 0 ? area[0] : null;
                     if (areaFocus != null) {
-                        System.out.println("areaFocus: " + areaFocus.getId());
                         player.setTeleport(typeTele);
                         AreaService.getInstance().gotoMap(player, areaFocus, x, y);
                         break;
@@ -438,10 +445,8 @@ public class AreaService {
                         serverService.sendChatGlobal(player.getSession(), null, "Không có khu vực trống trong map: " + mapId, false);
                         return;
                     }
-
                     player.setTeleport(typeTele);
                     AreaService.getInstance().gotoMap(player, newArea, x, y);
-
                 }
                 case Boss boss -> AreaService.getInstance().gotoMap(boss, area[0], x, y);
                 default -> LogServer.LogException("changerMapByShip: Not Entity :" + entity.getName());

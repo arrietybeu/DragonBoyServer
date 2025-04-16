@@ -11,7 +11,6 @@ import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.entity.player.Player;
 import nro.server.system.LogServer;
 import nro.server.service.core.combat.MonsterService;
-import nro.server.service.core.player.SkillService;
 import nro.server.service.core.item.DropItemMap;
 import nro.utils.Util;
 
@@ -48,7 +47,7 @@ public class Monster extends Entity {
     }
 
     @Override
-    public synchronized long handleAttack(Entity entityAttack,int type, long damage) {
+    public synchronized long handleAttack(Entity entityAttack, int type, long damage) {
         if (entityAttack instanceof Player plAttack) {
             this.lock.writeLock().lock();
             try {
@@ -113,16 +112,17 @@ public class Monster extends Entity {
         }
     }
 
-    public void setDie(Player plAttack, long damage) {
+    public void setDie(Entity entityAttack, long damage) {
         try {
             this.point.setHp(0);
             this.point.setDead(true);
             this.status.setStatus((byte) 0);
             this.info.setLastTimeDie(System.currentTimeMillis());
 
-            final List<ItemMap> itemMaps = DropItemMap.getInstance().dropItemMapForMonster(plAttack, this);
-            boolean isCritical = plAttack.getPoints().getTotalCriticalChance() == 1;
+            final List<ItemMap> itemMaps = DropItemMap.getInstance().dropItemMapForMonster(entityAttack, this);
+            boolean isCritical = entityAttack.getPoints().getTotalCriticalChance() == 1;
             MonsterService.getInstance().sendMonsterDie(this, damage, isCritical, itemMaps);
+            this.onDie(entityAttack);
         } catch (Exception ex) {
             LogServer.LogException("Monster setDie: " + ex.getMessage(), ex);
         }
@@ -176,10 +176,10 @@ public class Monster extends Entity {
         try {
             switch (entity) {
                 case Player player -> {
-                    if (player.getPlayerState().getLastTimeAddExp() + 1000 > ms) return;
+                    if (player.getPlayerContext().getLastTimeAddExp() + 1000 > ms) return;
                     long exp = player.getPoints().getPotentialPointsAttack(this, damage);
                     player.getPoints().addExp(ConstPlayer.ADD_POWER_AND_EXP, exp);
-                    player.getPlayerState().setLastTimeAddExp(ms);
+                    player.getPlayerContext().setLastTimeAddExp(ms);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + entity.getName());
             }

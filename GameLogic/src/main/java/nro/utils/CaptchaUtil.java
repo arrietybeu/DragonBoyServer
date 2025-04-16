@@ -79,7 +79,7 @@ public class CaptchaUtil {
             int y = 60;
             g.setColor(randomColor());
 
-            // Xoay nhẹ ký tự
+            // xoay ký tự
             double angle = Math.toRadians(rand.nextInt(41) - 20); // -20 đến +20 độ
             AffineTransform old = g.getTransform();
             g.rotate(angle, x, y);
@@ -121,5 +121,7 @@ public class CaptchaUtil {
         ImageIO.write(img, "png", baos);
         return baos.toByteArray();
     }
+
+
 
 }

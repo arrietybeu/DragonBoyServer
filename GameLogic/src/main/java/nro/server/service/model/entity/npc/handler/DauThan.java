@@ -5,8 +5,8 @@ import nro.consts.ConstNpc;
 import nro.server.service.model.entity.npc.ANpcHandler;
 import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.entity.player.PlayerContext;
 import nro.server.service.model.entity.player.PlayerMagicTree;
-import nro.server.service.model.entity.player.PlayerState;
 import nro.server.service.core.npc.NpcService;
 
 import java.util.ArrayList;
@@ -22,16 +22,16 @@ public class DauThan extends Npc {
     @Override
     public void openMenu(Player player) {
         PlayerMagicTree playerMagicTree = player.getPlayerMagicTree();
-        PlayerState playerState = player.getPlayerState();
+        PlayerContext playerContext = player.getPlayerContext();
         List<String> menu = new ArrayList<>();
 
         if (player.getPlayerTask().getTaskMain().getId() <= 1) {
             menu.add("Thu\nhoạch");
-            playerState.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
+            playerContext.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
         } else if (playerMagicTree.isUpgrade()) {
             menu.add("Nâng cấp\nnhanh");
             menu.add("Hủy\nnâng cấp\nhồi " + playerMagicTree.getGold());
-            playerState.setIndexMenu(ConstMenu.MENU_MAGIC_TREE_UPGRADE);
+            playerContext.setIndexMenu(ConstMenu.MENU_MAGIC_TREE_UPGRADE);
         } else {
             menu.add("Thu\nhoạch");
             if (playerMagicTree.getLevel() < 10) {
@@ -40,14 +40,14 @@ public class DauThan extends Npc {
             if (playerMagicTree.getCurrPeas() < playerMagicTree.getMaxPea()) {
                 menu.add("Kết hạt\nnhanh");
             }
-            playerState.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
+            playerContext.setIndexMenu(ConstMenu.MENU_HARVEST_PEA);
         }
         NpcService.getInstance().loadMagicTree(player, 1, menu);
     }
 
     @Override
     public void openUIConfirm(Player player, int select) {
-        var indexMenu = player.getPlayerState().getIndexMenu();
+        var indexMenu = player.getPlayerContext().getIndexMenu();
         var playerMagicTree = player.getPlayerMagicTree();
         switch (indexMenu) {
             case ConstMenu.MENU_HARVEST_PEA: {

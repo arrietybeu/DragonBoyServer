@@ -34,7 +34,7 @@ public class Player extends Entity {
     private PlayerTask playerTask;
     private PlayerInventory playerInventory;
     private PlayerMagicTree playerMagicTree;
-    private PlayerState playerState;
+    private PlayerContext playerContext;
     private PlayerTransport playerTransport;
 
     private Clan clan;
@@ -53,7 +53,7 @@ public class Player extends Entity {
         this.playerTask = new PlayerTask(this);
         this.playerInventory = new PlayerInventory(this);
         this.playerMagicTree = new PlayerMagicTree(this);
-        this.playerState = new PlayerState(this);
+        this.playerContext = new PlayerContext(this);
         this.points = new PlayerPoints(this);
         this.fashion = new PlayerFashion(this);
         this.skills = new PlayerSkills(this);
@@ -79,7 +79,7 @@ public class Player extends Entity {
         try {
             ItemService itemService = ItemService.getInstance();
             long currentTime = System.currentTimeMillis();
-            long lastChangeTime = this.getPlayerState().getLastTimeChangeFlag();
+            long lastChangeTime = this.getPlayerContext().getLastTimeChangeFlag();
             boolean isInvalidIndex = index < 0 || index >= ItemManager.getInstance().getFlags().size();
 
             switch (action) {
@@ -100,7 +100,7 @@ public class Player extends Entity {
                     }
 
                     if (index != 0) {
-                        this.getPlayerState().setLastTimeChangeFlag(currentTime);
+                        this.getPlayerContext().setLastTimeChangeFlag(currentTime);
                     }
 
                     this.fashion.setFlagPk((byte) index);
@@ -168,7 +168,7 @@ public class Player extends Entity {
 
             if (playerInventory != null) playerInventory.dispose();
             if (playerTask != null) playerTask.dispose();
-            if (playerState != null) playerState.dispose();
+            if (playerContext != null) playerContext.dispose();
             if (playerTransport != null) playerTransport.dispose();
             if (skills != null) skills.dispose();
             if (petFollow != null) petFollow.dispose();
@@ -177,7 +177,7 @@ public class Player extends Entity {
             this.playerMagicTree = null;
             this.playerInventory = null;
             this.playerTask = null;
-            this.playerState = null;
+            this.playerContext = null;
             this.playerTransport = null;
             this.playerCurrencies = null;
             this.fashion = null;

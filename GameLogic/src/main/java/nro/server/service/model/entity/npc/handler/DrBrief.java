@@ -28,7 +28,7 @@ public class DrBrief extends Npc {
     @Override
     public void openUIConfirm(Player player, int select) {
         AreaService areaService = AreaService.getInstance();
-        if (player.getPlayerState().isBaseMenu()) {
+        if (player.getPlayerContext().isBaseMenu()) {
             switch (select) {
                 case 0 ->
                         areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_NAMEC, Util.nextInt(400, 444), 5, 1);

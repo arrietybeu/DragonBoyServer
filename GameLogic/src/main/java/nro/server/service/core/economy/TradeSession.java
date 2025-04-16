@@ -40,8 +40,8 @@ public class TradeSession {
     }
 
     private void setIdTradeForPlayer(int id) {
-        this.player1.getPlayerState().setIdTrade(id);
-        this.player2.getPlayerState().setIdTrade(id);
+        this.player1.getPlayerContext().setIdTrade(id);
+        this.player2.getPlayerContext().setIdTrade(id);
     }
 
     public boolean addItem(Player player, Item item) {
@@ -142,12 +142,12 @@ public class TradeSession {
         donePlayer2 = false;
 
         if (player1 != null) {
-            player1.getPlayerState().setIdTrade(-1);
+            player1.getPlayerContext().setIdTrade(-1);
             player1 = null;
         }
 
         if (player2 != null) {
-            player2.getPlayerState().setIdTrade(-1);
+            player2.getPlayerContext().setIdTrade(-1);
             player2 = null;
         }
 

@@ -75,7 +75,7 @@ public class MonsterUpdateSystem implements ISystemBase {
 
     @Override
     public int size() {
-        return 0;
+        return this.monsters.size();
     }
 
     @Override

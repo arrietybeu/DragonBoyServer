@@ -38,7 +38,7 @@ public final class BossManager implements IManager {
     public void init() {
         try {
             BossFactory.getInstance().init(ConfigServer.PATH_BOSS_HANDLER);
-            loadBoss();
+            this.loadBoss();
         } catch (Exception e) {
             LogServer.LogException("BossManager.init() error: " + e.getMessage(), e);
         }
