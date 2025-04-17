@@ -105,6 +105,14 @@ public class PlayerInventory {
                         for (Item itemInventory : items) {
                             if (itemInventory == null || itemInventory.getTemplate() == null) continue;
 
+                            if (ItemFactory.isItemAutoPractice(itemNew.getTemplate().id())) {
+                                if (this.addParamOptionItemAutoPractice(itemInventory, itemNew)) {
+                                    return true;
+                                } else {
+                                    continue;
+                                }
+                            }
+
                             if (itemInventory.getTemplate().id() != itemNew.getTemplate().id() || !isSameOptions(itemInventory.getItemOptions(), itemNew.getItemOptions())) {
                                 continue;
                             }
@@ -162,6 +170,31 @@ public class PlayerInventory {
         }
     }
 
+    private boolean addParamOptionItemAutoPractice(Item itemInventory, Item itemAdd) throws RuntimeException {
+        List<ItemOption> optionsItemInventory = itemInventory.getItemOptions();
+        List<ItemOption> optionsItemAdd = itemAdd.getItemOptions();
+        int paramItemAdd = -1;
+        int optionItemAdd = -1;
+
+        for (var option : optionsItemAdd) {
+            if (option.getId() == ConstOption.THOI_GIAN_SUA_DUNG) {
+                optionItemAdd = option.getId();
+                paramItemAdd = option.getParam();
+            }
+        }
+        if (optionItemAdd == -1 || paramItemAdd == -1) {
+            throw new RuntimeException("Item to be added does not have the required option or parameter optionItemAdd: " + optionItemAdd + "- paramItemAdd: " + paramItemAdd);
+        }
+        for (var option : optionsItemInventory) {
+            if (option.getId() == optionItemAdd) {
+                int paramAdd = option.getParam() + paramItemAdd;
+                option.setParam(paramAdd);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void ______________REMOVE_ITEM______________() {
         // Xử lý người chơi xóa item
     }
@@ -203,9 +236,7 @@ public class PlayerInventory {
             default -> List.of();
         };
 
-        inventories.forEach(inventory ->
-                inventory.replaceAll(item -> ItemFactory.getInstance().createItemNull())
-        );
+        inventories.forEach(inventory -> inventory.replaceAll(item -> ItemFactory.getInstance().createItemNull()));
 
         this.sendInfoAfterEquipItem();
     }

@@ -158,7 +158,6 @@ public final class TaskManager implements IManager {
         var taskIndex = player.getPlayerTask().getTaskMain().getIndex();
         for (ItemTaskReward reward : taskRewardMap) {
             if (reward.taskId == taskId && reward.taskIndex == taskIndex && (reward.gender == player.getGender() || reward.gender == -1)) {
-                System.out.println("reward Item: " + reward.itemId);
                 Item item = ItemFactory.getInstance().createItemOptionsBase(reward.itemId(), player.getId(), 1);
                 String name = item.getTemplate().name();
                 player.getPlayerInventory().addItemBag(item);

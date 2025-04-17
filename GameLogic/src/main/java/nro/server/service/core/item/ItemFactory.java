@@ -6,6 +6,7 @@ import nro.server.service.model.item.ItemShop;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.template.item.ItemTemplate;
 import nro.server.manager.ItemManager;
+import nro.server.system.LogServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,7 @@ public class ItemFactory {
         clone.setTemplate(original.getTemplate());
         clone.setQuantity(original.getQuantity());
         clone.setCreateTime(original.getCreateTime());
+        clone.setCreatorPlayerId(original.getCreatorPlayerId());
 
         List<ItemOption> optionClones = new ArrayList<>();
         for (ItemOption option : original.getItemOptions()) {
@@ -142,5 +144,8 @@ public class ItemFactory {
         return item != null && item.type() == 6;
     }
 
+    public static boolean isItemAutoPractice(int itemId) {
+        return itemId == 521 || itemId == 1523 || itemId == 1524;
+    }
 
 }

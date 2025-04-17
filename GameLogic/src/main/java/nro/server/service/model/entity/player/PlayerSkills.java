@@ -40,11 +40,12 @@ public class PlayerSkills extends Skills {
                 }
 
                 if (currentMp < mpUse) {
+                    ServerService.getInstance().sendChatGlobal(player.getSession(), null, "Không đủ KI để sử dụng", false);
                     return;
                 }
 
                 player.getPoints().setCurrentMp(Math.max(0, currentMp - mpUse));
-                PlayerService.getInstance().sendMpForPlayer(player);
+//                PlayerService.getInstance().sendMpForPlayer(player);
 
                 // === START SKILL ===
                 switch (this.skillSelect.getTemplate().getType()) {

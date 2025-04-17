@@ -22,6 +22,8 @@ public class ConstOption {
 
     public static final short TAN_CONG = 0;
 
+    public static final short THOI_GIAN_SUA_DUNG = 1;
+
     public static final short HP_KI_000 = 2;
 
     public static final short HP = 6;
