@@ -3,7 +3,7 @@ package nro.server.service.core.social;
 import nro.consts.*;
 import nro.server.manager.entity.BossManager;
 import nro.server.realtime.system.boss.BossAISystem;
-import nro.server.realtime.system.item.ItemMapSystem;
+import nro.server.realtime.system.map.ItemMapSystem;
 import nro.server.realtime.system.player.PlayerSystem;
 import nro.server.service.core.dragon.DragonService;
 import nro.server.service.core.npc.NpcService;
@@ -28,9 +28,9 @@ import nro.server.service.core.item.ItemFactory;
 import nro.server.service.core.item.ItemService;
 import nro.server.service.core.player.PlayerService;
 import nro.utils.FileNio;
+import nro.utils.Rnd;
 import nro.utils.Util;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,7 +94,7 @@ public class ChatService {
             }
             if (text.startsWith("m ")) {
                 int mapId = (int) this.getNumber(text);
-                AreaService.getInstance().changerMapByShip(playerChat, mapId, Util.nextInt(400, 444), 5, 1);
+                AreaService.getInstance().changerMapByShip(playerChat, mapId, Rnd.nextInt(400, 444), 5, 1);
                 serverService.sendChatGlobal(playerChat.getSession(), null, "Đã dịch chuyển đến map " + mapId, false);
                 return;
             }

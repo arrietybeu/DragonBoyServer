@@ -38,7 +38,7 @@ public class GameMap {
     private final List<Waypoint> waypoints;
     private final NavigableMap<Integer, List<Waypoint>> waypointMap;
     private final List<BgItem> bgItems;
-    private final List<BackgroudEffect> backgroudEffects;
+    private final List<BackgroudEffect> backgroundEffects;
     private final List<NpcTemplate.NpcInfo> npcs;
 
     private List<Area> areas;
@@ -47,7 +47,7 @@ public class GameMap {
     // effects, waypoints, tileMap
     public GameMap(int id, String name, byte planetId, byte tileId, byte isMapDouble,
                    byte bgId, byte bgType, byte typeMap,
-                   List<BgItem> bgItems, List<BackgroudEffect> backgroudEffects,
+                   List<BgItem> bgItems, List<BackgroudEffect> backgroundEffects,
                    List<Waypoint> waypoints, TileMap tileMap,
                    List<NpcTemplate.NpcInfo> npcs) {
         this.id = id;
@@ -59,7 +59,7 @@ public class GameMap {
         this.bgType = bgType;
         this.typeMap = typeMap;
         this.bgItems = bgItems;
-        this.backgroudEffects = backgroudEffects;
+        this.backgroundEffects = backgroundEffects;
         this.waypoints = waypoints;
         this.tileMap = tileMap;
         this.waypointMap = new TreeMap<>();

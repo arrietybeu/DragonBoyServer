@@ -16,6 +16,7 @@ import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.template.item.ItemOption;
+import nro.utils.Rnd;
 import nro.utils.Util;
 
 import java.util.List;
@@ -47,7 +48,6 @@ public class PlayerPoints extends Points {
 
 //        this.currentHP = this.baseHP;
 //        this.currentMP = this.baseMP;
-
         this.maxHP = this.baseHP;
         this.maxMP = this.baseMP;
         this.totalDefense = this.baseDefense;
@@ -408,7 +408,7 @@ public class PlayerPoints extends Points {
         int levelDiff = levelPlayer - monster.getPoint().getLevel();
 
         if (monster.getTemplateId() == 0) {
-            if (Util.nextInt(100) > 65) {
+            if (Rnd.nextInt(100) > 65) {
                 return -1;
             }
             return 1;
@@ -433,9 +433,9 @@ public class PlayerPoints extends Points {
                     } else {
                         sub = 0;
                     }
-                    sub += Util.nextInt(26) + 20; // 20 -> 45
+                    sub += Rnd.nextInt(26) + 20; // 20 -> 45
                 } else {
-                    sub = Util.nextInt(6) + 10; // 10 -> 15
+                    sub = Rnd.nextInt(6) + 10; // 10 -> 15
                 }
 
                 long subExp = (exp * sub) / 100;
@@ -446,11 +446,11 @@ public class PlayerPoints extends Points {
         } else {
             for (int i = 0; i < -levelDiff; i++) {
                 if (levelPlayer >= 13) {
-                    exp -= exp * (Util.nextInt(26) + 25) / 100; // 25 -> 50%
+                    exp -= exp * (Rnd.nextInt(26) + 25) / 100; // 25 -> 50%
                     continue;
                 }
 
-                long add = (exp * (Util.nextInt(9) + 2)) / 100; // 2 -> 10%
+                long add = (exp * (Rnd.nextInt(9) + 2)) / 100; // 2 -> 10%
                 if (add <= 0) break;
 
                 exp += add;
@@ -475,10 +475,8 @@ public class PlayerPoints extends Points {
             exp = 1;
         }
 
-        long finalExp = Util.nextInt((int) (exp * 70 / 100), (int) (exp * 120 / 100));
-
-//        System.out.println("exp: " + exp + " finalExp: " + finalExp);
-        return finalExp;
+        //        System.out.println("exp: " + exp + " finalExp: " + finalExp);
+        return Rnd.nextInt((int) (exp * 70 / 100), (int) (exp * 120 / 100));
     }
 
 

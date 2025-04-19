@@ -2,9 +2,8 @@ package nro.server.service.model.item;
 
 import lombok.Getter;
 import lombok.Setter;
-import nro.server.realtime.system.item.ItemMapSystem;
+import nro.server.realtime.system.map.ItemMapSystem;
 import nro.server.service.model.entity.Entity;
-import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 
 @Getter

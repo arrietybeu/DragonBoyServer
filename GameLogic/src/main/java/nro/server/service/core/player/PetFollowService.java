@@ -1,12 +1,10 @@
 package nro.server.service.core.player;
 
-import lombok.Getter;
-import nro.server.service.core.npc.NpcService;
 import nro.server.system.LogServer;
 import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.pet.PetFollow;
 import nro.server.service.model.entity.player.Player;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,7 +39,7 @@ public class PetFollowService {
                 pet.setAssistPet(true);
                 pet.setBuffStartTime(System.currentTimeMillis());
 
-                byte typeBuff = (byte) Util.nextInt(0, 3);
+                byte typeBuff = (byte) Rnd.nextInt(0, 3);
 
                 pet.setTypeBuff(typeBuff);
                 player.setPetFollow(pet);

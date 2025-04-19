@@ -86,7 +86,7 @@ public final class MessageReceiver {
         }
 
         if (payloadLength > MAX_MESSAGE_SIZE) {
-            LogServer.LogException("Data too big cmd: " + cmd);
+            LogServer.LogWarning("Data too big cmd: " + cmd);
         }
 
         byte[] payload = new byte[payloadLength];
@@ -123,7 +123,7 @@ public final class MessageReceiver {
         }
         this.messageCount++;
         if (this.messageCount > ConfigServer.MAX_MESSAGES_PER_5_SECONDS) {
-            LogServer.LogException("Session id: " + session.getSessionInfo().getId() + " | Message count: " + this.messageCount + " | Command: " + msg);
+            LogServer.LogWarning("Session id: " + session.getSessionInfo().getId() + " | Message count: " + this.messageCount + " | Command: " + msg);
             SessionManager.getInstance().kickSession(session);
             return false;
         }

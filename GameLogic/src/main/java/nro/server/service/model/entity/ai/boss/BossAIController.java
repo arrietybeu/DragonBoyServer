@@ -8,7 +8,7 @@ import nro.server.service.model.entity.ai.AIState;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 public abstract class BossAIController {
 
@@ -33,7 +33,7 @@ public abstract class BossAIController {
         try {
             var yTarget = target.getY();
             int direction = boss.getX() - target.getX() < 0 ? 1 : -1;
-            int move = Util.nextInt(50, 100);
+            int move = Rnd.nextInt(50, 100);
             boss.setX((short) (boss.getX() + (direction == 1 ? move : -move)));
             boss.setY(yTarget);
             AreaService.getInstance().playerMove(boss);

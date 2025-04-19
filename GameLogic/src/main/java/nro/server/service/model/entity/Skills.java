@@ -2,18 +2,16 @@ package nro.server.service.model.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.server.realtime.system.player.SkillSystem;
 import nro.server.service.core.player.SkillService;
-import nro.server.service.core.system.ServerService;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.system.LogServer;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,22 +45,25 @@ public abstract class Skills {
     }
 
 
-
     public void useSkillTarget(Entity target) {
         try {
             SkillService skillService = SkillService.getInstance();
             Entity owner = this.owner;
             switch (this.skillSelect.getTemplate().getId()) {
                 case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO -> {
+
                     long dame = owner.getPoints().getDameAttack();
+                    boolean isCritical = owner.getPoints().isCritical();
+
                     switch (target) {
                         case Player plTarget -> {
-                            SkillService.getInstance().sendEntityAttackEntity(owner, plTarget, dame, true);
+                            SkillService.getInstance().sendEntityAttackEntity(owner, plTarget, dame, isCritical);
                             plTarget.handleAttack(owner, 0, dame);
                         }
                         case Monster monster -> monster.handleAttack(owner, 0, dame);
+
                         case Boss boss -> {
-                            SkillService.getInstance().sendEntityAttackEntity(owner, boss, dame, true);
+                            SkillService.getInstance().sendEntityAttackEntity(owner, boss, dame, isCritical);
                             boss.handleAttack(owner, 0, dame);
                         }
                         default ->
@@ -148,7 +149,7 @@ public abstract class Skills {
     // dành cho con boss
     public void selectRandomSkill() {
         if (!skills.isEmpty()) {
-            this.skillSelect = skills.get(Util.nextInt(0, skills.size()));
+            this.skillSelect = skills.get(Rnd.nextInt(0, skills.size()));
         }
     }
 

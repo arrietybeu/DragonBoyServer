@@ -7,6 +7,7 @@ import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.system.LogServer;
+import nro.utils.Rnd;
 
 @Getter
 @Setter
@@ -77,11 +78,6 @@ public abstract class Points {
         }
     }
 
-    /** copy các chỉ số hiện tại (currentHP, currentMP, currentDamage...) sang một đối tượng mới
-     * @return một đối tượng Points mới với các chỉ số hiện tại đã được sao chép
-     */
-    public abstract Points copy(Entity entity);
-
     /// tính toán sát thương cuối cùng khi tấn công (đã áp dụng kỹ năng nếu có)
     public long getDameAttack() {
         long dame = this.getCurrentDamage();
@@ -92,6 +88,33 @@ public abstract class Points {
         }
         if (dame <= 0) dame = 1;
         return dame;
+    }
+
+    public long calculateDamage(boolean isCritical) {
+        long baseDmg = this.getDameAttack();
+        int critMultiplier = this.baseCriticalChance;
+        return isCritical ? Math.round(baseDmg * critMultiplier) : baseDmg;
+    }
+
+    public boolean isCritical() {
+        boolean result = totalCriticalChance >= 100 || Rnd.chancePercent(totalCriticalChance);
+        LogServer.LogInfo("criticalChance: " + this.totalCriticalChance + " → isCritical: " + result);
+        return result;
+    }
+
+    /// tính sát thương kỹ năng
+    public long getDameSkill() {
+        try {
+            SkillInfo skillSelect = this.owner.getSkills().getSkillSelect();
+            return switch (skillSelect.getTemplate().getId()) {
+                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO ->
+                        skillSelect.getDamage();
+                default -> 0;
+            };
+        } catch (Exception ex) {
+            LogServer.LogException(" getSkillDamageMultiplier: " + ex.getMessage(), ex);
+            return 0;
+        }
     }
 
     /// call resetBaseStats + applyItemBonuses để cập nhật lại toàn bộ chỉ số hiện tại
@@ -108,21 +131,6 @@ public abstract class Points {
 
     /// tính giá trị cộng từ ItemOption dựa trên kiểu Option (phần trăm, cộng cố định, ...)
     public abstract long getParamOption(long currentPoint, ItemOption option);
-
-    /// tính sát thương kỹ năng
-    public long getDameSkill() {
-        try {
-            SkillInfo skillSelect = this.owner.getSkills().getSkillSelect();
-            return switch (skillSelect.getTemplate().getId()) {
-                case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO ->
-                        skillSelect.getDamage();
-                default -> 0;
-            };
-        } catch (Exception ex) {
-            LogServer.LogException(" getSkillDamageMultiplier: " + ex.getMessage(), ex);
-            return 0;
-        }
-    }
 
     /// add EXP (sức mạnh hoặc tiềm năng), theo type: 0 = Power, 1 = Potential, 2 = cả 2
     public abstract void addExp(int type, long exp);
@@ -150,5 +158,12 @@ public abstract class Points {
 
     /// tính điểm tiềm năng kiếm được sau khi tấn công quái, có xét chênh lệch cấp độ
     public abstract long getPotentialPointsAttack(Monster monster, long damage);
+
+    /**
+     * copy các chỉ số hiện tại (currentHP, currentMP, currentDamage...) sang một đối tượng mới
+     *
+     * @return một đối tượng Points mới với các chỉ số hiện tại đã được sao chép
+     */
+    public abstract Points copy(Entity entity);
 
 }

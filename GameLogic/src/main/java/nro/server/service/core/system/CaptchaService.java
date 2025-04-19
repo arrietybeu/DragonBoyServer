@@ -5,7 +5,7 @@ import nro.server.network.Message;
 import nro.server.service.model.entity.player.Player;
 import nro.server.system.LogServer;
 import nro.utils.CaptchaUtil;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 import java.io.DataOutputStream;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class CaptchaService {
 
     private String shuffleDigits(String input) {
         List<Character> hintDigits = new ArrayList<>();
-        int obfuscation = Util.nextInt(0, 5);
+        int obfuscation = Rnd.nextInt(0, 5);
         for (char c : input.toCharArray()) hintDigits.add(c);
         Collections.shuffle(hintDigits);
         StringBuilder shuffled = new StringBuilder();

@@ -8,7 +8,7 @@ import nro.server.service.model.entity.npc.Npc;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.npc.NpcService;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 @ANpcHandler({ConstNpc.CUI})
 public class Cui extends Npc {
@@ -30,8 +30,8 @@ public class Cui extends Npc {
         AreaService areaService = AreaService.getInstance();
         if (player.getPlayerContext().isBaseMenu()) {
             switch (select) {
-                case 0 -> areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_TRAI_DAT, Util.nextInt(400, 444), 5,  1);
-                case 1 -> areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_NAMEC, Util.nextInt(400, 444), 5, 1);
+                case 0 -> areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_TRAI_DAT, Rnd.nextInt(400, 444), 5,  1);
+                case 1 -> areaService.changerMapByShip(player, ConstMap.TRAM_TAU_VU_TRU_NAMEC, Rnd.nextInt(400, 444), 5, 1);
             }
         }
     }

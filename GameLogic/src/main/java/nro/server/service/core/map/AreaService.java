@@ -127,6 +127,29 @@ public class AreaService {
         }
     }
 
+    private boolean writePlayerInfo(Entity entity, DataOutputStream data, Fashion fashion) throws Exception {
+        byte level = (byte) CaptionManager.getInstance().getLevel(entity);
+        data.writeByte(level);
+        data.writeBoolean(false);// write isInvisiblez
+        data.writeByte(entity.getTypePk()); // write status Pk
+        data.writeByte(entity.getGender());
+        data.writeByte(entity.getGender());
+        data.writeShort(fashion.getHead());
+        data.writeUTF(entity.getName());
+        data.writeLong(entity.getPoints().getCurrentHP());
+        data.writeLong(entity.getPoints().getMaxHP());
+        data.writeShort(fashion.getBody());
+        data.writeShort(fashion.getLeg());
+        data.writeShort(fashion.getFlagBag());
+        data.writeByte(0);
+        data.writeShort(entity.getX());
+        data.writeShort(entity.getY());
+        data.writeShort(entity.getPoints().getEff5BuffHp());
+        data.writeShort(entity.getPoints().getEff5BuffMp());
+        data.writeByte(0);
+        return true;
+    }
+
     public void sendLoadPlayerInArea(Entity entity) {
         try (Message message = new Message(-30)) {
             DataOutputStream data = message.writer();
@@ -151,28 +174,7 @@ public class AreaService {
         return -1;
     }
 
-    private boolean writePlayerInfo(Entity entity, DataOutputStream data, Fashion fashion) throws Exception {
-        byte level = (byte) CaptionManager.getInstance().getLevel(entity);
-        data.writeByte(level);
-        data.writeBoolean(false);// write isInvisiblez
-        data.writeByte(entity.getTypePk()); // write status Pk
-        data.writeByte(entity.getGender());
-        data.writeByte(entity.getGender());
-        data.writeShort(fashion.getHead());
-        data.writeUTF(entity.getName());
-        data.writeLong(entity.getPoints().getCurrentHP());
-        data.writeLong(entity.getPoints().getMaxHP());
-        data.writeShort(fashion.getBody());
-        data.writeShort(fashion.getLeg());
-        data.writeShort(fashion.getFlagBag());
-        data.writeByte(0);
-        data.writeShort(entity.getX());
-        data.writeShort(entity.getY());
-        data.writeShort(entity.getPoints().getEff5BuffHp());
-        data.writeShort(entity.getPoints().getEff5BuffMp());
-        data.writeByte(0);
-        return true;
-    }
+
 
     public void sendSpeedPlayerInArea(Entity player) {
         try (Message message = new Message(-30)) {

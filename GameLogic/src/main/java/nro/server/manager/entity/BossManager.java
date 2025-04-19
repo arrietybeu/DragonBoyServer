@@ -58,8 +58,9 @@ public final class BossManager implements IManager {
     }
 
     private void loadBoss() {
-        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_ENTITY); PreparedStatement ps = conn.prepareStatement(BOSS_DATA_QUERY); ResultSet rs = ps.executeQuery()) {
-
+        try (Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_ENTITY);
+             PreparedStatement ps = conn.prepareStatement(BOSS_DATA_QUERY);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 int bossId = rs.getInt("id");
                 String name = rs.getString("name");

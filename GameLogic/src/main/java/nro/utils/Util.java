@@ -1,7 +1,5 @@
 package nro.utils;
 
-import org.json.JSONArray;
-
 import java.text.Normalizer;
 import java.util.SplittableRandom;
 import java.util.concurrent.Executors;
@@ -9,7 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Util {
-    private static final SplittableRandom random = new SplittableRandom();
 
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(25);
 
@@ -21,18 +18,6 @@ public class Util {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         StackTraceElement caller = stackTrace[3];
         System.out.println("Called by: " + caller);
-    }
-
-    public static int nextInt(int bound) {
-        return random.nextInt(bound);
-    }
-
-    public static int nextInt(int origin, int bound) {
-        return random.nextInt(origin, bound);
-    }
-
-    public static double nextDouble() {
-        return random.nextDouble();
     }
 
     public static int getDistance(int x1, int y1, int x2, int y2) {

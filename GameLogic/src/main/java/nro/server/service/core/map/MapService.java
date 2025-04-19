@@ -82,7 +82,7 @@ public class MapService {
 
         List<BgItem> bgItems = map.getBgItems();
         List<Waypoint> wayPoints = map.getWaypoints();
-        List<BackgroudEffect> backgroudEffects = map.getBackgroudEffects();
+        List<BackgroudEffect> backgroudEffects = map.getBackgroundEffects();
 
         Map<Integer, Monster> monsters = area.getMonsters();
         List<Npc> npcs = area.getNpcList();

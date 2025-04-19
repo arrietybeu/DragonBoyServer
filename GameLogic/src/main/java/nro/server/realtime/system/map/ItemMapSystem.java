@@ -1,4 +1,4 @@
-package nro.server.realtime.system.item;
+package nro.server.realtime.system.map;
 
 import lombok.Getter;
 import java.util.Set;

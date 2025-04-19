@@ -9,8 +9,7 @@ import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerTask;
-import nro.server.service.model.template.item.ItemOption;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,7 @@ public class DropItemMap {
             case ConstMonster.THAN_LAN_ME -> {
                 if (playerTask.getTaskMain().getId() == 8) {
                     if (playerTask.getTaskMain().getIndex() != 1) return;
-                    if (Util.nextInt(100) < 10) {
+                    if (Rnd.nextInt(100) < 10) {
                         Item item = ItemFactory.getInstance().createItemNotOptionsBase(ConstItem.NGOC_RONG_7_SAO, player.getId(), 1);
                         ItemMap itemMap = new ItemMap(
                                 monster.getArea(),

@@ -66,8 +66,6 @@ public class Monster extends Entity {
                     }
                 }
 
-                // send effect skill attack monster
-
                 if (damage >= this.point.getHp()) damage = this.point.getHp();
 
                 // tru hp cua monster
@@ -80,7 +78,8 @@ public class Monster extends Entity {
                     this.setDie(plAttack, damage);
                 } else {
                     boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
-                    MonsterService.getInstance().sendHpMonster(plAttack, this, damage, true, isHutHp);
+                    boolean isCritical = plAttack.getPoints().isCritical();
+                    MonsterService.getInstance().sendHpMonster(plAttack, this, damage, isCritical, isHutHp);
                 }
                 return damage;
             } catch (Exception exception) {

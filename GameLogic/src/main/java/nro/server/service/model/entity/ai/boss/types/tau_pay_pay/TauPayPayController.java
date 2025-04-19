@@ -10,7 +10,7 @@ import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.areas.Area;
 import nro.server.system.LogServer;
-import nro.utils.Util;
+import nro.utils.Rnd;
 
 public class TauPayPayController extends BossAIController {
 
@@ -119,7 +119,7 @@ public class TauPayPayController extends BossAIController {
         try {
             if (boss == null) return;
             if (boss.getArea() == null && !boss.isBossInMap()) {
-                int mapId = boss.getMapsId()[Util.nextInt(0, boss.getMapsId().length)];
+                int mapId = boss.getMapsId()[Rnd.nextInt(0, boss.getMapsId().length)];
                 GameMap mapNew = MapManager.getInstance().findMapById(mapId);
                 if (mapNew == null) return;
                 Area newArea = mapNew.getArea(-1, boss);
@@ -208,7 +208,7 @@ public class TauPayPayController extends BossAIController {
                 }
 
                 boss.setEntityTarget(null);
-                String chat = THACH_THUC[Util.nextInt(0, THACH_THUC.length - 1)];
+                String chat = THACH_THUC[Rnd.nextInt(0, THACH_THUC.length - 1)];
                 ChatService.getInstance().chatMap(boss, chat);
 
                 if (boss.getEntityTarget() == null) {

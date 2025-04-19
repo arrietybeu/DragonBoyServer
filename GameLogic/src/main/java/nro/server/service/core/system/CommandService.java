@@ -158,7 +158,7 @@ public class CommandService {
                     case "eff_map":
                         try {
                             GameMap gameMap = MapManager.getInstance().findMapById(0);
-                            List<BackgroudEffect> backgroudEffects = gameMap.getBackgroudEffects();
+                            List<BackgroudEffect> backgroudEffects = gameMap.getBackgroundEffects();
                             System.out.println(backgroudEffects.size());
                             for (var back : backgroudEffects) {
                                 System.out.println(back.key() + " - " + back.value());

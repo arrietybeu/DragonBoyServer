@@ -20,7 +20,7 @@ public final class SafeCallback {
             }
             runnable.run();
         } catch (Exception e) {
-            LogServer.LogException("SafeCallback error for entity " + (entity != null ? entity.getName() : "null"), e);
+            LogServer.LogException("SafeCallback error for entity " + entity.getName(), e);
         }
     }
 }
