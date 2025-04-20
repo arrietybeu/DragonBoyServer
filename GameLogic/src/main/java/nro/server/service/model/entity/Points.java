@@ -98,7 +98,7 @@ public abstract class Points {
 
     public boolean isCritical() {
         boolean result = totalCriticalChance >= 100 || Rnd.chancePercent(totalCriticalChance);
-        LogServer.LogInfo("criticalChance: " + this.totalCriticalChance + " → isCritical: " + result);
+//        LogServer.LogInfo("criticalChance: " + this.totalCriticalChance + " → isCritical: " + result);
         return result;
     }
 

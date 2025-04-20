@@ -1,6 +1,35 @@
 package nro.consts;
 
+@SuppressWarnings("ALL")
 public class ConstMap {
+
+    // --- TILE SET INFO
+    public static final int T_EMPTY = 0;
+    public static final int T_CENTER = 1;
+    public static final int T_TOP = 2;
+    public static final int T_LEFT = 4;
+    public static final int T_RIGHT = 8;           // Tile phải?
+    public static final int T_TREE = 16;
+    public static final int T_WATERFALL = 32;
+    public static final int T_WATERFLOW = 64;
+    public static final int T_TOPFALL = 128;
+    public static final int T_OUTSIDE = 256;
+    public static final int T_DOWN1PIXEL = 512;
+    public static final int T_BRIDGE = 1024;       // Tile cầu
+    public static final int T_UNDERWATER = 2048;
+    public static final int T_SOLIDGROUND = 4096;
+    public static final int T_BOTTOM = 8192;
+    public static final int T_DIE = 16384;
+    public static final int T_HEBI = 32768;
+    public static final int T_BANG = 65536;
+    public static final int T_JUM8 = 131072;
+    public static final int T_NT0 = 262144;
+    public static final int T_NT1 = 524288;
+
+    // --- Grouped logic (gợi ý)
+    public static final int T_GROUND_MASK = T_TOP | T_SOLIDGROUND;
+    public static final int T_DEADLY_MASK = T_DIE;
+    public static final int T_WATER_MASK = T_WATERFALL | T_WATERFLOW | T_UNDERWATER;
 
     // Map status
 

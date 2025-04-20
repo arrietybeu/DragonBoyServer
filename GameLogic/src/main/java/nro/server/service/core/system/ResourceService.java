@@ -1,7 +1,6 @@
 package nro.server.service.core.system;
 
 import nro.consts.ConstMsgNotMap;
-import nro.server.service.core.social.ClanService;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.resources.Effect;
 import nro.server.service.model.resources.ImageByName;
@@ -279,10 +278,23 @@ public class ResourceService {
         }
     }
 
+//    public void sendTileSetInfo(Session session) {
+//        try (Message message = new Message(-82)) {
+//            byte[] data = FileNio.loadDataFile("resources/data/tile_data/tile_set_info");
+//            if (data == null) return;
+//            message.writer().write(data);
+//            System.out.println("tile set data size: " + data.length);
+//            session.doSendMessage(message);
+//        } catch (Exception e) {
+//            LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
+//        }
+//    }
+
     public void sendTileSetInfo(Session session) {
         try (Message message = new Message(-82)) {
-            byte[] data = FileNio.loadDataFile("resources/data/tile_data/tile_set_info");
-            if (data == null) return;
+            MapManager mapManager = MapManager.getInstance();
+            var data = mapManager.getTileSetInfoData();
+            System.out.println("tile set data size: " + data.length);
             message.writer().write(data);
             session.doSendMessage(message);
         } catch (Exception e) {
@@ -364,16 +376,6 @@ public class ResourceService {
         }
     }
 
-    // public void sendTileSetInfo(Session session) {
-    // try (Message message = new Message(-82)) {
-    // MapManager mapManager = MapManager.getInstance();
-    // var data = mapManager.getTileSetData();
-    // message.writer().write(data);
-    // session.sendMessage(message);
-    // } catch (Exception e) {
-    // LogServer.LogException("Error sendTileSetInfo: " + e.getMessage());
-    // }
-    // }
 
     public void clientOk(Session session) {
         if (!session.getSessionInfo().isClientOk()) {

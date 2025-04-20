@@ -44,7 +44,6 @@ public abstract class Skills {
         }
     }
 
-
     public void useSkillTarget(Entity target) {
         try {
             SkillService skillService = SkillService.getInstance();

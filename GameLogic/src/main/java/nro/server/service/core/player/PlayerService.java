@@ -451,6 +451,19 @@ public class PlayerService {
         }
     }
 
+    public void sendSetPosition(Entity entity, int effectId) {
+        try (Message message = new Message(ConstsCmd.SET_POS)) {
+            DataOutputStream writer = message.writer();
+            writer.writeInt(entity.getId());
+            writer.writeShort(entity.getX());
+            writer.writeShort(entity.getY());
+            writer.writeByte(effectId);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
+        } catch (Exception e) {
+            LogServer.LogException("Error sendSetPosition: " + e.getMessage(), e);
+        }
+    }
+
     public void pickItem(Player player, int itemMapID) {
         try {
             if (this.pickItemTask(player, itemMapID)) return;

@@ -12,7 +12,6 @@ import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.map.decorates.BgItem;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.template.NpcTemplate;
-import nro.server.service.model.template.map.TileSetTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.map.Transport;
@@ -30,10 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -41,25 +37,34 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @SuppressWarnings("ALL")
 public final class MapManager implements IManager {
 
+    public static final int MAX_TILE_SET = 33; // giới hạn, hoặc tileSetIds.size() sau này
+
     @Getter
     private static final MapManager instance = new MapManager();
-    private final Map<Integer, GameMap> gameMaps = new HashMap<>();
-    private final Map<Integer, Area> playerOfflineAreas = new ConcurrentHashMap<>();
-    private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
-    private final List<TileSetTemplate> tileSetTemplates = new ArrayList<>();
-    private final List<Transport> transports = new ArrayList<>();
-    private byte[] BackgroundMapData;
-    private byte[] TileSetData;
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    private final Map<Integer, GameMap> gameMaps = new HashMap<>();
+    private final Map<Integer, Area> playerOfflineAreas = new ConcurrentHashMap<>();
+
+    private final List<BackgroundMapTemplate> backgroundMapTemplates = new ArrayList<>();
+    private final List<Transport> transports = new ArrayList<>();
+
     private final String SELECT_MAP_TRANSPORT = "SELECT * FROM `map_transport` ORDER BY index_row";
+    private final String SELECT_TILE_SET_INFO = "SELECT DISTINCT tile_set_id FROM tile_sets ORDER BY tile_set_id";
+
+    public int[][] tileType = new int[MAX_TILE_SET][];
+    public int[][][] tileIndex = new int[MAX_TILE_SET][][];
+
+    public byte[] tileSetIdMap = new byte[MAX_TILE_SET];
+    public byte[] tileSetInfoData;
+    private byte[] BackgroundMapData;
 
     @Override
     public void init() {
+        this.loadTileSetInfo();
         this.loadMapTemplate();
         this.loadDataBackgroundMap();
-        this.loadTileSetInfo();
         this.loadTransportsMap();
     }
 
@@ -73,10 +78,9 @@ public final class MapManager implements IManager {
     public void clear() {
         this.gameMaps.clear();
         this.backgroundMapTemplates.clear();
-        this.tileSetTemplates.clear();
         this.transports.clear();
         this.BackgroundMapData = null;
-        this.TileSetData = null;
+        this.tileSetInfoData = null;
     }
 
     private void loadMapTemplate() {
@@ -109,6 +113,10 @@ public final class MapManager implements IManager {
 
                 GameMap mapTemplate = new GameMap(id, name, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems,
                         effects, waypoints, tileMap, npcs);
+
+                if (tileId > 0) {
+                    mapTemplate.loadTileMap(tileId);
+                }
 
                 mapTemplate.setAreas(this.initArea(connection, mapTemplate, zone, maxPlayer));
                 this.gameMaps.put(id, mapTemplate);
@@ -273,23 +281,96 @@ public final class MapManager implements IManager {
     }
 
     private void loadTileSetInfo() {
-        String query = "SELECT * FROM `map_tile_set_info`";
         try (Connection connection = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC);
-             PreparedStatement ps = connection.prepareStatement(query);
-             var rs = ps.executeQuery()) {
+             PreparedStatement ps = connection.prepareStatement("SELECT DISTINCT tile_set_id FROM tile_types");
+             ResultSet rs = ps.executeQuery()) {
+
+            List<Integer> tileSetIds = new ArrayList<>();
             while (rs.next()) {
-                var tileSet = new TileSetTemplate();
-                tileSet.setId(rs.getInt("id"));
-                tileSet.setTileType(rs.getByte("tile_type"));
-                var tileTypes = this.loadTileType(connection, tileSet.getId());
-                tileSet.setTileTypes(tileTypes);
-                this.tileSetTemplates.add(tileSet);
+                tileSetIds.add(rs.getInt("tile_set_id"));
             }
-            // LogServer.LogInit("LoadTileSetInfo initialized size: " +
-            // this.tileSetTemplates.size());
-            this.setTileSetData();
+
+            setTileSetInfoData(tileSetIds);
+
         } catch (SQLException e) {
             LogServer.LogException("Error loadTileSetInfo: " + e.getMessage(), e);
+        }
+    }
+
+    private void setTileSetInfoData(List<Integer> tileSetIds) {
+        try (Message ms = new Message()) {
+            try (DataOutputStream writer = ms.writer();
+                 Connection conn = DatabaseFactory.getConnectionForTask(ConfigDB.DATABASE_STATIC)) {
+
+                int count = tileSetIds.size();
+                writer.writeByte(count); // b28 = số tile set
+
+                for (int idx = 0; idx < count; idx++) {
+                    int tileSetId = tileSetIds.get(idx);
+                    tileSetIdMap[idx] = (byte) tileSetId;
+
+                    PreparedStatement ps = conn.prepareStatement(
+                            "SELECT type_value, GROUP_CONCAT(index_value ORDER BY index_value) AS indices " +
+                                    "FROM tile_types WHERE tile_set_id = ? GROUP BY type_value");
+                    ps.setInt(1, tileSetId);
+                    ResultSet rs = ps.executeQuery();
+
+                    List<Integer> typeList = new ArrayList<>();
+                    List<int[]> indexList = new ArrayList<>();
+
+                    while (rs.next()) {
+                        int typeVal = rs.getInt("type_value");
+                        String[] indicesStr = rs.getString("indices").split(",");
+                        int[] indices = new int[indicesStr.length];
+                        for (int i = 0; i < indicesStr.length; i++) {
+                            indices[i] = Integer.parseInt(indicesStr[i]);
+                        }
+                        typeList.add(typeVal);
+                        indexList.add(indices);
+                    }
+
+                    writer.writeByte(typeList.size()); // b29
+                    for (int i = 0; i < typeList.size(); i++) {
+                        int type = typeList.get(i);
+                        int[] indices = indexList.get(i);
+                        writer.writeInt(type); // type_value
+                        writer.writeByte(indices.length); // số index
+                        for (int idxVal : indices) {
+                            writer.writeByte(idxVal); // từng index
+                        }
+                    }
+
+                    tileType[idx] = typeList.stream().mapToInt(i -> i).toArray();
+                    tileIndex[idx] = indexList.toArray(new int[0][]);
+
+                    rs.close();
+                    ps.close();
+                }
+
+                writer.flush();
+                this.tileSetInfoData = ms.getData();
+            } catch (Exception e) {
+                LogServer.LogException("Error setTileSetInfoData (writer): " + e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            LogServer.LogException("Error setTileSetInfoData (message): " + e.getMessage(), e);
+        }
+    }
+
+    private int[] parseJsonToIntArray(String json) {
+        try {
+            JSONParser parser = new JSONParser();
+            JSONArray jsonArray = (JSONArray) parser.parse(json);
+
+            int[] maps = new int[jsonArray.size()];
+            for (int i = 0; i < jsonArray.size(); i++) {
+                maps[i] = Integer.parseInt(jsonArray.get(i).toString());
+            }
+            return maps;
+
+        } catch (ParseException e) {
+            LogServer.LogException("Error parsing JSON: " + e.getMessage());
+            return new int[0];
         }
     }
 
@@ -328,38 +409,6 @@ public final class MapManager implements IManager {
         }
     }
 
-    private List<TileSetTemplate.TileType> loadTileType(Connection connection, int tileSetId) {
-        String query = "SELECT * FROM `map_tile_type` WHERE tile_set_id = ?";
-        List<TileSetTemplate.TileType> tileTypes = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, tileSetId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    var tileType = new TileSetTemplate.TileType();
-                    tileType.setId(rs.getInt("id"));
-                    tileType.setTileSetId(rs.getInt("tile_set_id"));
-                    tileType.setTileTypeValue(rs.getInt("tile_type_value"));
-                    tileType.setIndex(rs.getInt("so_index"));
-
-                    String indexValueJson = rs.getString("index_value");
-                    JSONArray dataArray = (JSONArray) JSONValue.parse(indexValueJson);
-
-                    int[] indexValues = new int[dataArray.size()];
-                    for (int i = 0; i < dataArray.size(); i++) {
-                        indexValues[i] = ((Number) dataArray.get(i)).intValue();
-                    }
-                    tileType.setIndexValue(indexValues);
-                    tileTypes.add(tileType); // add to the list
-                }
-            }
-        } catch (SQLException e) {
-            LogServer.LogException("Error loadTileType: " + e.getMessage());
-        } catch (Exception e) {
-            LogServer.LogException("Error parsing index_value JSON: " + e.getMessage());
-        }
-        return tileTypes;
-    }
-
     private void setDataBackgroundMap() {
         try (Message ms = new Message()) {
             try (DataOutputStream dataOutputStream = ms.writer()) {
@@ -381,48 +430,6 @@ public final class MapManager implements IManager {
             }
         } catch (Exception e) {
             LogServer.LogException("Error setDataBackgroundMap: " + e.getMessage());
-        }
-    }
-
-    private void setTileSetData() {
-        try (Message ms = new Message()) {
-            try (DataOutputStream dataOutputStream = ms.writer()) {
-                List<TileSetTemplate> tileSetTemplates = this.tileSetTemplates;
-                dataOutputStream.writeByte(tileSetTemplates.size());
-                for (var tile : tileSetTemplates) {
-                    dataOutputStream.writeByte(tile.getTileType());
-                    for (var tileType : tile.getTileTypes()) {
-                        dataOutputStream.writeInt(tileType.getTileSetId());
-                        dataOutputStream.writeByte(tileType.getIndex());
-                        for (var indexValue : tileType.getIndexValue()) {
-                            dataOutputStream.writeByte(indexValue);
-                        }
-                    }
-                }
-                dataOutputStream.flush();
-                this.TileSetData = ms.getData();
-            } catch (Exception e) {
-                LogServer.LogException("Error setTileSetData: " + e.getMessage());
-            }
-        } catch (Exception e) {
-            LogServer.LogException("Error setTileSetData: " + e.getMessage());
-        }
-    }
-
-    private int[] parseJsonToIntArray(String json) {
-        try {
-            JSONParser parser = new JSONParser();
-            JSONArray jsonArray = (JSONArray) parser.parse(json);
-
-            int[] maps = new int[jsonArray.size()];
-            for (int i = 0; i < jsonArray.size(); i++) {
-                maps[i] = Integer.parseInt(jsonArray.get(i).toString());
-            }
-            return maps;
-
-        } catch (ParseException e) {
-            LogServer.LogException("Error parsing JSON: " + e.getMessage());
-            return new int[0];
         }
     }
 
@@ -470,7 +477,6 @@ public final class MapManager implements IManager {
     public int sizeMap() {
         return this.gameMaps.size();
     }
-
 
     public int checkAllPlayerInGame() {
         int size = 0;

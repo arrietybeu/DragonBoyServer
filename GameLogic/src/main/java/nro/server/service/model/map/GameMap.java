@@ -21,27 +21,24 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
 @Setter
 public class GameMap {
 
-    private static final Set<Integer> TILE_TOP_SET = new HashSet<>(Set.of(2, 3, 5, 7)); // vi tri co the dung duoc
-
     private static final int SIZE = 24;// size của 1 cục đất (giá trị kích thước một ô tile) 24 x 24
 
     private final int id;
-    private final String name;
-    private final byte planetId;
-    private final byte tileId;
-    private final byte bgId;
-    private final byte bgType;
-    private final byte typeMap;
-    private final byte isMapDouble;
-    private final TileMap tileMap;
+    private int pixelWidth;
+    private int pixelHeight;
 
+    private final String name;
+
+    private final byte planetId, tileId, bgId, bgType, typeMap, isMapDouble;
+
+    private final TileMap tileMap;
     private final List<Waypoint> waypoints;
     private final NavigableMap<Integer, List<Waypoint>> waypointMap;
     private final List<BgItem> bgItems;
     private final List<BackgroudEffect> backgroundEffects;
     private final List<NpcTemplate.NpcInfo> npcs;
-
     private List<Area> areas;
+    public int[] types;
 
     // id, name, planetId, tileId, isMapDouble, status, bgId, bgType, bgItems,
     // effects, waypoints, tileMap
@@ -49,7 +46,7 @@ public class GameMap {
                    byte bgId, byte bgType, byte typeMap,
                    List<BgItem> bgItems, List<BackgroudEffect> backgroundEffects,
                    List<Waypoint> waypoints, TileMap tileMap,
-                   List<NpcTemplate.NpcInfo> npcs) {
+                   List<NpcTemplate.NpcInfo> npcInfos) {
         this.id = id;
         this.name = name;
         this.planetId = planetId;
@@ -63,9 +60,37 @@ public class GameMap {
         this.waypoints = waypoints;
         this.tileMap = tileMap;
         this.waypointMap = new TreeMap<>();
-        this.npcs = npcs;
+        this.npcs = npcInfos;
         for (Waypoint wp : waypoints) {
             waypointMap.computeIfAbsent((int) wp.getMinX(), k -> new ArrayList<>()).add(wp);
+        }
+    }
+
+    public void loadTileMap(int tileId) {
+        this.types = new int[tileMap.tiles().length];
+        pixelHeight = tileMap.height() * SIZE;
+        pixelWidth = tileMap.width() * SIZE;
+        int num = tileId - 1;
+
+        try {
+            int[] tiles = tileMap.tiles();
+            MapManager mapManager = MapManager.getInstance();
+            int[][] indexList = mapManager.tileIndex[num];
+            int[] typeList = mapManager.tileType[num];
+
+            for (int i = 0; i < tiles.length; i++) {
+                int tile = tiles[i];
+                for (int j = 0; j < indexList.length; j++) {
+                    for (int indexVal : indexList[j]) {
+                        if (tile == indexVal) {
+                            types[i] |= typeList[j];
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            LogServer.LogException("loadTileMap: [" + tileId + "] " + ex.getMessage(), ex);
         }
     }
 
@@ -148,50 +173,93 @@ public class GameMap {
         return null;
     }
 
-    public boolean isVoDaiMap() {
-        return this.id == 51 || this.id == 103 || this.id == 112 || this.id == 113 || this.id == 129 || this.id == 130;
+    public int tileTypeAtPixel(int px, int py) {
+        int x = px / SIZE, y = py / SIZE;
+        if (x < 0 || y < 0 || x >= tileMap.width() || y >= tileMap.height()) return 1000;
+        int index = y * tileMap.width() + x;
+        return (index < 0 || index >= types.length) ? 1000 : types[index];
     }
 
-    public int getGroundY(int tileX) {
-        TileMap tileMap = this.tileMap;
-        for (int y = 0; y < tileMap.height(); y++) {
-            int index = y * tileMap.width() + tileX;
-            if (tileMap.tiles()[index] != 0) {
-                return y;
+    public short touchY(int px, int py) {
+        int tx = px / SIZE;
+        int y = py;
+
+        int width = tileMap.width();
+        int height = tileMap.height();
+
+        if (tx < 0 || tx >= width) return (short) this.pixelHeight;
+
+        while (y < this.pixelHeight) {
+            int ty = y / SIZE;
+            int index = ty * width + tx;
+            if ((types[index] & ConstMap.T_TOP) != 0) {
+                return (short) (ty * SIZE);
             }
+            y++;
         }
-        return -1;
+
+        return (short) this.pixelHeight;
     }
 
 
-    public int tileTypeAt(int x, int y) {
-        try {
-            AtomicIntegerArray types = new AtomicIntegerArray(new int[this.tileMap.tiles().length]);
-            return types.get(y * this.tileMap.width() + x);
-        } catch (Exception exception) {
-            return 1000;
-        }
+    public boolean isPlayerOnGround(int x, int y) {
+        return (tileTypeAtPixel(x, y + 1) & ConstMap.T_TOP) != 0;
     }
 
-    private boolean isTileTop(int tile) {
-        return TILE_TOP_SET.contains(tile);
+    public boolean isVoDaiMap() {
+        return switch (id) {
+            case 51, 103, 112, 113, 129, 130 -> true;
+            default -> false;
+        };
     }
 
     public boolean isTrainingMap() {
-        return this.id == 39 || this.id == 40 || this.id == 41;
+        return switch (id) {
+            case 39, 40, 41 -> true;
+            default -> false;
+        };
     }
 
     public boolean isMapLang() {
-        return this.id == 0 || this.id == 7 || this.id == 14;
+        return switch (id) {
+            case 0, 7, 14 -> true;
+            default -> false;
+        };
+    }
+
+    public boolean isTouchY(int x, int y) {
+        int tx = x / SIZE;
+        int ty = y / SIZE;
+
+        int width = tileMap.width();
+        int height = tileMap.height();
+
+        if (tx < 0 || tx >= width) return false;
+
+        for (int j = ty; j < height; j++) {
+            int index = j * width + tx;
+            if ((types[index] & ConstMap.T_TOP) != 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isMapHouseByGender(int gender) {
-        return gender == 0 && this.id == 21 || gender == 1 && this.id == 22 || gender == 2 && this.id == 23;
+        return switch (gender) {
+            case 0 -> id == 21;
+            case 1 -> id == 22;
+            case 2 -> id == 23;
+            default -> false;
+        };
     }
 
     public boolean isMapOffline() {
         return this.typeMap == ConstMap.MAP_OFFLINE;
     }
 
-
+    @Override
+    public String toString() {
+        return "Map " + id + " - " + name;
+    }
 }

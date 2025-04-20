@@ -4,3 +4,4 @@ plugins {
 
 rootProject.name = 'GameServer'
 include('GameLogic')
+include('test')

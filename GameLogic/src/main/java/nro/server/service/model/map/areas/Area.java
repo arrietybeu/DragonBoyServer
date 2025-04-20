@@ -54,7 +54,7 @@ public class Area {
         try {
             switch (entity) {
                 case Player player -> {
-                    if (this.entitys.size() >= this.maxPlayers) {
+                    if (this.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size() >= this.getMaxPlayers()) {
                         LogServer.LogException("Zone is full: " + this.id);
                         return;
                     }
@@ -285,4 +285,10 @@ public class Area {
         area.initNpc();
         return area;
     }
+
+    @Override
+    public String toString() {
+        return "Area " + id + " players [" + this.getEntitysByType(ConstTypeObject.TYPE_PLAYER).size() + "/" + this.maxPlayers;
+    }
+
 }

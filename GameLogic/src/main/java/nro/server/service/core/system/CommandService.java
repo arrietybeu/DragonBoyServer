@@ -1,5 +1,6 @@
 package nro.server.service.core.system;
 
+import nro.server.service.core.system.controller.MapViewerController;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.template.CaptionTemplate;
@@ -30,6 +31,10 @@ public class CommandService {
             while (true) {
                 String line = sc.nextLine();
                 switch (line) {
+                    case "controller": {
+                        MapViewerController mapViewerController = new MapViewerController();
+                        break;
+                    }
                     case "noi_tai":
                         SpeacialSkillManager skillManager = SpeacialSkillManager.getInstance();
                         for (var option : skillManager.getNamec()) {
@@ -94,11 +99,6 @@ public class CommandService {
                             PlayerCreator.getInstance().createPlayer(con, 1, "tuanbeo", (byte) 2, 1);
                         }
                         break;
-                    case "tile_set":
-                        for (TileSetTemplate tileSetTemplate : MapManager.getInstance().getTileSetTemplates()) {
-                            LogServer.DebugLogic(tileSetTemplate.toString());
-                        }
-                        break;
                     case "data_skill":
                         // DataSkill.SendDataSkill();
                         break;
@@ -110,8 +110,7 @@ public class CommandService {
                         break;
                     case "item_bg":
                         for (int i = 0; i < 100; i++) {
-                            String filePath = "C:\\Users\\Win Val\\Desktop\\ProjectServer\\resources\\louisgoku\\map\\item_bg_map_data\\"
-                                    + i;
+                            String filePath = "C:\\Users\\Win Val\\Desktop\\ProjectServer\\resources\\louisgoku\\map\\item_bg_map_data\\" + i;
                             try (DataInputStream reader = new DataInputStream(new FileInputStream(filePath))) {
                                 short num6 = reader.readShort();
                                 GameMap map = MapManager.getInstance().findMapById((short) i);
@@ -149,8 +148,7 @@ public class CommandService {
                         System.out.println(taskManager.getTaskMainById(0).getSubNameList().get(0).toString());
                         break;
                     case "caption":
-                        List<CaptionTemplate.CaptionLevel> captionLevels = CaptionManager.getInstance()
-                                .getCaptionLevelsByGender((byte) 2);
+                        List<CaptionTemplate.CaptionLevel> captionLevels = CaptionManager.getInstance().getCaptionLevelsByGender((byte) 2);
                         for (var captionLevel : captionLevels) {
                             System.out.println(captionLevel.name());
                         }

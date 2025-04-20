@@ -13,6 +13,7 @@ import nro.server.service.core.system.ServerService;
 import nro.server.service.core.economy.ShopService;
 import nro.server.service.core.map.AreaService;
 import nro.server.service.core.player.InventoryService;
+import nro.server.service.core.system.controller.MapViewerController;
 import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.boss.BossFactory;
 import nro.server.service.model.item.Item;
@@ -210,6 +211,9 @@ public class ChatService {
                 return;
             }
             switch (text) {
+                case "map_controller" -> {
+                    MapViewerController mapViewerController = new MapViewerController();
+                }
                 case "lock_move" -> {
                     playerChat.setLockMove(!playerChat.isLockMove());
                     String content = playerChat.isLockMove() ? "Đã khóa di chuyển" : "Mở khóa di chuyển";
