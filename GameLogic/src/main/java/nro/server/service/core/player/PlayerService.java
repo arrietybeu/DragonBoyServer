@@ -273,6 +273,8 @@ public class PlayerService {
         }
     }
 
+
+
     public void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
             Points stats = player.getPoints();

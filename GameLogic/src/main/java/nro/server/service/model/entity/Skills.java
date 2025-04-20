@@ -5,6 +5,7 @@ import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.server.realtime.system.player.SkillSystem;
+import nro.server.service.core.combat.MonsterService;
 import nro.server.service.core.player.SkillService;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.entity.monster.Monster;
@@ -52,15 +53,21 @@ public abstract class Skills {
                 case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO -> {
 
                     long dame = owner.getPoints().getDameAttack();
+
                     boolean isCritical = owner.getPoints().isCritical();
+
+                    if (isCritical) dame *= 2;
 
                     switch (target) {
                         case Player plTarget -> {
-                            SkillService.getInstance().sendEntityAttackEntity(owner, plTarget, dame, isCritical);
                             plTarget.handleAttack(owner, 0, dame);
+                            SkillService.getInstance().sendEntityAttackEntity(owner, plTarget, dame, isCritical);
                         }
-                        case Monster monster -> monster.handleAttack(owner, 0, dame);
-
+                        case Monster monster -> {
+                            boolean isHutHp = owner.getPoints().getTlHutHpMob() > 0;
+                            MonsterService.getInstance().sendHpMonster(owner, monster, dame, isCritical, isHutHp);
+                            monster.handleAttack(owner, 0, dame);
+                        }
                         case Boss boss -> {
                             SkillService.getInstance().sendEntityAttackEntity(owner, boss, dame, isCritical);
                             boss.handleAttack(owner, 0, dame);
@@ -149,6 +156,7 @@ public abstract class Skills {
     public void selectRandomSkill() {
         if (!skills.isEmpty()) {
             this.skillSelect = skills.get(Rnd.nextInt(0, skills.size()));
+            System.out.println("random skill: " + this.skillSelect.getSkillId() + " size: " + skills.size());
         }
     }
 

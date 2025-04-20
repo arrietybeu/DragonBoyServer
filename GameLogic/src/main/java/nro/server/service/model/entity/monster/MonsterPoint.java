@@ -1,6 +1,8 @@
 package nro.server.service.model.entity.monster;
 
 import lombok.Data;
+import nro.server.manager.MonsterManager;
+import nro.server.service.model.template.MonsterTemplate;
 import nro.utils.Rnd;
 
 @Data
@@ -37,9 +39,14 @@ public class MonsterPoint {
         this.hp -= damage;
     }
 
-    public long getDameGoc() {
+//    public long getDamage() {
+//        MonsterTemplate template = MonsterManager.getInstance().getMonsterTemplate(this.monster.getTemplateId());
+//        return template.damage();
+//    }
+
+    public long getDamage() {
         return switch (this.monster.getTemplateId()) {
-            case 1, 2, 3 -> Rnd.nextInt(8, 10);
+            case 1, 2, 3 -> Rnd.nextInt(8, 15);
             case 4, 5, 6 -> Rnd.nextInt(15, 20);
             case 7, 8, 9 -> Rnd.nextInt(20, 35);
             case 10, 11, 12 -> Rnd.nextInt(50, 76);

@@ -201,7 +201,6 @@ public class GameMap {
         return (short) this.pixelHeight;
     }
 
-
     public boolean isPlayerOnGround(int x, int y) {
         return (tileTypeAtPixel(x, y + 1) & ConstMap.T_TOP) != 0;
     }

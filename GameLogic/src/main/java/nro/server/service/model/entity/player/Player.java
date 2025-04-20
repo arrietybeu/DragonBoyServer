@@ -124,7 +124,7 @@ public class Player extends Entity {
     }
 
     @Override
-    public synchronized long handleAttack(Entity entityAttack, int type, long damage) {
+    public long handleAttack(Entity entityAttack, int type, long damage) {
         return super.handleAttack(entityAttack, type, damage);
     }
 

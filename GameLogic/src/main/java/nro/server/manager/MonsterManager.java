@@ -49,11 +49,12 @@ public final class MonsterManager implements IManager {
                 var type = rs.getByte("type");
                 var name = rs.getString("name");
                 var hp = rs.getLong("hp");
+                var damage = rs.getLong("damage");
                 var rangeMove = rs.getByte("range_move");
                 var speed = rs.getByte("speed");
                 var dartType = rs.getByte("dart_type");
 
-                MonsterTemplate template = new MonsterTemplate(id, type, name, hp, rangeMove, speed, dartType);
+                MonsterTemplate template = new MonsterTemplate(id, type, name, damage, hp, rangeMove, speed, dartType);
                 this.MONSTERS.add(template);
             }
 //            LogServer.LogInit("MonsterManager initialized size: " + MONSTERS.size());

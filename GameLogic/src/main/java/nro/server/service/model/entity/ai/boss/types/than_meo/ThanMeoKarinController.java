@@ -97,7 +97,6 @@ public class ThanMeoKarinController extends BossAIController {
             // Gọi kỹ năng đang chọn (hoặc bạn có thể random skill nếu muốn)
             if (boss.getSkills() == null) return;
 
-
             boss.getSkills().selectRandomSkill();
 
             if (boss.getSkills().getSkillSelect() == null) return;

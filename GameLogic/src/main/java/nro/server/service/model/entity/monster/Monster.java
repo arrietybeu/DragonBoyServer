@@ -47,7 +47,7 @@ public class Monster extends Entity {
     }
 
     @Override
-    public synchronized long handleAttack(Entity entityAttack, int type, long damage) {
+    public long handleAttack(Entity entityAttack, int type, long damage) {
         if (entityAttack instanceof Player plAttack) {
             this.lock.writeLock().lock();
             try {
@@ -68,18 +68,17 @@ public class Monster extends Entity {
 
                 if (damage >= this.point.getHp()) damage = this.point.getHp();
 
+
+
                 // tru hp cua monster
                 this.point.subHp(damage);
+
 
                 this.handleCreateExpEntityAttackMob(plAttack, damage);
 
                 // kiem tra monster chet
                 if (this.point.isDead()) {
                     this.setDie(plAttack, damage);
-                } else {
-                    boolean isHutHp = plAttack.getPoints().getTlHutHpMob() > 0;
-                    boolean isCritical = plAttack.getPoints().isCritical();
-                    MonsterService.getInstance().sendHpMonster(plAttack, this, damage, isCritical, isHutHp);
                 }
                 return damage;
             } catch (Exception exception) {
@@ -150,7 +149,7 @@ public class Monster extends Entity {
 
     private long constDame(Player player) {
         // TODO bù trừ dame
-        long dame = this.point.getDameGoc();
+        long dame = this.point.getDamage();
         return player.handleAttack(this, 0, dame);
     }
 

@@ -35,14 +35,6 @@ public class PlayerMoveHandler implements IMessageProcessor {
             player.setX(newX);
             player.setY(newY);
 
-            int tileType = player.getArea().getMap().tileTypeAtPixel(newX, newY);
-
-            LogServer.DebugLogic("tileType at (" + newX + "," + (newY) + ") = " + tileType);
-
-            if (player.getArea().getMap().isPlayerOnGround(newX, newY)) {
-                LogServer.LogInfo("player đang đứng trên mặt đất?");
-            }
-
             if (player.getPlayerTask().getTaskMain().getId() == 0) {
                 player.getPlayerTask().checkDoneTaskGoMap();
             }

@@ -17,13 +17,7 @@ public class BossSkill extends Skills {
     public BossSkill copy(Entity entity) {
         BossSkill copy = new BossSkill(entity);
         for (SkillInfo skill : this.skills) {
-            SkillInfo skillInfo = SkillManager.getInstance()
-                    .getSkillInfoByTemplateId(skill.getTemplate().getId(), entity.getGender(), skill.getPoint());
-            if (skillInfo != null) {
-                copy.addSkill(skillInfo);
-            } else {
-                LogServer.LogException("BossSkill.copy(): skillInfo null for skillId=" + skill.getSkillId() + " gender =" + entity.getGender() + " point=" + skill.getPoint());
-            }
+            copy.addSkill(skill);
         }
         return copy;
     }

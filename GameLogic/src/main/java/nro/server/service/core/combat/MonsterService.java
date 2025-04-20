@@ -1,5 +1,6 @@
 package nro.server.service.core.combat;
 
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.item.ItemMap;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
@@ -82,7 +83,7 @@ public class MonsterService {
         }
     }
 
-    public void sendHpMonster(Player player, Monster monster, long dame, boolean isCrit, boolean isHut) {
+    public void sendHpMonster(Entity entity, Monster monster, long dame, boolean isCrit, boolean isHut) {
         try (Message message = new Message(-9)) {
             DataOutputStream writer = message.writer();
             writer.writeByte(monster.getId());
@@ -90,7 +91,7 @@ public class MonsterService {
             writer.writeLong(dame);
             writer.writeBoolean(isCrit);
             writer.writeByte(isHut ? 37 : -1);
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendHpMonster: " + ex.getMessage(), ex);
         }
