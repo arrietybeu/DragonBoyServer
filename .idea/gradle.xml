@@ -5,12 +5,12 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="20" />
+        <option name="gradleJvm" value="21" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/GameLogic" />
-            <option value="$PROJECT_DIR$/test" />
+            <option value="$PROJECT_DIR$/commons" />
+            <option value="$PROJECT_DIR$/game-server" />
           </set>
         </option>
       </GradleProjectSettings>
