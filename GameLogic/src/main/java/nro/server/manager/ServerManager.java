@@ -14,6 +14,7 @@ import nro.server.controller.MessageController;
 import nro.consts.ConstsCmd;
 import nro.server.controller.MessageProcessorRegistry;
 import nro.server.realtime.core.DispatcherRegistry;
+import nro.server.service.model.skill.behavior.SkillBehaviorRegistry;
 import nro.server.system.LogServer;
 import nro.server.service.core.usage.ItemHandlerRegistry;
 import nro.server.network.Session;
@@ -44,6 +45,7 @@ public final class ServerManager {
         ItemHandlerRegistry.init(ConfigServer.PATH_USE_ITEM_HANDLER);
         MessageProcessorRegistry.init(ConfigServer.PATH_CONTROLLER_HANDLER);
         DispatcherRegistry.startAllDispatchers(ConfigServer.PATH_ENTITY_COMPONENT_SYSTEM);
+        SkillBehaviorRegistry.init(ConfigServer.PATH_SKILLS_HANDLER);
     }
 
     public static void launch() {

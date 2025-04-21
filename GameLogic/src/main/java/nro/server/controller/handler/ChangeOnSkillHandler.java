@@ -21,8 +21,7 @@ public class ChangeOnSkillHandler implements IMessageProcessor {
                 player.getSkills().getSkillShortCut()[i] = (byte) skillId;
             }
         } catch (Exception ex) {
-            LogServer.LogException("ChangeOnSkillHandler: " + ex.getMessage());
-            ex.printStackTrace();
+            LogServer.LogException("ChangeOnSkillHandler: " + ex.getMessage(), ex);
         }
     }
 

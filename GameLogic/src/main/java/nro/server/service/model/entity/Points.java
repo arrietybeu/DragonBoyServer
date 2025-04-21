@@ -3,6 +3,10 @@ package nro.server.service.model.entity;
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstSkill;
+import nro.server.service.core.combat.MonsterService;
+import nro.server.service.core.player.SkillService;
+import nro.server.service.model.entity.ai.boss.Boss;
+import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.service.model.template.item.ItemOption;
 import nro.server.service.model.entity.monster.Monster;
@@ -79,21 +83,35 @@ public abstract class Points {
     }
 
     /// tính toán sát thương cuối cùng khi tấn công (đã áp dụng kỹ năng nếu có)
-    public long getDameAttack() {
-        long dame = this.getCurrentDamage();
+    public long getDameAttack(Entity target) {
+        long damage = this.getCurrentDamage();
 
         long dameSkill = this.getDameSkill();
         if (dameSkill != 0) {
-            dame = dame * dameSkill / 100;
+            damage = damage * dameSkill / 100;
         }
-        if (dame <= 0) dame = 1;
-        return dame;
-    }
 
-    public long calculateDamage(boolean isCritical) {
-        long baseDmg = this.getDameAttack();
-        int critMultiplier = this.baseCriticalChance;
-        return isCritical ? Math.round(baseDmg * critMultiplier) : baseDmg;
+        boolean isCritical = this.isCritical();
+        boolean isHutHp = getTlHutHpMob() > 0;
+
+        if (isCritical) damage *= 2;
+
+        if (damage <= 0) damage = 1;
+
+        switch (target) {
+            case Monster monsterTarget -> {
+                MonsterService.getInstance().sendHpMonster(owner, monsterTarget, damage, isCritical, isHutHp);
+            }
+            case Boss ignored -> {
+                SkillService.getInstance().sendHaveAttackPlayer(owner, ignored, damage, isCritical, isHutHp);
+            }
+            case Player ignored1 -> {
+                SkillService.getInstance().sendHaveAttackPlayer(owner, ignored1, damage, isCritical, isHutHp);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + target);
+        }
+
+        return damage;
     }
 
     public boolean isCritical() {

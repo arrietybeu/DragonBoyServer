@@ -97,7 +97,6 @@ public class PlayerService {
         this.sendCaptionForPlayer(player);// -41
         player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
         SkillService.getInstance().sendSkillCooldown(player);
-
         DropItemMap.dropMissionItems(player);
         player.getPlayerTask().checkDoneTaskGoMap();
     }
@@ -273,8 +272,6 @@ public class PlayerService {
         }
     }
 
-
-
     public void sendPointForMe(Player player) {
         try (Message msg = new Message(-42)) {
             Points stats = player.getPoints();
@@ -416,14 +413,14 @@ public class PlayerService {
         }
     }
 
-    public void sendPlayerDeathToArea(Player player) {
+    public void sendPlayerDeathToArea(Entity entity) {
         try (Message message = new Message(-8)) {
             DataOutputStream out = message.writer();
-            out.writeInt(player.getId());
-            out.writeByte(player.getTypePk());
-            out.writeShort(player.getX());
-            out.writeShort(player.getY());
-            player.getArea().sendMessageToPlayersInArea(message, null);
+            out.writeInt(entity.getId());
+            out.writeByte(entity.getTypePk());
+            out.writeShort(entity.getX());
+            out.writeShort(entity.getY());
+            entity.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception ex) {
             LogServer.LogException("sendPlayerDeathToArea: " + ex.getMessage(), ex);
             ex.printStackTrace();

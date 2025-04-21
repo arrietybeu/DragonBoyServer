@@ -361,12 +361,12 @@ public class PlayerTask {
                 case ConstMap.RUNG_KARIN -> {
                     this.doneTask(8, 3);
                     if (this.taskMain.getId() == 9 && this.taskMain.getIndex() >= 1 || this.taskMain.getId() == 10 && this.taskMain.getIndex() == 0) {
-                        BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
+                        BossFactory.getInstance().trySpawnSpecialBossInAreaToPointsPlayer(this.player, this.player.getArea(), this.player.getX(), 0, ConstBoss.TAU_PAY_PAY);
                         this.doneTask(9, 1);
                         break;
                     }
                     if (this.taskMain.getId() == 10 && this.taskMain.getIndex() == 1) {
-                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), 171, 0, ConstBoss.TAU_PAY_PAY);
+                        BossFactory.getInstance().trySpawnSpecialBossInArea(this.player, this.player.getArea(), this.player.getX(), 0, ConstBoss.TAU_PAY_PAY);
                     }
                 }
                 case ConstMap.DAO_KAME, ConstMap.DAO_GURU, ConstMap.VACH_NUI_DEN -> this.doneTask(11, 0);

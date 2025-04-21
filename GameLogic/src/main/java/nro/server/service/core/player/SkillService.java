@@ -22,7 +22,6 @@ public class SkillService {
     }
 
     public void sendEntityAttackMonster(Entity entity, int mobId) {
-        LogServer.LogInfo(" con");
         try (Message message = new Message(54)) {
             DataOutputStream writer = message.writer();
             writer.writeInt(entity.getId());
@@ -82,31 +81,27 @@ public class SkillService {
             writer.writeByte(entityAttack.getSkills().getSkillSelect().getSkillId());
             writer.writeByte(1);// list id entity target
             writer.writeInt(entityTarget.getId());
-
             // write is continue attack
             writer.writeByte(0);// continue attack
-
-            LogServer.DebugLogic("entity attack id: " + entityAttack.getId());
-
             entityAttack.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception e) {
             LogServer.LogException("SkillService: sendEntityAttackEntity: " + e.getMessage(), e);
-        } finally {
-            this.sendHaveAttackPlayer(entityAttack, entityTarget, damage, isCritical);
         }
     }
 
-    public void sendHaveAttackPlayer(Entity entityAttack, Entity target, long damage, boolean isCritical) {
+    public void sendHaveAttackPlayer(Entity entityAttack, Entity target, long damage, boolean isCritical, boolean isEffect) {
         try (Message message = new Message(ConstsCmd.HAVE_ATTACK_PLAYER)) {
             DataOutputStream writer = message.writer();
             writer.writeInt(target.getId());
             writer.writeLong(target.getPoints().getCurrentHP());
             writer.writeLong(damage);
             writer.writeBoolean(isCritical);
-            writer.writeByte(-1);
+            writer.writeByte(isEffect ? 37 : -1);
             entityAttack.getArea().sendMessageToPlayersInArea(message, null);
         } catch (Exception exception) {
             LogServer.LogException("Error sendHaveAttackPlayer: " + exception.getMessage(), exception);
+        } finally {
+            this.sendEntityAttackEntity(entityAttack, target, damage, isCritical);
         }
     }
 
@@ -116,6 +111,7 @@ public class SkillService {
             for (SkillInfo skillInfo : player.getSkills().getSkills()) {
                 writer.writeShort(skillInfo.getSkillId());
                 writer.writeInt((int) skillInfo.getCooldownRemaining());
+                LogServer.LogInfo("skills cooldown: " + skillInfo.getCooldownRemaining());
             }
             player.sendMessage(message);
         } catch (Exception e) {

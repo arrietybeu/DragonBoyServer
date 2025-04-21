@@ -7,6 +7,7 @@ import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerInventory;
 import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.entity.Points;
+import nro.server.service.model.skill.behavior.SkillBehaviorRegistry;
 import nro.server.service.model.task.TaskMain;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.network.Session;
@@ -88,10 +89,10 @@ public class PlayerLoader {
         // Load player data task
         this.loadPLayerDataTask(player, connection);
 
+        this.loadPlayerSkills(player, connection);
+
         // Load player skills shortcut
         this.loadPlayerSkillsShortCut(player, connection);
-
-        this.loadPlayerSkills(player, connection);
 
         // Load player inventory
         this.loadPlayerInventory(player, connection);
@@ -105,7 +106,6 @@ public class PlayerLoader {
 
         return player;
     }
-
 
     public void registerToEntityComponentSystem(Player player) {
         PlayerSystem.getInstance().register(player);
@@ -124,6 +124,7 @@ public class PlayerLoader {
                     SkillInfo skillInfo = SkillManager.getInstance().getSkillInfoByTemplateId(skillId, player.getGender(), currentLevel);
                     if (skillInfo == null) continue;
                     skillInfo.setLastTimeUseThisSkill(lastTimeUseSkill);
+                    skillInfo.restoreBaseCooldown();
                     player.getSkills().addSkill(skillInfo);
                 }
             }
@@ -377,6 +378,11 @@ public class PlayerLoader {
                 if (selectedSkill == null) {
                     selectedSkill = player.getSkills().getSkillDefaultByGender(player.getGender());
                 }
+
+                if (selectedSkill != null && selectedSkill.getBehavior() == null) {
+                    selectedSkill.setBehavior(SkillBehaviorRegistry.getBehavior(selectedSkill.getTemplate().getId()));
+                }
+
                 player.getSkills().setSkillSelect(selectedSkill);
             }
         }

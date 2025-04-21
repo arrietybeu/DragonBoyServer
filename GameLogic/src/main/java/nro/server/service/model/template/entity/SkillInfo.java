@@ -3,6 +3,7 @@ package nro.server.service.model.template.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import nro.server.service.model.skill.behavior.SkillBehavior;
 import nro.server.service.model.template.skill.SkillOptionTemplate;
 import nro.server.service.model.template.skill.SkillTemplate;
 
@@ -45,6 +46,9 @@ public class SkillInfo {
     private SkillOptionTemplate[] options;
 
     private String moreInfo;
+
+    private SkillBehavior behavior;
+
 
     // kiểm tra dùng đc skill chưa
     public boolean isReady() {
@@ -100,6 +104,7 @@ public class SkillInfo {
         clone.template = this.template;
         clone.options = this.options;
         clone.moreInfo = this.moreInfo;
+        clone.behavior = this.behavior;
         return clone;
     }
 

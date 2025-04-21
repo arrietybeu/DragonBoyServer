@@ -4,11 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nro.server.service.core.player.PlayerService;
-import nro.server.service.core.player.SkillService;
-import nro.server.service.model.entity.ai.boss.Boss;
-import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.map.areas.Area;
-import nro.server.system.LogServer;
+import nro.server.service.model.skill.Skills;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -79,11 +76,7 @@ public abstract class Entity {
                 this.points.setDie(entityAttack);
                 return 0;
             }
-            var lastHp = this.points.getCurrentHP();
-
             this.points.subCurrentHp(damage);
-
-            LogServer.LogInfo("hp sau khi trừ: " + this.points.getCurrentHP() + " damage: " + damage + " last hp: " + lastHp);
 
             if (this.points.isDead()) {
                 this.points.setDie(entityAttack);

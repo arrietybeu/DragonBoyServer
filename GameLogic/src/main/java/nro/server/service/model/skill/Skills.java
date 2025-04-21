@@ -1,15 +1,16 @@
-package nro.server.service.model.entity;
+package nro.server.service.model.skill;
 
 import lombok.Getter;
 import lombok.Setter;
 import nro.consts.ConstPlayer;
 import nro.consts.ConstSkill;
 import nro.server.realtime.system.player.SkillSystem;
-import nro.server.service.core.combat.MonsterService;
 import nro.server.service.core.player.SkillService;
+import nro.server.service.model.entity.Entity;
 import nro.server.service.model.entity.ai.boss.Boss;
 import nro.server.service.model.entity.monster.Monster;
 import nro.server.service.model.entity.player.Player;
+import nro.server.service.model.skill.behavior.SkillBehaviorRegistry;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.system.LogServer;
 import nro.utils.Rnd;
@@ -51,25 +52,15 @@ public abstract class Skills {
             Entity owner = this.owner;
             switch (this.skillSelect.getTemplate().getId()) {
                 case ConstSkill.DRAGON, ConstSkill.DEMON, ConstSkill.GALICK, ConstSkill.KAMEJOKO -> {
-
-                    long dame = owner.getPoints().getDameAttack();
-
-                    boolean isCritical = owner.getPoints().isCritical();
-
-                    if (isCritical) dame *= 2;
-
+                    long dame = owner.getPoints().getDameAttack(target);
                     switch (target) {
                         case Player plTarget -> {
                             plTarget.handleAttack(owner, 0, dame);
-                            SkillService.getInstance().sendEntityAttackEntity(owner, plTarget, dame, isCritical);
                         }
                         case Monster monster -> {
-                            boolean isHutHp = owner.getPoints().getTlHutHpMob() > 0;
-                            MonsterService.getInstance().sendHpMonster(owner, monster, dame, isCritical, isHutHp);
                             monster.handleAttack(owner, 0, dame);
                         }
                         case Boss boss -> {
-                            SkillService.getInstance().sendEntityAttackEntity(owner, boss, dame, isCritical);
                             boss.handleAttack(owner, 0, dame);
                         }
                         default ->
@@ -109,14 +100,20 @@ public abstract class Skills {
         return this.skills.stream().filter(skillInfo -> skillInfo.getSkillId() == id).findFirst().orElse(null);
     }
 
+    public SkillInfo getSkillByTemplateId(int id) {
+        return this.skills.stream().filter(skillInfo -> skillInfo.getTemplate().getId() == id).findFirst().orElse(null);
+    }
+
     public void selectSkill(int skillId) {
-        if (skillSelect != null) {
-            if (skillSelect.getTemplate().getId() == skillId) return;
-        }
+        if (skillSelect != null && skillSelect.getTemplate().getId() == skillId) return;
         try {
             for (SkillInfo skillInfo : this.skills) {
                 if (skillInfo.getTemplate().getId() == -1) continue;
                 if (skillInfo.getTemplate().getId() == skillId) {
+                    if (skillInfo.getBehavior() == null) {
+                        skillInfo.setBehavior(SkillBehaviorRegistry.getBehavior(skillId));
+                    }
+                    skillInfo.restoreBaseCooldown();
                     this.skillSelect = skillInfo;
                     break;
                 }
@@ -129,9 +126,9 @@ public abstract class Skills {
     public SkillInfo getSkillDefaultByGender(int gender) {
         SkillInfo skillInfo;
         switch (gender) {
-            case ConstPlayer.TRAI_DAT -> skillInfo = this.getSkillById(ConstSkill.DRAGON);
-            case ConstPlayer.NAMEC -> skillInfo = this.getSkillById(ConstSkill.DEMON);
-            case ConstPlayer.XAYDA -> skillInfo = this.getSkillById(ConstSkill.GALICK);
+            case ConstPlayer.TRAI_DAT -> skillInfo = this.getSkillByTemplateId(ConstSkill.DRAGON);
+            case ConstPlayer.NAMEC -> skillInfo = this.getSkillByTemplateId(ConstSkill.DEMON);
+            case ConstPlayer.XAYDA -> skillInfo = this.getSkillByTemplateId(ConstSkill.GALICK);
             default -> throw new IllegalStateException("getSkillDefaultByGender Unexpected value: " + gender);
         }
         return skillInfo;
@@ -155,8 +152,11 @@ public abstract class Skills {
     // dành cho con boss
     public void selectRandomSkill() {
         if (!skills.isEmpty()) {
-            this.skillSelect = skills.get(Rnd.nextInt(0, skills.size()));
-            System.out.println("random skill: " + this.skillSelect.getSkillId() + " size: " + skills.size());
+            SkillInfo selected = skills.get(Rnd.nextInt(0, skills.size()));
+            if (selected.getBehavior() == null) {
+                selected.setBehavior(SkillBehaviorRegistry.getBehavior(selected.getSkillId()));
+            }
+            this.skillSelect = selected;
         }
     }
 

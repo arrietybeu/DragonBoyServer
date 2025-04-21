@@ -1,5 +1,6 @@
-package nro.server.service.model.entity;
+package nro.server.service.model.skill;
 
+import nro.server.service.model.entity.Entity;
 import nro.server.system.LogServer;
 
 public final class SafeCallback {

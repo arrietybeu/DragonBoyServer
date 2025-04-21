@@ -1,9 +1,9 @@
 package nro.server.service.model.entity.ai.boss;
 
 import nro.consts.ConstSkill;
-import nro.server.manager.skill.SkillManager;
 import nro.server.service.model.entity.Entity;
-import nro.server.service.model.entity.Skills;
+import nro.server.service.model.skill.Skills;
+import nro.server.service.model.skill.behavior.SkillBehaviorRegistry;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.system.LogServer;
 
@@ -25,13 +25,12 @@ public class BossSkill extends Skills {
     @Override
     public void useSkill(Entity target) {
         try {
-            switch (this.skillSelect.getTemplate().getType()) {
-                case ConstSkill.SKILL_FORCUS -> this.useSkillTarget(target);
-                case ConstSkill.SKILL_SUPPORT -> { /* TODO */ }
-                case ConstSkill.SKILL_NOT_FORCUS -> this.useSkillNotForcus();
+            if (skillSelect.getBehavior() == null) {
+                skillSelect.setBehavior(SkillBehaviorRegistry.getBehavior(skillSelect.getSkillId()));
             }
+            skillSelect.getBehavior().use(owner, target);
         } catch (Exception ex) {
-            LogServer.LogException("useSkill player name:" + owner.getName() + " error: " + ex.getMessage());
+            LogServer.LogException("Boss useSkill failed: " + ex.getMessage(), ex);
         }
     }
 
