@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.skill.SkillPaintTemplate;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.model.template.entity.SkillPaintInfo;
 import nro.server.manager.IManager;
 import nro.server.system.LogServer;

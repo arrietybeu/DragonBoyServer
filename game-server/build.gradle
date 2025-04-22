@@ -23,17 +23,22 @@ shadowJar {
 
 dependencies {
     // lib folder
-
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':commons')
 
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     // lib maven
-    implementation("com.lmax:disruptor:4.0.0")
-    implementation("org.luaj:luaj-jse:3.0.1")
+    implementation("org.reflections:reflections:0.10.2")
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    implementation("org.json:json:20250107")
+    implementation("com.zaxxer:HikariCP:6.3.0")
+    implementation 'ch.qos.logback:logback-classic:1.5.16'
+    implementation("org.quartz-scheduler:quartz:2.5.0")
     implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-    implementation("io.reactivex.rxjava3:rxjava:3.1.8")
+    implementation("com.lmax:disruptor:4.0.0")
+
+    // scrip
+//    implementation("org.luaj:luaj-jse:3.0.1")
 
     // test
     compileOnly 'org.projectlombok:lombok:1.18.30'

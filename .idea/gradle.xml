@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/commons" />
+            <option value="$PROJECT_DIR$/dragon-server" />
             <option value="$PROJECT_DIR$/game-server" />
           </set>
         </option>

@@ -10,18 +10,25 @@ import java.util.concurrent.Executors;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import nro.commons.network.NioServer;
+import nro.commons.network.ServerCfg;
+import nro.server.ShutdownHook;
+import nro.server.config.network.NetworkConfig;
 import nro.server.controller.MessageController;
 import nro.consts.ConstsCmd;
 import nro.server.controller.MessageProcessorRegistry;
+import nro.server.network.nro.GameConnectionFactoryImpl;
 import nro.server.realtime.core.DispatcherRegistry;
 import nro.server.service.model.skill.behavior.SkillBehaviorRegistry;
 import nro.server.system.LogServer;
 import nro.server.service.core.usage.ItemHandlerRegistry;
 import nro.server.network.Session;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.config.ConfigServer;
 import nro.server.service.core.system.CommandService;
+import nro.utils.ThreadPoolManager;
 import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.ClassicConstants;
 
 public final class ServerManager {
 
@@ -31,12 +38,19 @@ public final class ServerManager {
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(3);
     private volatile boolean running;
 
+    private static NioServer nioServer;
+
     public static ServerManager getInstance() {
         if (instance == null) {
             instance = new ServerManager();
             instance.init();
         }
         return instance;
+    }
+
+    static {
+        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, "config/logback.xml"); // must be set before instantiating any logger
+//        archiveLogs(); // must also run before instantiating any logger
     }
 
     private void init() {
@@ -53,6 +67,10 @@ public final class ServerManager {
             configure();
             startCommandLine();
             ServerManager.getInstance().start();
+
+            nioServer = initNioServer();
+            Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
+
         } catch (Exception e) {
             LogServer.LogException("Error main: " + e.getMessage(), e);
         }
@@ -100,6 +118,13 @@ public final class ServerManager {
         });
     }
 
+    private static NioServer initNioServer() {
+        NioServer nioServer = new NioServer(NetworkConfig.NIO_READ_WRITE_THREADS,
+                new ServerCfg(NetworkConfig.CLIENT_SOCKET_ADDRESS, "Nro game clients", new GameConnectionFactoryImpl()));
+        nioServer.connect(ThreadPoolManager.getInstance());
+        return nioServer;
+    }
+
     private void startGame() {
         try {
             SessionManager.getInstance().startSessionChecker();
@@ -112,26 +137,26 @@ public final class ServerManager {
         threadPool.execute(CommandService::ActiveCommandLine);
     }
 
-//    private static void startDeadLockDetector() {
-//        DeadLockDetector deadLockDetector = new DeadLockDetector(Duration.ofSeconds(2L), () -> {
-//            System.out.println("isRestartOnDeadLock");
-//        });
-//        deadLockDetector.start();
-//    }
-
     public void shutdown() {
         try {
             this.running = false;
             closeServerSocket();
             SessionManager.getInstance().kickAllPlayer("Bảo trì");
             Manager.getInstance().clearAllData();
-            DatabaseFactory.closeConnections();
+            DatabaseFactory.closeAll();
             LogServer.DebugLogic("Server closed");
             System.exit(0);
         } catch (Exception e) {
             LogServer.LogException("Error shutdown: " + e.getMessage());
         } finally {
             instance = null;
+        }
+    }
+
+    public static void shutdownNioServer() {
+        if (nioServer != null) {
+            nioServer.shutdown();
+            nioServer = null;
         }
     }
 

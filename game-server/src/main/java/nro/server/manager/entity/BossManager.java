@@ -12,7 +12,7 @@ import nro.server.service.core.map.AreaService;
 import nro.server.service.model.entity.ai.boss.*;
 import nro.server.service.model.map.areas.Area;
 import nro.server.service.model.template.entity.SkillInfo;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.system.LogServer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;

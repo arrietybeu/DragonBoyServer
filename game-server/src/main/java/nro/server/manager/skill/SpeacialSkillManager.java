@@ -3,7 +3,7 @@ package nro.server.manager.skill;
 import lombok.Getter;
 import nro.consts.ConstPlayer;
 import nro.server.service.model.template.skill.SpeacialSkillTemplate;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.IManager;

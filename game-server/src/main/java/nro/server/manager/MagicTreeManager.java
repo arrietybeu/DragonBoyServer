@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.template.MagicTreeTemplate;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 

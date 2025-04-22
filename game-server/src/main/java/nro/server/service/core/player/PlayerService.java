@@ -17,7 +17,7 @@ import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.manager.SessionManager;
 import nro.server.network.Message;
 import nro.server.network.Session;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.repositories.player.PlayerCreator;
 import nro.server.service.repositories.player.PlayerLoader;
 import nro.server.system.LogServer;

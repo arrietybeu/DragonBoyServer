@@ -11,7 +11,7 @@ import nro.server.service.model.skill.behavior.SkillBehaviorRegistry;
 import nro.server.service.model.task.TaskMain;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.network.Session;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 import nro.server.manager.MapManager;

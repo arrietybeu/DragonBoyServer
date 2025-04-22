@@ -4,5 +4,6 @@ plugins {
 
 rootProject.name = 'ChuBeoRong'
 
-include 'commons', 'game-server'
+include 'commons', 'game-server', 'dragon-server'
+
 

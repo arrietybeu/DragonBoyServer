@@ -1,9 +1,7 @@
 package nro.server.service.repositories.account;
 
-import lombok.Getter;
 import nro.server.config.ConfigDB;
-import nro.server.service.model.resources.DataGame;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.model.template.entity.UserInfo;
 import nro.server.manager.UserManager;
 import nro.server.service.core.system.ServerService;

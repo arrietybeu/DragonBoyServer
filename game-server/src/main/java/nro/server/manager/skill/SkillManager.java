@@ -10,7 +10,7 @@ import lombok.Getter;
 import nro.server.service.model.template.skill.NClassTemplate;
 import nro.server.service.model.template.skill.SkillOptionTemplate;
 import nro.server.config.ConfigDB;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.model.template.entity.SkillInfo;
 import nro.server.manager.IManager;
 import nro.server.service.model.template.skill.SkillTemplate;

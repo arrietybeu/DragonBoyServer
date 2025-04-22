@@ -68,7 +68,6 @@ public abstract class AConnection<T extends BaseServerPacket> {
      * readBuffer: chứa dữ liệu client gửi lên server, đang chờ xử lý.
      */
     public final ByteBuffer writeBuffer;
-
     public final ByteBuffer readBuffer;
 
     /**
@@ -240,7 +239,7 @@ public abstract class AConnection<T extends BaseServerPacket> {
     /**
      * Được gọi khi đối tượng {@link AConnection} được khởi tạo đầy đủ và đã sẵn sàng để nhận/gửi dữ liệu
      */
-    protected abstract void initialized();
+    public abstract void initialized();
 
     /**
      * Như tên hàm

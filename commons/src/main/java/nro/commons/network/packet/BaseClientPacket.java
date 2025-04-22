@@ -36,4 +36,10 @@ public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePac
         return buf.remaining();
     }
 
+    protected abstract void runImpl();
+
+    public final T getConnection() {
+        return client;
+    }
+
 }

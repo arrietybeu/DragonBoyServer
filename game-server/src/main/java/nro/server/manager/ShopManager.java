@@ -6,7 +6,7 @@ import nro.server.service.core.item.ItemFactory;
 import nro.server.service.model.item.ItemShop;
 import nro.server.service.model.shop.Shop;
 import nro.server.service.model.shop.TabShop;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.system.LogServer;
 
 import java.sql.Connection;

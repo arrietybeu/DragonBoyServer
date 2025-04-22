@@ -5,7 +5,7 @@ import nro.consts.ConstItem;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.item.*;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.config.ConfigServer;
 import nro.server.system.LogServer;
 import nro.server.service.core.item.ItemFactory;

@@ -3,13 +3,19 @@ package nro.server.network.nro;
 import lombok.Getter;
 import nro.commons.network.AConnection;
 import nro.commons.network.Dispatcher;
+import nro.server.config.network.PacketFloodFilterConfig;
+import nro.server.system.LogServer;
+import nro.utils.ThreadPoolManager;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 @Getter
 public class NroConnection extends AConnection<NroServerPacket> {
@@ -19,21 +25,36 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     private final Deque<NroServerPacket> sendMsgQueue = new ArrayDeque<>();
+    private Map<Integer, Long> pffRequests;
 
     private volatile State state;
 
+    private volatile long lastClientMessageTime;
+
     private boolean encrypted;
 
-    public NroConnection(SocketChannel sc, Dispatcher d, int rbSize, int wbSize) throws IOException {
-        super(sc, d, rbSize, wbSize);
-        this.state = State.CONNECTED;
+    private final ConnectionAliveChecker connectionAliveChecker;
+
+    public NroConnection(SocketChannel sc, Dispatcher d) throws IOException {
+        super(sc, d, 8192 * 4, 8192 * 4);
+
+        state = State.CONNECTED;
+
+        String ip = getIP();
+
+        LogServer.LogInfo("connection from: " + ip);
+
+        lastClientMessageTime = System.currentTimeMillis();
+        connectionAliveChecker = new ConnectionAliveChecker();
+
+        if (PacketFloodFilterConfig.PFF_MODE > 0 && PacketFloodFilterConfig.THRESHOLD_MILLIS_BY_PACKET_OPCODE != null)
+            pffRequests = new ConcurrentHashMap<>();
     }
 
     @Override
     protected Queue<NroServerPacket> getSendMsgQueue() {
         return sendMsgQueue;
     }
-
 
     @Override
     protected boolean processData(ByteBuffer data) {
@@ -50,14 +71,13 @@ public class NroConnection extends AConnection<NroServerPacket> {
             long begin = System.nanoTime();
             packet.write(this, buffer);
             long duration = System.nanoTime() - begin;
-            // Nếu bạn dùng thống kê thời gian có thể log ra đây
-
+            // TODO
             return true;
         }
     }
 
     @Override
-    protected void initialized() {
+    public void initialized() {
         // TODO Có thể gửi session key hoặc packet mở đầu ở đây nếu cần
     }
 
@@ -85,8 +105,41 @@ public class NroConnection extends AConnection<NroServerPacket> {
 //        }
     }
 
+    public boolean isBigPacket(int command) {
+        return true;
+    }
+
+    public byte writeKey(int command) {
+        return -1;
+    }
+
     @Override
     public String toString() {
         return "NroConnection [state=" + state + ", ip=" + getIP() + "]";
     }
+
+    private class ConnectionAliveChecker implements Runnable {
+
+        private ScheduledFuture<?> task;
+
+        private ConnectionAliveChecker() {
+            if (connectionAliveChecker != null)
+                throw new IllegalStateException("ConnectionAliveChecker for " + NroConnection.this + " is already assigned.");
+//            task = ThreadPoolManager.getInstance().scheduleAtFixedRate(this, CM_PING.CLIENT_PING_INTERVAL, CM_PING.CLIENT_PING_INTERVAL);
+        }
+
+        private void stop() {
+            task.cancel(false);
+        }
+
+        @Override
+        public void run() {
+            long millisSinceLastClientPacket = System.currentTimeMillis() - lastClientMessageTime;
+//            if (millisSinceLastClientPacket - 5000 > CM_PING.CLIENT_PING_INTERVAL) {
+//                LogServer.LogInfo("Closing hanged up connection of " + NroConnection.this + " (last sign of life was " + millisSinceLastClientPacket + "ms ago)");
+//                close();
+//            }
+        }
+    }
+
 }

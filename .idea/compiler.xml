@@ -9,10 +9,11 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
         </processorPath>
         <module name="ChuBeoRong.commons.main" />
+        <module name="ChuBeoRong.dragon-server.main" />
         <module name="ChuBeoRong.game-server.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="20">
+    <bytecodeTargetLevel target="21">
       <module name="GameServer.GameLogic" target="21" />
       <module name="GameServer.GameLogic.main" target="21" />
       <module name="GameServer.GameLogic.test" target="21" />

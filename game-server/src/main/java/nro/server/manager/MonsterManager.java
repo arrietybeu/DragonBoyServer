@@ -3,7 +3,7 @@ package nro.server.manager;
 
 import lombok.Getter;
 import nro.server.config.ConfigDB;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.model.template.MonsterTemplate;
 import nro.server.system.LogServer;
 

@@ -15,7 +15,7 @@ import nro.server.service.model.template.NpcTemplate;
 import nro.server.network.Message;
 import nro.server.config.ConfigDB;
 import nro.server.service.model.template.map.Transport;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.model.template.map.BackgroundMapTemplate;
 import nro.server.service.model.map.GameMap;
 import nro.server.system.LogServer;

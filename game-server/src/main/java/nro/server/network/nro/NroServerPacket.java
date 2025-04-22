@@ -22,9 +22,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
         super(command);
     }
 
-    /**
-     * Gọi để viết gói tin vào buffer và mã hóa (nếu cần).
-     */
     public final void write(NroConnection con, ByteBuffer buffer) {
         setByteBuffer(buffer);
 
@@ -40,7 +37,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
         byteBuffer.flip();
 
         if (con.isBigPacket(command)) {
-            // packet 3 byte size
             byte b1 = (byte) (size);
             byte b2 = (byte) (size >> 8);
             byte b3 = (byte) (size >> 16);
@@ -73,7 +69,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
             buffer.put(b);
         }
     }
-
 
     protected abstract void writeImpl(NroConnection con);
 

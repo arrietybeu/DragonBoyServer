@@ -29,7 +29,7 @@ public abstract class Dispatcher extends Thread {
     /**
      * {@link Selector} theo dõi các sự kiện I/O
      */
-    @Getter
+
     protected final Selector selector;
 
     /**
@@ -140,22 +140,23 @@ public abstract class Dispatcher extends Thread {
     }
 
     private boolean parse(AConnection<?> con, ByteBuffer buf) {
-        int size = (buf.getShort() & 0xFFFF) - 2;
-        if (size <= 0) {
-            log.warn("Received empty packet without opcode from " + con + ", content: " + NetworkUtils.toHex(buf));
-            return false;
-        }
-        ByteBuffer b = buf.slice().order(buf.order());
-        try {
-            b.limit(size);
-            // read message fully
-            buf.position(buf.position() + size);
-
-            return con.processData(b);
-        } catch (Exception e) {
-            log.error("Error parsing input from " + con + ", packet size: " + size + ", content: " + NetworkUtils.toHex(b), e);
-            return false;
-        }
+//        int size = (buf.getShort() & 0xFFFF) - 2;
+//        if (size <= 0) {
+//            log.warn("Received empty packet without opcode from " + con + ", content: " + NetworkUtils.toHex(buf));
+//            return false;
+//        }
+//        ByteBuffer b = buf.slice().order(buf.order());
+//        try {
+//            b.limit(size);
+//            // read message fully
+//            buf.position(buf.position() + size);
+//
+//            return con.processData(b);
+//        } catch (Exception e) {
+//            log.error("Error parsing input from " + con + ", packet size: " + size + ", content: " + NetworkUtils.toHex(b), e);
+//            return false;
+//        }
+        return false;
     }
 
     final void write(SelectionKey key) {
@@ -221,6 +222,9 @@ public abstract class Dispatcher extends Thread {
         con.disconnect(dcExecutor);
     }
 
+    public final Selector selector() {
+        return this.selector;
+    }
 
 }
 

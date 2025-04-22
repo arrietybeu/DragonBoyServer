@@ -4,8 +4,7 @@ import nro.server.service.core.system.controller.MapViewerController;
 import nro.server.service.model.map.GameMap;
 import nro.server.service.model.map.decorates.BackgroudEffect;
 import nro.server.service.model.template.CaptionTemplate;
-import nro.server.service.model.template.map.TileSetTemplate;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.service.model.template.entity.UserInfo;
 import nro.server.service.repositories.player.PlayerCreator;
 import nro.server.config.ConfigDB;
@@ -63,7 +62,7 @@ public class CommandService {
                         SessionManager.getInstance().kickAllPlayer("Thích thì kick");
                         break;
                     case "close_database":
-                        DatabaseFactory.closeConnections();
+                        DatabaseFactory.closeAll();
                         break;
                     case "version_image":
                         // System.out.println("Version image: " +

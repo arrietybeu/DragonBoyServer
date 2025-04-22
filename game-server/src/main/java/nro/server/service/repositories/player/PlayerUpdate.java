@@ -1,13 +1,12 @@
 package nro.server.service.repositories.player;
 
-import lombok.Getter;
 import nro.server.service.model.item.Item;
 import nro.server.service.model.entity.player.Player;
 import nro.server.service.model.entity.player.PlayerMagicTree;
 import nro.server.service.model.entity.Points;
 import nro.server.service.model.task.TaskMain;
 import nro.server.service.model.template.entity.SessionInfo;
-import nro.server.service.repositories.DatabaseFactory;
+import nro.commons.database.DatabaseFactory;
 import nro.server.system.LogServer;
 import nro.server.config.ConfigDB;
 
