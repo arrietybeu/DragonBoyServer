@@ -7,6 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+/**
+ * Bộ điều phối chấp nhận, đọc và ghi dữ liệu (triển khai cụ thể)
+ *
+ * @author Arriety
+ */
 public class AcceptReadWriteDispatcherImpl extends Dispatcher {
 
     private final List<AConnection<?>> pendingClose = new ArrayList<>();
@@ -25,7 +30,6 @@ public class AcceptReadWriteDispatcherImpl extends Dispatcher {
     @Override
     public void dispatch() throws IOException {
         int selected = selector.select();
-
         if (selected != 0) {
             for (Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator(); selectedKeys.hasNext(); ) {
                 SelectionKey key = selectedKeys.next();

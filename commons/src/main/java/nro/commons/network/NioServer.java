@@ -1,6 +1,5 @@
 package nro.commons.network;
 
-import nro.commons.network.packet.Acceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +20,8 @@ public class NioServer {
     private int currentReadWriteDispatcher;
     private Dispatcher[] readWriteDispatchers;
 
-    private int readWriteThreads;
-    private ServerCfg[] cfgs;
+    private final int readWriteThreads;
+    private final ServerCfg[] cfgs;
 
     public NioServer(int readWriteThreads, ServerCfg... cfgs) {
         this.readWriteThreads = readWriteThreads;
@@ -38,10 +37,11 @@ public class NioServer {
                 serverChannel.configureBlocking(false);
 
                 serverChannel.socket().bind(cfg.address());
-                log.info("Listening on " + cfg.getAddressInfo() + " for " + cfg.clientDescription());
+                log.info("Listening on {} for {}", cfg.getAddressInfo(), cfg.clientDescription());
 
-                SelectionKey acceptKey = acceptDispatcher.register(serverChannel, SelectionKey.OP_ACCEPT,
-                        new Acceptor(cfg.connectionFactory(), this));
+                SelectionKey acceptKey = acceptDispatcher.register(serverChannel, SelectionKey.OP_ACCEPT, new Acceptor(cfg.connectionFactory(), this));
+
+                System.out.println("✅ Acceptor registered for: " + cfg.getAddressInfo());
                 serverChannelKeys.add(acceptKey);
             }
         } catch (Exception e) {

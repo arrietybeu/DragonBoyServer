@@ -1,7 +1,5 @@
 package nro.commons.network;
 
-import lombok.Getter;
-import nro.commons.network.packet.Acceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

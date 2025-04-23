@@ -19,4 +19,5 @@ public record ServerCfg(InetSocketAddress address, String clientDescription, Con
     public String getAddressInfo() {
         return (isAnyLocalAddress() ? "all addresses on port " : getIP() + ":") + getPort();
     }
+
 }

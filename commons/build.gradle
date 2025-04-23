@@ -21,7 +21,7 @@ dependencies {
 //    implementation("org.luaj:luaj-jse:3.0.1")
 //    implementation("com.lmax:disruptor:4.0.0")
 
-    // test
+    // nro.utils.test
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }

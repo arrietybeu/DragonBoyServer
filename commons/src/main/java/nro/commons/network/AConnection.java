@@ -97,7 +97,6 @@ public abstract class AConnection<T extends BaseServerPacket> {
         writeBuffer.order(ByteOrder.LITTLE_ENDIAN);
         readBuffer = ByteBuffer.allocate(rbSize);
         readBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
         this.ip = socketChannel.socket().getInetAddress().getHostAddress();
     }
 
@@ -184,16 +183,15 @@ public abstract class AConnection<T extends BaseServerPacket> {
     /**
      * Khoá dùng trong quá trình parse packet
      */
-    boolean tryLockConnection() {
+    public boolean tryLockConnection() {
         if (locked)
             return false;
         return locked = true;
     }
 
-    void unlockConnection() {
+    public void unlockConnection() {
         locked = false;
     }
-
 
     /**
      * Được gọi khi <code>dispatcher</code> thực sự xử lý đóng kết nối

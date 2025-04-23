@@ -3,10 +3,10 @@ package nro.commons.network.packet;
 import lombok.Getter;
 import lombok.Setter;
 
+@Setter
+@Getter
 public abstract class BasePacket {
 
-    @Getter
-    @Setter
     private int command;
 
     /**

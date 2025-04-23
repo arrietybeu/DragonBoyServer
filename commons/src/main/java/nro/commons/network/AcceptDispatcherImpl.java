@@ -23,10 +23,10 @@ public class AcceptDispatcherImpl extends Dispatcher {
             while (selectedKeys.hasNext()) {
                 SelectionKey key = selectedKeys.next();
                 selectedKeys.remove();
-
                 if (key.isValid())
                     accept(key);
             }
         }
     }
+
 }

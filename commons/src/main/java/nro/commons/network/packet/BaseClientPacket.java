@@ -15,31 +15,32 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePacket implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(BaseClientPacket.class);
+
     private static final Set<Integer> partiallyReadPackets = ConcurrentHashMap.newKeySet();
 
     private T client;
 
     private ByteBuffer buf;
 
-    public BaseClientPacket(int opcode) {
-        this(null, opcode);
+    public BaseClientPacket(int command) {
+        this(null, command);
     }
 
-    public BaseClientPacket(ByteBuffer buf, int opcode) {
-        super(opcode);
+    public BaseClientPacket(ByteBuffer buf, int command) {
+        super(command);
         this.buf = buf;
     }
-
-    protected abstract void readImpl();
 
     public final int getRemainingBytes() {
         return buf.remaining();
     }
 
-    protected abstract void runImpl();
-
     public final T getConnection() {
         return client;
     }
+
+    protected abstract void runImpl();
+
+    protected abstract void readImpl();
 
 }
