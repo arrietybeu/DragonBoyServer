@@ -156,6 +156,7 @@ public final class TaskManager implements IManager {
     public boolean rewardTask(Player player) {
         var taskId = player.getPlayerTask().getTaskMain().getId();
         var taskIndex = player.getPlayerTask().getTaskMain().getIndex();
+
         for (ItemTaskReward reward : taskRewardMap) {
             if (reward.taskId == taskId && reward.taskIndex == taskIndex && (reward.gender == player.getGender() || reward.gender == -1)) {
                 Item item = ItemFactory.getInstance().createItemOptionsBase(reward.itemId(), player.getId(), 1);

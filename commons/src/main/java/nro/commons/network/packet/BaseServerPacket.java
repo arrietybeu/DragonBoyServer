@@ -76,7 +76,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeQ(long value) {
+    protected final void writeLong(long value) {
         byteBuffer.putLong(value);
     }
 

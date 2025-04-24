@@ -1,11 +1,22 @@
-package nro.server.utils;
+package test;
+
+import nro.commons.utils.ExitCode;
+import nro.commons.utils.concurrent.DeadLockDetector;
+import nro.server.utils.ThreadPoolManager;
+
+import java.time.Duration;
 
 public class DeadlockTest {
 
     private static final Object LOCK_A = new Object();
     private static final Object LOCK_B = new Object();
 
-    public static void main(String[] args) {
+    public static void main(String... args) {
+        DeadLockDetector.start(Duration.ofSeconds(2), () -> System.exit(ExitCode.ERROR));
+        createDeadlock();
+    }
+
+    public static void createDeadlock() {
         // Task 1: khóa A → đợi B
         Runnable task1 = () -> {
             synchronized (LOCK_A) {

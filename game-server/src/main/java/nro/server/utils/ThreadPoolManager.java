@@ -29,7 +29,6 @@ public final class ThreadPoolManager implements Executor {
      */
     private final ThreadPoolExecutor longRunningPool;
 
-
     private ThreadPoolManager() {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
         int instantPoolSize = Math.max(4, ThreadConfig.BASE_THREAD_POOL_SIZE == 0 ? availableProcessors : ThreadConfig.BASE_THREAD_POOL_SIZE);

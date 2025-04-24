@@ -7,6 +7,7 @@ import nro.server.network.Session;
 /**
  * @author Arriety
  */
+@FunctionalInterface
 public interface IMessageProcessor {
     void process(Session session, Message message);
 }

@@ -12,7 +12,7 @@ public class PriorityThreadFactory implements ThreadFactory {
     /**
      * Thread group name
      */
-    private final String name;
+    private final String threadName;
     /**
      * Number of created threads
      */
@@ -25,19 +25,19 @@ public class PriorityThreadFactory implements ThreadFactory {
     /**
      * Constructor.
      *
-     * @param name
+     * @param threadName
      * @param prio
      */
-    public PriorityThreadFactory(String name, int prio) {
+    public PriorityThreadFactory(String threadName, int prio) {
         this.prio = prio;
-        this.name = name;
-        this.group = new ThreadGroup(this.name);
+        this.threadName = threadName;
+        this.group = new ThreadGroup(this.threadName);
     }
 
     @Override
     public Thread newThread(final Runnable r) {
         Thread t = new Thread(group, r);
-        t.setName(name + "-" + threadNumber.getAndIncrement());
+        t.setName(threadName + "-" + threadNumber.getAndIncrement());
         t.setPriority(prio);
         return t;
     }

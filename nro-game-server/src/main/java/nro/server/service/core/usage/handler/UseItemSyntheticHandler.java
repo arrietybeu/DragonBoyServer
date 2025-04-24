@@ -35,4 +35,5 @@ public class UseItemSyntheticHandler implements IUseItemHandler {
         player.getPlayerContext().setTypeTransport(ConstPlayer.TYPE_TRANSPORT_CAPSULE);
         MapService.getInstance().sendMapTransport(player);
     }
+
 }

@@ -19,8 +19,6 @@ public class GameServer {
 
         ThreadPoolManager pool = ThreadPoolManager.getInstance();
         pool.getStats().forEach(line -> LOGGER.info(LogServer.ANSI_GREEN + "{}" + LogServer.ANSI_RESET, line));
-
-        System.out.println("thread: " + Thread.activeCount());
     }
 
 }

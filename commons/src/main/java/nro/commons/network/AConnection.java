@@ -1,8 +1,6 @@
 package nro.commons.network;
 
-
 import lombok.Getter;
-import nro.commons.network.packet.BaseServerPacket;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,6 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import nro.commons.network.packet.BaseServerPacket;
 
 /**
  * Lớp này đại diện cho một kết nối với socket server. Kết nối được tạo ra bởi <code>ConnectionFactory</code> và gán với
@@ -33,7 +32,6 @@ public abstract class AConnection<T extends BaseServerPacket> {
      * Là đối tượng <code>Dispatcher</code> (thread xử lý IO: đọc/ghi) mà kết nối này được gán vào.
      * Tức là mỗi <code>Dispatcher</code> sẽ quản lý nhiều kết nối <code>AConnection</code> thông qua selector.
      */
-
     private final Dispatcher dispatcher;
 
     /**
