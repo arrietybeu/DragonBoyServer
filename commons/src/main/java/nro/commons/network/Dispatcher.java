@@ -1,5 +1,6 @@
 package nro.commons.network;
 
+import nro.commons.utils.NetworkUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,120 +101,76 @@ public abstract class Dispatcher extends Thread {
      * Đọc dữ liệu từ {@link SocketChannel} được gán với {@link SelectionKey}
      */
     protected final void read(SelectionKey key) {
-        SocketChannel channel = (SocketChannel) key.channel();
+        SocketChannel socketChannel = (SocketChannel) key.channel();
         AConnection<?> con = (AConnection<?>) key.attachment();
-        ByteBuffer rb = con.readBuffer;
 
-//        if (Assertion.NetworkAssertion) {
-//            assert rb.hasRemaining();
-//        }
+        ByteBuffer rb = con.readBuffer;
 
         int numRead;
         try {
-            numRead = channel.read(rb);
+            numRead = socketChannel.read(rb);
         } catch (IOException e) {
             closeConnectionImpl(con);
             return;
         }
 
         if (numRead == -1) {
-            // Remote entity shut the socket down cleanly. Do the same from our end and cancel the channel.
+            // remote entity shut the socket down cleanly. Do the same from our end and cancel the channel.
             closeConnectionImpl(con);
             return;
         } else if (numRead == 0) {
             return;
         }
 
-
         rb.flip();
+
         while (rb.remaining() > 2 && rb.remaining() >= (rb.getShort(rb.position()) & 0xFFFF)) {
-            // nhận được tin nhắn đầy đủ
+            // nhận tin nhắn đầy đủ
             if (!parse(con, rb)) {
                 closeConnectionImpl(con);
                 return;
             }
         }
-        if (rb.hasRemaining()) rb.compact();
-        else rb.clear();
+        if (rb.hasRemaining()) {
+            rb.compact();
+        } else
+            rb.clear();
     }
 
+    /**
+     * Parse dữ liệu từ buffer, tách ra đúng từng message theo định dạng packet cũ.
+     * Format packet: [1 byte CMD] + [2 byte LENGTH] + PAYLOAD[length]
+     */
     private boolean parse(AConnection<?> con, ByteBuffer buf) {
-//        int size = (buf.getShort() & 0xFFFF) - 2;
-//        if (size <= 0) {
-//            log.warn("Received empty packet without opcode from " + con + ", content: " + NetworkUtils.toHex(buf));
-//            return false;
-//        }
-//        ByteBuffer b = buf.slice().order(buf.order());
-//        try {
-//            b.limit(size);
-//            // read message fully
-//            buf.position(buf.position() + size);
-//
-//            return con.processData(b);
-//        } catch (Exception e) {
-//            log.error("Error parsing input from " + con + ", packet size: " + size + ", content: " + NetworkUtils.toHex(b), e);
-//            return false;
-//        }
-        return false;
+        if (buf.remaining() < 3) return false;
+
+        int initialPos = buf.position();
+
+        byte cmd = buf.get();
+        byte b1 = buf.get();
+        byte b2 = buf.get();
+
+        int length = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
+
+        int totalPacketSize = 1 + 2 + length;
+
+        if (buf.remaining() < length) {
+            buf.position(initialPos); // rollback lại nếu chưa đủ
+            return false;
+        }
+
+        ByteBuffer packetBuf = buf.slice().order(buf.order());
+        try {
+            packetBuf.limit(totalPacketSize);
+            buf.position(buf.position() + length);
+            return con.processData(ByteBuffer.wrap(new byte[]{cmd, b1, b2}, 0, 3).put(packetBuf).flip());
+        } catch (Exception e) {
+            log.error("Error parsing input from {}, packet size: {}, content: {}", con, totalPacketSize, NetworkUtils.toHex(packetBuf), e);
+            return false;
+        }
     }
 
     final void write(SelectionKey key) {
-        SocketChannel socketChannel = (SocketChannel) key.channel();
-        AConnection<?> con = (AConnection<?>) key.attachment();
-
-        int numWrite;
-        ByteBuffer wb = con.writeBuffer;
-        // We have not written data
-        if (wb.hasRemaining()) {
-            try {
-                numWrite = socketChannel.write(wb);
-            } catch (IOException e) {
-                closeConnectionImpl(con);
-                return;
-            }
-
-            if (numWrite == 0) {
-                log.info("Write " + numWrite + " ip: " + con.getIP());
-                return;
-            }
-
-            // Again not all data was send
-            if (wb.hasRemaining())
-                return;
-        }
-
-        while (true) {
-            wb.clear();
-            boolean writeFailed = !con.writeData(wb);
-
-            if (writeFailed) {
-                wb.limit(0);
-                break;
-            }
-
-            // Attempt to write to the channel
-            try {
-                numWrite = socketChannel.write(wb);
-            } catch (IOException e) {
-                closeConnectionImpl(con);
-                return;
-            }
-
-            if (numWrite == 0) {
-                log.info("Write " + numWrite + " ip: " + con.getIP());
-                return;
-            }
-
-            // not all data was send
-            if (wb.hasRemaining())
-                return;
-        }
-
-        // Test if this build should use assertion. If NetworkAssertion == false javac will remove this code block
-
-
-        // We wrote away all data, so we're no longer interested in writing on this socket.
-        key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
     }
 
     protected final void closeConnectionImpl(AConnection<?> con) {

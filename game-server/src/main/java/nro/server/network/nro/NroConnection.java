@@ -1,9 +1,13 @@
-package nro.server.network;
+package nro.server.network.nro;
 
 import lombok.Getter;
 import nro.commons.network.AConnection;
 import nro.commons.network.Dispatcher;
-import nro.server.network.nro.NroServerPacket;
+import nro.commons.network.PacketProcessor;
+import nro.commons.utils.concurrent.ExecuteWrapper;
+import nro.server.configs.main.ThreadConfig;
+import nro.server.configs.network.NetworkConfig;
+import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,25 +24,25 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     private static final Logger log = LoggerFactory.getLogger(NroConnection.class);
 
-    private static final int READ_BUFFER_SIZE = 8192;
-    private static final int WRITE_BUFFER_SIZE = 8192;
+    private static final PacketProcessor<NroConnection> packetProcessor = new PacketProcessor<>(
+            NetworkConfig.PACKET_PROCESSOR_MIN_THREADS,
+            NetworkConfig.PACKET_PROCESSOR_MAX_THREADS,
+            NetworkConfig.PACKET_PROCESSOR_THREAD_SPAWN_THRESHOLD,
+            NetworkConfig.PACKET_PROCESSOR_THREAD_KILL_THRESHOLD,
+            new ExecuteWrapper(ThreadConfig.MAXIMUM_RUNTIME_IN_MILLISEC_WITHOUT_WARNING)
+    );
 
     @Getter
     private volatile State state;
-
-    private long lastMessageTimestamp = 0;
-    private int messageCount = 0;
-    private static final int MAX_MESSAGES_PER_INTERVAL = 30; // Ví dụ: Lấy từ ConfigServer.MAX_MESSAGES_PER_5_SECONDS
-    private static final long MESSAGE_INTERVAL = 5000; // 5 giây
-
-    private volatile long lastClientMessageTime;
-
+    private final NroCrypt crypt = new NroCrypt();
     private final ConnectionAliveChecker connectionAliveChecker;
     private final Deque<NroServerPacket> sendMsgQueue = new ArrayDeque<>();
 
+    private volatile long lastClientMessageTime;
+
     public enum State {
         /**
-         * mới kết nối, chờ gửi key
+         * các message thực thi ở khi client connection
          */
         CONNECTED,
         /**
@@ -46,24 +50,17 @@ public class NroConnection extends AConnection<NroServerPacket> {
          */
         AUTHED,
         /**
-         * Đã vào game
+         * các state message chỉ dùng khi đã vào game
          */
         IN_GAME
     }
 
     public NroConnection(SocketChannel sc, Dispatcher d) throws IOException {
-        super(sc, d, READ_BUFFER_SIZE * 4, WRITE_BUFFER_SIZE * 4);
+        super(sc, d, NetworkConfig.READ_BUFFER_SIZE, NetworkConfig.WRITE_BUFFER_SIZE);
         this.state = State.CONNECTED;
-
         String ip = getIP();
-
-        this.lastMessageTimestamp = System.currentTimeMillis();
         connectionAliveChecker = new ConnectionAliveChecker();
-
         log.debug("Connection established: {}", ip);
-//        if (PffConfig.PFF_MODE > 0 && PffConfig.THRESHOLD_MILLIS_BY_PACKET_OPCODE != null)
-//            pffRequests = new ConcurrentHashMap<>();
-//        SessionManager.getInstance().add(this);
     }
 
     /**
@@ -78,9 +75,25 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     @Override
-    protected boolean processData(ByteBuffer data) {
-        return false;
+    public boolean processData(ByteBuffer data) {
+        if (!crypt.isEnabled()) return true;
+
+        if (!crypt.decrypt(data)) {
+            return false;
+        }
+
+        byte cmd = data.get();
+        ByteBuffer sliced = data.slice();
+
+        NroClientPacket packet = NroClientPacketFactory.createPacket(ByteBuffer.wrap(new byte[]{cmd}).put(sliced).flip(), this);
+
+        if (packet != null && packet.read()) {
+//            ThreadPoolManager.getInstance().execute(packet);
+            packetProcessor.executePacket(packet);
+        }
+        return true;
     }
+
 
     @Override
     protected boolean writeData(ByteBuffer buffer) {
@@ -116,7 +129,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
 //        }
         // Dọn dẹp hàng đợi gửi (nên làm trong synchronized để an toàn)
         synchronized (guard) {
-            if (sendMsgQueue != null) {
+            if (sendMsgQueue != null && !sendMsgQueue.isEmpty()) {
+                log.info("clear sendMsgQueue for onDisconnect size: {}", sendMsgQueue.size());
                 sendMsgQueue.clear();
             }
         }

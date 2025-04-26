@@ -5,9 +5,9 @@ import java.nio.channels.SelectionKey;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
 
-public class AcceptDispatcherImpl extends Dispatcher {
+public class AcceptDispatcher extends Dispatcher {
 
-    public AcceptDispatcherImpl(String name, Executor dcExecutor) throws IOException {
+    public AcceptDispatcher(String name, Executor dcExecutor) throws IOException {
         super(name, dcExecutor);
     }
 

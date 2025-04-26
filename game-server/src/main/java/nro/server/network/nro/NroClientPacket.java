@@ -1,9 +1,8 @@
 package nro.server.network.nro;
 
 import nro.commons.network.packet.BaseClientPacket;
-import nro.server.network.NroConnection;
 
-import nro.server.network.NroConnection.State;
+import nro.server.network.nro.NroConnection.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +15,8 @@ public abstract class NroClientPacket extends BaseClientPacket<NroConnection> {
 
     private final Set<State> validStates;
 
-    protected NroClientPacket(int opcode, Set<State> validStates) {
-        super(opcode);
+    protected NroClientPacket(int command, Set<State> validStates) {
+        super(command);
         this.validStates = validStates;
     }
 

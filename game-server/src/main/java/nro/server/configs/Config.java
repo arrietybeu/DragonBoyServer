@@ -24,7 +24,6 @@ import java.util.Set;
 
 public class Config {
 
-
     private static final List<Class<?>> CONFIGS = Arrays.asList(ConfigServer.class, ThreadConfig.class, NetworkConfig.class);
 
     public static void load(Class<?>... allowedConfigs) {
@@ -48,7 +47,7 @@ public class Config {
             if (localIPv4 == null)
                 throw new GameServerError("No IP for Nro client advertisement configured and local IP discovery failed. Please configure gameserver.network.client.connect_address");
             NetworkConfig.CLIENT_CONNECT_ADDRESS = new InetSocketAddress(localIPv4, NetworkConfig.CLIENT_CONNECT_ADDRESS.getPort());
-            LoggerFactory.getLogger(Config.class).info("No IP for Aion client advertisement configured, using " + localIPv4.getHostAddress());
+            LoggerFactory.getLogger(Config.class).info("No IP for Aion client advertisement configured, using {}", localIPv4.getHostAddress());
         }
 
     }
@@ -71,7 +70,7 @@ public class Config {
         Properties defaults = new Properties();
         try {
             for (String configDir : defaultsFolders) {
-                log.info("Loading default configuration values from: " + configDir + "/*");
+                log.info("Loading default configuration values from: {}/*", configDir);
                 PropertiesUtils.loadFromDirectory(defaults, configDir, false);
             }
             log.info("Loading: ./config/mygs.properties");
@@ -80,7 +79,7 @@ public class Config {
                 log.info("No override properties found");
             return properties;
         } catch (Exception e) {
-            throw new GameServerError("Can't load gameserver configuration:", e);
+            throw new GameServerError("Can't load game-server configuration:", e);
         }
     }
 

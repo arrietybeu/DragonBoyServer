@@ -1,7 +1,6 @@
 package nro.server.network.nro;
 
 import nro.commons.network.packet.BaseServerPacket;
-import nro.server.network.NroConnection;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 
 import java.nio.ByteBuffer;
@@ -31,17 +30,16 @@ public class NroServerPacket extends BaseServerPacket {
      * và mã hóa toàn bộ nếu cần.
      */
     public final void write(NroConnection con, ByteBuffer buffer) {
-//        // --- Ghi payload tạm vào buffer phụ ---
 //        ByteBuffer tempBuf = ByteBuffer.allocate(MAX_USABLE_PACKET_BODY_SIZE);
 //        this.setByteBuffer(tempBuf);
-//        writeImpl(con); // Ghi dữ liệu cụ thể
+//        writeImpl(con); // write
 //        tempBuf.flip();
 //
 //        byte[] payload = new byte[tempBuf.remaining()];
 //        tempBuf.get(payload);
 //        int size = payload.length;
 //
-//        this.setByteBuffer(buffer); // Ghi vào buffer chính
+//        this.setByteBuffer(buffer); // write vào buffer chính
 //        boolean encrypted = con.getClientInfo().isSendKeyComplete();
 //        byte cmd = (byte) getCommand();
 //

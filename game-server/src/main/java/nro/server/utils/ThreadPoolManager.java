@@ -6,6 +6,8 @@ import nro.commons.utils.concurrent.NroRejectedExecutionHandler;
 import nro.commons.utils.concurrent.PriorityThreadFactory;
 import nro.commons.utils.concurrent.RunnableWrapper;
 import nro.server.configs.main.ThreadConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.concurrent.*;
 
 public final class ThreadPoolManager implements Executor {
 
+    private static final Logger log = LoggerFactory.getLogger(ThreadPoolManager.class);
     /**
      * xử lý các tác vụ định kỳ
      */
@@ -35,7 +38,7 @@ public final class ThreadPoolManager implements Executor {
         int scheduledPoolSize = Math.max(4, ThreadConfig.SCHEDULED_THREAD_POOL_SIZE == 0 ? availableProcessors : ThreadConfig.SCHEDULED_THREAD_POOL_SIZE);
 
         DeadLockDetector.start(Duration.ofMinutes(1), () -> System.exit(ExitCode.RESTART));
-        instantPool = new ThreadPoolExecutor(instantPoolSize, instantPoolSize, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100000),
+        instantPool = new ThreadPoolExecutor(instantPoolSize, instantPoolSize, 0, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100_000),
                 new PriorityThreadFactory("InstantPool", ThreadConfig.USE_PRIORITIES ? 7 : Thread.NORM_PRIORITY));
         instantPool.setRejectedExecutionHandler(new NroRejectedExecutionHandler());
         instantPool.prestartAllCoreThreads();
@@ -94,6 +97,7 @@ public final class ThreadPoolManager implements Executor {
     /**
      * Dành cho các task nặng, chạy lâu (load map, load data lớn, import file...).
      * Dùng {@link ExecutorService} (cachedThreadPool) -> tạo luồng mới nếu cần mà không giới hạn cứng số lượng.
+     *
      * @param r
      */
     public void executeLongRunning(Runnable r) {
@@ -118,7 +122,6 @@ public final class ThreadPoolManager implements Executor {
         return tp.getQueue().size() + tp.getActiveCount();
     }
 
-
     public void shutdown() {
         final long begin = System.currentTimeMillis();
 
@@ -137,10 +140,10 @@ public final class ThreadPoolManager implements Executor {
         } catch (InterruptedException ignored) {
         }
 
-        LogServer.LogInfo("\t... success: " + success + " in " + (System.currentTimeMillis() - begin) + " msec.");
-        LogServer.LogInfo("\t... " + getTaskCount(scheduledPool) + " scheduled tasks left.");
-        LogServer.LogInfo("\t... " + getTaskCount(instantPool) + " instant tasks left.");
-        LogServer.LogInfo("\t... " + getTaskCount(longRunningPool) + " long running tasks left.");
+        log.info("\t... success: {} in {} msec.", success, System.currentTimeMillis() - begin);
+        log.info("\t... {} scheduled tasks left.", getTaskCount(scheduledPool));
+        log.info("\t... {} instant tasks left.", getTaskCount(instantPool));
+        log.info("\t... {} long running tasks left.", getTaskCount(longRunningPool));
     }
 
 
@@ -201,7 +204,6 @@ public final class ThreadPoolManager implements Executor {
         list.add("\tTổng số tác vụ đã hoàn thành: .................. " + longRunningPool.getCompletedTaskCount());
         list.add("\tSố tác vụ đang chờ xử lý: ...................... " + longRunningPool.getQueue().size());
         list.add("\tTổng số tác vụ đã submit: ...................... " + longRunningPool.getTaskCount());
-
         return list;
     }
 
@@ -213,6 +215,5 @@ public final class ThreadPoolManager implements Executor {
     public static ThreadPoolManager getInstance() {
         return SingletonHolder.INSTANCE;
     }
-
 
 }

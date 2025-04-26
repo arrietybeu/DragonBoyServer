@@ -202,6 +202,7 @@ public abstract class AConnection<T extends BaseServerPacket> {
         }
 
         key.cancel();
+
         try {
             socketChannel.close();
         } catch (IOException ignored) {

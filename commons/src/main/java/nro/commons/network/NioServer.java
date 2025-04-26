@@ -39,8 +39,11 @@ public class NioServer {
                 serverChannel.socket().bind(cfg.address());
                 log.info("Listening on {} for {}", cfg.getAddressInfo(), cfg.clientDescription());
 
-                SelectionKey acceptKey = acceptDispatcher.register(serverChannel, SelectionKey.OP_ACCEPT, new Acceptor(cfg.connectionFactory(), this));
-
+                SelectionKey acceptKey = acceptDispatcher.register(
+                        serverChannel,
+                        SelectionKey.OP_ACCEPT,
+                        new Acceptor(cfg.connectionFactory(), this)
+                );
                 System.out.println("✅ Acceptor registered for: " + cfg.getAddressInfo());
                 serverChannelKeys.add(acceptKey);
             }
@@ -51,15 +54,15 @@ public class NioServer {
 
     private void initDispatchers(int readWriteThreads, Executor dcExecutor) throws IOException {
         if (readWriteThreads < 1) {
-            acceptDispatcher = new AcceptReadWriteDispatcherImpl("AcceptReadWrite Dispatcher", dcExecutor);
+            acceptDispatcher = new AcceptReadWriteDispatcher("AcceptReadWrite Dispatcher", dcExecutor);
             acceptDispatcher.start();
         } else {
-            acceptDispatcher = new AcceptDispatcherImpl("Accept Dispatcher", dcExecutor);
+            acceptDispatcher = new AcceptDispatcher("Accept Dispatcher", dcExecutor);
             acceptDispatcher.start();
 
             readWriteDispatchers = new Dispatcher[readWriteThreads];
             for (int i = 0; i < readWriteDispatchers.length; i++) {
-                readWriteDispatchers[i] = new AcceptReadWriteDispatcherImpl("ReadWrite-" + i + " Dispatcher", dcExecutor);
+                readWriteDispatchers[i] = new AcceptReadWriteDispatcher("ReadWrite-" + i + " Dispatcher", dcExecutor);
                 readWriteDispatchers[i].start();
             }
         }

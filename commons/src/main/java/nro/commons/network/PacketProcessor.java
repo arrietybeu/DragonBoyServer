@@ -73,7 +73,7 @@ public class PacketProcessor<T extends AConnection<?>> {
             return false;
 
         String name = "PacketProcessor:" + threads.size();
-        log.debug("Creating new PacketProcessor Thread: " + name);
+        log.debug("Creating new PacketProcessor Thread: {}", name);
 
         Thread t = Thread.ofVirtual().name(name).unstarted(new PacketProcessorTask());
         threads.add(t);
@@ -147,8 +147,7 @@ public class PacketProcessor<T extends AConnection<?>> {
                 } else if (packetsWaitingForExecution > threadSpawnThreshold) {
                     // too small amount of threads
                     if (!newThread() && packetsWaitingForExecution >= threadSpawnThreshold * 3)
-                        log.warn("Lag detected! [" + packetsWaitingForExecution
-                                + " client packets are waiting for execution]. You should consider increasing PacketProcessor maxThreads or hardware upgrade.");
+                        log.warn("Lag detected! [{} client packets are waiting for execution]. You should consider increasing PacketProcessor maxThreads or hardware upgrade.", packetsWaitingForExecution);
                 }
                 previousPacketCount = packetsWaitingForExecution;
             }
@@ -178,6 +177,5 @@ public class PacketProcessor<T extends AConnection<?>> {
             }
         }
     }
-
 
 }

@@ -18,6 +18,9 @@ public class NetworkUtils {
         }
     }
 
+    public static String toHex(ByteBuffer buffer) {
+        return toHex(buffer, 0, Math.min(buffer.limit(), buffer.capacity()));
+    }
     /**
      * @param buffer
      * @param start  position to start read from

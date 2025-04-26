@@ -12,7 +12,6 @@ import nro.server.service.core.system.ServerService;
 
 import java.util.List;
 
-
 @APacketHandler(21)
 public class ChangeAreaHandler implements IMessageProcessor {
 

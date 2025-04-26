@@ -12,11 +12,11 @@ import java.util.concurrent.Executor;
  *
  * @author Arriety
  */
-public class AcceptReadWriteDispatcherImpl extends Dispatcher {
+public class AcceptReadWriteDispatcher extends Dispatcher {
 
     private final List<AConnection<?>> pendingClose = new ArrayList<>();
 
-    public AcceptReadWriteDispatcherImpl(String name, Executor dcExecutor) throws IOException {
+    public AcceptReadWriteDispatcher(String name, Executor dcExecutor) throws IOException {
         super(name, dcExecutor);
     }
 

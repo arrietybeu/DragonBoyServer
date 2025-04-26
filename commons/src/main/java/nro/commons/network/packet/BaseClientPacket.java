@@ -137,7 +137,7 @@ public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePac
         try {
             return buf.getDouble();
         } catch (BufferUnderflowException e) {
-            log.error("Missing readDouble for: {} (sent from {})", this, client, );
+            log.error("Missing readDouble for: {} (sent from {})", this, client, e);
         }
         return 0;
     }
@@ -175,18 +175,6 @@ public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePac
      *
      * @return String
      */
-//    protected final String readUTF() {
-//        try {
-//            int len = buf.getShort() & 0xFFFF;
-//            byte[] utfBytes = new byte[len];
-//            buf.get(utfBytes);
-//            return new String(utfBytes, StandardCharsets.UTF_8);
-//        } catch (Exception e) {
-//            log.error("Missing S for: {} (sent from {})", this, client, e);
-//            return "";
-//        }
-//    }
-
     protected final String readUTF() {
         try {
             int len = this.readShort(); // 2 byte độ dài
