@@ -12,8 +12,14 @@ public class NetworkConfig {
     @Property(key = "game-server.network.client.connect_address", defaultValue = "127.0.0.1:14445")
     public static InetSocketAddress CLIENT_CONNECT_ADDRESS;
 
-    @Property(key = "game-server.network.client.socket_address", defaultValue = "0.0.0.0:7777")
+    @Property(key = "game-server.network.client.socket_address", defaultValue = "127.0.0.1:14445")
     public static InetSocketAddress CLIENT_SOCKET_ADDRESS;
+
+    @Property(key = "game-server.network.host", defaultValue = "127.0.0.1")
+    public static String HOST;
+
+    @Property(key = "game-server.network.port", defaultValue = "14445")
+    public static int PORT;
 
     @Property(key = "game-server.network.packet.processor.threads.min", defaultValue = "4")
     public static int PACKET_PROCESSOR_MIN_THREADS;

@@ -44,7 +44,9 @@ public class AcceptReadWriteDispatcher extends Dispatcher {
                     case SelectionKey.OP_WRITE -> write(key);
                     case SelectionKey.OP_READ | SelectionKey.OP_WRITE -> {
                         read(key);
-                        if (key.isValid()) write(key);
+                        if (key.isValid()) {
+                            write(key);
+                        }
                     }
                 }
             }
@@ -53,11 +55,11 @@ public class AcceptReadWriteDispatcher extends Dispatcher {
     }
 
     private void processPendingClose() {
-        if (pendingClose.isEmpty()) return;
+        if (pendingClose.isEmpty())
+            return;
         synchronized (pendingClose) {
             long nowMillis = System.currentTimeMillis();
-            for (Iterator<AConnection<?>> iterator = pendingClose.iterator();
-                 iterator.hasNext(); ) {
+            for (Iterator<AConnection<?>> iterator = pendingClose.iterator(); iterator.hasNext(); ) {
                 AConnection<?> connection = iterator.next();
                 if (connection.getSendMsgQueue().isEmpty() || !connection.isConnected() || nowMillis > connection.pendingCloseUntilMillis) {
                     closeConnectionImpl(connection);
@@ -66,4 +68,5 @@ public class AcceptReadWriteDispatcher extends Dispatcher {
             }
         }
     }
+
 }

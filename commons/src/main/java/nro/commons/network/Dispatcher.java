@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
 /**
@@ -67,22 +68,29 @@ public abstract class Dispatcher extends Thread {
     }
 
     /**
+     * Đăng ký một {@link Acceptor} (thường là {@link ServerSocketChannel}) để accept connection mới
+     */
+//    public final SelectionKey register(SelectableChannel ch, int ops, Acceptor att) throws IOException {
+//        synchronized (gate) {
+//            selector.wakeup();
+//            return ch.register(selector, ops, att);
+//        }
+//    }
+    public final SelectionKey register(SelectableChannel ch, int ops, Acceptor att) throws IOException {
+        synchronized (gate) {
+            SelectionKey key = ch.register(selector, ops, att);
+            selector.wakeup();
+            return key;
+        }
+    }
+
+    /**
      * Đăng ký một {@link SocketChannel} mới và gán {@link SelectionKey} cho connection
      */
     public final void register(SelectableChannel ch, int ops, AConnection<?> att) throws IOException {
         synchronized (gate) {
             selector.wakeup();
             att.setKey(ch.register(selector, ops, att));
-        }
-    }
-
-    /**
-     * Đăng ký một {@link Acceptor} (thường là {@link ServerSocketChannel}) để accept connection mới
-     */
-    public final SelectionKey register(SelectableChannel ch, int ops, Acceptor att) throws IOException {
-        synchronized (gate) {
-            selector.wakeup();
-            return ch.register(selector, ops, att);
         }
     }
 
@@ -124,6 +132,10 @@ public abstract class Dispatcher extends Thread {
 
         rb.flip();
 
+        System.out.println("readBytes: còn lại bao nhieu bytes " + rb.remaining()
+                + (rb.remaining() >= 2 ? " >= get short: " + (rb.getShort(rb.position()) & 0xFFFF) : " < 2 bytes, không đọc được short"));
+
+//        System.out.println("cmd: " + rb.get());
         while (rb.remaining() > 2 && rb.remaining() >= (rb.getShort(rb.position()) & 0xFFFF)) {
             // nhận tin nhắn đầy đủ
             if (!parse(con, rb)) {
@@ -171,6 +183,59 @@ public abstract class Dispatcher extends Thread {
     }
 
     final void write(SelectionKey key) {
+        SocketChannel socketChannel = (SocketChannel) key.channel();
+        AConnection<?> con = (AConnection<?>) key.attachment();
+
+        int numWrite;
+        ByteBuffer wb = con.writeBuffer;
+
+        if (wb.hasRemaining()) {
+            try {
+                numWrite = socketChannel.write(wb);
+            } catch (IOException e) {
+                closeConnectionImpl(con);
+                return;
+            }
+
+            if (numWrite == 0) {
+                log.info("Write {} ip: {}", numWrite, con.getIP());
+                return;
+            }
+
+            // Again not all data was send
+            if (wb.hasRemaining())
+                return;
+        }
+
+        while (true) {
+            wb.clear();
+            boolean writeFailed = !con.writeData(wb);
+
+            if (writeFailed) {
+                wb.limit(0);
+                break;
+            }
+
+            // Attempt to write to the channel
+            try {
+                numWrite = socketChannel.write(wb);
+            } catch (IOException e) {
+                closeConnectionImpl(con);
+                return;
+            }
+
+            if (numWrite == 0) {
+                log.info("Write {} ip: {}", numWrite, con.getIP());
+                return;
+            }
+
+            // not all data was send
+            if (wb.hasRemaining())
+                return;
+        }
+
+        key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
+
     }
 
     protected final void closeConnectionImpl(AConnection<?> con) {

@@ -8,6 +8,7 @@ import nro.commons.utils.concurrent.ExecuteWrapper;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
+import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Getter
     private volatile State state;
+    @Getter
     private final NroCrypt crypt = new NroCrypt();
     private final ConnectionAliveChecker connectionAliveChecker;
     private final Deque<NroServerPacket> sendMsgQueue = new ArrayDeque<>();
@@ -76,8 +78,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Override
     public boolean processData(ByteBuffer data) {
-        if (!crypt.isEnabled()) return true;
+        log.info("processData: {} bytes", data.remaining());
 
+        if (!crypt.isSendKey()) return true;
         if (!crypt.decrypt(data)) {
             return false;
         }
@@ -93,7 +96,6 @@ public class NroConnection extends AConnection<NroServerPacket> {
         }
         return true;
     }
-
 
     @Override
     protected boolean writeData(ByteBuffer buffer) {
@@ -116,7 +118,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Override
     public void initialized() {
-        log.debug("Connection initialized for ID: ");
+        System.out.println("initialized write key");
+        sendPacket(new SMSendKey());
     }
 
     @Override

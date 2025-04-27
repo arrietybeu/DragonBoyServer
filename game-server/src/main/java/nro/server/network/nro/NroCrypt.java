@@ -1,5 +1,7 @@
 package nro.server.network.nro;
 
+import lombok.Getter;
+
 import java.nio.ByteBuffer;
 
 public class NroCrypt {
@@ -8,12 +10,13 @@ public class NroCrypt {
      * check xem client đã write key chưa?
      * nếu chưa có key thì packet client-server không bị mã hóa.
      */
-    private boolean isEnabled = false;
+    private boolean isSendKey = false;
 
     /**
      * Dãy key XOR do client gửi lên từ packet -27
      */
-    private byte[] sessionKey;
+    @Getter
+    public static final byte[] sessionKey = "nKO/WctQ0AVLbpzfBkS6NevDYT8ourG5CRlmdjyJ72aswx4EPq1UgZhFMXH?3iI9".getBytes();
     private byte curReadIndex;
     private byte curWriteIndex;
 
@@ -24,18 +27,17 @@ public class NroCrypt {
      * call khi server nhận được key từ packet -27 của client.
      * Server lưu key để mã hóa/giải mã từ giờ về sau.
      */
-    public void init(byte[] key) {
-        this.sessionKey = key;
+    public void init() {
         this.curReadIndex = 0;
         this.curWriteIndex = 0;
-        this.isEnabled = true;
+        this.isSendKey = true;
     }
 
     /**
      * Check xem đã có key mã hóa chưa
      */
-    public boolean isEnabled() {
-        return isEnabled;
+    public boolean isSendKey() {
+        return isSendKey;
     }
 
     /**
@@ -43,7 +45,7 @@ public class NroCrypt {
      * Chỉ thực thi nếu đã nhận được key.
      */
     public boolean decrypt(ByteBuffer buffer) {
-        if (!isEnabled || sessionKey == null) {
+        if (!isSendKey) {
             return true;
         }
 
@@ -76,7 +78,7 @@ public class NroCrypt {
      * Gọi sau khi packet đã được viết đầy đủ vào buffer.
      */
     public void encrypt(ByteBuffer buffer) {
-        if (!isEnabled || sessionKey == null) {
+        if (!isSendKey || sessionKey == null) {
             return;
         }
 
@@ -92,9 +94,36 @@ public class NroCrypt {
         }
     }
 
+    // encrypt một byte
+    public byte encryptByte(byte b) {
+        if (!isSendKey) {
+            return b;
+        }
+        byte result = (byte) ((b & 0xFF) ^ (sessionKey[curWriteIndex] & 0xFF));
+        curWriteIndex++;
+        if (curWriteIndex >= sessionKey.length) {
+            curWriteIndex = 0;
+        }
+        return result;
+    }
+
+    // decrypt một byte (nếu cần bên nhận)
+    public byte decryptByte(byte b) {
+        if (!isSendKey) {
+            return b;
+        }
+        byte result = (byte) ((b & 0xFF) ^ (sessionKey[curReadIndex] & 0xFF));
+        curReadIndex++;
+        if (curReadIndex >= sessionKey.length) {
+            curReadIndex = 0;
+        }
+        return result;
+    }
+
+
     public void disable() {
-        this.isEnabled = false;
-        this.sessionKey = null;
+        this.isSendKey = false;
+//        this.sessionKey = null;
     }
 
     public void reset() {

@@ -18,13 +18,15 @@ public class AcceptDispatcher extends Dispatcher {
 
     @Override
     protected void dispatch() throws IOException {
-        if (selector.select() != 0) {
+        int selected = selector.select();
+        if (selected != 0) {
             Iterator<SelectionKey> selectedKeys = this.selector.selectedKeys().iterator();
             while (selectedKeys.hasNext()) {
                 SelectionKey key = selectedKeys.next();
                 selectedKeys.remove();
-                if (key.isValid())
+                if (key.isValid()) {
                     accept(key);
+                }
             }
         }
     }

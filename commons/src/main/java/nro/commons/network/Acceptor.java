@@ -26,8 +26,6 @@ public class Acceptor {
         socketChannel.socket().setTcpNoDelay(true);
 
         String ip = socketChannel.socket().getInetAddress().getHostAddress();
-        System.out.println("📥 New client connected from " + ip);
-
         Dispatcher dispatcher = nioServer.getReadWriteDispatcher();
         AConnection<?> con = factory.create(socketChannel, dispatcher);
 

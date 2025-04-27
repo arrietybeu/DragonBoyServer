@@ -30,7 +30,6 @@ public class GameConnectionFactory implements ConnectionFactory {
 
     @Override
     public AConnection<?> create(SocketChannel socket, Dispatcher dispatcher) throws IOException {
-
         if (NetworkConfig.ENABLE_FLOOD_CONNECTIONS) {
             String host = socket.socket().getInetAddress().getHostAddress();
             final Result isFlooding = floodAcceptor.isFlooding(host, true);
@@ -44,6 +43,7 @@ public class GameConnectionFactory implements ConnectionFactory {
             }
         }
 
+        log.info("Creating new connection for {}", socket.socket().getInetAddress().getHostAddress());
         return new NroConnection(socket, dispatcher);
     }
 

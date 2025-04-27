@@ -21,7 +21,6 @@ public final class ThreadPoolManager implements Executor {
      * xử lý các tác vụ định kỳ
      */
     private final ScheduledThreadPoolExecutor scheduledPool;
-
     /**
      * xử lý các tác vụ tức thì
      */
@@ -204,9 +203,11 @@ public final class ThreadPoolManager implements Executor {
         list.add("\tTổng số tác vụ đã hoàn thành: .................. " + longRunningPool.getCompletedTaskCount());
         list.add("\tSố tác vụ đang chờ xử lý: ...................... " + longRunningPool.getQueue().size());
         list.add("\tTổng số tác vụ đã submit: ...................... " + longRunningPool.getTaskCount());
+
+        list.add("\t============= ALL THREAD =============");
+        list.add("\tThread count: " + Thread.activeCount());
         return list;
     }
-
 
     private static final class SingletonHolder {
         private static final ThreadPoolManager INSTANCE = new ThreadPoolManager();

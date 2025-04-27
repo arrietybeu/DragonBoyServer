@@ -184,7 +184,6 @@ public class CommandService {
             }
         } catch (Exception e) {
             LogServer.LogException("Error ActiveCommandLine: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }

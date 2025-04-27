@@ -38,14 +38,13 @@ public class NioServer {
 
                 serverChannel.socket().bind(cfg.address());
                 log.info("Listening on {} for {}", cfg.getAddressInfo(), cfg.clientDescription());
-
                 SelectionKey acceptKey = acceptDispatcher.register(
                         serverChannel,
                         SelectionKey.OP_ACCEPT,
                         new Acceptor(cfg.connectionFactory(), this)
                 );
-                System.out.println("✅ Acceptor registered for: " + cfg.getAddressInfo());
-                serverChannelKeys.add(acceptKey);
+//                acceptDispatcher.selector().wakeup();
+                serverChannelKeys.add(acceptKey);// add to controller SelectionKey
             }
         } catch (Exception e) {
             throw new Error("Could not open server socket: " + e.getMessage(), e);
@@ -59,7 +58,6 @@ public class NioServer {
         } else {
             acceptDispatcher = new AcceptDispatcher("Accept Dispatcher", dcExecutor);
             acceptDispatcher.start();
-
             readWriteDispatchers = new Dispatcher[readWriteThreads];
             for (int i = 0; i < readWriteDispatchers.length; i++) {
                 readWriteDispatchers[i] = new AcceptReadWriteDispatcher("ReadWrite-" + i + " Dispatcher", dcExecutor);
@@ -72,9 +70,9 @@ public class NioServer {
         if (readWriteDispatchers == null)
             return acceptDispatcher;
 
-        if (readWriteDispatchers.length == 1)
+        if (readWriteDispatchers.length == 1) {
             return readWriteDispatchers[0];
-
+        }
         if (currentReadWriteDispatcher >= readWriteDispatchers.length)
             currentReadWriteDispatcher = 0;
         return readWriteDispatchers[currentReadWriteDispatcher++];
@@ -131,4 +129,9 @@ public class NioServer {
             log.info("\tActive connections left: " + activeConnections.size());
         }
     }
+
+    public Set<AConnection<?>> listAllConnections() {
+        return findAllConnections();
+    }
+
 }

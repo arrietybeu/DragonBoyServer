@@ -1,11 +1,14 @@
 package nro.server;
 
+import lombok.Getter;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;
 import nro.commons.utils.SystemInfo;
 import nro.server.configs.Config;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.GameConnectionFactory;
+import nro.server.network.nro.server_packets.ServerPacketsCommand;
+import nro.server.services.CommandService;
 import nro.server.utils.LogServer;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -15,14 +18,12 @@ public class GameServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameServer.class);
 
+    @Getter
     private static NioServer nioServer;
 
     public static void main(String[] args) {
         initUtilityServicesAndConfig();
-
         System.gc();
-
-        SystemInfo.logAll();
         nioServer = initNioServer();
         Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
     }
@@ -43,8 +44,16 @@ public class GameServer {
 
     private static void initUtilityServicesAndConfig() {
         Config.load();
+
+        ServerPacketsCommand.init("nro.server.network.nro.server_packets.handler");
         ThreadPoolManager pool = ThreadPoolManager.getInstance();
         pool.getStats().forEach(line -> LOGGER.info(LogServer.ANSI_GREEN + "{}" + LogServer.ANSI_RESET, line));
+        SystemInfo.logAll();
+        initCommandService();
+    }
+
+    private static void initCommandService() {
+        new Thread(CommandService::ActiveCommandLine, "CommandLine Thread").start();
     }
 
 }

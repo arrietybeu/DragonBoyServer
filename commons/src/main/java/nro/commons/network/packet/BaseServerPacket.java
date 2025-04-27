@@ -1,9 +1,11 @@
 package nro.commons.network.packet;
 
+import lombok.Getter;
 import lombok.Setter;
 
 import java.nio.ByteBuffer;
 
+@Getter
 @Setter
 public abstract class BaseServerPacket extends BasePacket {
 
@@ -15,6 +17,13 @@ public abstract class BaseServerPacket extends BasePacket {
 
     protected BaseServerPacket(int command) {
         super(command);
+    }
+
+    /**
+     * @param buf the buf to set
+     */
+    public void setByteBuff(ByteBuffer buf) {
+        this.byteBuffer = buf;
     }
 
     /**
@@ -98,6 +107,13 @@ public abstract class BaseServerPacket extends BasePacket {
 
         writeShort(utfBytes.length);
         byteBuffer.put(utfBytes);
+    }
+
+    /**
+     * @param value
+     */
+    protected final void writeBoolean(boolean value) {
+        this.writeByte((value ? 1 : 0));
     }
 
     /**
