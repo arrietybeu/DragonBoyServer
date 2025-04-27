@@ -209,6 +209,7 @@ public abstract class Dispatcher extends Thread {
 
         while (true) {
             wb.clear();
+
             boolean writeFailed = !con.writeData(wb);
 
             if (writeFailed) {
@@ -225,7 +226,7 @@ public abstract class Dispatcher extends Thread {
             }
 
             if (numWrite == 0) {
-                log.info("Write {} ip: {}", numWrite, con.getIP());
+                log.info("nit me may Write {} ip: {}", numWrite, con.getIP());
                 return;
             }
 
@@ -235,7 +236,6 @@ public abstract class Dispatcher extends Thread {
         }
 
         key.interestOps(key.interestOps() & ~SelectionKey.OP_WRITE);
-
     }
 
     protected final void closeConnectionImpl(AConnection<?> con) {

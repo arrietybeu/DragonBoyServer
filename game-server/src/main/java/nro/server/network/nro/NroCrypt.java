@@ -30,7 +30,6 @@ public class NroCrypt {
     public void init() {
         this.curReadIndex = 0;
         this.curWriteIndex = 0;
-        this.isSendKey = true;
     }
 
     /**
@@ -78,7 +77,7 @@ public class NroCrypt {
      * Gọi sau khi packet đã được viết đầy đủ vào buffer.
      */
     public void encrypt(ByteBuffer buffer) {
-        if (!isSendKey || sessionKey == null) {
+        if (!isSendKey) {
             return;
         }
 
@@ -120,6 +119,12 @@ public class NroCrypt {
         return result;
     }
 
+    public final void encrypt() {
+        if (!isSendKey) {
+            isSendKey = true;
+        }
+        // TODO packet encrypt
+    }
 
     public void disable() {
         this.isSendKey = false;

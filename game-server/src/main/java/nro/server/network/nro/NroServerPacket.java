@@ -8,7 +8,9 @@ import java.nio.ByteBuffer;
 public abstract class NroServerPacket extends BaseServerPacket {
 
     public static final int MAX_CLIENT_SUPPORTED_PACKET_SIZE = 8192;
-    public static final int MAX_USABLE_PACKET_BODY_SIZE = MAX_CLIENT_SUPPORTED_PACKET_SIZE - 7; // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
+
+    // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
+    public static final int MAX_USABLE_PACKET_BODY_SIZE = MAX_CLIENT_SUPPORTED_PACKET_SIZE - 7;
 
     protected NroServerPacket() {
         super();
@@ -27,42 +29,47 @@ public abstract class NroServerPacket extends BaseServerPacket {
      * và mã hóa toàn bộ nếu cần.
      */
     public final void write(NroConnection con, ByteBuffer buffer) {
-        setByteBuff(buffer);
+        ByteBuffer temp = ByteBuffer.allocate(2048);
+        setByteBuff(temp);
+
         this.writeImpl(con);
-        final ByteBuffer local = this.getByteBuffer();
-        final int bodySize = local.position();
-        local.flip();
+
+        temp.flip();
+        final int bodySize = temp.remaining();
+        final NroCrypt crypt = con.getCrypt();
+
         if (bodySize > NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE) {
             throw new IllegalArgumentException("Packet body too large: " + bodySize);
         }
-        final NroCrypt crypt = con.getCrypt();
+
+        System.out.println("write server packet for opcode: " + getCommand() + " | bodySize: " + bodySize);
 
         if (isSpecialCommand(this.getCommand())) {
-            this.writeSpecial(local, buffer, crypt);
+            this.writeSpecial(temp, buffer, crypt);
         } else {
             if (!crypt.isSendKey()) {
-                // Giai đoạn chưa mã hóa (chưa gửi key)
                 buffer.put((byte) getCommand());
-                buffer.putShort((short) bodySize);
-                buffer.put(local);
+                buffer.put((byte) 0);
+                buffer.put((byte) bodySize);
+                buffer.put(temp);
             } else {
-                // Giai đoạn đã gửi key, cần mã hóa
                 buffer.put(crypt.encryptByte((byte) getCommand()));
-
                 buffer.put(crypt.encryptByte((byte) (bodySize >> 8)));
                 buffer.put(crypt.encryptByte((byte) (bodySize)));
-
                 int posBeforePayload = buffer.position();
-                buffer.put(local);
-
-                // Mã hóa toàn bộ payload trong buffer (từ posBeforePayload tới hiện tại)
+                buffer.put(temp);
                 int limit = buffer.position();
                 for (int i = posBeforePayload; i < limit; i++) {
                     buffer.put(i, crypt.encryptByte(buffer.get(i)));
                 }
             }
         }
+
+        buffer.flip();
+
+        con.encrypt();
     }
+
 
     protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final NroCrypt crypt) {
         final int bodySize = local.position();

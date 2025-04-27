@@ -12,8 +12,9 @@ public class SMSendKey extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) {
-        System.out.println("write key");
+        con.getCrypt().init();
         final byte[] keys = NroCrypt.sessionKey;
+        System.out.println("size cua key: " + keys.length);
         this.writeByte(keys.length);
         int index;
         for (index = 0; index < keys.length; index++) {

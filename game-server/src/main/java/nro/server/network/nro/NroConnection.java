@@ -1,10 +1,12 @@
 package nro.server.network.nro;
 
 import lombok.Getter;
+import nro.commons.configs.CommonsConfig;
 import nro.commons.network.AConnection;
 import nro.commons.network.Dispatcher;
 import nro.commons.network.PacketProcessor;
 import nro.commons.utils.concurrent.ExecuteWrapper;
+import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
@@ -106,20 +108,34 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
         if (packet == null) return false; // Hết packet để gửi
 
+        long begin = System.nanoTime();
+
         try {
+            System.out.println("dispatcher size write bytes: " + buffer.remaining());
             packet.write(this, buffer);
+            System.out.println("Viết xong packet, buffer position: " + buffer.remaining() + " bytes");
         } catch (Exception e) {
             log.error("Error processing packet write {} for ID:", packet.getClass().getSimpleName(), e);
             close();
             return false;
+        } finally {
+            if (CommonsConfig.RUNNABLESTATS_ENABLE) {
+                long duration = System.nanoTime() - begin;
+                RunnableStatsManager.handleStats(packet.getClass(), "runImpl()", duration);
+            }
+//            if (buffer.limit() > AionServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE)
+//                log.warn("{} contains {} more bytes than the game client of {} can read", packet, buffer.limit() - AionServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE, getActivePlayer());
         }
         return true;
     }
 
     @Override
     public void initialized() {
-        System.out.println("initialized write key");
         sendPacket(new SMSendKey());
+    }
+
+    public final void encrypt(){
+        this.crypt.encrypt();
     }
 
     @Override

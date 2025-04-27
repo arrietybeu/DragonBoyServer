@@ -85,7 +85,7 @@ public class PacketProcessor<T extends AConnection<?>> {
     private void killThread() {
         if (threads.size() > minThreads) {
             Thread t = threads.removeLast();
-            log.debug("Killing PacketProcessor Thread: " + t.getName());
+            log.debug("Killing PacketProcessor Thread: {}", t.getName());
             t.interrupt();
         }
     }
