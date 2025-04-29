@@ -56,4 +56,8 @@ public class GameServer {
         new Thread(CommandService::ActiveCommandLine, "CommandLine Thread").start();
     }
 
+    public static boolean isShuttingDownSoon() {
+        return ShutdownHook.getInstance().isRunning() && ShutdownHook.getInstance().getRemainingSeconds() <= 30;
+    }
+
 }

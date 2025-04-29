@@ -8,6 +8,7 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
         </processorPath>
+        <module name="ChuBeoRong.nro-game-server.main" />
         <module name="ChuBeoRong.commons.main" />
         <module name="ChuBeoRong.login-server.main" />
         <module name="ChuBeoRong.game-server.main" />
@@ -20,6 +21,10 @@
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_STRING" value="--enable-preview" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ChuBeoRong.nro-game-server" options="--enable-preview -Xlint:-preview" />
+      <module name="ChuBeoRong.nro-game-server.main" options="--enable-preview -Xlint:-preview" />
+      <module name="ChuBeoRong.nro-game-server.test" options="--enable-preview -Xlint:-preview" />
+    </option>
   </component>
 </project>

@@ -80,6 +80,9 @@ public abstract class AConnection<T extends BaseServerPacket> {
      */
     private boolean locked = false;
 
+    @Getter
+    private final Crypt crypt = new Crypt();
+
     /**
      * Constructor
      *

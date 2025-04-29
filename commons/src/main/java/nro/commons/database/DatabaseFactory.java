@@ -15,7 +15,7 @@ public class DatabaseFactory {
     private static HikariDataSource ENTITY_DATA_SOURCE;
 
     private DatabaseFactory() {
-        System.out.println("cai lon?");
+        System.out.println("call cai choa gi?");
     }
 
     public synchronized static void init() {

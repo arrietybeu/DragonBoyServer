@@ -55,7 +55,7 @@ public class Config {
 
     private static Properties loadProperties() {
         Logger log = LoggerFactory.getLogger(Config.class);
-        List<String> defaultsFolders = Arrays.asList("./config/administration", "./config/main", "./config/network");
+        List<String> defaultsFolders = Arrays.asList("nro-game-server/config/main", "nro-game-server/config/network");
         Properties defaults = new Properties();
         try {
             for (String configDir : defaultsFolders) {

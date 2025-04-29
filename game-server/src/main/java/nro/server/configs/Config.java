@@ -49,7 +49,6 @@ public class Config {
             NetworkConfig.CLIENT_CONNECT_ADDRESS = new InetSocketAddress(localIPv4, NetworkConfig.CLIENT_CONNECT_ADDRESS.getPort());
             LoggerFactory.getLogger(Config.class).info("No IP for Aion client advertisement configured, using {}", localIPv4.getHostAddress());
         }
-
     }
 
     private static void removePropertiesUsedInLogbackXml(Set<String> properties) {
@@ -66,7 +65,7 @@ public class Config {
 
     private static Properties loadProperties() {
         Logger log = LoggerFactory.getLogger(Config.class);
-        List<String> defaultsFolders = Arrays.asList(/*"./config/administration", */"./config/main", "./config/network");
+        List<String> defaultsFolders = Arrays.asList(/*"./config/administration", */"resources/config/main", "resources/config/network");
         Properties defaults = new Properties();
         try {
             for (String configDir : defaultsFolders) {

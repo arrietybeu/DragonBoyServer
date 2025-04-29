@@ -1,5 +1,6 @@
 package nro.server.network.nro;
 
+import nro.commons.network.Crypt;
 import nro.commons.network.packet.BaseServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 
@@ -21,22 +22,26 @@ public abstract class NroServerPacket extends BaseServerPacket {
         super(command);
     }
 
-    protected abstract void writeImpl(NroConnection con);
+    protected abstract void writeImpl(NroConnection con) ;
 
     /**
-     * Ghi packet vào buffer, theo đúng format:
-     * [1 byte cmd] [2 byte length] [payload]
-     * và mã hóa toàn bộ nếu cần.
+     * Ghi một packet vào ByteBuffer để chuẩn bị gửi cho client.
+     *
+     * @param con    - NroConnection tương ứng với client mà mình đang gửi packet tới.
+     *               - Task: chứa session, crypt key, trạng thái send/receive, buffer đọc/ghi...
+     *
+     * @param buffer - ByteBuffer chính để chứa dữ liệu đã build xong, chuẩn bị write ra socket.
+     *               - Task: buffer này sẽ được SocketChannel.write(buffer) ngay sau khi ghi xong.
+     *               - buffer này thường chính là con.writeBuffer (ByteBuffer đã được cấp phát sẵn khi accept kết nối).
      */
-    public final void write(NroConnection con, ByteBuffer buffer) {
+    public final void write(NroConnection con, ByteBuffer buffer) throws RuntimeException {
         ByteBuffer temp = ByteBuffer.allocate(2048);
         setByteBuff(temp);
-
         this.writeImpl(con);
 
         temp.flip();
         final int bodySize = temp.remaining();
-        final NroCrypt crypt = con.getCrypt();
+        final Crypt crypt = con.getCrypt();
 
         if (bodySize > NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE) {
             throw new IllegalArgumentException("Packet body too large: " + bodySize);
@@ -51,7 +56,7 @@ public abstract class NroServerPacket extends BaseServerPacket {
                 buffer.put((byte) getCommand());
                 buffer.put((byte) 0);
                 buffer.put((byte) bodySize);
-                buffer.put(temp);
+                buffer.put(temp);// put bytes for writeImpl
             } else {
                 buffer.put(crypt.encryptByte((byte) getCommand()));
                 buffer.put(crypt.encryptByte((byte) (bodySize >> 8)));
@@ -64,18 +69,14 @@ public abstract class NroServerPacket extends BaseServerPacket {
                 }
             }
         }
-
         buffer.flip();
-
         con.encrypt();
     }
 
-
-    protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final NroCrypt crypt) {
+    protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final Crypt crypt) {
         final int bodySize = local.position();
         if (!crypt.isSendKey()) {
             buffer.put((byte) getCommand());
-
             // Ghi body size theo special format
             int size = bodySize;
             buffer.put((byte) (size % 256 - 128));

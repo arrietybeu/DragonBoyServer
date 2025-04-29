@@ -25,6 +25,9 @@ public class NroClientPacketFactory {
         for (Class<?> cls : reflections.getTypesAnnotatedWith(AClientPacketHandler.class)) {
             if (NroClientPacket.class.isAssignableFrom(cls)) {
                 AClientPacketHandler handler = cls.getAnnotation(AClientPacketHandler.class);
+                if (handler == null) {
+                    throw new IllegalArgumentException("Handler annotation is missing on class: " + cls.getName());
+                }
                 NroClientPacketFactory.register((Class<? extends NroClientPacket>) cls, handler.command(), handler.validStates());
             }
         }
@@ -35,7 +38,11 @@ public class NroClientPacketFactory {
     }
 
     public static NroClientPacket createPacket(ByteBuffer data, NroConnection client) {
-        int command = data.get() & 0xFF;
+//        int command = data.get() & 0xFF;
+        int command = data.get();
+
+        System.out.println("create packet for command: " + command);
+
         PacketInfo<? extends NroClientPacket> info = packetMap.get(command);
         if (info == null || !info.isValid(client.getState())) {
             log.warn("Unknown or invalid packet command: {} state: {}", command, client.getState());

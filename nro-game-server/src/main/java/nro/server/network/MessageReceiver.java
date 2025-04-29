@@ -69,22 +69,23 @@ public final class MessageReceiver {
     private Message readMessage() throws IOException {
         final boolean sendKeyComplete = session.getClientInfo().isSendKeyComplete();
         byte cmd = dis.readByte();
-        if (sendKeyComplete) {
-            cmd = readKey(cmd);
-        }
         if (!checkMessageRateLimit(cmd)) {
             return null;
         }
 
         int payloadLength;
         if (sendKeyComplete) {
+            cmd = readKey(cmd);
             byte b2 = dis.readByte();
             byte b3 = dis.readByte();
             payloadLength = ((readKey(b2) & 0xFF) << 8) | (readKey(b3) & 0xFF);
+
+            System.out.println("cmd: " + cmd + " b2: " + b2 + " b3: " + b3 + " payloadLength: " + payloadLength);
         } else {
             payloadLength = dis.readUnsignedShort();
         }
 
+        System.out.println("no key: " + cmd + " payloadLength: " + payloadLength);
         if (payloadLength > MAX_MESSAGE_SIZE) {
             LogServer.LogWarning("Data too big cmd: " + cmd);
         }
@@ -112,6 +113,7 @@ public final class MessageReceiver {
         if (this.session.getSessionInfo().curR >= this.session.getSessionInfo().getKeys().length) {
             this.session.getSessionInfo().curR %= (byte) this.session.getSessionInfo().getKeys().length;
         }
+        System.out.println("Decrypt byte, curReadIndex=" + this.session.getSessionInfo().curR);
         return result;
     }
 

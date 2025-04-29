@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.channels.spi.SelectorProvider;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
 /**
@@ -123,7 +122,6 @@ public abstract class Dispatcher extends Thread {
         }
 
         if (numRead == -1) {
-            // remote entity shut the socket down cleanly. Do the same from our end and cancel the channel.
             closeConnectionImpl(con);
             return;
         } else if (numRead == 0) {
@@ -132,21 +130,55 @@ public abstract class Dispatcher extends Thread {
 
         rb.flip();
 
-        System.out.println("readBytes: còn lại bao nhieu bytes " + rb.remaining()
-                + (rb.remaining() >= 2 ? " >= get short: " + (rb.getShort(rb.position()) & 0xFFFF) : " < 2 bytes, không đọc được short"));
+        while (true) {
+            int pos = rb.position();
 
-//        System.out.println("cmd: " + rb.get());
-        while (rb.remaining() > 2 && rb.remaining() >= (rb.getShort(rb.position()) & 0xFFFF)) {
-            // nhận tin nhắn đầy đủ
-            if (!parse(con, rb)) {
+            if (rb.remaining() < 3) {
+                rb.position(pos);
+                break;
+            }
+
+            byte cmd = rb.get(pos);
+            byte b1 = rb.get(pos + 1);
+            byte b2 = rb.get(pos + 2);
+
+            boolean isEncrypted = con.getCrypt().isSendKey();
+            if (isEncrypted) {
+                cmd = con.getCrypt().decryptByte(cmd);
+                b1 = con.getCrypt().decryptByte(b1);
+                b2 = con.getCrypt().decryptByte(b2);
+            }
+
+            int bodyLength = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
+            int fullPacketLength = 1 + 2 + bodyLength;
+
+            if (rb.remaining() < fullPacketLength) {
+                rb.position(pos);
+                break;
+            }
+
+            ByteBuffer packetBuf = rb.slice();
+            packetBuf.limit(fullPacketLength);
+
+            rb.position(pos + fullPacketLength);
+
+            try {
+                if (!con.processData(packetBuf)) {
+                    closeConnectionImpl(con);
+                    return;
+                }
+            } catch (Exception e) {
+                log.error("Error processing packet from {}, content: {}", con, NetworkUtils.toHex(packetBuf), e);
                 closeConnectionImpl(con);
                 return;
             }
         }
+
         if (rb.hasRemaining()) {
             rb.compact();
-        } else
+        } else {
             rb.clear();
+        }
     }
 
     /**
@@ -154,30 +186,19 @@ public abstract class Dispatcher extends Thread {
      * Format packet: [1 byte CMD] + [2 byte LENGTH] + PAYLOAD[length]
      */
     private boolean parse(AConnection<?> con, ByteBuffer buf) {
-        if (buf.remaining() < 3) return false;
-
-        int initialPos = buf.position();
-
-        byte cmd = buf.get();
-        byte b1 = buf.get();
-        byte b2 = buf.get();
-
-        int length = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
-
-        int totalPacketSize = 1 + 2 + length;
-
-        if (buf.remaining() < length) {
-            buf.position(initialPos); // rollback lại nếu chưa đủ
+        int size = (buf.getShort() & 0xFFFF) - 2;
+        if (size <= 0) {
+            log.warn("Received empty packet without opcode from {}, content: {}", con, NetworkUtils.toHex(buf));
             return false;
         }
 
-        ByteBuffer packetBuf = buf.slice().order(buf.order());
+        ByteBuffer b = buf.slice().order(buf.order());
         try {
-            packetBuf.limit(totalPacketSize);
-            buf.position(buf.position() + length);
-            return con.processData(ByteBuffer.wrap(new byte[]{cmd, b1, b2}, 0, 3).put(packetBuf).flip());
+            b.limit(size);
+            buf.position(buf.position() + size);
+            return con.processData(b);
         } catch (Exception e) {
-            log.error("Error parsing input from {}, packet size: {}, content: {}", con, totalPacketSize, NetworkUtils.toHex(packetBuf), e);
+            log.error("Error parsing input from {}, packet size: {}, content: {}", con, size, NetworkUtils.toHex(b), e);
             return false;
         }
     }

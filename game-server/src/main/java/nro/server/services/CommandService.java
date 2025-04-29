@@ -1,7 +1,7 @@
 package nro.server.services;
 
-import nro.commons.network.NioServer;
 import nro.commons.utils.SystemInfo;
+import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.utils.LogServer;
 import nro.server.utils.ThreadPoolManager;
@@ -26,10 +26,11 @@ public class CommandService {
                             LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
                     case "system_info" -> SystemInfo.logAll();
                     case "gc" -> System.gc();
+                    case "dump_packet" -> RunnableStatsManager.dumpClassStats();
                 }
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            LOGGER.error("", exception);
         }
     }
 }

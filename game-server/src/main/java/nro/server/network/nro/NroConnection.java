@@ -4,9 +4,11 @@ import lombok.Getter;
 import nro.commons.configs.CommonsConfig;
 import nro.commons.network.AConnection;
 import nro.commons.network.Dispatcher;
+import nro.commons.network.Crypt;
 import nro.commons.network.PacketProcessor;
 import nro.commons.utils.concurrent.ExecuteWrapper;
 import nro.commons.utils.concurrent.RunnableStatsManager;
+import nro.server.GameServer;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
@@ -37,8 +39,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Getter
     private volatile State state;
-    @Getter
-    private final NroCrypt crypt = new NroCrypt();
+
     private final ConnectionAliveChecker connectionAliveChecker;
     private final Deque<NroServerPacket> sendMsgQueue = new ArrayDeque<>();
 
@@ -79,54 +80,86 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     @Override
-    public boolean processData(ByteBuffer data) {
-        log.info("processData: {} bytes", data.remaining());
+    public boolean processData(ByteBuffer rb) {
+        final boolean isEncrypted = getCrypt().isSendKey();
 
-        if (!crypt.isSendKey()) return true;
-        if (!crypt.decrypt(data)) {
-            return false;
+        int startPos = rb.position();
+
+        byte cmd = rb.get();
+        byte b1 = rb.get();
+        byte b2 = rb.get();
+
+        if (isEncrypted) {
+            cmd = getCrypt().decryptByte(cmd);
         }
 
-        byte cmd = data.get();
-        ByteBuffer sliced = data.slice();
 
-        NroClientPacket packet = NroClientPacketFactory.createPacket(ByteBuffer.wrap(new byte[]{cmd}).put(sliced).flip(), this);
+        int bodySize = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
 
-        if (packet != null && packet.read()) {
-//            ThreadPoolManager.getInstance().execute(packet);
-            packetProcessor.executePacket(packet);
+        System.out.println("🔥 Read packet cmd: " + cmd + ", bodyLength=" + bodySize);
+
+        if (rb.remaining() < bodySize) {
+            log.warn("Not enough bytes for full payload. cmd={}, expect bodySize={}, available={}", cmd, bodySize, rb.remaining());
+            rb.position(startPos); // trả lại pos ban đầu
+            return true; // chờ thêm bytes ở lần read kế tiếp
         }
+
+        byte[] payload = new byte[bodySize];
+        rb.get(payload);
+
+        if (isEncrypted) {
+            for (int i = 0; i < payload.length; i++) {
+                payload[i] = getCrypt().decryptByte(payload[i]);
+            }
+        }
+
+        ByteBuffer packet = ByteBuffer.allocate(1 + 2 + payload.length);
+        packet.put(cmd);
+        packet.put(b1);
+        packet.put(b2);
+        packet.put(payload);
+        packet.flip();
+
+        NroClientPacket p = NroClientPacketFactory.createPacket(packet, this);
+
+        if (p != null) {
+            if (p.read()) {
+                packetProcessor.executePacket(p);
+            }
+        } else {
+            log.warn("Unknown packet cmd={} in state={}", cmd, state);
+        }
+
         return true;
     }
+
 
     @Override
     protected boolean writeData(ByteBuffer buffer) {
         NroServerPacket packet;
         synchronized (guard) {
             packet = sendMsgQueue.poll();
-        }
 
-        if (packet == null) return false; // Hết packet để gửi
+            if (packet == null) return false; // Hết packet để gửi
 
-        long begin = System.nanoTime();
+            long begin = System.nanoTime();
 
-        try {
-            System.out.println("dispatcher size write bytes: " + buffer.remaining());
-            packet.write(this, buffer);
-            System.out.println("Viết xong packet, buffer position: " + buffer.remaining() + " bytes");
-        } catch (Exception e) {
-            log.error("Error processing packet write {} for ID:", packet.getClass().getSimpleName(), e);
-            close();
-            return false;
-        } finally {
-            if (CommonsConfig.RUNNABLESTATS_ENABLE) {
-                long duration = System.nanoTime() - begin;
-                RunnableStatsManager.handleStats(packet.getClass(), "runImpl()", duration);
+            try {
+                packet.write(this, buffer);
+            } catch (Exception e) {
+                log.error("Error processing packet write: [{}] for ID:", packet.getClass().getSimpleName(), e);
+                close();
+                return false;
+            } finally {
+                if (CommonsConfig.RUNNABLESTATS_ENABLE) {
+                    long duration = System.nanoTime() - begin;
+                    RunnableStatsManager.handleStats(packet.getClass(), "runImpl()", duration);
+                }
+                if (buffer.limit() > NroServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE)
+                    log.warn("{} contains {} more bytes than the game client of {} can read", packet, buffer.limit() - NroServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE, null);
             }
-//            if (buffer.limit() > AionServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE)
-//                log.warn("{} contains {} more bytes than the game client of {} can read", packet, buffer.limit() - AionServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE, getActivePlayer());
+            return true;
         }
-        return true;
     }
 
     @Override
@@ -134,18 +167,19 @@ public class NroConnection extends AConnection<NroServerPacket> {
         sendPacket(new SMSendKey());
     }
 
-    public final void encrypt(){
-        this.crypt.encrypt();
+    public final void encrypt() {
+        this.getCrypt().encrypt();
     }
 
     @Override
     protected void onDisconnect() {
         connectionAliveChecker.stop();
 
-//        if (GameServer.isShuttingDownSoon()) { // client crashing during last seconds of countdown
-//            safeLogout(); // instant synchronized leaveWorld to ensure completion before onServerClose
-//            return;
-//        }
+        if (GameServer.isShuttingDownSoon()) { // client crashing during last seconds of countdown
+            safeLogout(); // instant synchronized leaveWorld to ensure completion before onServerClose
+            return;
+        }
+
         // Dọn dẹp hàng đợi gửi (nên làm trong synchronized để an toàn)
         synchronized (guard) {
             if (sendMsgQueue != null && !sendMsgQueue.isEmpty()) {
@@ -203,6 +237,11 @@ public class NroConnection extends AConnection<NroServerPacket> {
                 close();
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "NroConnection [state=" + state + "], getIP()=" + getIP() + "]";
     }
 
 }

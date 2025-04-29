@@ -4,6 +4,6 @@ plugins {
 
 rootProject.name = 'ChuBeoRong'
 
-include 'commons', 'game-server'/*, 'nro-game-server'*/
+include 'commons', 'game-server', 'nro-game-server'
 include 'login-server'
 

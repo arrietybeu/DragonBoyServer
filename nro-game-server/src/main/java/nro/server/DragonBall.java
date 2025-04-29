@@ -22,7 +22,7 @@ public class DragonBall {
 
     private static NioServer nioServer;
 
-    public static void mainz(String[] args) {
+    public static void main(String[] args) {
         Config.load();
         DatabaseFactory.init();
         ServerManager.launch();
@@ -30,7 +30,7 @@ public class DragonBall {
         LogServer.DebugLogic("Launching Dragon Ball...");
     }
 
-    public static void main(String[] args) {
+    public static void mainz(String[] args) {
         Config.load();
         nioServer = initNioServer();
 //        initUtilityServicesAndConfig();

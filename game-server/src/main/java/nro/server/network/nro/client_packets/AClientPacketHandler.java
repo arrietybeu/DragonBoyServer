@@ -7,7 +7,7 @@ import nro.server.network.nro.NroConnection.State;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AClientPacketHandler {
 
-    int command();
+    byte command();
     State[] validStates() default {State.CONNECTED};
 
 }
