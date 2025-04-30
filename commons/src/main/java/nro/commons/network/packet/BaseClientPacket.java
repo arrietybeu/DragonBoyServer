@@ -100,6 +100,15 @@ public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePac
         }
     }
 
+    protected final boolean readBoolean() {
+        try {
+            return this.readByte() != 0;
+        } catch (BufferUnderflowException e) {
+            log.error("Missing readBoolean for: {} (sent from {})", this, client, e);
+            return false;
+        }
+    }
+
     /**
      * Read short from this packet buffer.
      *

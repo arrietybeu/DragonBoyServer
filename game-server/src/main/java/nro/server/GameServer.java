@@ -7,6 +7,7 @@ import nro.commons.utils.SystemInfo;
 import nro.server.configs.Config;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.GameConnectionFactory;
+import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
 import nro.server.utils.LogServer;
@@ -35,17 +36,11 @@ public class GameServer {
         return nioServer;
     }
 
-    public static void shutdownNioServer() {
-        if (nioServer != null) {
-            nioServer.shutdown();
-            nioServer = null;
-        }
-    }
 
     private static void initUtilityServicesAndConfig() {
         Config.load();
-
         ServerPacketsCommand.init("nro.server.network.nro.server_packets.handler");
+        NroClientPacketFactory.init("nro.server.network.nro.client_packets.handler");
         ThreadPoolManager pool = ThreadPoolManager.getInstance();
         pool.getStats().forEach(line -> LOGGER.info(LogServer.ANSI_GREEN + "{}" + LogServer.ANSI_RESET, line));
         SystemInfo.logAll();
@@ -54,6 +49,13 @@ public class GameServer {
 
     private static void initCommandService() {
         new Thread(CommandService::ActiveCommandLine, "CommandLine Thread").start();
+    }
+
+    public static void shutdownNioServer() {
+        if (nioServer != null) {
+            nioServer.shutdown();
+            nioServer = null;
+        }
     }
 
     public static boolean isShuttingDownSoon() {

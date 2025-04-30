@@ -2,7 +2,7 @@ package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.network.Crypt;
 import nro.server.configs.network.NetworkConfig;
-import nro.server.consts.ConstsCmd;
+import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;

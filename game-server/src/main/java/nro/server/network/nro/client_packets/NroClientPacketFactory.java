@@ -37,9 +37,7 @@ public class NroClientPacketFactory {
         packetMap.put(command, new PacketInfo<>(packetClass, command, validStates));
     }
 
-    public static NroClientPacket createPacket(ByteBuffer data, NroConnection client) {
-//        int command = data.get() & 0xFF;
-        int command = data.get();
+    public static NroClientPacket createPacket(int command ,ByteBuffer data, NroConnection client) {
 
         System.out.println("create packet for command: " + command);
 
@@ -75,7 +73,6 @@ public class NroClientPacketFactory {
         boolean isValid(NroConnection.State state) {
             return validStates.contains(state);
         }
-
     }
 
 }

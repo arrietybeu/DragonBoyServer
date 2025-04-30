@@ -108,7 +108,7 @@ public class NioServer {
         // find active connections once, at this point new ones cannot be added anymore
         Set<AConnection<?>> activeConnections = findAllConnections();
         if (!activeConnections.isEmpty()) {
-            log.info("\tClosing " + activeConnections.size() + " connections...");
+            log.info("\tClosing {} connections...", activeConnections.size());
 
             activeConnections.forEach(AConnection::onServerClose);
 
@@ -120,13 +120,13 @@ public class NioServer {
                 }
                 if (System.currentTimeMillis() > timeout) {
                     activeConnections.removeIf(AConnection::isClosed);
-                    log.info("\tForcing " + activeConnections.size() + " connections to disconnect...");
+                    log.info("\tForcing {} connections to disconnect...", activeConnections.size());
                     activeConnections.forEach(AConnection::close);
                     break;
                 }
             }
             activeConnections.removeIf(AConnection::isClosed);
-            log.info("\tActive connections left: " + activeConnections.size());
+            log.info("\tActive connections left: {}", activeConnections.size());
         }
     }
 

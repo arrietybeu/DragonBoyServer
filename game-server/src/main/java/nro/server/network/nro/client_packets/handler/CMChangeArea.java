@@ -11,7 +11,7 @@ public class CMChangeArea extends NroClientPacket {
 
     private byte areaId;
 
-    protected CMChangeArea(int command, Set<NroConnection.State> validStates) {
+    public CMChangeArea(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
 

@@ -4,13 +4,13 @@ import lombok.Getter;
 import nro.commons.configs.CommonsConfig;
 import nro.commons.network.AConnection;
 import nro.commons.network.Dispatcher;
-import nro.commons.network.Crypt;
 import nro.commons.network.PacketProcessor;
 import nro.commons.utils.concurrent.ExecuteWrapper;
 import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
+import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;
@@ -39,6 +39,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Getter
     private volatile State state;
+    @Getter
+    private SessionInfo sessionInfo = new SessionInfo();
 
     private final ConnectionAliveChecker connectionAliveChecker;
     private final Deque<NroServerPacket> sendMsgQueue = new ArrayDeque<>();
@@ -93,15 +95,14 @@ public class NroConnection extends AConnection<NroServerPacket> {
             cmd = getCrypt().decryptByte(cmd);
         }
 
-
         int bodySize = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
 
-        System.out.println("🔥 Read packet cmd: " + cmd + ", bodyLength=" + bodySize);
+//        System.out.println(" Read packet cmd: " + cmd + ", bodyLength=" + bodySize);
 
         if (rb.remaining() < bodySize) {
             log.warn("Not enough bytes for full payload. cmd={}, expect bodySize={}, available={}", cmd, bodySize, rb.remaining());
-            rb.position(startPos); // trả lại pos ban đầu
-            return true; // chờ thêm bytes ở lần read kế tiếp
+            rb.position(startPos);
+            return true;
         }
 
         byte[] payload = new byte[bodySize];
@@ -120,7 +121,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
         packet.put(payload);
         packet.flip();
 
-        NroClientPacket p = NroClientPacketFactory.createPacket(packet, this);
+        ByteBuffer bodyBuf = ByteBuffer.wrap(payload);
+
+        NroClientPacket p = NroClientPacketFactory.createPacket(cmd, bodyBuf, this);
 
         if (p != null) {
             if (p.read()) {
@@ -129,10 +132,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
         } else {
             log.warn("Unknown packet cmd={} in state={}", cmd, state);
         }
-
         return true;
     }
-
 
     @Override
     protected boolean writeData(ByteBuffer buffer) {

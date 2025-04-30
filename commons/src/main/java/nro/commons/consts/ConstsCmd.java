@@ -1,4 +1,4 @@
-package nro.server.consts;
+package nro.commons.consts;
 
 import java.util.HashMap;
 import java.util.Map;
