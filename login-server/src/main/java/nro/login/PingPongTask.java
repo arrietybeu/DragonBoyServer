@@ -33,11 +33,10 @@ public class PingPongTask implements Runnable {
         unrespondedPingCount.set(0);
     }
 
-
     @Override
     public void run() {
         if (unrespondedPingCount.getAndIncrement() <= 2) {
-            connection.sendPacket(new SM_PING());
+//            connection.sendPacket(new SM_PING());
         } else {
             stop();
             LoggerFactory.getLogger(PingPongTask.class).warn("Gameserver #{} connection died, closing it.", connection.getGameServerInfo().getId());

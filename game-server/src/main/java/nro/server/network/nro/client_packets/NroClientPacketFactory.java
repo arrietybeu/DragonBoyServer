@@ -19,7 +19,6 @@ public class NroClientPacketFactory {
 
     private static final Map<Integer, PacketInfo<? extends NroClientPacket>> packetMap = new HashMap<>();
 
-    @SuppressWarnings("unchecked")
     public static void init(String path) {
         Reflections reflections = new Reflections(path);
         for (Class<?> cls : reflections.getTypesAnnotatedWith(AClientPacketHandler.class)) {

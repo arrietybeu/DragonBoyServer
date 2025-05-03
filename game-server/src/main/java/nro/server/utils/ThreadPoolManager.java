@@ -49,7 +49,7 @@ public final class ThreadPoolManager implements Executor {
 
         longRunningPool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
-        LogServer.LogInfo("ThreadPoolManager: Initialized with " + instantPool.getPoolSize() + " instant, " + scheduledPool.getPoolSize() + " scheduler and "
+        log.info("ThreadPoolManager: Initialized with " + instantPool.getPoolSize() + " instant, " + scheduledPool.getPoolSize() + " scheduler and "
                 + longRunningPool.getPoolSize() + " long running threads");
     }
 
@@ -124,10 +124,10 @@ public final class ThreadPoolManager implements Executor {
     public void shutdown() {
         final long begin = System.currentTimeMillis();
 
-        LogServer.LogInfo("ThreadPoolManager: Shutting down.");
-        LogServer.LogInfo("\t... executing " + scheduledPool.getActiveCount() + "/" + getTaskCount(scheduledPool) + " scheduled tasks.");
-        LogServer.LogInfo("\t... executing " + getTaskCount(instantPool) + " instant tasks.");
-        LogServer.LogInfo("\t... executing " + getTaskCount(longRunningPool) + " long running tasks.");
+        log.info("ThreadPoolManager: Shutting down.");
+        log.info("\t... executing " + scheduledPool.getActiveCount() + "/" + getTaskCount(scheduledPool) + " scheduled tasks.");
+        log.info("\t... executing " + getTaskCount(instantPool) + " instant tasks.");
+        log.info("\t... executing " + getTaskCount(longRunningPool) + " long running tasks.");
 
         scheduledPool.shutdown();
         instantPool.shutdown();
@@ -144,7 +144,6 @@ public final class ThreadPoolManager implements Executor {
         log.info("\t... {} instant tasks left.", getTaskCount(instantPool));
         log.info("\t... {} long running tasks left.", getTaskCount(longRunningPool));
     }
-
 
     private boolean awaitTermination(long timeoutInMillisec) throws InterruptedException {
         final long begin = System.currentTimeMillis();

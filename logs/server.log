@@ -1,0 +1,5 @@
+2025-05-03 05:41:28.751 [CommandLine Thread] ERROR nro.server.services.CommandService - 
+java.util.NoSuchElementException: No line found
+	at java.base/java.util.Scanner.nextLine(Scanner.java:1660)
+	at nro.server.services.CommandService.ActiveCommandLine(CommandService.java:20)
+	at java.base/java.lang.Thread.run(Thread.java:1583)

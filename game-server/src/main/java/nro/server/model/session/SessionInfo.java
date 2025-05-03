@@ -2,7 +2,6 @@ package nro.server.model.session;
 
 
 import lombok.Getter;
-import lombok.Setter;
 
 public class SessionInfo {
 

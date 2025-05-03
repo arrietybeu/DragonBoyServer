@@ -98,7 +98,7 @@ public class GameServerConnection extends AConnection<GameServerPacket> {
     @Override
     protected final void onDisconnect() {
         pingPongTask.stop();
-        log.info(this + " disconnected");
+        log.info("{} disconnected", this);
         if (gameServerInfo != null) {
             gameServerInfo.setConnection(null);
             gameServerInfo.getAccountsOnGameServer().clear();

@@ -54,18 +54,5 @@ public class CMNotLogin extends NroClientPacket {
         session.getClientDeviceInfo().setTouch(isTouch);
         session.getClientDeviceInfo().setPlatformInfo(platformInfo);
         session.getClientDeviceInfo().setExtraInfo(extraInfo);
-
-        // log info all
-        System.out.println("Client Device Info:");
-        System.out.println("Type Client: " + typeClient);
-        System.out.println("Zoom Level: " + zoomLevel);
-        System.out.println("Screen Width: " + screenWidth);
-        System.out.println("Screen Height: " + screenHeight);
-        System.out.println("Is Qwerty: " + isQwerty);
-        System.out.println("Is Touch: " + isTouch);
-        System.out.println("Platform Info: " + platformInfo);
-        System.out.println("Extra Info: " + extraInfo.length);
-        System.out.println("Client Device Info End");
-
     }
 }

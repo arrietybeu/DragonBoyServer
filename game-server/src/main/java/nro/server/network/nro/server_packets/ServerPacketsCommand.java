@@ -1,5 +1,6 @@
 package nro.server.network.nro.server_packets;
 
+import nro.server.configs.main.PacketConfig;
 import nro.server.network.nro.NroServerPacket;
 import org.reflections.Reflections;
 
@@ -31,6 +32,30 @@ public class ServerPacketsCommand {
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize server packet opcodes", e);
+        }
+    }
+
+    private static void loadCommand(int command) {
+        try {
+            Reflections reflections = new Reflections(PacketConfig.SERVER_PACKET_COMMAND);
+            Set<Class<?>> classes = reflections.getTypesAnnotatedWith(ServerPacketCommand.class);
+            for (Class<?> clazz : classes) {
+                if (NroServerPacket.class.isAssignableFrom(clazz)) {
+                    ServerPacketCommand annotation = clazz.getAnnotation(ServerPacketCommand.class);
+                    int opcode = annotation.value();
+                    if (opcode == command) {
+
+                        if (commands.containsValue(opcode)) {
+                            throw new IllegalStateException("Duplicate opcode: " + opcode + " for class: " + clazz.getSimpleName());
+                        }
+
+                        //noinspection unchecked
+                        commands.put((Class<? extends NroServerPacket>) clazz, opcode);
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            throw new RuntimeException("Failed to load command: " + command, exception);
         }
     }
 

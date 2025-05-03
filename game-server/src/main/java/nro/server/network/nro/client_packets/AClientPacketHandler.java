@@ -8,6 +8,7 @@ import nro.server.network.nro.NroConnection.State;
 public @interface AClientPacketHandler {
 
     byte command();
+
     State[] validStates() default {State.CONNECTED};
 
 }

@@ -73,11 +73,13 @@ public abstract class NroServerPacket extends BaseServerPacket {
         con.encrypt();
     }
 
-    protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final Crypt crypt) {
+    protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final Crypt crypt) throws RuntimeException {
         final int bodySize = local.position();
         if (!crypt.isSendKey()) {
             buffer.put((byte) getCommand());
-            // Ghi body size theo special format
+
+            // write body size theo special format
+
             int size = bodySize;
             buffer.put((byte) (size % 256 - 128));
             size /= 256;
@@ -88,7 +90,9 @@ public abstract class NroServerPacket extends BaseServerPacket {
             buffer.put(local);
         } else {
             buffer.put(crypt.encryptByte((byte) getCommand()));
-            // Ghi body size theo special format (mã hóa từng byte)
+
+            // write body size theo special format (mã hóa từng byte)
+
             int size = bodySize;
             buffer.put(crypt.encryptByte((byte) (size % 256 - 128)));
             size /= 256;
@@ -99,7 +103,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
             int posBeforePayload = buffer.position();
             buffer.put(local);
 
-            // Mã hóa phần payload
             int limit = buffer.position();
             for (int i = posBeforePayload; i < limit; i++) {
                 buffer.put(i, crypt.encryptByte(buffer.get(i)));
