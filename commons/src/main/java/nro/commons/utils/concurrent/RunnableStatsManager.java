@@ -119,7 +119,7 @@ public final class RunnableStatsManager {
         getClassStat(clazz, false).getMethodStat(methodName, false).handleStats(runTime);
     }
 
-    public static enum SortBy {
+    public enum SortBy {
         AVG("average"),
         COUNT("count"),
         TOTAL("total"),
@@ -131,7 +131,7 @@ public final class RunnableStatsManager {
 
         private final String xmlAttributeName;
 
-        private SortBy(String xmlAttributeName) {
+        SortBy(String xmlAttributeName) {
             this.xmlAttributeName = xmlAttributeName;
         }
 
@@ -181,24 +181,16 @@ public final class RunnableStatsManager {
 
         @SuppressWarnings("rawtypes")
         private Comparable getComparableValueOf(MethodStat stat) {
-            switch (this) {
-                case AVG:
-                    return stat.total / stat.count;
-                case COUNT:
-                    return stat.count;
-                case TOTAL:
-                    return stat.total;
-                case NAME:
-                    return stat.className;
-                case METHOD:
-                    return stat.methodName;
-                case MIN:
-                    return stat.min;
-                case MAX:
-                    return stat.max;
-                default:
-                    throw new InternalError();
-            }
+            return switch (this) {
+                case AVG -> stat.total / stat.count;
+                case COUNT -> stat.count;
+                case TOTAL -> stat.total;
+                case NAME -> stat.className;
+                case METHOD -> stat.methodName;
+                case MIN -> stat.min;
+                case MAX -> stat.max;
+                default -> throw new InternalError();
+            };
         }
 
         private static final SortBy[] VALUES = SortBy.values();

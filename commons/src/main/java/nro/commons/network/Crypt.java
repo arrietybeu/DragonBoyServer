@@ -16,14 +16,13 @@ public class Crypt {
     private boolean isSendKey = false;
 
     /**
-     * Dãy key XOR do client gửi lên từ packet -27
+     * day key XOR do client gui len tu packet -27
      */
 //    public static final byte[] sessionKey = "beo".getBytes();
     public static final byte[] sessionKey = {0};
     private byte curReadIndex;
     private byte curWriteIndex;
 
-    private static final int MAX_CORRUPT_PACKETS_BEFORE_DISCONNECT = 4;
     private int corruptPackets = 0;
 
     // encrypt một byte
@@ -65,7 +64,6 @@ public class Crypt {
         this.curReadIndex = 0;
         this.curWriteIndex = 0;
     }
-
 
     public void disable() {
         this.isSendKey = false;

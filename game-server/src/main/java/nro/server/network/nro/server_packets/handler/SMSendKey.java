@@ -23,4 +23,5 @@ public class SMSendKey extends NroServerPacket {
         this.writeInt(NetworkConfig.PORT);
         this.writeByte(0);
     }
+
 }

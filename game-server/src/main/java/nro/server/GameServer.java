@@ -3,7 +3,9 @@ package nro.server;
 import lombok.Getter;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;
+import nro.commons.services.CronService;
 import nro.commons.utils.SystemInfo;
+import nro.commons.utils.concurrent.UncaughtExceptionHandler;
 import nro.server.configs.Config;
 import nro.server.configs.main.PacketConfig;
 import nro.server.configs.network.NetworkConfig;
@@ -14,6 +16,8 @@ import nro.server.services.CommandService;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.TimeZone;
 
 public class GameServer {
 
@@ -39,13 +43,23 @@ public class GameServer {
     }
 
     private static void initUtilityServicesAndConfig() {
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
+
         Config.load();
+
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
+
+        // Initialize thread pools
         ThreadPoolManager pool = ThreadPoolManager.getInstance();
+
         pool.getStats().forEach(line -> LOGGER.info(ANSI_GREEN + "{}" + ANSI_RESET, line));
         SystemInfo.logAll();
+
+        // Initialize scanner
         initCommandService();
+
+//        CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(GSConfig.TIME_ZONE_ID));
     }
 
     private static void initCommandService() {

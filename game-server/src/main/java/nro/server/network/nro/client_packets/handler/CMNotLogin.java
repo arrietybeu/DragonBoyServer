@@ -5,12 +5,14 @@ import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
+import nro.server.network.nro.server_packets.handler.CMGetImageSources2;
 
 import java.util.Set;
 
 @AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {NroConnection.State.CONNECTED})
 public class CMNotLogin extends NroClientPacket {
 
+    private byte command;
     private byte typeClient;
     private byte zoomLevel;
     private int screenWidth;
@@ -26,33 +28,47 @@ public class CMNotLogin extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-        byte command = readByte();
-        typeClient = readByte();
-        zoomLevel = readByte();
-        readBoolean();
-        screenWidth = readInt();
-        screenHeight = readInt();
-        isQwerty = readBoolean();
-        isTouch = readBoolean();
-        platformInfo = readUTF();
-
-        int size = readShort();
-        extraInfo = new byte[size];
-        for (int i = 0; i < size; i++) {
-            extraInfo[i] = readByte();
+        this.command = readByte();
+        switch (command) {
+            case 1 -> {
+            }
+            case 2 -> {
+                typeClient = readByte();
+                zoomLevel = readByte();
+                readBoolean();
+                screenWidth = readInt();
+                screenHeight = readInt();
+                isQwerty = readBoolean();
+                isTouch = readBoolean();
+                platformInfo = readUTF();
+                int size = readShort();
+                extraInfo = new byte[size];
+                for (int i = 0; i < size; i++) {
+                    extraInfo[i] = readByte();
+                }
+            }
         }
     }
 
     @Override
     protected void runImpl() {
-        final SessionInfo session = getConnection().getSessionInfo();
-        session.getClientDeviceInfo().setTypeClient(typeClient);
-        session.getClientDeviceInfo().setZoomLevel(zoomLevel);
-        session.getClientDeviceInfo().setScreenWidth(screenWidth);
-        session.getClientDeviceInfo().setScreenHeight(screenHeight);
-        session.getClientDeviceInfo().setQwerty(isQwerty);
-        session.getClientDeviceInfo().setTouch(isTouch);
-        session.getClientDeviceInfo().setPlatformInfo(platformInfo);
-        session.getClientDeviceInfo().setExtraInfo(extraInfo);
+        switch (command) {
+            case 1 -> {
+            }
+            case 2 -> {
+                final SessionInfo session = getConnection().getSessionInfo();
+                session.getClientDeviceInfo().setTypeClient(typeClient);
+                session.getClientDeviceInfo().setZoomLevel(zoomLevel);
+                session.getClientDeviceInfo().setScreenWidth(screenWidth);
+                session.getClientDeviceInfo().setScreenHeight(screenHeight);
+                session.getClientDeviceInfo().setQwerty(isQwerty);
+                session.getClientDeviceInfo().setTouch(isTouch);
+                session.getClientDeviceInfo().setPlatformInfo(platformInfo);
+                session.getClientDeviceInfo().setExtraInfo(extraInfo);
+                System.out.println("getClientDeviceInfo: " + session.getClientDeviceInfo());
+
+                sendPacket(new CMGetImageSources2());
+            }
+        }
     }
 }

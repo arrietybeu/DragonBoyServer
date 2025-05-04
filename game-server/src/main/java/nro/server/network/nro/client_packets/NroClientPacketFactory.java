@@ -36,7 +36,7 @@ public class NroClientPacketFactory {
         packetMap.put(command, new PacketInfo<>(packetClass, command, validStates));
     }
 
-    public static NroClientPacket createPacket(int command ,ByteBuffer data, NroConnection client) {
+    public static NroClientPacket createPacket(int command, ByteBuffer data, NroConnection client) {
 
         System.out.println("create packet for command: " + command);
 
