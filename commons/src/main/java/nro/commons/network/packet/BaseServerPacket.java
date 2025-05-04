@@ -3,11 +3,17 @@ package nro.commons.network.packet;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
 @Getter
 @Setter
 public abstract class BaseServerPacket extends BasePacket {
+
+    private static final int TEMP_BUFFER_SIZE = 8192 * 4;
+
+    protected static final ThreadLocal<ByteBuffer> TEMP_BUFFER =
+            ThreadLocal.withInitial(() -> ByteBuffer.allocate(TEMP_BUFFER_SIZE));
 
     public ByteBuffer byteBuffer;
 
@@ -122,6 +128,10 @@ public abstract class BaseServerPacket extends BasePacket {
      * @param data
      */
     protected final void writeByte(byte[] data) {
+//        System.out.println("Write byte array length = " + data.length + ", remaining = " + byteBuffer.remaining());
+        if (byteBuffer.remaining() < data.length) {
+            throw new BufferOverflowException();
+        }
         byteBuffer.put(data);
     }
 

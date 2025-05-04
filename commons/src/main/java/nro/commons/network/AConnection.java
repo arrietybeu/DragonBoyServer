@@ -79,10 +79,6 @@ public abstract class AConnection<T extends BaseServerPacket> {
      * Giống kiểu mutex.
      */
     private boolean locked = false;
-
-    @Getter
-    private final Crypt crypt = new Crypt();
-
     /**
      * Constructor
      *
@@ -251,5 +247,5 @@ public abstract class AConnection<T extends BaseServerPacket> {
      */
     protected abstract void onServerClose();
 
-
+    protected abstract Crypt getCrypt();
 }

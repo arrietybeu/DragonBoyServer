@@ -5,7 +5,7 @@ import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
-import nro.server.network.nro.server_packets.handler.CMGetImageSources2;
+import nro.server.network.nro.server_packets.handler.SMGetImageSources2;
 
 import java.util.Set;
 
@@ -67,7 +67,8 @@ public class CMNotLogin extends NroClientPacket {
                 session.getClientDeviceInfo().setExtraInfo(extraInfo);
                 System.out.println("getClientDeviceInfo: " + session.getClientDeviceInfo());
 
-                sendPacket(new CMGetImageSources2());
+                sendPacket(new SMGetImageSources2());
+//                sendPacket(new SMGetImageSource());
             }
         }
     }

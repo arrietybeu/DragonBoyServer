@@ -10,7 +10,7 @@ import nro.server.utils.FileNio;
 import java.util.Objects;
 
 @ServerPacketCommand(ConstsCmd.GET_IMAGE_SOURCE2)
-public class CMGetImageSources2 extends NroServerPacket {
+public class SMGetImageSources2 extends NroServerPacket {
 
     @Override
     protected void writeImpl(final NroConnection con) {

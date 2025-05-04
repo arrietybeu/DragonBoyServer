@@ -2,16 +2,16 @@ package nro.server.network.nro;
 
 import nro.commons.network.Crypt;
 import nro.commons.network.packet.BaseServerPacket;
+import nro.commons.utils.NetworkUtils;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
 public abstract class NroServerPacket extends BaseServerPacket {
 
-    public static final int MAX_CLIENT_SUPPORTED_PACKET_SIZE = 8192;
-
     // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
-    public static final int MAX_USABLE_PACKET_BODY_SIZE = MAX_CLIENT_SUPPORTED_PACKET_SIZE - 7;
+    public static final int MAX_USABLE_PACKET_BODY_SIZE = 65535;
 
     protected NroServerPacket() {
         super();
@@ -35,7 +35,8 @@ public abstract class NroServerPacket extends BaseServerPacket {
      *               - buffer này thường chính là con.writeBuffer (ByteBuffer đã được cấp phát sẵn khi accept kết nối).
      */
     public final void write(NroConnection con, ByteBuffer buffer) throws RuntimeException {
-        ByteBuffer temp = ByteBuffer.allocate(2048);
+        ByteBuffer temp = TEMP_BUFFER.get();
+        temp.clear();
         setByteBuff(temp);
         this.writeImpl(con);
 
@@ -47,10 +48,15 @@ public abstract class NroServerPacket extends BaseServerPacket {
             throw new IllegalArgumentException("Packet body too large: " + bodySize);
         }
 
-        System.out.println("write server packet for opcode: " + getCommand() + " | bodySize: " + bodySize);
+//        System.out.println("write server packet for opcode: " + getCommand() + " | bodySize: " + bodySize);
+
+        if (buffer.remaining() < bodySize + 3) {
+            throw new BufferOverflowException();
+        }
 
         if (isSpecialCommand(this.getCommand())) {
-            this.writeSpecial(temp, buffer, crypt);
+//            this.writeSpecial(temp, buffer, crypt);
+            this.writeSpecial(temp, buffer, crypt, bodySize);
         } else {
             if (!crypt.isSendKey()) {
                 buffer.put((byte) getCommand());
@@ -73,13 +79,10 @@ public abstract class NroServerPacket extends BaseServerPacket {
         con.encrypt();
     }
 
-    protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final Crypt crypt) throws RuntimeException {
-        final int bodySize = local.position();
+    protected final void writeSpecial(final ByteBuffer local, ByteBuffer buffer, final Crypt crypt, int bodySize) throws RuntimeException {
+//        final int bodySize = local.position();
         if (!crypt.isSendKey()) {
             buffer.put((byte) getCommand());
-
-            // write body size theo special format
-
             int size = bodySize;
             buffer.put((byte) (size % 256 - 128));
             size /= 256;
@@ -90,8 +93,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
             buffer.put(local);
         } else {
             buffer.put(crypt.encryptByte((byte) getCommand()));
-
-            // write body size theo special format (mã hóa từng byte)
 
             int size = bodySize;
             buffer.put(crypt.encryptByte((byte) (size % 256 - 128)));

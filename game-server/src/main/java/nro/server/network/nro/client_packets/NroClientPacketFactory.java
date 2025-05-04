@@ -37,9 +37,6 @@ public class NroClientPacketFactory {
     }
 
     public static NroClientPacket createPacket(int command, ByteBuffer data, NroConnection client) {
-
-        System.out.println("create packet for command: " + command);
-
         PacketInfo<? extends NroClientPacket> info = packetMap.get(command);
         if (info == null || !info.isValid(client.getState())) {
             log.warn("Unknown or invalid packet command: {} state: {}", command, client.getState());

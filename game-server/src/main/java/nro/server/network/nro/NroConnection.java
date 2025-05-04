@@ -3,6 +3,7 @@ package nro.server.network.nro;
 import lombok.Getter;
 import nro.commons.configs.CommonsConfig;
 import nro.commons.network.AConnection;
+import nro.commons.network.Crypt;
 import nro.commons.network.Dispatcher;
 import nro.commons.network.PacketProcessor;
 import nro.commons.utils.concurrent.ExecuteWrapper;
@@ -42,6 +43,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
     @Getter
     private SessionInfo sessionInfo = new SessionInfo();
 
+    @Getter
+    private final Crypt crypt = new Crypt();
+
     private final ConnectionAliveChecker connectionAliveChecker;
     private final Deque<NroServerPacket> sendMsgQueue = new ArrayDeque<>();
 
@@ -63,7 +67,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     public NroConnection(SocketChannel sc, Dispatcher d) throws IOException {
-        super(sc, d, NetworkConfig.READ_BUFFER_SIZE, NetworkConfig.WRITE_BUFFER_SIZE);
+        super(sc, d, NetworkConfig.READ_BUFFER_SIZE * 4, NetworkConfig.WRITE_BUFFER_SIZE * 4);
         this.state = State.CONNECTED;
         String ip = getIP();
         connectionAliveChecker = new ConnectionAliveChecker();
@@ -97,8 +101,6 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
         int bodySize = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
 
-//        System.out.println(" Read packet cmd: " + cmd + ", bodyLength=" + bodySize);
-
         if (rb.remaining() < bodySize) {
             log.warn("Not enough bytes for full payload. cmd={}, expect bodySize={}, available={}", cmd, bodySize, rb.remaining());
             rb.position(startPos);
@@ -128,6 +130,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
         if (p != null) {
             if (p.read()) {
                 packetProcessor.executePacket(p);
+            } else{
+                log.warn("Invalid packet cmd={} in state={}", cmd, state);
             }
         } else {
             log.warn("Unknown packet cmd={} in state={}", cmd, state);
@@ -156,8 +160,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
                     long duration = System.nanoTime() - begin;
                     RunnableStatsManager.handleStats(packet.getClass(), "runImpl()", duration);
                 }
-                if (buffer.limit() > NroServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE)
-                    log.warn("{} contains {} more bytes than the game client of {} can read", packet, buffer.limit() - NroServerPacket.MAX_CLIENT_SUPPORTED_PACKET_SIZE, null);
+                if (buffer.limit() > NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE)
+                    log.warn("{} contains {} more bytes than the game client of {} can read", packet, buffer.limit() - NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE, null);
             }
             return true;
         }
@@ -165,7 +169,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Override
     public void initialized() {
-        sendPacket(new SMSendKey());
+//        sendPacket(new SMSendKey());
     }
 
     public final void encrypt() {

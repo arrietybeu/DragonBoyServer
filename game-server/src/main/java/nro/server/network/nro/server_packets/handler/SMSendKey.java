@@ -1,6 +1,5 @@
 package nro.server.network.nro.server_packets.handler;
 
-import nro.commons.network.Crypt;
 import nro.server.configs.network.NetworkConfig;
 import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroConnection;
@@ -12,11 +11,18 @@ public class SMSendKey extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) {
-        final byte[] keys = Crypt.sessionKey;
-        this.writeByte(keys.length);
+        final byte[] rawKey = con.getCrypt().sessionKey;
 
-        for (byte b : keys) {
-            writeByte(b);
+        byte[] encodedKey = new byte[rawKey.length];
+        System.arraycopy(rawKey, 0, encodedKey, 0, rawKey.length);
+
+        for (int i = 0; i < encodedKey.length - 1; i++) {
+            encodedKey[i + 1] ^= encodedKey[i];
+        }
+
+        this.writeByte(encodedKey.length);
+        for (byte b : encodedKey) {
+            this.writeByte(b);
         }
 
         this.writeUTF(NetworkConfig.HOST);

@@ -47,7 +47,8 @@ public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePac
         try {
             readImpl();
             if (getRemainingBytes() > 0 && partiallyReadPackets.add(getCommand())) {
-                log.warn("{} was not fully read! Last {} bytes were not read from buffer:\n{}", this, getRemainingBytes(), NetworkUtils.toHex(buf, startPos, buf.limit()));
+                log.warn("{} chưa đọc hết {} bytes, còn bytes:\n{}", this, getRemainingBytes(), NetworkUtils.toHex(buf, startPos, buf.limit()));
+                // skip remaining bytes
             }
             return true;
         } catch (Exception ex) {
@@ -56,6 +57,7 @@ public abstract class BaseClientPacket<T extends AConnection<?>> extends BasePac
                 msg += " (last " + getRemainingBytes() + " bytes were not read)";
             msg += ":\n" + NetworkUtils.toHex(buf, startPos, buf.limit());
             log.error(msg, ex);
+
             return false;
         }
     }

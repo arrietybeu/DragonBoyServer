@@ -9,6 +9,7 @@ import nro.commons.utils.concurrent.UncaughtExceptionHandler;
 import nro.server.configs.Config;
 import nro.server.configs.main.PacketConfig;
 import nro.server.configs.network.NetworkConfig;
+import nro.server.data_holders.DataManager;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
@@ -30,6 +31,9 @@ public class GameServer {
 
     public static void main(String[] args) {
         initUtilityServicesAndConfig();
+
+        DataManager.getInstance();
+
         System.gc();
         nioServer = initNioServer();
         Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());

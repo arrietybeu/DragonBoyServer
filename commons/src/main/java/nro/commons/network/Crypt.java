@@ -18,8 +18,8 @@ public class Crypt {
     /**
      * day key XOR do client gui len tu packet -27
      */
-//    public static final byte[] sessionKey = "beo".getBytes();
-    public static final byte[] sessionKey = {0};
+    public byte[] sessionKey = {0};
+    //    public static final byte[] sessionKey = {0};
     private byte curReadIndex;
     private byte curWriteIndex;
 
@@ -36,23 +36,35 @@ public class Crypt {
     }
 
     public byte decryptByte(byte b) {
-        byte num = curReadIndex;
-
-        curReadIndex = (byte) (num + 1);
-
-        byte result = (byte) ((sessionKey[num] & 0xFF) ^ (b & 0xFF));
-
+        byte result = (byte) ((sessionKey[curReadIndex] & 0xFF) ^ (b & 0xFF));
+        curReadIndex++;
         if (curReadIndex >= sessionKey.length) {
-            curReadIndex %= (byte) sessionKey.length;
+            curReadIndex = 0;
         }
-//        System.out.println("Decrypt byte, curReadIndex=" + curReadIndex);
         return result;
     }
 
+
+//    public byte decryptByte(byte b) {
+//        byte num = curReadIndex;
+//
+//        curReadIndex = (byte) (num + 1);
+//
+//        byte result = (byte) ((sessionKey[num] & 0xFF) ^ (b & 0xFF));
+//
+//        if (curReadIndex >= sessionKey.length) {
+//            curReadIndex %= (byte) sessionKey.length;
+//        }
+
+    /// /        System.out.println("Decrypt byte, curReadIndex=" + curReadIndex);
+//        System.out.printf("Decrypt byte: 0x%02X -> 0x%02X, index=%d\n", b, result, num);
+//        return result;
+//    }
     public final void encrypt() {
         if (!isSendKey) {
             isSendKey = true;
         }
+        this.resetKeyIndex();
         // TODO packet encrypt
     }
 

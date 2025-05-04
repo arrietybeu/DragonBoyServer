@@ -11,11 +11,11 @@ import java.util.Set;
 
 public abstract class NroClientPacket extends BaseClientPacket<NroConnection> {
 
-    private static final Logger log = LoggerFactory.getLogger(NroClientPacket.class);
+    protected static final Logger log = LoggerFactory.getLogger(NroClientPacket.class);
 
     private final Set<State> validStates;
 
-    protected NroClientPacket(int command, Set<State> validStates) {
+    public NroClientPacket(int command, Set<State> validStates) {
         super(command);
         this.validStates = validStates;
     }
