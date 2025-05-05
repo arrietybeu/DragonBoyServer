@@ -21,6 +21,9 @@ public class NetworkConfig {
     @Property(key = "game-server.network.port", defaultValue = "14445")
     public static int PORT;
 
+    @Property(key = "game-server.network.name-host-port", defaultValue = "Localhost:127.0.0.1:14445")
+    public static String HOST_PORT;
+
     @Property(key = "game-server.network.packet.processor.threads.min", defaultValue = "4")
     public static int PACKET_PROCESSOR_MIN_THREADS;
 

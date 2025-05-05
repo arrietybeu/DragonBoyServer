@@ -5,6 +5,7 @@ import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.handler.SMGetImageSource;
+import nro.server.network.nro.server_packets.handler.SMNotLogin;
 
 import java.util.Set;
 
@@ -18,17 +19,16 @@ public class CMGetImageSource2 extends NroClientPacket {
     @Override
     protected void readImpl() {
         var size = readShort();
-
         for (int i = 0; i < size; i++) {
             var imageSource = readUTF();
-            System.out.println("image source: " + imageSource + " size: " + size);
+            System.out.println("image source: " + imageSource + " size: " + size + " connect: " + getConnection());
         }
     }
 
     @Override
     protected void runImpl() {
-        System.out.println("hihi server bat duoc goi -111 roi nha");
-        sendPacket(new SMGetImageSource());
+        sendPacket(new SMGetImageSource(0));
+        sendPacket(new SMNotLogin());
     }
 
 }

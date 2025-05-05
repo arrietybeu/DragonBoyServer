@@ -13,7 +13,6 @@ import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
-import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +66,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     public NroConnection(SocketChannel sc, Dispatcher d) throws IOException {
-        super(sc, d, NetworkConfig.READ_BUFFER_SIZE * 4, NetworkConfig.WRITE_BUFFER_SIZE * 4);
+        super(sc, d, NetworkConfig.READ_BUFFER_SIZE, NetworkConfig.WRITE_BUFFER_SIZE);
         this.state = State.CONNECTED;
         String ip = getIP();
         connectionAliveChecker = new ConnectionAliveChecker();
@@ -130,7 +129,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
         if (p != null) {
             if (p.read()) {
                 packetProcessor.executePacket(p);
-            } else{
+            } else {
                 log.warn("Invalid packet cmd={} in state={}", cmd, state);
             }
         } else {

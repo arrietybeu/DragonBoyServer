@@ -1,6 +1,5 @@
 package nro.server.data_holders.data;
 
-import lombok.Getter;
 import nro.server.data_holders.IManager;
 
 import java.nio.file.Files;
@@ -11,9 +10,6 @@ import java.util.stream.Stream;
 public final class VersionImageData implements IManager {
 
     private int[] versionImage;
-
-    @Getter
-    private static final VersionImageData instance = new VersionImageData();
 
     @Override
     public void init() throws IllegalArgumentException {
@@ -52,4 +48,13 @@ public final class VersionImageData implements IManager {
         }
         return versionImage[zoomLevel - 1];
     }
+
+    private static final class SingletonHolder {
+        private static final VersionImageData INSTANCE = new VersionImageData();
+    }
+
+    public static VersionImageData getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
 }

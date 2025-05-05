@@ -1,7 +1,6 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
-import nro.commons.network.Crypt;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;

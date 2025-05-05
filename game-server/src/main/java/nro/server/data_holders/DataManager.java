@@ -1,5 +1,6 @@
 package nro.server.data_holders;
 
+import nro.server.data_holders.data.TileImageData;
 import nro.server.data_holders.data.VersionImageData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,10 @@ public final class DataManager {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    private static final List<IManager> MANAGERS = List.of(VersionImageData.getInstance());
+    private static final List<IManager> MANAGERS = List.of(
+            VersionImageData.getInstance(),
+            TileImageData.getInstance()
+    );
 
     private DataManager() {
         long start = System.currentTimeMillis();

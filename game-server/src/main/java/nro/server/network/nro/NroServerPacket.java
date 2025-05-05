@@ -2,7 +2,6 @@ package nro.server.network.nro;
 
 import nro.commons.network.Crypt;
 import nro.commons.network.packet.BaseServerPacket;
-import nro.commons.utils.NetworkUtils;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 
 import java.nio.BufferOverflowException;
@@ -13,6 +12,10 @@ public abstract class NroServerPacket extends BaseServerPacket {
     // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
     public static final int MAX_USABLE_PACKET_BODY_SIZE = 65535;
 
+    protected static boolean isSpecialCommand(int cmd) {
+        return cmd == -32 || cmd == -66 || cmd == 11 || cmd == -67 || cmd == -74 || cmd == -87 || cmd == 66 || cmd == 12;
+    }
+
     protected NroServerPacket() {
         super();
         setCommand(ServerPacketsCommand.getOpcode(getClass()));
@@ -22,14 +25,13 @@ public abstract class NroServerPacket extends BaseServerPacket {
         super(command);
     }
 
-    protected abstract void writeImpl(NroConnection con) ;
+    protected abstract void writeImpl(NroConnection con) throws RuntimeException;
 
     /**
      * Ghi một packet vào ByteBuffer để chuẩn bị gửi cho client.
      *
      * @param con    - NroConnection tương ứng với client mà mình đang gửi packet tới.
      *               - Task: chứa session, crypt key, trạng thái send/receive, buffer đọc/ghi...
-     *
      * @param buffer - ByteBuffer chính để chứa dữ liệu đã build xong, chuẩn bị write ra socket.
      *               - Task: buffer này sẽ được SocketChannel.write(buffer) ngay sau khi ghi xong.
      *               - buffer này thường chính là con.writeBuffer (ByteBuffer đã được cấp phát sẵn khi accept kết nối).
@@ -44,7 +46,8 @@ public abstract class NroServerPacket extends BaseServerPacket {
         final int bodySize = temp.remaining();
         final Crypt crypt = con.getCrypt();
 
-        if (bodySize > NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE) {
+        if (!isSpecialCommand(this.getCommand()) &&
+                bodySize > NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE) {
             throw new IllegalArgumentException("Packet body too large: " + bodySize);
         }
 
@@ -55,7 +58,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
         }
 
         if (isSpecialCommand(this.getCommand())) {
-//            this.writeSpecial(temp, buffer, crypt);
             this.writeSpecial(temp, buffer, crypt, bodySize);
         } else {
             if (!crypt.isSendKey()) {
@@ -110,10 +112,5 @@ public abstract class NroServerPacket extends BaseServerPacket {
             }
         }
     }
-
-    protected static boolean isSpecialCommand(int cmd) {
-        return cmd == -32 || cmd == -66 || cmd == 11 || cmd == -67 || cmd == -74 || cmd == -87 || cmd == 66 || cmd == 12;
-    }
-
 
 }

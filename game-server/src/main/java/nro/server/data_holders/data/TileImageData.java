@@ -1,0 +1,58 @@
+package nro.server.data_holders.data;
+
+import nro.server.data_holders.IManager;
+import nro.server.utils.FileNio;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public final class TileImageData implements IManager {
+
+    private final Map<Integer, List<File>> cachedResources = new HashMap<>();
+
+    @Override
+    public void init() throws IllegalArgumentException {
+        cachedResources.clear();
+        for (int level = 1; level <= 4; level++) {
+            String path = "resources/x" + level + "/res";
+            File root = new File(path);
+
+            if (!root.exists() || !root.isDirectory()) {
+                throw new IllegalArgumentException("Invalid resource path: " + path);
+            }
+
+            ArrayList<File> resources = new ArrayList<>();
+            FileNio.addPath(resources, root);
+            cachedResources.put(level, resources);
+        }
+    }
+
+    @Override
+    public void reload() throws IllegalArgumentException {
+        clear();
+        init();
+    }
+
+    @Override
+    public void clear() {
+        cachedResources.clear();
+    }
+
+    private static final class SingletonHolder {
+        private static final TileImageData INSTANCE = new TileImageData();
+    }
+
+    public static TileImageData getInstance() {
+        return TileImageData.SingletonHolder.INSTANCE;
+    }
+
+    public List<File> getTileImageByZoomLevel(int zoomLevel) {
+        if (zoomLevel < 1 || zoomLevel > 4) {
+            throw new IllegalArgumentException("Zoom level must be between 1 and 4");
+        }
+        return cachedResources.get(zoomLevel);
+    }
+}

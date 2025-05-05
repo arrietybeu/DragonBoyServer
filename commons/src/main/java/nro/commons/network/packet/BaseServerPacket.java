@@ -3,14 +3,13 @@ package nro.commons.network.packet;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
 @Getter
 @Setter
 public abstract class BaseServerPacket extends BasePacket {
 
-    private static final int TEMP_BUFFER_SIZE = 8192 * 4;
+    private static final int TEMP_BUFFER_SIZE = 4_175_000;
 
     protected static final ThreadLocal<ByteBuffer> TEMP_BUFFER =
             ThreadLocal.withInitial(() -> ByteBuffer.allocate(TEMP_BUFFER_SIZE));
@@ -55,7 +54,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeByte(int value) {
+    protected final void writeBytes(int value) {
         byteBuffer.put((byte) value);
     }
 
@@ -64,7 +63,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeByte(byte value) {
+    protected final void writeBytes(byte value) {
         byteBuffer.put(value);
     }
 
@@ -119,7 +118,7 @@ public abstract class BaseServerPacket extends BasePacket {
      * @param value
      */
     protected final void writeBoolean(boolean value) {
-        this.writeByte((value ? 1 : 0));
+        this.writeBytes((value ? 1 : 0));
     }
 
     /**
@@ -127,12 +126,28 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param data
      */
-    protected final void writeByte(byte[] data) {
-//        System.out.println("Write byte array length = " + data.length + ", remaining = " + byteBuffer.remaining());
-        if (byteBuffer.remaining() < data.length) {
-            throw new BufferOverflowException();
-        }
+    protected final void writeBytes(byte[] data, String... path) {
+//        System.out.println("Write byte array length = " + data.length + ", remaining = " + byteBuffer.remaining() +
+//                ", path = " + String.join(",", path));
+        ensureCapacity(data.length);
         byteBuffer.put(data);
     }
+
+    protected void ensureCapacity(int sizeToWrite) {
+        if (byteBuffer == null) {
+            throw new IllegalStateException("byteBuffer chưa được set! Gọi setByteBuff(ByteBuffer) trước khi ghi.");
+        }
+
+        if (byteBuffer.remaining() < sizeToWrite) {
+            int newSize = byteBuffer.capacity() + sizeToWrite + 1024;
+            ByteBuffer newBuffer = ByteBuffer.allocate(newSize);
+            byteBuffer.flip();
+            newBuffer.put(byteBuffer);
+            byteBuffer = newBuffer;
+            TEMP_BUFFER.set(newBuffer);
+
+        }
+    }
+
 
 }

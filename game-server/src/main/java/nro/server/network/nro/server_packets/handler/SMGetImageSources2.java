@@ -20,7 +20,7 @@ public class SMGetImageSources2 extends NroServerPacket {
 
         String path = "resources/x" + zoomLevel + "/image_source/image_source";
 
-        this.writeByte(Objects.requireNonNull(FileNio.loadDataFile(path)));
+        this.writeBytes(Objects.requireNonNull(FileNio.loadDataFile(path)));
     }
 
 }
