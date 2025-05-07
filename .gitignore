@@ -24,6 +24,7 @@ gradle/wrapper/gradle-wrapper.properties
 gradlew
 gradlew.bat
 
+
 # IntelliJ IDEA
 .idea/
 *.iml
@@ -50,6 +51,7 @@ resources/
 *.old
 
 # Git
+.gitattributes
 *.orig
 *.rej
 *.sublime-workspace
