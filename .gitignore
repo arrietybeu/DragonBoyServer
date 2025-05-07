@@ -1,12 +1,58 @@
-# Ignore Gradle project-specific cache directory
-.idea
-.gradle
+# ======================
+# Java + Gradle Project
+# ======================
 
-# Ignore Gradle build output directory
+# Compiled class files
+*.class
 
+# Log files
+*.log
+logs/
+log/
+
+# Build outputs
 build/
-/bin/
+bin/
+out/
 
+# Gradle
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
 
-resources
-logs
+# Wrapper logs
+gradle/wrapper/gradle-wrapper.properties
+gradlew
+gradlew.bat
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code
+.vscode/
+
+# MacOS
+.DS_Store
+
+# Generated resources (if applicable)
+resources/
+
+# Environment files
+.env
+.env.*
+
+# Others (optional)
+*.swp
+*.tmp
+*.bak
+*.old
+
+# Git
+*.orig
+*.rej
+*.sublime-workspace
+
+# Docker
+*.pid
