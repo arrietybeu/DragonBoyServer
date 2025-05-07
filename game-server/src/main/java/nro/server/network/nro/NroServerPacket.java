@@ -13,6 +13,15 @@ public abstract class NroServerPacket extends BaseServerPacket {
     // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
     public static final int MAX_USABLE_PACKET_BODY_SIZE = NetworkConfig.WRITE_BUFFER_SIZE;
 
+    /**
+     * Checks if the given command is a special command.
+     *
+     * <p>Special commands are commands that are handled by the server differently than regular commands.
+     * These commands are used for things like encryption, compression, and internal server operations.</p>
+     *
+     * @param cmd - The command to check.
+     * @return true if the command is special, false otherwise.
+     */
     protected static boolean isSpecialCommand(int cmd) {
         return cmd == -32 || cmd == -66 || cmd == 11 || cmd == -67 || cmd == -74 || cmd == -87 || cmd == 66 || cmd == 12;
     }
@@ -38,6 +47,7 @@ public abstract class NroServerPacket extends BaseServerPacket {
      *               - buffer này thường chính là con.writeBuffer (ByteBuffer đã được cấp phát sẵn khi accept kết nối).
      */
     public final void write(NroConnection con, ByteBuffer buffer) throws RuntimeException {
+
         ByteBuffer temp = TEMP_BUFFER.get();
         temp.clear();
         setByteBuff(temp);

@@ -7,3 +7,5 @@ rootProject.name = 'ChuBeoRong'
 include 'commons', 'game-server'
 include 'login-server'
 
+
+include 'log-server'

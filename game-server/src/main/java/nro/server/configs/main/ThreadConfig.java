@@ -16,5 +16,4 @@ public class ThreadConfig {
     @Property(key = "game-server.thread.use-priority", defaultValue = "false")
     public static boolean USE_PRIORITIES;
 
-
 }
