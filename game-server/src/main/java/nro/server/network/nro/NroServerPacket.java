@@ -2,6 +2,7 @@ package nro.server.network.nro;
 
 import nro.commons.network.Crypt;
 import nro.commons.network.packet.BaseServerPacket;
+import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 
 import java.nio.BufferOverflowException;
@@ -10,7 +11,7 @@ import java.nio.ByteBuffer;
 public abstract class NroServerPacket extends BaseServerPacket {
 
     // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
-    public static final int MAX_USABLE_PACKET_BODY_SIZE = 65535;
+    public static final int MAX_USABLE_PACKET_BODY_SIZE = NetworkConfig.WRITE_BUFFER_SIZE;
 
     protected static boolean isSpecialCommand(int cmd) {
         return cmd == -32 || cmd == -66 || cmd == 11 || cmd == -67 || cmd == -74 || cmd == -87 || cmd == 66 || cmd == 12;

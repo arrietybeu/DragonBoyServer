@@ -35,7 +35,9 @@ public class GameServer {
         DataManager.getInstance();
 
         System.gc();
+
         nioServer = initNioServer();
+
         Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
     }
 
@@ -48,21 +50,15 @@ public class GameServer {
 
     private static void initUtilityServicesAndConfig() {
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
-
         Config.load();
-
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
-
         // Initialize thread pools
         ThreadPoolManager pool = ThreadPoolManager.getInstance();
-
         pool.getStats().forEach(line -> LOGGER.info(ANSI_GREEN + "{}" + ANSI_RESET, line));
         SystemInfo.logAll();
-
         // Initialize scanner
         initCommandService();
-
 //        CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(GSConfig.TIME_ZONE_ID));
     }
 

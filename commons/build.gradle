@@ -7,7 +7,6 @@ repositories {
 }
 
 dependencies {
-    // lib maven
     implementation("org.reflections:reflections:0.10.2")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.json:json:20250107")
@@ -22,6 +21,13 @@ dependencies {
 //    implementation("com.lmax:disruptor:4.0.0")
 
     // nro.utils.test
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+}
+
+test {
+    useJUnitPlatform()
 }

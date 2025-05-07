@@ -44,22 +44,6 @@ public class Crypt {
         return result;
     }
 
-
-//    public byte decryptByte(byte b) {
-//        byte num = curReadIndex;
-//
-//        curReadIndex = (byte) (num + 1);
-//
-//        byte result = (byte) ((sessionKey[num] & 0xFF) ^ (b & 0xFF));
-//
-//        if (curReadIndex >= sessionKey.length) {
-//            curReadIndex %= (byte) sessionKey.length;
-//        }
-
-    /// /        System.out.println("Decrypt byte, curReadIndex=" + curReadIndex);
-//        System.out.printf("Decrypt byte: 0x%02X -> 0x%02X, index=%d\n", b, result, num);
-//        return result;
-//    }
     public final void encrypt() {
         if (!isSendKey) {
             isSendKey = true;

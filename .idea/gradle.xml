@@ -12,7 +12,6 @@
             <option value="$PROJECT_DIR$/commons" />
             <option value="$PROJECT_DIR$/game-server" />
             <option value="$PROJECT_DIR$/login-server" />
-            <option value="$PROJECT_DIR$/nro-game-server" />
           </set>
         </option>
       </GradleProjectSettings>
