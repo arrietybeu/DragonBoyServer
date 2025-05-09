@@ -44,7 +44,7 @@ public final class VersionImageData implements IManager {
 
     public int getVersionImage(int zoomLevel) {
         if (zoomLevel < 1 || zoomLevel > 4) {
-            throw new RuntimeException("Zoom level must be between 1 and 4");
+            throw new IllegalArgumentException("Zoom level must be between 1 and 4");
         }
         return versionImage[zoomLevel - 1];
     }

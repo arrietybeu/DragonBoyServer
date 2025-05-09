@@ -13,9 +13,7 @@ import java.io.File;
 public class SMGetImageSource extends NroServerPacket {
 
     private final byte type;
-
     private short nBig;
-
     private File file;
 
     public SMGetImageSource(int type) {
