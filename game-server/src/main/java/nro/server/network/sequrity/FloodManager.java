@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * @Author Arriety
+ */
 public final class FloodManager {
 
     public record FloodFilter(int warnLimit, int rejectLimit, int tickLimit) {

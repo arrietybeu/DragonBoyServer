@@ -14,9 +14,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * @author Arriety
- */
 public class PacketProcessor<T extends AConnection<?>> {
 
     private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class.getName());

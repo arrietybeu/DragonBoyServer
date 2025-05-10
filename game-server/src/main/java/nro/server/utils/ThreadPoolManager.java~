@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-/**
- * @Author Arriety
- */
 public final class ThreadPoolManager implements Executor {
 
     private static final Logger log = LoggerFactory.getLogger(ThreadPoolManager.class);

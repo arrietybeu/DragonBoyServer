@@ -60,7 +60,7 @@ public class GameServer {
 
         // Initialize thread pools
         ThreadPoolManager pool = ThreadPoolManager.getInstance();
-        pool.getStats().forEach(LOGGER::info);
+        pool.getStats().forEach(line -> LOGGER.info(line));
         SystemInfo.logAll();
 
         // Initialize scanner
