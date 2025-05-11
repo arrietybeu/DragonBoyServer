@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class TileImageData implements IManager {
+public final class TileImageData implements IManager<> {
 
     private final Map<Integer, List<File>> cachedResources = new HashMap<>();
 

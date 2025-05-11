@@ -4,6 +4,7 @@ import nro.commons.utils.ExitCode;
 import nro.commons.utils.SystemInfo;
 import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
+import nro.server.data_holders.data.DartData;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +21,15 @@ public class CommandService {
             while (true) {
                 String _line = sc.nextLine();
                 switch (_line) {
-                    case "thread" ->
-                            ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
+                    case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
                     case "session" ->
                             LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
                     case "system_info" -> SystemInfo.logAll();
                     case "gc" -> System.gc();
                     case "dump_packet" -> RunnableStatsManager.dumpClassStats();
                     case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
+                    case "dart" ->
+                            DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
                 }
             }
         } catch (Exception exception) {

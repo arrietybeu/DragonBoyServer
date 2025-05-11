@@ -13,6 +13,7 @@ import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
+import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +44,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
     @Getter
     private volatile State state;
     @Getter
-    private SessionInfo sessionInfo = new SessionInfo();
+    private final SessionInfo sessionInfo;
     @Getter
-    private final Crypt crypt = new Crypt();
+    private final Crypt crypt;
 
     private volatile long lastClientMessageTime;
 
@@ -72,6 +73,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
         this.state = State.CONNECTED;
         String ip = getIP();
         connectionAliveChecker = new ConnectionAliveChecker();
+        this.sessionInfo = new SessionInfo();
+        this.crypt = new Crypt();
         log.debug("Connection established: {}", ip);
     }
 
@@ -170,7 +173,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     @Override
     public void initialized() {
-//        sendPacket(new SMSendKey());
+        sendPacket(new SMSendKey());
     }
 
     public final void encrypt() {

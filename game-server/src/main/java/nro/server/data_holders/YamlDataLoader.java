@@ -1,0 +1,25 @@
+package nro.server.data_holders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.List;
+
+/**
+ * @author Arriety
+ */
+public class YamlDataLoader {
+
+    public static <T> List<T> loadList(String filePath, Class<T> elementClass) {
+        try (InputStream input = new FileInputStream(filePath)) {
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            return mapper.readValue(input,
+                    mapper.getTypeFactory().constructCollectionType(List.class, elementClass));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load YAML list from " + filePath, e);
+        }
+    }
+
+}

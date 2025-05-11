@@ -4,7 +4,6 @@ import lombok.Getter;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;
 import nro.commons.services.CronService;
-import nro.commons.utils.SystemInfo;
 import nro.commons.utils.concurrent.UncaughtExceptionHandler;
 import nro.server.configs.Config;
 import nro.server.configs.main.ConfigServer;
@@ -20,6 +19,7 @@ import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.management.ManagementFactory;
 import java.util.TimeZone;
 
 /**
@@ -29,6 +29,8 @@ import java.util.TimeZone;
 public class GameServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameServer.class);
+
+    public static final int START_TIME_SECONDS = (int) (ManagementFactory.getRuntimeMXBean().getStartTime() / 1000);
 
     @Getter
     private static NioServer nioServer;
@@ -58,14 +60,14 @@ public class GameServer {
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
 
-        // Initialize thread pools
-        ThreadPoolManager pool = ThreadPoolManager.getInstance();
-        pool.getStats().forEach(LOGGER::info);
-        SystemInfo.logAll();
+        //noinspection ResultOfMethodCallIgnored
+        ThreadPoolManager.getInstance();
 
         // Initialize scanner
         initCommandService();
         CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
+
+        LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);
     }
 
     private static void initCommandService() {

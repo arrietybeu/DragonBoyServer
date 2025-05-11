@@ -4,7 +4,7 @@ public interface IManager {
 
     void init() throws Throwable;
 
-    void reload() throws Throwable;
+    void reload() throws Exception;
 
-    void clear() throws Throwable;
+    void clear() throws Exception;
 }

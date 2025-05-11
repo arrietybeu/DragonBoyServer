@@ -26,6 +26,14 @@ public final class VersionImageData implements IManager {
         versionImage = null;
     }
 
+    public void size() {
+
+    }
+
+    public int[] get() {
+        return versionImage;
+    }
+
     private void setVersionImage() throws IllegalArgumentException {
         versionImage = new int[4];
         for (int zoomLevel = 1; zoomLevel <= 4; zoomLevel++) {
