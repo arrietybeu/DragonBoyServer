@@ -12,7 +12,7 @@ public final class DartData implements IManager {
 
     @Override
     public void init() throws RuntimeException {
-        this.darts = YamlDataLoader.loadList("resources/data/update_data/NR_arrow.yml", DartTemplate.class);
+        this.darts = YamlDataLoader.loadList("resources/data/update_data/NR_dart.yml", DartTemplate.class);
     }
 
     @Override

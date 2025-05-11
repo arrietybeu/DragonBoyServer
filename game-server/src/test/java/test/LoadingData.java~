@@ -1,0 +1,34 @@
+package test;
+
+import nro.server.data_holders.YamlDataLoader;
+import nro.server.model.template.data.EffectCharPaintTemplate;
+
+public class LoadingData {
+
+    /**
+     * input:
+     * - idEf: 1
+     *   arrEfInfo:
+     *     - dx: -1
+     *       dy: -25
+     *       idImg: 35
+     *     - dx: 0
+     *       dy: -28
+     *       idImg: 36
+     *     - dx: 1
+     *       dy: -31
+     *       idImg: 37
+     *     - dx: 0
+     *       dy: -31
+     *       idImg: 38
+     * output:
+     * EffectCharPaintTemplate(idEf=1, arrEfInfo=[EffectInfoPaint[dx=-1, dy=-25, idImg=35],
+     * EffectInfoPaint[dx=0, dy=-28, idImg=36], EffectInfoPaint[dx=1, dy=-31, idImg=37],
+     * EffectInfoPaint[dx=0, dy=-31, idImg=38]])
+     */
+
+    public static void main(String[] args) throws Exception {
+        var list = YamlDataLoader.loadList("resources/data/update_data/NR_effect.yml", EffectCharPaintTemplate.class);
+        list.forEach(System.out::println);
+    }
+}

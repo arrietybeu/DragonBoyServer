@@ -1,8 +1,6 @@
 package nro.server.data_holders;
 
-import nro.server.data_holders.data.DartData;
-import nro.server.data_holders.data.TileImageData;
-import nro.server.data_holders.data.VersionImageData;
+import nro.server.data_holders.data.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +13,10 @@ public final class DataManager {
     private static final List<IManager> MANAGERS = List.of(
             VersionImageData.getInstance(),
             TileImageData.getInstance(),
-            DartData.getInstance()
+            DartData.getInstance(),
+            ArrowPaintData.getInstance(),
+            EffectCharPaintData.getInstance(),
+            PartData.getInstance()
     );
 
     private DataManager() {

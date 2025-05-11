@@ -38,7 +38,6 @@ public class GameServer {
     public static void main(String[] args) {
         initUtilityServicesAndConfig();
 
-        //noinspection ResultOfMethodCallIgnored
         DataManager.getInstance();
 
         System.gc();

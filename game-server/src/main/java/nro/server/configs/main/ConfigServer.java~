@@ -15,4 +15,5 @@ public class ConfigServer {
     @Property(key = "game-server.timezone")
     public static ZoneId TIME_ZONE_ID;
 
+
 }
