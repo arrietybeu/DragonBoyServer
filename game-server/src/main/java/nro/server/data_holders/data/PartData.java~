@@ -9,7 +9,7 @@ import java.util.List;
 
 public final class PartData implements IManager {
 
-    public List<PartTemplate> templates = new ArrayList<>();
+    private List<PartTemplate> templates = new ArrayList<>();
 
     @Override
     public void init() throws Throwable {

@@ -16,7 +16,9 @@ public final class DataManager {
             DartData.getInstance(),
             ArrowPaintData.getInstance(),
             EffectCharPaintData.getInstance(),
-            PartData.getInstance()
+            PartData.getInstance(),
+            SkillPaintData.getInstance(),
+            ImageData.getInstance()
     );
 
     private DataManager() {

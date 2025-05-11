@@ -24,6 +24,15 @@ public class YamlDataLoader {
         }
     }
 
+    public static <T> T loadArray(String filePath, Class<T> arrayType) {
+        try (InputStream input = new FileInputStream(filePath)) {
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            return mapper.readValue(input, arrayType);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load YAML array from " + filePath, e);
+        }
+    }
+
     public static <K, V> Map<K, V> loadMap(String filePath, Class<K> keyClass, Class<V> valueClass) {
         try (InputStream input = new FileInputStream(filePath)) {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());

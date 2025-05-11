@@ -32,8 +32,9 @@ public class CommandService {
                     case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
                     case "dart" ->
                             DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
-                    case "part" ->
-                            PartData.getInstance().templates.forEach(partTemplate -> LOGGER.info(partTemplate.toString()));
+                    case "part" ->{
+                        PartData.getInstance().templates.forEach(partTemplate -> LOGGER.info(partTemplate.toString()));
+                    }
                 }
             }
         } catch (Exception exception) {
