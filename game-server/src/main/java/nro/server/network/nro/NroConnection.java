@@ -1,6 +1,7 @@
 package nro.server.network.nro;
 
 import lombok.Getter;
+import lombok.Setter;
 import nro.commons.configs.CommonsConfig;
 import nro.commons.network.AConnection;
 import nro.commons.network.Crypt;
@@ -11,7 +12,8 @@ import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
-import nro.server.model.session.SessionInfo;
+import nro.server.model.entity.player.Player;
+import nro.server.model.template.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;
@@ -25,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Arriety Bếu
@@ -41,12 +44,15 @@ public class NroConnection extends AConnection<NroServerPacket> {
             new ExecuteWrapper(ThreadConfig.MAXIMUM_RUNTIME_IN_MILLISEC_WITHOUT_WARNING)
     );
 
+    @Setter
     @Getter
     private volatile State state;
     @Getter
     private final SessionInfo sessionInfo;
     @Getter
     private final Crypt crypt;
+
+    private final AtomicReference<Player> activePlayer = new AtomicReference<>();
 
     private volatile long lastClientMessageTime;
 
@@ -178,6 +184,24 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     public final void encrypt() {
         this.getCrypt().encrypt();
+    }
+
+    /**
+     * Sets Active player to new value. Update connection state to correct value.
+     *
+     * @param player
+     * @return True if active player was set to new value.
+     */
+    public boolean setActivePlayer(Player player) {
+        if (player == null) {
+            activePlayer.set(null);
+            setState(State.AUTHED);
+        } else if (activePlayer.compareAndSet(null, player)) {
+            setState(State.IN_GAME);
+        } else {
+            return false;
+        }
+        return true;
     }
 
     @Override

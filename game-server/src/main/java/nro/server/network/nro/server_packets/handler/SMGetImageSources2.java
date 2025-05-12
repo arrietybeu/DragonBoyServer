@@ -1,7 +1,7 @@
 package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
-import nro.server.model.session.ClientDeviceInfo;
+import nro.server.model.template.session.ClientDeviceInfo;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;

@@ -18,9 +18,9 @@ public class CommandService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandService.class);
 
     public static void ActiveCommandLine() {
-        try {
-            Scanner sc = new Scanner(System.in);
-            while (true) {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            try {
                 String _line = sc.nextLine();
                 switch (_line) {
                     case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
@@ -35,9 +35,9 @@ public class CommandService {
                     case "part" ->
                             PartData.getInstance().templates.forEach(partTemplate -> LOGGER.info(partTemplate.toString()));
                 }
+            } catch (Exception exception) {
+                LOGGER.error("", exception);
             }
-        } catch (Exception exception) {
-            LOGGER.error("", exception);
         }
     }
 }

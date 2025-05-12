@@ -27,21 +27,23 @@ public class Crypt {
 
     // encrypt một byte
     public byte encryptByte(byte b) {
-        byte result = (byte) ((b & 0xFF) ^ (sessionKey[curWriteIndex] & 0xFF));
-        curWriteIndex++;
-        if (curWriteIndex >= sessionKey.length) {
-            curWriteIndex = 0;
-        }
-        return result;
+//        byte result = (byte) ((b & 0xFF) ^ (sessionKey[curWriteIndex] & 0xFF));
+//        curWriteIndex++;
+//        if (curWriteIndex >= sessionKey.length) {
+//            curWriteIndex = 0;
+//        }
+//        return result;
+        return b;
     }
 
     public byte decryptByte(byte b) {
-        byte result = (byte) ((sessionKey[curReadIndex] & 0xFF) ^ (b & 0xFF));
-        curReadIndex++;
-        if (curReadIndex >= sessionKey.length) {
-            curReadIndex = 0;
-        }
-        return result;
+//        byte result = (byte) ((sessionKey[curReadIndex] & 0xFF) ^ (b & 0xFF));
+//        curReadIndex++;
+//        if (curReadIndex >= sessionKey.length) {
+//            curReadIndex = 0;
+//        }
+//        return result;
+        return b;
     }
 
     public final void encrypt() {

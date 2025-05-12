@@ -17,13 +17,13 @@ public class NetConnector {
 //        instance = new NioServer(Config.NIO_READ_WRITE_THREADS, aion, gs);
 //    }
 
-    public static void connect() {
-        instance.connect(dcExecutor);
-    }
+//    public static void connect() {
+//        instance.connect(dcExecutor);
+//    }
 
-    public static void shutdown() {
-        instance.shutdown();
-        dcExecutor.shutdown();
-    }
+//    public static void shutdown() {
+//        instance.shutdown();
+//        dcExecutor.shutdown();
+//    }
 
 }

@@ -71,6 +71,8 @@ public class CMNotLogin extends NroClientPacket {
                 session.getClientDeviceInfo().setTouch(isTouch);
                 session.getClientDeviceInfo().setPlatformInfo(platformInfo);
                 session.getClientDeviceInfo().setExtraInfo(extraInfo);
+                System.out.println("getClientDeviceInfo: " + session.getClientDeviceInfo());
+
                 sendPacket(new SMGetImageSources2());
             }
         }
