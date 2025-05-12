@@ -34,7 +34,7 @@ public class SMGetImageSource extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
         int zoomLevel = con.getSessionInfo().getClientDeviceInfo().getZoomLevel();
-        this.writeBytes(type);
+        this.writeByte(type);
         switch (type) {
             case 0, 3 -> {
                 int size = VersionImageData.getInstance().getVersionImage(zoomLevel);

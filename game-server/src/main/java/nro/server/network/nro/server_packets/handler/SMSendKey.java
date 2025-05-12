@@ -20,14 +20,14 @@ public class SMSendKey extends NroServerPacket {
             encodedKey[i + 1] ^= encodedKey[i];
         }
 
-        this.writeBytes(encodedKey.length);
+        this.writeByte(encodedKey.length);
         for (byte b : encodedKey) {
-            this.writeBytes(b);
+            this.writeByte(b);
         }
 
         this.writeUTF(NetworkConfig.HOST);
         this.writeInt(NetworkConfig.PORT);
-        this.writeBytes(0);
+        this.writeByte(0);
     }
 
 }

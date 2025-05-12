@@ -11,9 +11,9 @@ public class SMNotLogin extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) {
-        this.writeBytes(2);
+        this.writeByte(2);
         this.writeUTF(NetworkConfig.HOST_PORT + ":0,0,0");
-        this.writeBytes(1);
+        this.writeByte(1);
     }
 
 }

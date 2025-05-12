@@ -1,0 +1,22 @@
+package nro.server.model.template.data;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+public class SkillPaintTemplate {
+
+    private int id;
+    private int effectHappenOnMob;
+    private int numEff;
+    private SkillInfoPaint[] skillStand;
+    private SkillInfoPaint[] skillfly;
+
+    private record SkillInfoPaint(int status, int effS0Id, int e0dx, int e0dy, int effS1Id, int e1dx, int e1dy,
+                                  int effS2Id, int e2dx, int e2dy, int arrowId, int adx, int ady) {
+
+    }
+}

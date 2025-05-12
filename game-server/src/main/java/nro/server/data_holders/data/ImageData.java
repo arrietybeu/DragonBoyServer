@@ -1,10 +1,12 @@
 package nro.server.data_holders.data;
 
+import lombok.Getter;
 import nro.server.data_holders.IManager;
 import nro.server.data_holders.YamlDataLoader;
 
-public class ImageData implements IManager {
+public final class ImageData implements IManager {
 
+    @Getter
     private int[][] versionImage;
 
     @Override

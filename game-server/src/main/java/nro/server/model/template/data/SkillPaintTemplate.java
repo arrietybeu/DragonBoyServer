@@ -15,7 +15,7 @@ public class SkillPaintTemplate {
     private SkillInfoPaint[] skillStand;
     private SkillInfoPaint[] skillfly;
 
-    private record SkillInfoPaint(int status, int effS0Id, int e0dx, int e0dy, int effS1Id, int e1dx, int e1dy,
+    public record SkillInfoPaint(int status, int effS0Id, int e0dx, int e0dy, int effS1Id, int e1dx, int e1dy,
                                   int effS2Id, int e2dx, int e2dy, int arrowId, int adx, int ady) {
 
     }

@@ -54,7 +54,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeBytes(int value) {
+    protected final void writeByte(int value) {
         byteBuffer.put((byte) value);
     }
 
@@ -63,7 +63,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeBytes(byte value) {
+    protected final void writeByte(byte value) {
         byteBuffer.put(value);
     }
 
@@ -118,7 +118,7 @@ public abstract class BaseServerPacket extends BasePacket {
      * @param value
      */
     protected final void writeBoolean(boolean value) {
-        this.writeBytes((value ? 1 : 0));
+        this.writeByte((value ? 1 : 0));
     }
 
     /**

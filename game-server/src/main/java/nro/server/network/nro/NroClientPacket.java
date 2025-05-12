@@ -1,11 +1,10 @@
 package nro.server.network.nro;
 
 import nro.commons.network.packet.BaseClientPacket;
-
 import nro.server.network.nro.NroConnection.State;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import java.util.Set;
 

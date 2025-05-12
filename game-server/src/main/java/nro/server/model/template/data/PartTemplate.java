@@ -1,40 +1,6 @@
 package nro.server.model.template.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.ToString;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-@ToString
-public class PartTemplate {
-
-    @Getter
-    private int type;
-    private final Map<Short, PartImage> piMap = new HashMap<>();
-
-    public PartTemplate(
-            @JsonProperty("type") int type,
-            @JsonProperty("pi") List<PartImage> piList
-    ) {
-        this.type = type;
-        if (piList != null) {
-            for (PartImage img : piList) {
-                piMap.put(img.id, img);
-            }
-        }
-    }
-
-    public PartImage getImageById(short id) {
-        return piMap.get(id);
-    }
-
-    @ToString
-    public static class PartImage {
-        public short id;
-        public byte dx;
-        public byte dy;
+public record PartTemplate(int type, PartImage[] pi) {
+    public record PartImage(short id, byte dx, byte dy) {
     }
 }

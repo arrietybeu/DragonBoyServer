@@ -1,1 +1,29 @@
-FROM openjdk:21
+# -------- BUILD STAGE --------
+
+FROM gradle:8.5-jdk21 AS builder
+
+WORKDIR /app
+
+#  COPY ALL SOUCRES ADD VAO CONTAINER
+COPY build.gradle settings.gradle gradlew gradlew.bat gradle.properties ./
+COPY gradle ./gradle
+COPY commons ./commons
+COPY game-server ./game-server
+COPY resources ./resources
+
+# Build project và đóng gói shadow jar (fat jar)
+RUN ./gradlew :game-server:shadowJar --no-daemon
+
+
+# -------- RUNTIME STAGE --------
+FROM eclipse-temurin:21-jre
+
+WORKDIR /app
+
+COPY --from=builder /app/game-server/build/libs/game-server-*-all.jar app.jar
+
+COPY --from=builder /app/resources ./resources
+
+EXPOSE 14445
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

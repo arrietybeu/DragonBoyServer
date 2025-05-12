@@ -12,7 +12,7 @@ public class EffectCharPaintTemplate {
     private int idEf;
     private EffectInfoPaint[] arrEfInfo;
 
-    private record EffectInfoPaint(int dx, int dy, int idImg) {
+    public record EffectInfoPaint(int dx, int dy, int idImg) {
     }
 
 }
