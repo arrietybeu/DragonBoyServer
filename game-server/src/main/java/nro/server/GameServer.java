@@ -58,6 +58,7 @@ public class GameServer {
     private static void initUtilityServicesAndConfig() {
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
         Config.load();
+
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
 

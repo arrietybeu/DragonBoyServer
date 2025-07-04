@@ -248,7 +248,7 @@ public abstract class Dispatcher extends Thread {
             }
 
             if (numWrite == 0) {
-                log.info("nit me may Write {} ip: {}", numWrite, con.getIP());
+//                log.info("nit me may Write {} ip: {}", numWrite, con.getIP());
                 return;
             }
 

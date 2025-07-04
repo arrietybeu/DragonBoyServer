@@ -1,9 +1,7 @@
 package nro.server.model.template.session;
 
-
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter

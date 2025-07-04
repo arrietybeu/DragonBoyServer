@@ -15,4 +15,7 @@ public class ConfigServer {
     @Property(key = "game-server.timezone")
     public static ZoneId TIME_ZONE_ID;
 
+    @Property(key = "game-server.is_debug", defaultValue = "false")
+    public static boolean IS_DEBUG = false;
+
 }

@@ -1,6 +1,5 @@
 package nro.server.model.template.session;
 
-
 import lombok.Getter;
 
 public class SessionInfo {
@@ -8,7 +7,7 @@ public class SessionInfo {
     @Getter
     private final ClientDeviceInfo clientDeviceInfo;
 
-    public SessionInfo(){
+    public SessionInfo() {
         clientDeviceInfo = new ClientDeviceInfo();
     }
 

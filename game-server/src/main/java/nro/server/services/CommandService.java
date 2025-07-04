@@ -23,7 +23,7 @@ public class CommandService {
             try {
                 String _line = sc.nextLine();
                 switch (_line) {
-                    case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
+//                    case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
                     case "session" ->
                             LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
                     case "system_info" -> SystemInfo.logAll();
