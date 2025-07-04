@@ -5,7 +5,9 @@ import nro.server.model.template.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
+import nro.server.network.nro.server_packets.handler.SMGetImageSource;
 import nro.server.network.nro.server_packets.handler.SMGetImageSources2;
+import nro.server.network.nro.server_packets.handler.SMNotLogin;
 
 import java.util.Set;
 
@@ -29,12 +31,14 @@ public class CMNotLogin extends NroClientPacket {
     @Override
     protected void readImpl() {
         this.command = readByte();
+        System.out.println("CMNotLogin command: " + command + " connection: " + getConnection());
         switch (command) {
             case 0 -> {
                 var username = readUTF().toLowerCase();
                 var password = readUTF().toLowerCase();
                 var version = readUTF();
                 var type = readByte();
+                System.out.println("CMNotLogin username: " + username + ", password: " + password + ", version: " + version + ", type: " + type);
             }
             case 1 -> {
             }
@@ -47,10 +51,12 @@ public class CMNotLogin extends NroClientPacket {
                 isQwerty = readBoolean();
                 isTouch = readBoolean();
                 platformInfo = readUTF();
-                int size = readShort();
-                extraInfo = new byte[size];
-                for (int i = 0; i < size; i++) {
-                    extraInfo[i] = readByte();
+                if (getRemainingBytes() > 0) {
+                    int size = readShort();
+                    extraInfo = new byte[size];
+                    for (int i = 0; i < size; i++) {
+                        extraInfo[i] = readByte();
+                    }
                 }
             }
         }
@@ -72,6 +78,7 @@ public class CMNotLogin extends NroClientPacket {
                 session.getClientDeviceInfo().setPlatformInfo(platformInfo);
                 session.getClientDeviceInfo().setExtraInfo(extraInfo);
                 sendPacket(new SMGetImageSources2());
+                sendPacket(new SMNotLogin());
             }
         }
     }
