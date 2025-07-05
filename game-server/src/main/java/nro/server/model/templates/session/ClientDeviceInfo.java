@@ -1,4 +1,4 @@
-package nro.server.model.template.session;
+package nro.server.model.templates.session;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,7 @@
 package nro.server;
 
 import lombok.Getter;
+import nro.commons.database.DatabaseFactory;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;
 import nro.commons.services.CronService;
@@ -40,6 +41,7 @@ public class GameServer {
 
         //noinspection ResultOfMethodCallIgnored
         DataManager.getInstance();
+        DatabaseFactory.init();
 
         System.gc();
 

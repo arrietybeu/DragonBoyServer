@@ -2,7 +2,7 @@ package nro.server.data_holders.data;
 
 import nro.server.data_holders.IManager;
 import nro.server.data_holders.YamlDataLoader;
-import nro.server.model.template.data.ArrowPaintTemplate;
+import nro.server.model.templates.data.ArrowPaintTemplate;
 
 import java.util.List;
 
@@ -23,7 +23,8 @@ public final class ArrowPaintData implements IManager {
 
     @Override
     public void clear() throws RuntimeException {
-        if (arrowPaintData != null) arrowPaintData.clear();
+        if (arrowPaintData != null)
+            arrowPaintData.clear();
         arrowPaintData = null;
     }
 

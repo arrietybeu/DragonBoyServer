@@ -4,6 +4,7 @@ import nro.server.data_holders.data.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.List;
 
 public final class DataManager {
@@ -18,7 +19,9 @@ public final class DataManager {
             EffectCharPaintData.getInstance(),
             PartData.getInstance(),
             SkillPaintData.getInstance(),
-            ImageData.getInstance()
+            ImageData.getInstance(),
+            ResourcesData.getInstance(),
+            CaptionData.getInstance()
     );
 
     private DataManager() {
@@ -34,6 +37,8 @@ public final class DataManager {
         long time = System.currentTimeMillis() - start;
         log.info("##### [Static Data loaded in {} seconds] #####", String.format("%.1f", time / 1000f));
     }
+
+
 
     public static DataManager getInstance() {
         return SingletonHolder.instance;

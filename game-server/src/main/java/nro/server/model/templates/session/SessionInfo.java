@@ -1,11 +1,16 @@
-package nro.server.model.template.session;
+package nro.server.model.templates.session;
 
 import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class SessionInfo {
 
-    @Getter
     private final ClientDeviceInfo clientDeviceInfo;
+
+    private String version;
+    private boolean isUpdateData;
 
     public SessionInfo() {
         clientDeviceInfo = new ClientDeviceInfo();

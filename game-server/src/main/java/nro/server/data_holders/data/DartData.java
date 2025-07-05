@@ -2,7 +2,7 @@ package nro.server.data_holders.data;
 
 import nro.server.data_holders.IManager;
 import nro.server.data_holders.YamlDataLoader;
-import nro.server.model.template.data.DartTemplate;
+import nro.server.model.templates.data.DartTemplate;
 
 import java.util.List;
 

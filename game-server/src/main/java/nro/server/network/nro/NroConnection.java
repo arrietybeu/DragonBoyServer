@@ -12,8 +12,9 @@ import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
+import nro.server.model.account.Account;
 import nro.server.model.entity.player.Player;
-import nro.server.model.template.session.SessionInfo;
+import nro.server.model.templates.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;
@@ -49,6 +50,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
     private volatile State state;
     @Getter
     private final SessionInfo sessionInfo;
+    @Setter
+    private Account account;
+
     @Getter
     private final Crypt crypt;
 
@@ -82,6 +86,14 @@ public class NroConnection extends AConnection<NroServerPacket> {
         this.sessionInfo = new SessionInfo();
         this.crypt = new Crypt();
         log.debug("Connection established: {}", ip);
+    }
+
+    public Account getAccount() {
+        if (account == null) {
+            log.warn("Account is null for connection: {}", this);
+            return null;
+        }
+        return account;
     }
 
     /**
@@ -221,7 +233,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
                 sendMsgQueue.clear();
             }
         }
-        log.info("Client disconnected successfully: ID=");
+        log.info("Client disconnected successfully: IP={}, state={}", getIP(), state);
     }
 
     /**

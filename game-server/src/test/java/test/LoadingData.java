@@ -1,7 +1,7 @@
 package test;
 
 import nro.server.data_holders.YamlDataLoader;
-import nro.server.model.template.data.EffectCharPaintTemplate;
+import nro.server.model.templates.data.EffectCharPaintTemplate;
 
 public class LoadingData {
 

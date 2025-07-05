@@ -1,18 +1,21 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
-import nro.server.model.template.session.SessionInfo;
+import nro.server.model.account.Account;
+import nro.server.model.templates.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
-import nro.server.network.nro.server_packets.handler.SMGetImageSource;
-import nro.server.network.nro.server_packets.handler.SMGetImageSources2;
-import nro.server.network.nro.server_packets.handler.SMNotLogin;
+import nro.server.network.nro.server_packets.handler.*;
 
 import java.util.Set;
 
 @AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {NroConnection.State.CONNECTED})
 public class CMNotLogin extends NroClientPacket {
+
+    private String username;
+    private String password;
+    private String version;
 
     private byte command;
     private byte typeClient;
@@ -34,11 +37,10 @@ public class CMNotLogin extends NroClientPacket {
         System.out.println("CMNotLogin command: " + command + " connection: " + getConnection());
         switch (command) {
             case 0 -> {
-                var username = readUTF().toLowerCase();
-                var password = readUTF().toLowerCase();
-                var version = readUTF();
+                this.username = readUTF().toLowerCase();
+                this.password = readUTF().toLowerCase();
+                this.version = readUTF();
                 var type = readByte();
-                System.out.println("CMNotLogin username: " + username + ", password: " + password + ", version: " + version + ", type: " + type);
             }
             case 1 -> {
             }
@@ -65,18 +67,37 @@ public class CMNotLogin extends NroClientPacket {
     @Override
     protected void runImpl() {
         switch (command) {
-            case 1 -> {
+            case 0 -> {
+                NroConnection connection = getConnection();
+                if (connection == null) {
+                    throw new RuntimeException("Connection is null in CMNotLogin command 1");
+                }
+                var zoom = connection.getSessionInfo().getClientDeviceInfo().getZoomLevel();
+                if (zoom <= 0 || zoom > 4) {
+                    connection.close(new SmLoginFail(SmLoginFail.RELOGIN_ALLOWED));
+                    throw new RuntimeException("Invalid zoom level: " + zoom + " for connection: " + connection);
+                }
+
+                Account account = new Account(username, password);
+                connection.setAccount(account);
+                connection.getSessionInfo().setVersion(version);
+
+                sendPacket(new SmSmallImageVersion());
+                sendPacket(new SmBackgroundItemVersion());
+                if (!connection.getSessionInfo().isUpdateData())
+                    sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
             }
             case 2 -> {
                 final SessionInfo session = getConnection().getSessionInfo();
-                session.getClientDeviceInfo().setTypeClient(typeClient);
-                session.getClientDeviceInfo().setZoomLevel(zoomLevel);
-                session.getClientDeviceInfo().setScreenWidth(screenWidth);
-                session.getClientDeviceInfo().setScreenHeight(screenHeight);
-                session.getClientDeviceInfo().setQwerty(isQwerty);
-                session.getClientDeviceInfo().setTouch(isTouch);
-                session.getClientDeviceInfo().setPlatformInfo(platformInfo);
-                session.getClientDeviceInfo().setExtraInfo(extraInfo);
+                var deviceInfo = session.getClientDeviceInfo();
+                deviceInfo.setTypeClient(typeClient);
+                deviceInfo.setZoomLevel(zoomLevel);
+                deviceInfo.setScreenWidth(screenWidth);
+                deviceInfo.setScreenHeight(screenHeight);
+                deviceInfo.setQwerty(isQwerty);
+                deviceInfo.setTouch(isTouch);
+                deviceInfo.setPlatformInfo(platformInfo);
+                deviceInfo.setExtraInfo(extraInfo);
                 sendPacket(new SMGetImageSources2());
                 sendPacket(new SMNotLogin());
             }

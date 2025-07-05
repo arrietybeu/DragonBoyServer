@@ -1,4 +1,4 @@
-package nro.server.model.template.data;
+package nro.server.model.templates.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

@@ -2,6 +2,7 @@ package nro.server.configs;
 
 
 import ch.qos.logback.classic.ClassicConstants;
+import nro.commons.configs.DatabaseConfig;
 import nro.commons.configuration.ConfigurableProcessor;
 import nro.commons.utils.NetworkUtils;
 import nro.commons.utils.PropertiesUtils;
@@ -25,7 +26,8 @@ import java.util.Set;
 
 public class Config {
 
-    private static final List<Class<?>> CONFIGS = Arrays.asList(ConfigServer.class, ThreadConfig.class, NetworkConfig.class, PacketConfig.class);
+    private static final List<Class<?>> CONFIGS = Arrays.asList(
+            ConfigServer.class, ThreadConfig.class, NetworkConfig.class, PacketConfig.class, DatabaseConfig.class);
 
     public static void load(Class<?>... allowedConfigs) {
         Properties properties = loadProperties();

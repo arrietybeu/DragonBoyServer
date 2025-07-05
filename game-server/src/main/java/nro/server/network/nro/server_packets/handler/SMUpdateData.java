@@ -3,7 +3,7 @@ package nro.server.network.nro.server_packets.handler;
 import nro.commons.consts.ConstsCmd;
 import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.data.*;
-import nro.server.model.template.data.*;
+import nro.server.model.templates.data.*;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;

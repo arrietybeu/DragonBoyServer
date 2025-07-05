@@ -12,7 +12,6 @@ public class DatabaseFactory {
 
     private static HikariDataSource DYNAMIC_DATA_SOURCE;
     private static HikariDataSource STATIC_DATA_SOURCE;
-    private static HikariDataSource ENTITY_DATA_SOURCE;
 
     private DatabaseFactory() {
         System.out.println("call cai choa gi?");
@@ -32,13 +31,6 @@ public class DatabaseFactory {
                 DatabaseConfig.DB_STATIC_URL,
                 DatabaseConfig.DB_STATIC_USER,
                 DatabaseConfig.DB_STATIC_PASSWORD,
-                5, 50
-        );
-
-        ENTITY_DATA_SOURCE = createDataSource(
-                DatabaseConfig.DB_ENTITY_URL,
-                DatabaseConfig.DB_ENTITY_USER,
-                DatabaseConfig.DB_ENTITY_PASSWORD,
                 5, 50
         );
     }
@@ -71,7 +63,7 @@ public class DatabaseFactory {
         return switch (type) {
             case DYNAMIC -> getConnection(DYNAMIC_DATA_SOURCE);
             case STATIC -> getConnection(STATIC_DATA_SOURCE);
-            case ENTITY -> getConnection(ENTITY_DATA_SOURCE);
+//            case ENTITY -> getConnection(ENTITY_DATA_SOURCE);
         };
     }
 
@@ -89,7 +81,7 @@ public class DatabaseFactory {
             return switch (taskIndex) {
                 case DatabaseConfig.DATABASE_DYNAMIC -> getConnection(DYNAMIC_DATA_SOURCE);
                 case DatabaseConfig.DATABASE_STATIC -> getConnection(STATIC_DATA_SOURCE);
-                case DatabaseConfig.DATABASE_ENTITY -> getConnection(ENTITY_DATA_SOURCE);
+//                case DatabaseConfig.DATABASE_ENTITY -> getConnection(ENTITY_DATA_SOURCE);
                 default -> null;
             };
         } catch (SQLException e) {
@@ -100,6 +92,6 @@ public class DatabaseFactory {
     public static void closeAll() {
         if (DYNAMIC_DATA_SOURCE != null) DYNAMIC_DATA_SOURCE.close();
         if (STATIC_DATA_SOURCE != null) STATIC_DATA_SOURCE.close();
-        if (ENTITY_DATA_SOURCE != null) ENTITY_DATA_SOURCE.close();
+//        if (ENTITY_DATA_SOURCE != null) ENTITY_DATA_SOURCE.close();
     }
 }
