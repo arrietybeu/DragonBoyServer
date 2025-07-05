@@ -4,7 +4,6 @@ import nro.server.data_holders.data.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.List;
 
 public final class DataManager {
@@ -21,7 +20,10 @@ public final class DataManager {
             SkillPaintData.getInstance(),
             ImageData.getInstance(),
             ResourcesData.getInstance(),
-            CaptionData.getInstance()
+            CaptionData.getInstance(),
+            MapData.getInstance(),
+            NpcData.getInstance(),
+            MonsterData.getInstance()
     );
 
     private DataManager() {

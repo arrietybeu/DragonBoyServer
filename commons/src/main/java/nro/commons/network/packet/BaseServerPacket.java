@@ -67,6 +67,12 @@ public abstract class BaseServerPacket extends BasePacket {
         byteBuffer.put(value);
     }
 
+    protected final void writeUnsignedByte(int value) {
+        if (value < 0 || value > 255)
+            throw new IllegalArgumentException("Gia tri unsigned byte phai tu 0 den 255");
+        writeByte(value);
+    }
+
     /**
      * Write double to buffer.
      *

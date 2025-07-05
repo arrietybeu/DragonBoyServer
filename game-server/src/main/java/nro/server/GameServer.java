@@ -41,7 +41,7 @@ public class GameServer {
 
         //noinspection ResultOfMethodCallIgnored
         DataManager.getInstance();
-        DatabaseFactory.init();
+
 
         System.gc();
 
@@ -60,7 +60,7 @@ public class GameServer {
     private static void initUtilityServicesAndConfig() {
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
         Config.load();
-
+        DatabaseFactory.init();
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
 

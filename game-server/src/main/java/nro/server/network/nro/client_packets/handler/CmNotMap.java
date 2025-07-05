@@ -24,11 +24,17 @@ public class CmNotMap extends NroClientPacket {
         System.out.println("CmNotMap status: " + status + " connection: " + getConnection());
         switch (status) {
             case SmNotMap.UPDATE_MAP -> {
+                if (!getConnection().getSessionInfo().isUpdateMap())
+                    sendPacket(new SmNotMap(status));
             }
         }
     }
 
+    /**
+     * Có những con thuyền không bao giờ cập bến, có những cuộc tình không bao giờ thành đôi.
+     */
     @Override
     protected void runImpl() {
     }
+
 }

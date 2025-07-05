@@ -17,7 +17,7 @@ public class WorldMapTemplate {
     private int pixelHeight;
     private final String name;
 
-    private final byte planetId, tileId, bgId, bgType, typeMap, isMapDouble, maxArea;
+    private final byte planetId, tileId, bgId, bgType, typeMap, isMapDouble, maxArea, maxPlayer;
 
     private final TileMap tileMap;
     private final List<Waypoint> waypoints;
@@ -27,13 +27,16 @@ public class WorldMapTemplate {
 
     public int[] types;
 
-    public WorldMapTemplate(int id, String name, byte maxArea, byte planetId, byte tileId, byte isMapDouble,
-                            byte bgId, byte bgType, byte typeMap,
-                            List<BgItem> bgItems, List<BackgroundEffect> backgroundEffects,
+    public WorldMapTemplate(int id, String name, byte maxArea, byte maxPlayer,
+                            byte planetId, byte tileId,
+                            byte isMapDouble, byte bgId, byte bgType,
+                            byte typeMap, List<BgItem> bgItems,
+                            List<BackgroundEffect> backgroundEffects,
                             List<Waypoint> waypoints, TileMap tileMap) {
         this.id = id;
         this.name = name;
         this.maxArea = maxArea;
+        this.maxPlayer = maxPlayer;
         this.planetId = planetId;
         this.tileId = tileId;
         this.isMapDouble = isMapDouble;

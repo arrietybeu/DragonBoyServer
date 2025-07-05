@@ -3,6 +3,9 @@ package nro.server.network.nro.server_packets.handler;
 import nro.commons.consts.ConstsCmd;
 import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.data.CaptionData;
+import nro.server.data_holders.data.MapData;
+import nro.server.data_holders.data.MonsterData;
+import nro.server.data_holders.data.NpcData;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
@@ -26,14 +29,15 @@ public class SmNotMap extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-        System.out.println("SmNotMap: " + status);
         this.writeByte(status);
         switch (status) {
-            case 1 -> {
-            }
             case ALL_DATA_GAME -> {
                 sendAllDataGame();
                 con.getSessionInfo().setUpdateData(true);
+            }
+            case UPDATE_MAP -> {
+                sendUpdateMap();
+                con.getSessionInfo().setUpdateMap(true);
             }
         }
     }
@@ -49,6 +53,40 @@ public class SmNotMap extends NroServerPacket {
         this.writeByte(captionTemplates.size());
         for (var caption : captionTemplates) {
             this.writeLong(caption.exp());
+        }
+    }
+
+    private void sendUpdateMap() {
+        var mapTemplates = MapData.getInstance().getWorldMaps();
+        writeByte(ConfigServer.VERSION_DATA_MAP);
+        writeUnsignedByte(mapTemplates.size());
+
+        for (var map : mapTemplates) {
+            writeUTF(map.getName());
+        }
+
+        var npcTemplates = NpcData.getInstance().getNpcTemplates();
+        // write npc
+        writeUnsignedByte(npcTemplates.size());
+        for (var npc : npcTemplates) {
+            this.writeUTF(npc.name());
+            this.writeShort(npc.head());
+            this.writeShort(npc.body());
+            this.writeShort(npc.leg());
+            this.writeByte(1);
+            this.writeByte(1);
+            this.writeUTF("Nói chuyện");
+        }
+
+        var monsterTemplates = MonsterData.getInstance().getMonsters();
+        writeUnsignedByte(monsterTemplates.size());
+        for (var monster : monsterTemplates) {
+            this.writeByte(monster.type());
+            this.writeUTF(monster.NAME());
+            this.writeInt((int) monster.hp());
+            this.writeByte(monster.rangeMove());
+            this.writeByte(monster.speed());
+            this.writeByte(monster.dartType());
         }
     }
 

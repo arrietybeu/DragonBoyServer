@@ -11,6 +11,7 @@ public class SessionInfo {
 
     private String version;
     private boolean isUpdateData;
+    private boolean isUpdateMap;
 
     public SessionInfo() {
         clientDeviceInfo = new ClientDeviceInfo();

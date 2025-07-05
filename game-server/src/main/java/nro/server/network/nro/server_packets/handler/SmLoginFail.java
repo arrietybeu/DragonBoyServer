@@ -13,7 +13,6 @@ public class SmLoginFail extends NroServerPacket {
 
     public static final byte LOGIN_FAIL = 0;
     public static final byte RELOGIN_ALLOWED = 1;
-
     private final byte type;
 
     /**
