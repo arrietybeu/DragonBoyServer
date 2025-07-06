@@ -38,16 +38,12 @@ public class GameServer {
 
     public static void main(String[] args) {
         initUtilityServicesAndConfig();
-
         //noinspection ResultOfMethodCallIgnored
         DataManager.getInstance();
-
-
         System.gc();
-
         nioServer = initNioServer();
-
         Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
+        LOGGER.info("Game server started successfully. Listening on: {}", NetworkConfig.CLIENT_SOCKET_ADDRESS);
     }
 
     private static NioServer initNioServer() {

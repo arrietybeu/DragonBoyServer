@@ -24,7 +24,6 @@ public class WorldMapTemplate {
     private final NavigableMap<Integer, List<Waypoint>> waypointMap;
     private final List<BgItem> bgItems;
     private final List<BackgroundEffect> backgroundEffects;
-
     public int[] types;
 
     public WorldMapTemplate(int id, String name, byte maxArea, byte maxPlayer,

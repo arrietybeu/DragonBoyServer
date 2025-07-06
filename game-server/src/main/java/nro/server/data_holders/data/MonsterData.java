@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
-public class MonsterData implements IManager {
+public final class MonsterData implements IManager {
 
     @Getter
     private List<MonsterTemplate> monsters;

@@ -1,4 +1,4 @@
-package nro.server.model.templates.session;
+package nro.server.model.session;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +12,8 @@ public class SessionInfo {
     private String version;
     private boolean isUpdateData;
     private boolean isUpdateMap;
+    private boolean isUpdateSkill;
+    private boolean isUpdateItem;
 
     public SessionInfo() {
         clientDeviceInfo = new ClientDeviceInfo();

@@ -23,7 +23,9 @@ public final class DataManager {
             CaptionData.getInstance(),
             MapData.getInstance(),
             NpcData.getInstance(),
-            MonsterData.getInstance()
+            MonsterData.getInstance(),
+            SkillData.getInstance(),
+            ItemData.getInstance()
     );
 
     private DataManager() {
@@ -40,8 +42,6 @@ public final class DataManager {
         log.info("##### [Static Data loaded in {} seconds] #####", String.format("%.1f", time / 1000f));
     }
 
-
-
     public static DataManager getInstance() {
         return SingletonHolder.instance;
     }
@@ -49,5 +49,4 @@ public final class DataManager {
     private static class SingletonHolder {
         protected static final DataManager instance = new DataManager();
     }
-
 }

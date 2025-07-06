@@ -2,10 +2,7 @@ package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
 import nro.server.configs.main.ConfigServer;
-import nro.server.data_holders.data.CaptionData;
-import nro.server.data_holders.data.MapData;
-import nro.server.data_holders.data.MonsterData;
-import nro.server.data_holders.data.NpcData;
+import nro.server.data_holders.data.*;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
@@ -22,9 +19,20 @@ public class SmNotMap extends NroServerPacket {
     public static final byte UPDATE_ITEM = 8;
 
     private final byte status;
+    private byte type;
 
     public SmNotMap(int status) {
         this.status = (byte) status;
+    }
+
+    /**
+     * Packet gửi item
+     * @param status
+     * @param type
+     */
+    public SmNotMap(int status, int type) {
+        this.status = (byte) status;
+        this.type = (byte) type;
     }
 
     @Override
@@ -38,6 +46,14 @@ public class SmNotMap extends NroServerPacket {
             case UPDATE_MAP -> {
                 sendUpdateMap();
                 con.getSessionInfo().setUpdateMap(true);
+            }
+            case UPDATE_SKILL -> {
+                sendUpdateSkill();
+                con.getSessionInfo().setUpdateSkill(true);
+            }
+            case UPDATE_ITEM -> {
+                sendUpdateItem(type);
+                con.getSessionInfo().setUpdateItem(true);
             }
         }
     }
@@ -88,6 +104,75 @@ public class SmNotMap extends NroServerPacket {
             this.writeByte(monster.speed());
             this.writeByte(monster.dartType());
         }
+    }
+
+    private void sendUpdateSkill() {
+
+        var skillData = SkillData.getInstance();
+        var nClasses = skillData.getNClassTemplates();
+
+        this.writeByte(ConfigServer.VERSION_DATA_SKILL);
+        this.writeByte(0);
+
+        // write skill nClass
+        this.writeByte(nClasses.size());
+
+        for (var classSkill : nClasses) {
+            this.writeUTF(classSkill.name());
+            this.writeByte(classSkill.skillTemplates().size());
+            for (var skillTemplate : classSkill.skillTemplates()) {
+                this.writeByte(skillTemplate.getId());
+                this.writeUTF(skillTemplate.getName());
+                this.writeByte(skillTemplate.getMaxPoint());
+                this.writeByte(skillTemplate.getManaUseType());
+                this.writeByte(skillTemplate.getType());
+                this.writeShort(skillTemplate.getIconId());
+                this.writeUTF(skillTemplate.getDamInfo());
+                this.writeUTF(skillTemplate.getDescription());
+                this.writeByte(skillTemplate.getSkills().size());
+                for (var skill : skillTemplate.getSkills()) {
+                    this.writeShort(skill.getSkillId());
+                    this.writeByte(skill.getPoint());
+                    this.writeLong(skill.getPowRequire());
+                    this.writeShort(skill.getManaUse());
+                    this.writeInt((int) skill.getBaseCooldown());
+                    this.writeShort(skill.getDx());
+                    this.writeShort(skill.getDy());
+                    this.writeByte(skill.getMaxFight());
+                    this.writeShort(skill.getDamage());
+                    this.writeShort(skill.getPrice());
+                    this.writeUTF(skill.getMoreInfo());
+                }
+            }
+        }
+
+    }
+
+    private void sendUpdateItem(int type) {
+        this.writeByte(ConfigServer.VERSION_DATA_ITEM);
+        switch (type) {
+            case 0 -> sendUpdateOption();
+            case 1 -> sendUpdateItemTemplate();
+            case 2 -> sendUpdateItemTemplate2();
+            case 100 -> sendItemArr_Head_2Fr();
+            default -> throw new IllegalArgumentException("Unknown item update type: " + type);
+        }
+    }
+
+    private void sendUpdateOption() {
+        writeBytes(ItemData.getInstance().getDataItemOption());
+    }
+
+    private void sendUpdateItemTemplate() {
+        writeBytes(ItemData.getInstance().getDataItemTemplate());
+    }
+
+    private void sendUpdateItemTemplate2() {
+        writeBytes(ItemData.getInstance().getDataItemTemplate2());
+    }
+
+    private void sendItemArr_Head_2Fr() {
+        writeBytes(ItemData.getInstance().getDataArrHead2Fr());
     }
 
 }

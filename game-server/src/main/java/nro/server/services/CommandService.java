@@ -1,15 +1,19 @@
 package nro.server.services;
 
+import nro.commons.database.DatabaseFactory;
 import nro.commons.utils.ExitCode;
 import nro.commons.utils.SystemInfo;
 import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
+import nro.server.model.templates.data.PartTemplate;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -24,6 +28,7 @@ public class CommandService {
                 String _line = sc.nextLine();
                 switch (_line) {
 //                    case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
+                    case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                     case "session" ->
                             LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
                     case "system_info" -> SystemInfo.logAll();
@@ -32,12 +37,35 @@ public class CommandService {
                     case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
                     case "dart" ->
                             DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
-                    case "part" ->
-                            PartData.getInstance().templates.forEach(partTemplate -> LOGGER.info(partTemplate.toString()));
+                    case "part" -> System.out.println("PartData size: " + buildNrPartData().length);
                 }
             } catch (Exception exception) {
                 LOGGER.error("", exception);
             }
         }
+    }
+
+    private static byte[] buildNrPartData() {
+        ByteBuffer buf = ByteBuffer.allocate(100_000);
+        List<PartTemplate> parts = PartData.getInstance().templates;
+
+        buf.putShort((short) parts.size());
+
+        for (PartTemplate part : parts) {
+            System.out.println("Part: id: " + part.id() + ", type: " + part.type());
+            buf.put((byte) part.type());
+            PartTemplate.PartImage[] pi = part.data();
+            for (PartTemplate.PartImage img : pi) {
+                System.out.println("PartImage: id: " + part.id() + " icon: " + img.icon() + ", dx: " + img.dx() + ", dy: " + img.dy());
+                buf.putShort(img.icon());
+                buf.put(img.dx());
+                buf.put(img.dy());
+            }
+        }
+
+        byte[] out = new byte[buf.position()];
+        buf.flip();
+        buf.get(out);
+        return out;
     }
 }

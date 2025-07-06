@@ -14,7 +14,7 @@ import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.model.account.Account;
 import nro.server.model.entity.player.Player;
-import nro.server.model.templates.session.SessionInfo;
+import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.utils.ThreadPoolManager;

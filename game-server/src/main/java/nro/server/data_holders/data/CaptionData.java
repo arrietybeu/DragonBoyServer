@@ -11,7 +11,7 @@ import java.util.List;
  * @author Arriety
  */
 @Getter
-public class CaptionData implements IManager {
+public final class CaptionData implements IManager {
 
     private List<CaptionTemplate.CaptionLevel> captionLevels;
     private List<CaptionTemplate> captionTemplates;

@@ -13,7 +13,7 @@ import java.util.*;
  * @author Arriety
  */
 @Getter
-public class ResourcesData implements IManager {
+public final class ResourcesData implements IManager {
 
     private static final Logger log = LoggerFactory.getLogger(ResourcesData.class);
 

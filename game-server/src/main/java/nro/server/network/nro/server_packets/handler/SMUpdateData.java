@@ -145,9 +145,9 @@ public class SMUpdateData extends NroServerPacket {
 
         for (PartTemplate part : parts) {
             buf.put((byte) part.type());
-            PartTemplate.PartImage[] pi = part.pi();
+            PartTemplate.PartImage[] pi = part.data();
             for (PartTemplate.PartImage img : pi) {
-                buf.putShort(img.id());
+                buf.putShort(img.icon());
                 buf.put(img.dx());
                 buf.put(img.dy());
             }

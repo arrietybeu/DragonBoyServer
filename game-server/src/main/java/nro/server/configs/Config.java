@@ -68,7 +68,9 @@ public class Config {
 
     private static Properties loadProperties() {
         Logger log = LoggerFactory.getLogger(Config.class);
-        List<String> defaultsFolders = Arrays.asList(/*"./config/administration", */"resources/config/main", "resources/config/network");
+        List<String> defaultsFolders = List.of(/*"./config/administration", */"resources/configs");
+//        List<String> defaultsFolders = Arrays.asList("config/main", "config/network");
+
         Properties defaults = new Properties();
         try {
             for (String configDir : defaultsFolders) {

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
-public class NpcData implements IManager {
+public final class NpcData implements IManager {
 
     @Getter
     private List<NpcTemplate> npcTemplates;

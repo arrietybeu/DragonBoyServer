@@ -1,6 +1,14 @@
 package nro.server.model.templates.data;
 
-public record PartTemplate(int type, PartImage[] pi) {
-    public record PartImage(short id, byte dx, byte dy) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * @author Arriety
+ */
+public record PartTemplate(int id, int type, PartImage[] data) {
+
+    public record PartImage(
+            @JsonProperty("icon_id")
+            short icon, byte dx, byte dy) {
     }
 }

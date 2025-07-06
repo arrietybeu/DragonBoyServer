@@ -2,7 +2,7 @@ package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.account.Account;
-import nro.server.model.templates.session.SessionInfo;
+import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
@@ -10,6 +10,9 @@ import nro.server.network.nro.server_packets.handler.*;
 
 import java.util.Set;
 
+/**
+ * @author Arriety
+ */
 @AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {NroConnection.State.CONNECTED})
 public class CMNotLogin extends NroClientPacket {
 

@@ -27,6 +27,17 @@ public class CmNotMap extends NroClientPacket {
                 if (!getConnection().getSessionInfo().isUpdateMap())
                     sendPacket(new SmNotMap(status));
             }
+            case SmNotMap.UPDATE_SKILL -> {
+                if (!getConnection().getSessionInfo().isUpdateSkill())
+                    sendPacket(new SmNotMap(status));
+            }
+            case SmNotMap.UPDATE_ITEM -> {
+                if (!getConnection().getSessionInfo().isUpdateItem()){
+                    sendPacket(new SmNotMap(status, 0));
+                    sendPacket(new SmNotMap(status, 1));
+                    sendPacket(new SmNotMap(status, 2));
+                }
+            }
         }
     }
 

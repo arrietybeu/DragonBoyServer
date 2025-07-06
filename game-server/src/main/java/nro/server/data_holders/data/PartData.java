@@ -28,6 +28,13 @@ public final class PartData implements IManager {
         templates = null;
     }
 
+    public PartTemplate findPartById(int id) {
+        return templates.stream()
+                .filter(part -> part.id() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
     private static final class SingletonHolder {
         private static final PartData INSTANCE = new PartData();
     }
