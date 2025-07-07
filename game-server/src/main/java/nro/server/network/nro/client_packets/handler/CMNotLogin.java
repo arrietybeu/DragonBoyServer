@@ -2,7 +2,6 @@ package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
 import nro.server.controllers.AccountController;
-import nro.server.model.account.Account;
 import nro.server.model.account.NroAuthResponse;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
@@ -87,16 +86,16 @@ public class CMNotLogin extends NroClientPacket {
                 if (response == null) return;
                 switch (response) {
                     case NroAuthResponse.ACCOUNT_BANNED ->
-                            connection.sendPacket(new CmDialogMessage("Tài Khoản của bạn đã bị khóa!"));
+                            connection.sendPacket(new SmDialogMessage("Tài Khoản của bạn đã bị khóa!"));
                     case NroAuthResponse.IP_BLOCKED ->
-                            connection.sendPacket(new CmDialogMessage("IP của bạn đã bị chặn!"));
+                            connection.sendPacket(new SmDialogMessage("IP của bạn đã bị chặn!"));
                     case NroAuthResponse.SUCCESS -> {
                         sendPacket(new SmSmallImageVersion());
                         sendPacket(new SmBackgroundItemVersion());
                         if (!connection.getSessionInfo().isUpdateData())
                             sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                     }
-                    default -> connection.sendPacket(new CmDialogMessage(""));
+                    default -> connection.sendPacket(new SmDialogMessage(""));
                 }
             }
             case 2 -> {

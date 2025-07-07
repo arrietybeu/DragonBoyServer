@@ -31,7 +31,6 @@ public final class ItemData implements IManager {
 
     private static final Logger log = LoggerFactory.getLogger(ItemData.class);
 
-
     private final Map<Short, ItemOptionTemplate> itemOptionTemplates = new HashMap<>();
     private byte[] dataItemOption;
 

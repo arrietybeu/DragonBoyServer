@@ -10,6 +10,7 @@ import nro.server.configs.Config;
 import nro.server.configs.main.ConfigServer;
 import nro.server.configs.main.PacketConfig;
 import nro.server.configs.network.NetworkConfig;
+import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
@@ -66,6 +67,8 @@ public class GameServer {
         // Initialize scanner
         initCommandService();
         CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
+
+        BannedIpController.start();
 
         LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);
     }

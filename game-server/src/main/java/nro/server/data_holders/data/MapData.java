@@ -3,12 +3,15 @@ package nro.server.data_holders.data;
 import lombok.Getter;
 import nro.commons.database.Database;
 import nro.server.data_holders.IManager;
+import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.world.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -20,7 +23,16 @@ public final class MapData implements IManager {
     private final static String QUERY_LOAD_MAP_TEMPLATE = "SELECT * FROM `map_template`";
     private final static String QUERY_LOAD_MAP_ITEM_BACKGROUND = "SELECT * FROM `map_item_background` WHERE `map_id` = ?";
 
-//    private final List<WorldMapTemplate> worldMaps = new ArrayList<>();
+    private final static byte MAX_TILE_SET = 33;
+
+    private List<BackgroundMapTemplate> backgroundMapTemplates;
+
+    @Getter
+    private byte[] dataBackgroundMapTemplates;
+
+    public int[][] tileType = new int[MAX_TILE_SET][];
+    public int[][][] tileIndex = new int[MAX_TILE_SET][][];
+    public byte[] tileSetInfoData;
 
     @Getter
     private final Map<Short, WorldMapTemplate> worldMaps = new LinkedHashMap<>();
@@ -28,10 +40,15 @@ public final class MapData implements IManager {
     @Override
     public void init() throws Throwable {
         loadMapTemplate();
+        setQueryLoadMapItemBackground();
+        loadTileSetInfo();
     }
 
     @Override
     public void reload() throws Throwable {
+        clear();
+        loadMapTemplate();
+        setQueryLoadMapItemBackground();
     }
 
     @Override
@@ -60,11 +77,7 @@ public final class MapData implements IManager {
                 List<Waypoint> waypoints = this.loadWaypoints(id);
                 TileMap tileMap = tileMaps.get(id);
 
-                var worldMapTemplate = new WorldMapTemplate(
-                        id, name, zone, maxPlayer, planetId,
-                        tileId, isMapDouble, bgId, bgType, type,
-                        bgItems, effects, waypoints, tileMap
-                );
+                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap);
                 worldMaps.put(id, worldMapTemplate);
             }
         });
@@ -163,6 +176,93 @@ public final class MapData implements IManager {
         } catch (ParseException e) {
             throw new RuntimeException("Error parsing JSON to int array: " + json, e);
         }
+    }
+
+
+    private void setQueryLoadMapItemBackground() {
+        backgroundMapTemplates = YamlDataLoader.loadList("resources/data/update_data/NR_map_data_background.yml", BackgroundMapTemplate.class);
+        setDataBackgroundMapTemplates();
+    }
+
+    private void setDataBackgroundMapTemplates() {
+        ByteBuffer buf = ByteBuffer.allocate(100_000);
+        buf.putShort((short) this.backgroundMapTemplates.size());
+        for (var template : backgroundMapTemplates) {
+            buf.putShort((short) template.getId());
+            buf.put(template.getLayer());
+            buf.putShort(template.getDx());
+            buf.putShort(template.getDy());
+        }
+        buf.flip();
+        dataBackgroundMapTemplates = new byte[buf.remaining()];
+        buf.get(dataBackgroundMapTemplates);
+
+        backgroundMapTemplates.clear();
+        backgroundMapTemplates = null; // Clear reference to free memory
+    }
+
+    private void loadTileSetInfo() {
+        List<Byte> tileSetIds = new ArrayList<>();
+        Database.select("SELECT DISTINCT tile_set_id FROM tile_types", rs -> {
+
+            while (rs.next()) {
+                tileSetIds.add(rs.getByte("tile_set_id"));
+            }
+
+        });
+        setTileSetInfoData(tileSetIds);
+    }
+
+    private void setTileSetInfoData(List<Byte> tileSetIds) {
+        ByteBuffer buf = ByteBuffer.allocate(100_000);
+
+        byte count = (byte) tileSetIds.size();
+
+        buf.put(count);
+
+        for (int idx = 0; idx < count; idx++) {
+
+            int tileSetId = tileSetIds.get(idx);
+
+            List<Integer> typeList = new ArrayList<>();
+            List<int[]> indexList = new ArrayList<>();
+
+            var query = "SELECT type_value, GROUP_CONCAT(index_value ORDER BY index_value) AS indices " +
+                    "FROM tile_types WHERE tile_set_id = ? GROUP BY type_value";
+
+            Database.select(query, rs -> {
+                while (rs.next()) {
+                    int typeVal = rs.getInt("type_value");
+                    String[] indicesStr = rs.getString("indices").split(",");
+                    int[] indices = new int[indicesStr.length];
+                    for (int i = 0; i < indicesStr.length; i++) {
+                        indices[i] = Integer.parseInt(indicesStr[i]);
+                    }
+                    typeList.add(typeVal);
+                    indexList.add(indices);
+                }
+
+            }, ps -> ps.setInt(1, tileSetId));
+
+            buf.put((byte) typeList.size());
+            for (int i = 0; i < typeList.size(); i++) {
+                int type = typeList.get(i);
+                int[] indices = indexList.get(i);
+                buf.putInt(type); // type_value
+                buf.put((byte) indices.length); // số index
+                for (int idxVal : indices) {
+                    buf.put((byte) idxVal); // từng index
+                }
+            }
+
+            tileType[idx] = typeList.stream().mapToInt(i -> i).toArray();
+            tileIndex[idx] = indexList.toArray(new int[0][]);
+        }
+
+        buf.flip();
+
+        tileSetInfoData = new byte[buf.remaining()];
+        buf.get(tileSetInfoData);
     }
 
     public void forEachParalllel(Consumer<WorldMapTemplate> consumer) {

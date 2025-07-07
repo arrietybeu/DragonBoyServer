@@ -26,10 +26,6 @@ public class World {
         log.info("World: {} world maps created.", worldMaps.size());
     }
 
-    public void registerMap(WorldMap map) {
-        worldMaps.put(map.getId(), map);
-    }
-
     public WorldMap getMap(int mapId) {
         return worldMaps.get(mapId);
     }

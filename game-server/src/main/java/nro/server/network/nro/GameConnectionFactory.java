@@ -36,10 +36,10 @@ public class GameConnectionFactory implements ConnectionFactory {
             final Result isFlooding = floodAcceptor.isFlooding(host, true);
             switch (isFlooding) {
                 case REJECTED:// cho cút luon khỏi game
-                    log.warn("Từ chối kết nối from IP: {}", host);
+                    log.warn("Tu choi ket noi from IP: {}", host);
                     return null;
                 case WARNED:// cảnh báo
-                    log.warn("IP vượt quá giới hạn gửi packet: {}", host);
+                    log.warn("IP vuot qua gioi han gui packet: {}", host);
                     break;
             }
         }

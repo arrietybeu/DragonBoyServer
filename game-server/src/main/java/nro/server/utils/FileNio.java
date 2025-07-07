@@ -83,7 +83,7 @@ public class FileNio {
             buffer.get(data);
             return data;
         } catch (Exception e) {
-            log.error("Lỗi đọc file: {} - {}", url, e.getMessage(), e);
+            log.error("Lỗi đọc file: {} - {}", url, e.getMessage());
         }
         return null;
     }

@@ -18,6 +18,11 @@ public class SmNotMap extends NroServerPacket {
     public static final byte UPDATE_SKILL = 7;
     public static final byte UPDATE_ITEM = 8;
 
+    public static final byte ITEM_OPTION = 0;
+    public static final byte ITEM_TEMPLATE = 1;
+    public static final byte ITEM_TEMPLATE2 = 2;
+    public static final byte ITEM_ARR_HEAD_2FR = 100;
+
     private final byte status;
     private byte type;
 
@@ -77,7 +82,7 @@ public class SmNotMap extends NroServerPacket {
         writeByte(ConfigServer.VERSION_DATA_MAP);
         writeUnsignedByte(mapTemplates.size());
 
-        for (var map : mapTemplates) {
+        for (var map : mapTemplates.values()) {
             writeUTF(map.getName());
         }
 
@@ -151,10 +156,10 @@ public class SmNotMap extends NroServerPacket {
     private void sendUpdateItem(int type) {
         this.writeByte(ConfigServer.VERSION_DATA_ITEM);
         switch (type) {
-            case 0 -> sendUpdateOption();
-            case 1 -> sendUpdateItemTemplate();
-            case 2 -> sendUpdateItemTemplate2();
-            case 100 -> sendItemArr_Head_2Fr();
+            case ITEM_OPTION -> sendUpdateOption();
+            case ITEM_TEMPLATE -> sendUpdateItemTemplate();
+            case ITEM_TEMPLATE2 -> sendUpdateItemTemplate2();
+            case ITEM_ARR_HEAD_2FR -> sendItemArr_Head_2Fr();
             default -> throw new IllegalArgumentException("Unknown item update type: " + type);
         }
     }

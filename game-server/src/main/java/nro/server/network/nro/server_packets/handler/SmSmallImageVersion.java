@@ -14,7 +14,6 @@ public class SmSmallImageVersion extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-
         var res = ResourcesData.getInstance();
         var zoomLevel = con.getSessionInfo().getClientDeviceInfo().getZoomLevel();
         byte[] smallVersion = res.getDataSmallVersion().get(zoomLevel);

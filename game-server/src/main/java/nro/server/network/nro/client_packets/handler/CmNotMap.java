@@ -4,7 +4,7 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
-import nro.server.network.nro.server_packets.handler.SmNotMap;
+import nro.server.network.nro.server_packets.handler.*;
 
 import java.util.Set;
 
@@ -32,11 +32,32 @@ public class CmNotMap extends NroClientPacket {
                     sendPacket(new SmNotMap(status));
             }
             case SmNotMap.UPDATE_ITEM -> {
-                if (!getConnection().getSessionInfo().isUpdateItem()){
-                    sendPacket(new SmNotMap(status, 0));
-                    sendPacket(new SmNotMap(status, 1));
-                    sendPacket(new SmNotMap(status, 2));
+                if (!getConnection().getSessionInfo().isUpdateItem()) {
+                    sendPacket(new SmNotMap(status, SmNotMap.ITEM_OPTION));
+                    sendPacket(new SmNotMap(status, SmNotMap.ITEM_TEMPLATE));
+                    sendPacket(new SmNotMap(status, SmNotMap.ITEM_TEMPLATE2));
+                    sendPacket(new SmNotMap(status, SmNotMap.ITEM_ARR_HEAD_2FR));
+                    getConnection().getSessionInfo().setUpdateItem(true);
                 }
+            }
+            case 13 -> {
+                if (getConnection().getSessionInfo().isClientOk())
+                    throw new RuntimeException(
+                            "Client already sent NOT_MAP with status 13, but connection is still in CONNECTED state. This should not happen."
+                    );
+                // client ok
+                // sendDataBackgroundMapTemplate
+                // sendTileSetInfo
+                // sendSmallVersion
+                // sendBackgroundVersion
+
+                sendPacket(new SmItemBackground());
+                sendPacket(new SmTileSet());
+                sendPacket(new SmSmallImageVersion());
+                sendPacket(new SmBackgroundItemVersion());
+
+                getConnection().setState(NroConnection.State.AUTHED);
+                getConnection().getSessionInfo().setClientOk(true);
             }
         }
     }
