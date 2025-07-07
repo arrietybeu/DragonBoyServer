@@ -77,7 +77,8 @@ public final class MapData implements IManager {
                 List<Waypoint> waypoints = this.loadWaypoints(id);
                 TileMap tileMap = tileMaps.get(id);
 
-                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap);
+                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId,
+                        isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap);
                 worldMaps.put(id, worldMapTemplate);
             }
         });
@@ -204,11 +205,9 @@ public final class MapData implements IManager {
     private void loadTileSetInfo() {
         List<Byte> tileSetIds = new ArrayList<>();
         Database.select("SELECT DISTINCT tile_set_id FROM tile_types", rs -> {
-
             while (rs.next()) {
                 tileSetIds.add(rs.getByte("tile_set_id"));
             }
-
         });
         setTileSetInfoData(tileSetIds);
     }

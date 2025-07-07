@@ -5,6 +5,7 @@ import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.PacketHelper;
+import nro.server.services.player.PlayerEnterWorldService;
 
 import java.util.Set;
 
@@ -25,7 +26,13 @@ public class CmFinishUpdate extends NroClientPacket {
 
     @Override
     protected void runImpl() {
+
+        // if the player is null show the character creation form
         sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
+
+        // else send a packet to enter the world.
+
+        PlayerEnterWorldService.enterWorld(getConnection());
     }
 
 }

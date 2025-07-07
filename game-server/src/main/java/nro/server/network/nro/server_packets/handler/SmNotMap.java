@@ -13,6 +13,7 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 @ServerPacketCommand(ConstsCmd.NOT_MAP)
 public class SmNotMap extends NroServerPacket {
 
+    public static final byte CREATE_CHARACTER = 2;
     public static final byte ALL_DATA_GAME = 4;
     public static final byte UPDATE_MAP = 6;
     public static final byte UPDATE_SKILL = 7;

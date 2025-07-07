@@ -23,6 +23,8 @@ public class CmNotMap extends NroClientPacket {
         var status = readByte();
         System.out.println("CmNotMap status: " + status + " connection: " + getConnection());
         switch (status) {
+            case SmNotMap.CREATE_CHARACTER -> {
+            }
             case SmNotMap.UPDATE_MAP -> {
                 if (!getConnection().getSessionInfo().isUpdateMap())
                     sendPacket(new SmNotMap(status));

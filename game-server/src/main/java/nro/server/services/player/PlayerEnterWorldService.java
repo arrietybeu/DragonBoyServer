@@ -12,6 +12,7 @@ public class PlayerEnterWorldService {
     private static final Logger log = LoggerFactory.getLogger(PlayerEnterWorldService.class);
 
     public static void enterWorld(final NroConnection client) {
+
     }
 
 }
