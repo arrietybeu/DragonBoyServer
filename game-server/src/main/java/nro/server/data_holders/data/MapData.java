@@ -9,10 +9,8 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author Arriety
@@ -22,8 +20,10 @@ public final class MapData implements IManager {
     private final static String QUERY_LOAD_MAP_TEMPLATE = "SELECT * FROM `map_template`";
     private final static String QUERY_LOAD_MAP_ITEM_BACKGROUND = "SELECT * FROM `map_item_background` WHERE `map_id` = ?";
 
+//    private final List<WorldMapTemplate> worldMaps = new ArrayList<>();
+
     @Getter
-    private final List<WorldMapTemplate> worldMaps = new ArrayList<>();
+    private final Map<Short, WorldMapTemplate> worldMaps = new LinkedHashMap<>();
 
     @Override
     public void init() throws Throwable {
@@ -65,7 +65,7 @@ public final class MapData implements IManager {
                         tileId, isMapDouble, bgId, bgType, type,
                         bgItems, effects, waypoints, tileMap
                 );
-                worldMaps.add(worldMapTemplate);
+                worldMaps.put(id, worldMapTemplate);
             }
         });
     }
@@ -163,6 +163,10 @@ public final class MapData implements IManager {
         } catch (ParseException e) {
             throw new RuntimeException("Error parsing JSON to int array: " + json, e);
         }
+    }
+
+    public void forEachParalllel(Consumer<WorldMapTemplate> consumer) {
+        worldMaps.values().parallelStream().forEach(consumer);
     }
 
     private static final class SingletonHolder {

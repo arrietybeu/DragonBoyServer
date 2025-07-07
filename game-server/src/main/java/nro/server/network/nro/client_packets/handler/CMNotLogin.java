@@ -1,7 +1,9 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
+import nro.server.controllers.AccountController;
 import nro.server.model.account.Account;
+import nro.server.model.account.NroAuthResponse;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
@@ -80,15 +82,22 @@ public class CMNotLogin extends NroClientPacket {
                     connection.close(new SmLoginFail(SmLoginFail.RELOGIN_ALLOWED));
                     throw new RuntimeException("Invalid zoom level: " + zoom + " for connection: " + connection);
                 }
-
-                Account account = new Account(username, password);
-                connection.setAccount(account);
                 connection.getSessionInfo().setVersion(version);
-
-                sendPacket(new SmSmallImageVersion());
-                sendPacket(new SmBackgroundItemVersion());
-                if (!connection.getSessionInfo().isUpdateData())
-                    sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
+                NroAuthResponse response = AccountController.Login(username, password, connection);
+                if (response == null) return;
+                switch (response) {
+                    case NroAuthResponse.ACCOUNT_BANNED ->
+                            connection.sendPacket(new CmDialogMessage("Tài Khoản của bạn đã bị khóa!"));
+                    case NroAuthResponse.IP_BLOCKED ->
+                            connection.sendPacket(new CmDialogMessage("IP của bạn đã bị chặn!"));
+                    case NroAuthResponse.SUCCESS -> {
+                        sendPacket(new SmSmallImageVersion());
+                        sendPacket(new SmBackgroundItemVersion());
+                        if (!connection.getSessionInfo().isUpdateData())
+                            sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
+                    }
+                    default -> connection.sendPacket(new CmDialogMessage(""));
+                }
             }
             case 2 -> {
                 final SessionInfo session = getConnection().getSessionInfo();
