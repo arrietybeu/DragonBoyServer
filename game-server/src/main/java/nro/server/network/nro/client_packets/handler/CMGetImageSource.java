@@ -25,7 +25,7 @@ public class CMGetImageSource extends NroClientPacket {
         this.action = this.readByte();
         if (action == 2) {
             if (getRemainingBytes() < 2) {
-                System.err.println("Không đủ bytes để đọc resourceIndexSize");
+//                System.err.println("Không đủ bytes để đọc resourceIndexSize");
                 return;
             }
             var resourceIndexSize = this.readShort();

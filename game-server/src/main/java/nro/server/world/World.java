@@ -36,16 +36,16 @@ public class World {
         if (map == null) return null;
 
         byte typeMap = map.getTemplate().getTypeMap();
-        switch (typeMap) {
-            case 0: // Offline map
-                return map.createInstanceForPlayer(ownerId);
-            case 1: // Online map
-                return map.getSharedZoneForOnline();
-            case 2: // Dungeon (guild instance)
-                return map.createInstanceForGuild(ownerId);
-            default:
-                throw new IllegalArgumentException("Unknown typeMap: " + typeMap);
-        }
+
+        return switch (typeMap) {
+            case 0 -> // Offline map
+                    map.createInstanceForPlayer(ownerId);
+            case 1 -> // Online map
+                    map.getSharedZoneForOnline();
+            case 2 -> // Pho ban
+                    map.createInstanceForGuild(ownerId);
+            default -> throw new IllegalArgumentException("Unknown typeMap: " + typeMap);
+        };
     }
 
     public static World getInstance() {

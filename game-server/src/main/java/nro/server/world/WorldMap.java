@@ -9,7 +9,9 @@ import nro.server.model.templates.world.WorldMapTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +27,7 @@ public class WorldMap {
     private final String name;
     private final WorldMapTemplate template;
 
-    private final Map<Integer, WorldMapInstance> area = new ConcurrentHashMap<>();
+    private final List<WorldMapInstance > areas = new ArrayList<>();
     private final Map<Integer, Integer> ownerToInstance = new ConcurrentHashMap<>();
 
     private final int[] types;
@@ -46,15 +48,15 @@ public class WorldMap {
 
         if (template.getTypeMap() == 1) {
             for (int i = 0; i < template.getMaxArea(); i++) {
-                area.put(i, new WorldMapInstance(this, i));
+                areas.add(i, new WorldMapInstance(this, i));
             }
         } else {
-            area.put(0, new WorldMapInstance(this, 0));
+            areas.addFirst(new WorldMapInstance(this, 0));
         }
     }
 
     public WorldMapInstance getWorldMapInstance(int instanceId) {
-        return area.get(instanceId);
+        return areas.get(instanceId);
     }
 
     public WorldMapInstance createInstanceForPlayer(int playerId) {
@@ -63,7 +65,7 @@ public class WorldMap {
 
     public WorldMapInstance getSharedZoneForOnline() {
         for (int i = 0; i < template.getMaxArea(); i++) {
-            WorldMapInstance inst = area.get(i);
+            WorldMapInstance inst = areas.get(i);
             if (inst != null && inst.getPlayerCount() < template.getMaxPlayer()) {
                 return inst;
             }
@@ -78,20 +80,22 @@ public class WorldMap {
      * @return
      */
     public WorldMapInstance createInstanceForGuild(int guildId) {
-        return ownerToInstance.containsKey(guildId) ? area.get(ownerToInstance.get(guildId)) : createUniqueInstance(guildId);
+        return ownerToInstance.containsKey(guildId) ? areas.get(ownerToInstance.get(guildId))
+                : createUniqueInstance(guildId);
     }
 
     private synchronized WorldMapInstance createUniqueInstance(int ownerId) {
         int nextId = generateNextInstanceId();
         WorldMapInstance instance = new WorldMapInstance(this, nextId, ownerId);
-        area.put(nextId, instance);
+        areas.add(nextId, instance);
         if (ownerId != 0) ownerToInstance.put(ownerId, nextId);
         return instance;
     }
 
     private int generateNextInstanceId() {
         int id = 1;
-        while (area.containsKey(id)) id++;
+//        while (area.containsKey(id)) id++;
+        while (id < areas.size() && areas.get(id) != null) id++;
         return id;
     }
 
@@ -100,17 +104,21 @@ public class WorldMap {
     }
 
     public WorldMapInstance getInstance(int instanceId) {
-        return area.get(instanceId);
+        if (instanceId < 0 || instanceId >= areas.size()) {
+            log.warn("Invalid instanceId: {} for map: {}", instanceId, id);
+            return null;
+        }
+        return areas.get(instanceId);
     }
 
     public Collection<WorldMapInstance> getAllArea() {
-        return area.values();
+        return areas;
     }
 
     public WorldMapInstance createNewInstance() {
         int nextId = generateNextInstanceId();
         WorldMapInstance instance = new WorldMapInstance(this, nextId);
-        area.put(nextId, instance);
+        areas.add(nextId, instance);
         return instance;
     }
 
