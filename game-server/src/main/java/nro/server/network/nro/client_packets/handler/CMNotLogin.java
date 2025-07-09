@@ -79,7 +79,7 @@ public class CMNotLogin extends NroClientPacket {
                 var zoom = connection.getSessionInfo().getClientDeviceInfo().getZoomLevel();
                 if (zoom <= 0 || zoom > 4) {
                     connection.close(new SmLoginFail(SmLoginFail.RELOGIN_ALLOWED));
-                    throw new RuntimeException("Invalid zoom level: " + zoom + " for connection: " + connection);
+                    return;
                 }
                 connection.getSessionInfo().setVersion(version);
                 NroAuthResponse response = AccountController.Login(username, password, connection);

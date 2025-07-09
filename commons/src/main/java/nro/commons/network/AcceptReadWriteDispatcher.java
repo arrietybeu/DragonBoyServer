@@ -29,7 +29,7 @@ public class AcceptReadWriteDispatcher extends Dispatcher {
 
     @Override
     public void dispatch() throws IOException {
-        int selected = selector.select();
+        int selected = selector.select(1000);
         if (selected != 0) {
             for (Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator(); selectedKeys.hasNext(); ) {
                 SelectionKey key = selectedKeys.next();
@@ -61,9 +61,16 @@ public class AcceptReadWriteDispatcher extends Dispatcher {
             long nowMillis = System.currentTimeMillis();
             for (Iterator<AConnection<?>> iterator = pendingClose.iterator(); iterator.hasNext(); ) {
                 AConnection<?> connection = iterator.next();
-                if (connection.getSendMsgQueue().isEmpty() || !connection.isConnected() || nowMillis > connection.pendingCloseUntilMillis) {
+                if (!connection.isConnected()) {
                     closeConnectionImpl(connection);
                     iterator.remove();
+                    continue;
+                }
+                if (nowMillis >= connection.pendingCloseUntilMillis) {
+                    if (connection.getSendMsgQueue().isEmpty()) {
+                        closeConnectionImpl(connection);
+                        iterator.remove();
+                    }
                 }
             }
         }

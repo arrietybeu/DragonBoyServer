@@ -22,7 +22,7 @@ public class AccountDAO {
 
         Database.select(QUERY_GET_ACCOUNT, rs -> {
             if (rs.next()) {
-                Account account = new Account(rs.getString("username"), rs.getString("password"));
+                Account account = new Account(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
                 accountRef.set(account);
             }
         }, stmt -> {

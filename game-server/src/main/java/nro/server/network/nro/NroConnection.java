@@ -13,7 +13,6 @@ import nro.server.GameServer;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.model.account.Account;
-import nro.server.model.entity.player.Player;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
@@ -28,7 +27,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Arriety Bếu
@@ -56,7 +54,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
     @Getter
     private final Crypt crypt;
 
-    private final AtomicReference<Player> activePlayer = new AtomicReference<>();
+    @Getter
+    private volatile int playerEntityId = -1;
 
     private volatile long lastClientMessageTime;
 
@@ -94,6 +93,25 @@ public class NroConnection extends AConnection<NroServerPacket> {
             return null;
         }
         return account;
+    }
+
+    /**
+     * Gán một Entity Player vào Connection này sau khi đăng nhập thành công.
+     * <p>Cập nhật trạng thái của connection thành IN_GAME.</p>
+     *
+     * @param entityId ID của entity người chơi
+     */
+    public void attachPlayerEntity(int entityId) {
+        this.playerEntityId = entityId;
+        setState(State.IN_GAME);
+    }
+
+    /**
+     * Tách Entity ra khỏi Connection, thường dùng khi đăng xuất.
+     */
+    public void detachPlayerEntity() {
+        this.playerEntityId = -1;
+        setState(State.AUTHED);
     }
 
     /**
@@ -199,23 +217,23 @@ public class NroConnection extends AConnection<NroServerPacket> {
         this.getCrypt().encrypt();
     }
 
-    /**
-     * Sets Active player to new value. Update connection state to correct value.
-     *
-     * @param player
-     * @return True if active player was set to new value.
-     */
-    public boolean setActivePlayer(Player player) {
-        if (player == null) {
-            activePlayer.set(null);
-            setState(State.AUTHED);
-        } else if (activePlayer.compareAndSet(null, player)) {
-            setState(State.IN_GAME);
-        } else {
-            return false;
-        }
-        return true;
-    }
+//    /**
+//     * Sets Active player to new value. Update connection state to correct value.
+//     *
+//     * @param player
+//     * @return True if active player was set to new value.
+//     */
+//    public boolean setActivePlayer(Player player) {
+//        if (player == null) {
+//            activePlayer.set(null);
+//            setState(State.AUTHED);
+//        } else if (activePlayer.compareAndSet(null, player)) {
+//            setState(State.IN_GAME);
+//        } else {
+//            return false;
+//        }
+//        return true;
+//    }
 
     @Override
     protected void onDisconnect() {
@@ -233,7 +251,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
                 sendMsgQueue.clear();
             }
         }
-        log.info("Client disconnected successfully: IP={}, state={}", getIP(), state);
+        log.info("Client disconnected successfully: IP={}, state={}", getIP(), state + " time delay" + pendingCloseUntilMillis);
     }
 
     /**

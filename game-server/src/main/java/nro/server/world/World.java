@@ -34,7 +34,6 @@ public class World {
     public WorldMapInstance getAvailableInstance(int mapId, int ownerId) {
         WorldMap map = getMap(mapId);
         if (map == null) return null;
-
         byte typeMap = map.getTemplate().getTypeMap();
 
         return switch (typeMap) {

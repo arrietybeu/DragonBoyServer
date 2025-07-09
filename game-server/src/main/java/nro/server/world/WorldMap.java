@@ -3,7 +3,9 @@ package nro.server.world;
 import lombok.Getter;
 import nro.server.consts.ConstMap;
 import nro.server.data_holders.data.MapData;
-import nro.server.model.entity.player.Player;
+import nro.server.engine.GameWorld;
+import nro.server.model.ecs.component.boss.BossComponent;
+import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.templates.world.TileMap;
 import nro.server.model.templates.world.WorldMapTemplate;
 import org.slf4j.Logger;
@@ -27,7 +29,7 @@ public class WorldMap {
     private final String name;
     private final WorldMapTemplate template;
 
-    private final List<WorldMapInstance > areas = new ArrayList<>();
+    private final List<WorldMapInstance> areas = new ArrayList<>();
     private final Map<Integer, Integer> ownerToInstance = new ConcurrentHashMap<>();
 
     private final int[] types;
@@ -122,28 +124,39 @@ public class WorldMap {
         return instance;
     }
 
-    public static WorldMapInstance getArea(int mapId, int areaId, Object entity) {
+    public static WorldMapInstance getArea(int mapId, int areaId, int entityId) {
         WorldMap map = World.getInstance().getMap(mapId);
         if (map == null) {
             throw new IllegalArgumentException("Invalid mapId: " + mapId);
         }
 
+        var ecsWorld = GameWorld.getInstance().getWorld();
+        var entity = ecsWorld.getEntity(entityId);
+
+        if (entity == null) {
+            throw new IllegalArgumentException("Entity with ID " + entityId + " not found.");
+        }
+
         byte typeMap = map.getTemplate().getTypeMap();
 
-        if (entity instanceof Player player) {
+        if (entity.getComponent(PlayerComponent.class) != null) {
             return switch (typeMap) {
-                case 0 -> map.createInstanceForPlayer(player.getId()); // offline
-                case 1 -> map.getSharedZoneForOnline();                // online
-//                case 2 -> map.createInstanceForGuild(player.getGuildId()); // phó bản
-                default -> throw new IllegalStateException("Unknown typeMap: " + typeMap);
+                case 0 -> map.createInstanceForPlayer(entityId); // offline
+                case 1 -> map.getSharedZoneForOnline();          // online
+                // case 2 -> {
+                //     ClanComponent clan = entity.getComponent(ClanComponent.class);
+                //     int guildId = (clan != null) ? clan.id : -1;
+                //     yield map.createInstanceForGuild(guildId); // phó bản
+                // }
+                default -> throw new IllegalStateException("Unknown typeMap for Player: " + typeMap);
             };
         }
 
-//        if (entity instanceof Boss boss) {
-//            return (areaId >= 0)
-//                    ? map.getWorldMapInstance(areaId)
-//                    : map.getWorldMapInstance(0); // default zone
-//        }
+        if (entity.getComponent(BossComponent.class) != null) {
+            return (areaId >= 0)
+                    ? map.getWorldMapInstance(areaId)
+                    : map.getWorldMapInstance(0);
+        }
 
         throw new UnsupportedOperationException("Unsupported entity type: " + entity.getClass().getSimpleName());
     }

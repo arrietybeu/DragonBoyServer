@@ -58,7 +58,6 @@ public final class ItemData implements IManager {
         this.dataItemOption = null;
     }
 
-
     private void loadItemOptionTemplate() {
         String query = "SELECT * FROM item_option_template";
         Database.select(query, rs -> {
@@ -74,8 +73,9 @@ public final class ItemData implements IManager {
                 }
                 this.itemOptionTemplates.put((short) id, itemOptionManager);
             }
-            this.setItemOption();
         });
+
+        this.setItemOption();
     }
 
     private void setItemOption() {
@@ -128,8 +128,9 @@ public final class ItemData implements IManager {
                 var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, maxQuantity, powerRequire, head, body, leg, itemOptions, isTrade);
                 this.itemTemplates.put(id, itemTemplate);
             }
-            this.setDataItemTemplate();
+
         });
+        this.setDataItemTemplate();
     }
 
     private void setDataItemTemplate() {
@@ -186,6 +187,7 @@ public final class ItemData implements IManager {
                 this.arrHead2Frames.add(new ItemTemplate.ArrHead2Frames(id, heads));
             }
         });
+        this.setItemArrHead2fr();
     }
 
     private void setItemArrHead2fr() {

@@ -20,17 +20,18 @@ public class CmFinishUpdate extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-    }
-
-    @Override
-    protected void runImpl() {
-        if (!getConnection().getSessionInfo().isLogin()) return;
+        if (getConnection().getSessionInfo().isLogin()) return;
 
         // if the player is null show the character creation form
 //        sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
         // else send a packet to enter the world.
 
+        System.out.println("enter world");
         PlayerEnterWorldService.enterWorld(getConnection());
+    }
+
+    @Override
+    protected void runImpl() {
     }
 
 }

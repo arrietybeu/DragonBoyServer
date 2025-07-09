@@ -79,6 +79,7 @@ public abstract class AConnection<T extends BaseServerPacket> {
      * Giống kiểu mutex.
      */
     private boolean locked = false;
+
     /**
      * Constructor
      *
@@ -151,6 +152,32 @@ public abstract class AConnection<T extends BaseServerPacket> {
             key.selector().wakeup();
         }
     }
+
+    public final void close(T closePacket, int delaySeconds) {
+        synchronized (guard) {
+            if (isPendingClose() || isClosed()) {
+                return;
+            }
+
+            if (delaySeconds < 0) {
+                closed = true;
+            } else {
+                pendingCloseUntilMillis = System.currentTimeMillis() + (delaySeconds * 1000L);
+            }
+
+            if (closePacket != null && isConnected()) {
+                getSendMsgQueue().clear();
+                getSendMsgQueue().add(closePacket);
+                key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
+            }
+
+            dispatcher.closeConnection(this);
+            if (key.selector().isOpen()) {
+                key.selector().wakeup();
+            }
+        }
+    }
+
 
     /**
      * Kiểm tra kết nối còn hoạt động không

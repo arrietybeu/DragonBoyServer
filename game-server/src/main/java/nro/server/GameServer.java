@@ -1,5 +1,6 @@
 package nro.server;
 
+import com.artemis.WorldConfigurationBuilder;
 import lombok.Getter;
 import nro.commons.database.DatabaseFactory;
 import nro.commons.network.NioServer;
@@ -12,6 +13,7 @@ import nro.server.configs.main.PacketConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
+import nro.server.engine.GameWorld;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
@@ -46,6 +48,8 @@ public class GameServer {
         World.getInstance();
         BannedIpController.start();
 
+        intEntityComponentSystem();
+
         System.gc();
         nioServer = initNioServer();
         Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
@@ -57,6 +61,17 @@ public class GameServer {
         NioServer nioServer = new NioServer(NetworkConfig.NIO_READ_WRITE_THREADS, serverCfg);
         nioServer.connect(ThreadPoolManager.getInstance());
         return nioServer;
+    }
+
+    private static void intEntityComponentSystem() {
+
+        WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
+//        builder.with();
+        GameWorld gameWorld = GameWorld.getInstance();
+        gameWorld.initialize(builder);
+        gameWorld.start();
+
+        LOGGER.info("ECS Game World started successfully.");
     }
 
     private static void initUtilityServicesAndConfig() {
@@ -72,7 +87,6 @@ public class GameServer {
         // Initialize scanner
         initCommandService();
         CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
-
 
 
         LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);

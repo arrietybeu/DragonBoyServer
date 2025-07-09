@@ -43,7 +43,6 @@ public class NioServer {
                         SelectionKey.OP_ACCEPT,
                         new Acceptor(cfg.connectionFactory(), this)
                 );
-//                acceptDispatcher.selector().wakeup();
                 serverChannelKeys.add(acceptKey);// add to controller SelectionKey
             }
         } catch (Exception e) {
