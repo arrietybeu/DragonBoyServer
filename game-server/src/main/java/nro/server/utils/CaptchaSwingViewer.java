@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
  */
 public class CaptchaSwingViewer {
 
-    public static void main(String[] args) throws Exception {
+    public static void main() throws Exception {
         CaptchaUtil.generateDynamicRules();
         String digits = "19062006";
 

@@ -143,10 +143,12 @@ public class WorldMap {
 
     private void loadTileTypes() {
         int tileId = template.getTileId() - 1;
+
         if (tileId < 0 || tileId >= MapData.getInstance().tileIndex.length) {
-            log.warn("Map {} name {} has invalid tileId: {}", id, name, tileId);
+//            log.warn("Map {} name {} has invalid tileId: {}", id, name, tileId);
             return;
         }
+
         int[][] indexList = MapData.getInstance().tileIndex[tileId];
         int[] typeList = MapData.getInstance().tileType[tileId];
         int[] tiles = tileMap.tiles();
