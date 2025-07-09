@@ -18,6 +18,7 @@ import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
+import nro.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +40,12 @@ public class GameServer {
 
     public static void main(String[] args) {
         initUtilityServicesAndConfig();
+        DatabaseFactory.init();
         //noinspection ResultOfMethodCallIgnored
         DataManager.getInstance();
+        World.getInstance();
+        BannedIpController.start();
+
         System.gc();
         nioServer = initNioServer();
         Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
@@ -57,7 +62,7 @@ public class GameServer {
     private static void initUtilityServicesAndConfig() {
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());
         Config.load();
-        DatabaseFactory.init();
+
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
 
@@ -68,7 +73,7 @@ public class GameServer {
         initCommandService();
         CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
 
-        BannedIpController.start();
+
 
         LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);
     }

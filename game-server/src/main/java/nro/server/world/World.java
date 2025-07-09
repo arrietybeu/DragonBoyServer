@@ -23,11 +23,29 @@ public class World {
                 worldMaps.put(template.getId(), wm);
             }
         });
+
         log.info("World: {} world maps created.", worldMaps.size());
     }
 
     public WorldMap getMap(int mapId) {
         return worldMaps.get(mapId);
+    }
+
+    public WorldMapInstance getAvailableInstance(int mapId, int ownerId) {
+        WorldMap map = getMap(mapId);
+        if (map == null) return null;
+
+        byte typeMap = map.getTemplate().getTypeMap();
+        switch (typeMap) {
+            case 0: // Offline map
+                return map.createInstanceForPlayer(ownerId);
+            case 1: // Online map
+                return map.getSharedZoneForOnline();
+            case 2: // Dungeon (guild instance)
+                return map.createInstanceForGuild(ownerId);
+            default:
+                throw new IllegalArgumentException("Unknown typeMap: " + typeMap);
+        }
     }
 
     public static World getInstance() {

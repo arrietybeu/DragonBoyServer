@@ -15,6 +15,8 @@ public class SessionInfo {
     private boolean isUpdateSkill;
     private boolean isUpdateItem;
 
+    private boolean isLogin;
+
     private boolean isClientOk;
     public SessionInfo() {
         clientDeviceInfo = new ClientDeviceInfo();

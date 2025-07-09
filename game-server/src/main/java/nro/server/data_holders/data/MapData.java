@@ -57,9 +57,10 @@ public final class MapData implements IManager {
     }
 
     private void loadMapTemplate() {
-        Database.select(QUERY_LOAD_MAP_TEMPLATE, rs -> {
-            Map<Short, TileMap> tileMaps = loadAllMapTiles();
 
+        Map<Short, TileMap> tileMaps = loadAllMapTiles();
+
+        Database.select(QUERY_LOAD_MAP_TEMPLATE, rs -> {
             while (rs.next()) {
                 var id = rs.getShort("id");
                 var name = rs.getString("name");
@@ -160,6 +161,7 @@ public final class MapData implements IManager {
                 tileMaps.put(mapId, new TileMap(tmw, tmh, maps));
             }
         });
+
         return tileMaps;
     }
 
