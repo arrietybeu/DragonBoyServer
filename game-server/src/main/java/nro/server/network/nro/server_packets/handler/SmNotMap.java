@@ -58,6 +58,7 @@ public class SmNotMap extends NroServerPacket {
                 con.getSessionInfo().setUpdateSkill(true);
             }
             case UPDATE_ITEM -> {
+                System.out.println("sendItemUpdate: " + type);
                 sendUpdateItem(type);
                 con.getSessionInfo().setUpdateItem(true);
             }

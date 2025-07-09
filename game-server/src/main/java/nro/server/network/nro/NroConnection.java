@@ -89,8 +89,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     public Account getAccount() {
         if (account == null) {
-            log.warn("Account is null for connection: {}", this);
-            return null;
+            throw new IllegalStateException("Account is not set for connection: " + this);
         }
         return account;
     }
@@ -216,24 +215,6 @@ public class NroConnection extends AConnection<NroServerPacket> {
     public final void encrypt() {
         this.getCrypt().encrypt();
     }
-
-//    /**
-//     * Sets Active player to new value. Update connection state to correct value.
-//     *
-//     * @param player
-//     * @return True if active player was set to new value.
-//     */
-//    public boolean setActivePlayer(Player player) {
-//        if (player == null) {
-//            activePlayer.set(null);
-//            setState(State.AUTHED);
-//        } else if (activePlayer.compareAndSet(null, player)) {
-//            setState(State.IN_GAME);
-//        } else {
-//            return false;
-//        }
-//        return true;
-//    }
 
     @Override
     protected void onDisconnect() {

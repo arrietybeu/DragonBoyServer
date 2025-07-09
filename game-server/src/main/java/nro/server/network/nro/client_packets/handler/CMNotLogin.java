@@ -85,6 +85,8 @@ public class CMNotLogin extends NroClientPacket {
                 NroAuthResponse response = AccountController.Login(username, password, connection);
                 if (response == null) return;
                 switch (response) {
+                    case NroAuthResponse.ACCOUNT_NOT_FOUND ->
+                            connection.sendPacket(new SmDialogMessage("Thông tin đăng nhập không chính xác"));
                     case NroAuthResponse.ACCOUNT_BANNED ->
                             connection.sendPacket(new SmDialogMessage("Tài Khoản của bạn đã bị khóa!"));
                     case NroAuthResponse.IP_BLOCKED ->
@@ -95,7 +97,7 @@ public class CMNotLogin extends NroClientPacket {
                         if (!connection.getSessionInfo().isUpdateData())
                             sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                     }
-                    default -> connection.sendPacket(new SmDialogMessage(""));
+                    default -> connection.sendPacket(new SmDialogMessage("Vui lòng nhập thông tin đăng nhập hợp lệ"));
                 }
             }
             case 2 -> {

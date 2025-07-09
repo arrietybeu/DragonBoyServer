@@ -128,7 +128,6 @@ public final class ItemData implements IManager {
                 var itemTemplate = new ItemTemplate(id, type, gender, name, description, level, iconID, part, maxQuantity, powerRequire, head, body, leg, itemOptions, isTrade);
                 this.itemTemplates.put(id, itemTemplate);
             }
-
         });
         this.setDataItemTemplate();
     }

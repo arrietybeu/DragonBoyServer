@@ -21,11 +21,9 @@ public class PlayerEnterWorldService {
     private static final ConcurrentLinkedQueue<Integer> enteringWorld = new ConcurrentLinkedQueue<>();
 
     public static void enterWorld(final NroConnection client) {
+        if (client == null)
+            throw new NullPointerException("Client EnterWorldService cannot be null");
 
-        if (client == null) {
-            log.warn("Attempted to enter world with invalid client connection.");
-            return;
-        }
         int accountId = client.getAccount().getId();
 
         int playerId = PlayerDAO.findPlayerIdByAccountId(accountId);
@@ -40,7 +38,6 @@ public class PlayerEnterWorldService {
                 client.close(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
                 return;
             }
-
             client.attachPlayerEntity(playerEntity.getId());
         }
     }
