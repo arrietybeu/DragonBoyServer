@@ -18,6 +18,9 @@ public class StatsComponent extends Component {
     public int baseDefense;
     public byte baseCrit;
 
+    public short expPerStatIncrease;
+    public long currentDamage;
+
     // Các chỉ số sau khi tính toán (sẽ được cập nhật bởi một System)
     public long totalDefense;
     public byte totalCriticalChance;

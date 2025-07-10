@@ -43,7 +43,6 @@ public class PlayerDAO {
 
     public static boolean saveNewPlayer(Connection connection, int playerID, int accountId, String name,
                                         byte gender, int hair) {
-
         try (CallableStatement stmt = connection.prepareCall(QUERY_CALL_CREATE_PLAYER)) {
             stmt.setInt(1, playerID);
             stmt.setInt(2, accountId);
@@ -54,7 +53,6 @@ public class PlayerDAO {
             stmt.setInt(7, 20);
 
             int rowsAffected = stmt.executeUpdate();
-
             return rowsAffected > 0;
         } catch (SQLException e) {
             log.error("Failed to create new player: {}, accountId: {}. Error: {}", name, accountId, e.getMessage(), e);
