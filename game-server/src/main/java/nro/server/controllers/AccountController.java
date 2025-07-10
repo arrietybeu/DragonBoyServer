@@ -2,7 +2,7 @@ package nro.server.controllers;
 
 import nro.server.model.account.Account;
 import nro.server.dao.AccountDAO;
-import nro.server.model.account.NroAuthResponse;
+import nro.server.network.nro.NroAuthResponse;
 import nro.server.network.nro.NroConnection;
 
 /**

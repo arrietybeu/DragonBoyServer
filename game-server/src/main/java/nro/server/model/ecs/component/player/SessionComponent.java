@@ -10,7 +10,10 @@ public class SessionComponent extends Component {
 
     public NroConnection connection;
 
-    public SessionComponent(final NroConnection connection) {
-        this.connection = connection;
+    public SessionComponent() {
+    }
+
+    public SessionComponent(NroConnection conn) {
+        this.connection = conn;
     }
 }

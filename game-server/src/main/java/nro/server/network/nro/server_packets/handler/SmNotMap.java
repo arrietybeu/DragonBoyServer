@@ -21,7 +21,6 @@ public class SmNotMap extends NroServerPacket {
 
     public static final byte ITEM_OPTION = 0;
     public static final byte ITEM_TEMPLATE = 1;
-    public static final byte ITEM_TEMPLATE2 = 2;
     public static final byte ITEM_ARR_HEAD_2FR = 100;
 
     private final byte status;
@@ -33,6 +32,7 @@ public class SmNotMap extends NroServerPacket {
 
     /**
      * Packet gửi item
+     *
      * @param status
      * @param type
      */
@@ -58,7 +58,6 @@ public class SmNotMap extends NroServerPacket {
                 con.getSessionInfo().setUpdateSkill(true);
             }
             case UPDATE_ITEM -> {
-                System.out.println("sendItemUpdate: " + type);
                 sendUpdateItem(type);
                 con.getSessionInfo().setUpdateItem(true);
             }
@@ -82,7 +81,7 @@ public class SmNotMap extends NroServerPacket {
     private void sendUpdateMap() {
         var mapTemplates = MapData.getInstance().getWorldMaps();
         writeByte(ConfigServer.VERSION_DATA_MAP);
-        writeUnsignedByte(mapTemplates.size());
+        writeShort(mapTemplates.size());// client version thap send byte
 
         for (var map : mapTemplates.values()) {
             writeUTF(map.getName());
@@ -96,17 +95,17 @@ public class SmNotMap extends NroServerPacket {
             this.writeShort(npc.head());
             this.writeShort(npc.body());
             this.writeShort(npc.leg());
-            this.writeByte(1);
-            this.writeByte(1);
-            this.writeUTF("Nói chuyện");
+            this.writeByte(0);
+//            this.writeByte(1);
+//            this.writeUTF("Nói chuyện");
         }
 
         var monsterTemplates = MonsterData.getInstance().getMonsters();
-        writeUnsignedByte(monsterTemplates.size());
+        writeShort(monsterTemplates.size());// client version thap send byte
         for (var monster : monsterTemplates) {
             this.writeByte(monster.type());
             this.writeUTF(monster.NAME());
-            this.writeInt((int) monster.hp());
+            this.writeLong(monster.hp());
             this.writeByte(monster.rangeMove());
             this.writeByte(monster.speed());
             this.writeByte(monster.dartType());
@@ -152,15 +151,12 @@ public class SmNotMap extends NroServerPacket {
                 }
             }
         }
-
     }
 
     private void sendUpdateItem(int type) {
         this.writeByte(ConfigServer.VERSION_DATA_ITEM);
         switch (type) {
             case ITEM_OPTION -> sendUpdateOption();
-            case ITEM_TEMPLATE -> sendUpdateItemTemplate();
-            case ITEM_TEMPLATE2 -> sendUpdateItemTemplate2();
             case ITEM_ARR_HEAD_2FR -> sendItemArr_Head_2Fr();
             default -> throw new IllegalArgumentException("Unknown item update type: " + type);
         }
@@ -168,14 +164,6 @@ public class SmNotMap extends NroServerPacket {
 
     private void sendUpdateOption() {
         writeBytes(ItemData.getInstance().getDataItemOption());
-    }
-
-    private void sendUpdateItemTemplate() {
-        writeBytes(ItemData.getInstance().getDataItemTemplate());
-    }
-
-    private void sendUpdateItemTemplate2() {
-        writeBytes(ItemData.getInstance().getDataItemTemplate2());
     }
 
     private void sendItemArr_Head_2Fr() {

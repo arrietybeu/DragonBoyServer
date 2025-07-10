@@ -1,4 +1,4 @@
-package nro.server.model.account;
+package nro.server.network.nro;
 
 public enum NroAuthResponse {
 

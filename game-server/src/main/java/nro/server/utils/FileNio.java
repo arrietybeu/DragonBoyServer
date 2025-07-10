@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
@@ -32,20 +33,23 @@ public class FileNio {
             lock.readLock().unlock();
         }
 
-        byte[] fileData = readFile(url);
-        if (fileData == null) return null;
-
-        int count = FILE_ACCESS_COUNT.merge(url, 1, Integer::sum);
-        if (count >= CACHE_THRESHOLD) {
-            lock.writeLock().lock();
-            try {
+        try {
+            byte[] fileData = readFile(url);
+            int count = FILE_ACCESS_COUNT.merge(url, 1, Integer::sum);
+            if (count >= CACHE_THRESHOLD) {
+                lock.writeLock().lock();
+                try {
 //                LogServer.LogWarning("ADD cache: " + url + " const: " + count);
-                CACHE.put(url, fileData);
-            } finally {
-                lock.writeLock().unlock();
+                    CACHE.put(url, fileData);
+                } finally {
+                    lock.writeLock().unlock();
+                }
             }
+            return fileData;
+        } catch (Exception e) {
+            log.error("Error reading file at URL: {} - {}", url, e.getMessage());
+            return null;
         }
-        return fileData;
     }
 
     public static byte[] loadDataFileCache(String url) {
@@ -83,9 +87,8 @@ public class FileNio {
             buffer.get(data);
             return data;
         } catch (Exception e) {
-            log.error("Lỗi đọc file: {} - {}", url, e.getMessage());
+            throw new RuntimeException("Error reading file: " + url, e);
         }
-        return null;
     }
 
     public static void clearCache() {

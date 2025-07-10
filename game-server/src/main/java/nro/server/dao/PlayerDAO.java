@@ -10,10 +10,7 @@ import nro.server.model.ecs.component.player.CurrencyComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * @author Arriety
@@ -22,6 +19,49 @@ public class PlayerDAO {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerDAO.class);
 
+    private static final String QUERY_CALL_CREATE_PLAYER = "{CALL `CreatePlayerBase`(?, ?, ?, ?, ?, ?, ?)}";
+    private static final String QUERY_NAME_TAKEN = "SELECT 1 FROM player WHERE name = ? LIMIT 1";
+    private static final String QUERY_ACCOUNT_HAS_CHARACTER = "SELECT 1 FROM player WHERE account_id = ? LIMIT 1";
+
+    public static boolean isNameTaken(Connection conn, String name) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(QUERY_NAME_TAKEN)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public static boolean accountHasCharacter(Connection conn, int accountId) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(QUERY_ACCOUNT_HAS_CHARACTER)) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public static boolean saveNewPlayer(Connection connection, int playerID, int accountId, String name,
+                                        byte gender, int hair) {
+
+        try (CallableStatement stmt = connection.prepareCall(QUERY_CALL_CREATE_PLAYER)) {
+            stmt.setInt(1, playerID);
+            stmt.setInt(2, accountId);
+            stmt.setString(3, name);
+            stmt.setByte(4, gender);
+            stmt.setInt(5, hair);
+            stmt.setInt(6, 20);
+            stmt.setInt(7, 20);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            log.error("Failed to create new player: {}, accountId: {}. Error: {}", name, accountId, e.getMessage(), e);
+            return false;
+        }
+    }
+
     public static Entity loadPlayerEntity(int playerId, int accountId) {
         World world = GameWorld.getInstance().getWorld();
         Entity playerEntity = world.createEntity();
@@ -29,8 +69,8 @@ public class PlayerDAO {
         InfoComponent info = new InfoComponent();
         info.id = playerId;
         info.accountId = accountId;
-        world.edit(playerEntity.getId())
-                .add(info);
+
+        world.edit(playerEntity.getId()).add(info);
         try (Connection conn = DatabaseFactory.getConnection()) {
             loadPlayerInfo(conn, playerEntity, playerId);
             loadPlayerLocation(conn, playerEntity, playerId);
@@ -48,19 +88,16 @@ public class PlayerDAO {
     public static int findPlayerIdByAccountId(int accountId) {
         final int[] playerId = {-1};
         String sql = "SELECT id FROM player WHERE account_id = ? LIMIT 1";
-        Database.select(sql,
-                rs -> {
-                    if (rs.next()) {
-                        playerId[0] = rs.getInt("id");
-                    }
-                },
-                stmt -> stmt.setInt(1, accountId)
-        );
+        Database.select(sql, rs -> {
+            if (rs.next()) {
+                playerId[0] = rs.getInt("id");
+            }
+        }, stmt -> stmt.setInt(1, accountId));
         return playerId[0];
     }
 
     private static void loadPlayerInfo(Connection conn, Entity entity, int playerId) throws SQLException {
-        String sql = "SELECT name, gender FROM player WHERE id = ?";
+        String sql = "SELECT name, gender, is_online FROM player WHERE id = ?";
         InfoComponent info = entity.getComponent(InfoComponent.class);
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
@@ -80,11 +117,7 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new PositionComponent(
-                            rs.getInt("map_id"),
-                            rs.getShort("pos_x"),
-                            rs.getShort("pos_y")
-                    ));
+                    entity.edit().add(new PositionComponent(rs.getInt("map_id"), rs.getShort("pos_x"), rs.getShort("pos_y")));
                 }
             }
         }
@@ -96,20 +129,7 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new StatsComponent(
-                            rs.getLong("power"),
-                            rs.getLong("tiem_nang"),
-                            (int) rs.getLong("hp"),
-                            (int) rs.getLong("mp"),
-                            rs.getInt("dame_default"),
-                            rs.getInt("defense"),
-                            rs.getByte("crit")
-                    )).add(new HealthComponent(
-                            rs.getLong("hp_current"),
-                            rs.getLong("hp_max"),
-                            rs.getLong("mp_current"),
-                            rs.getLong("mp_max")
-                    ));
+                    entity.edit().add(new StatsComponent(rs.getLong("power"), rs.getLong("tiem_nang"), (int) rs.getLong("hp"), (int) rs.getLong("mp"), rs.getInt("dame_default"), rs.getInt("defense"), rs.getByte("crit"))).add(new HealthComponent(rs.getLong("hp_current"), rs.getLong("hp_max"), rs.getLong("mp_current"), rs.getLong("mp_max")));
                 }
             }
         }
@@ -121,20 +141,14 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new CurrencyComponent(
-                            rs.getLong("gold"),
-                            rs.getInt("gem"),
-                            rs.getInt("ruby")
-                    ));
+                    entity.edit().add(new CurrencyComponent(rs.getLong("gold"), rs.getInt("gem"), rs.getInt("ruby")));
                 }
             }
         }
     }
 
     public static int[] getUsedIDs() {
-        try (Connection con = DatabaseFactory.getConnection();
-             PreparedStatement stmt = con.prepareStatement("SELECT id FROM player", ResultSet.TYPE_SCROLL_INSENSITIVE,
-                     ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
+        try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT id FROM player", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
             rs.last();
             int count = rs.getRow();
             rs.beforeFirst();

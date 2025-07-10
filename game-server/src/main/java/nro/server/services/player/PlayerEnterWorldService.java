@@ -1,7 +1,6 @@
 package nro.server.services.player;
 
 import nro.commons.consts.ConstsCmd;
-import nro.commons.database.DatabaseFactory;
 import nro.server.dao.PlayerDAO;
 import nro.server.model.ecs.component.player.SessionComponent;
 import nro.server.network.nro.NroConnection;
@@ -9,10 +8,6 @@ import nro.server.network.nro.server_packets.PacketHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**

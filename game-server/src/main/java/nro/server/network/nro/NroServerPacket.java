@@ -8,6 +8,9 @@ import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
+/**
+ * @Author Arriety
+ */
 public abstract class NroServerPacket extends BaseServerPacket {
 
     // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)

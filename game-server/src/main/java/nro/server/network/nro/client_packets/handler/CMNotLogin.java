@@ -2,7 +2,7 @@ package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
 import nro.server.controllers.AccountController;
-import nro.server.model.account.NroAuthResponse;
+import nro.server.network.nro.NroAuthResponse;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {NroConnection.State.CONNECTED})
+@AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {NroConnection.State.CONNECTED, NroConnection.State.AUTHED})
 public class CMNotLogin extends NroClientPacket {
 
     private String username;
@@ -84,6 +84,7 @@ public class CMNotLogin extends NroClientPacket {
                 connection.getSessionInfo().setVersion(version);
                 NroAuthResponse response = AccountController.Login(username, password, connection);
                 if (response == null) return;
+
                 switch (response) {
                     case NroAuthResponse.ACCOUNT_NOT_FOUND ->
                             connection.sendPacket(new SmDialogMessage("Thông tin đăng nhập không chính xác"));
@@ -94,7 +95,7 @@ public class CMNotLogin extends NroClientPacket {
                     case NroAuthResponse.SUCCESS -> {
                         sendPacket(new SmSmallImageVersion());
                         sendPacket(new SmBackgroundItemVersion());
-                        if (!connection.getSessionInfo().isUpdateData())
+//                        if (!connection.getSessionInfo().isUpdateData())
                             sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                     }
                     default -> connection.sendPacket(new SmDialogMessage("Vui lòng nhập thông tin đăng nhập hợp lệ"));
