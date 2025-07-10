@@ -68,6 +68,7 @@ public class PlayerDAO {
                 if (rs.next()) {
                     info.name = rs.getString("name");
                     info.gender = rs.getByte("gender");
+                    info.isOnline = rs.getBoolean("is_online");
                 }
             }
         }
@@ -127,6 +128,23 @@ public class PlayerDAO {
                     ));
                 }
             }
+        }
+    }
+
+    public static int[] getUsedIDs() {
+        try (Connection con = DatabaseFactory.getConnection();
+             PreparedStatement stmt = con.prepareStatement("SELECT id FROM player", ResultSet.TYPE_SCROLL_INSENSITIVE,
+                     ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
+            rs.last();
+            int count = rs.getRow();
+            rs.beforeFirst();
+            int[] ids = new int[count];
+            for (int i = 0; rs.next(); i++)
+                ids[i] = rs.getInt("id");
+            return ids;
+        } catch (SQLException e) {
+            log.error("Can't get list of IDs from players table", e);
+            return null;
         }
     }
 

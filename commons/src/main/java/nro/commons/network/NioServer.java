@@ -9,6 +9,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.*;
 import java.util.concurrent.Executor;
 
+/**
+ * @author Arriety Bếu
+ */
 public class NioServer {
 
     private static final Logger log = LoggerFactory.getLogger(NioServer.class.getName());

@@ -9,6 +9,7 @@ import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
 import nro.server.model.templates.data.PartTemplate;
 import nro.server.utils.ThreadPoolManager;
+import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,8 @@ public class CommandService {
             try {
                 String _line = sc.nextLine();
                 switch (_line) {
+                    case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
+
 //                    case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
                     case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                     case "session" ->

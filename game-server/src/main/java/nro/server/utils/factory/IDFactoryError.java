@@ -5,5 +5,4 @@ public class IDFactoryError extends RuntimeException {
     public IDFactoryError(String message) {
         super(message);
     }
-
 }

@@ -20,6 +20,7 @@ import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
+import nro.server.utils.factory.IDFactory;
 import nro.server.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ public class GameServer {
         DatabaseFactory.init();
         //noinspection ResultOfMethodCallIgnored
         DataManager.getInstance();
+        IDFactory.getInstance();
         World.getInstance();
         BannedIpController.start();
 

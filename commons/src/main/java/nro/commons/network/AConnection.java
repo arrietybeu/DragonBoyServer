@@ -15,6 +15,7 @@ import nro.commons.network.packet.BaseServerPacket;
 /**
  * Lớp này đại diện cho một kết nối với socket server. Kết nối được tạo ra bởi <code>ConnectionFactory</code> và gán với
  * <code>SelectionKey</code> này sẽ được đăng ký vào một Dispatcher (luồng xử lý) để xử lý các thao tác đọc/ghi bằng NIO.
+ * @author Arriety
  */
 
 public abstract class AConnection<T extends BaseServerPacket> {
