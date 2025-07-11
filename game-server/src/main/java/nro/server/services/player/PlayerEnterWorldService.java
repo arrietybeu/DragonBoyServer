@@ -74,7 +74,7 @@ public class PlayerEnterWorldService {
                     // send skill shortcut -113
                     // send game noti 50
                     // send caption -41
-                    //player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
+                    // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
                 } catch (Throwable e) {
                     log.error("Error during enter world of {}", playerEntity.getId(), e);

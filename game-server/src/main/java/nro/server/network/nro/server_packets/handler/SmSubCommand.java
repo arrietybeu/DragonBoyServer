@@ -69,7 +69,6 @@ public class SmSubCommand extends NroServerPacket {
                 // send skill shortcut
             }
             case ConstMsgSubCommand.INIT_MY_CHARACTER -> {
-
             }
         }
     }
