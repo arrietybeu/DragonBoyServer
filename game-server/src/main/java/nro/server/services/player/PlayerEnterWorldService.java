@@ -1,6 +1,7 @@
 package nro.server.services.player;
 
 import com.artemis.ComponentMapper;
+import com.artemis.Entity;
 import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
 import nro.server.dao.PlayerDAO;
@@ -53,8 +54,7 @@ public class PlayerEnterWorldService {
 //                    this.sendSelectSkillShortCut(player, "OSkill");
 
                     client.sendPacket(new SmSpecialSkill());
-
-                    sendPointsInfo(client, playerId);
+                    client.sendPacket(new SmMeLoadPoint(playerId));
                     // send task
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
 
@@ -84,43 +84,4 @@ public class PlayerEnterWorldService {
             }
         }
     }
-
-    private static void sendPointsInfo(NroConnection conn, int playerEntityId) {
-        World world = GameWorld.getInstance().getWorld();
-
-        ComponentMapper<StatsComponent> statsMapper = world.getMapper(StatsComponent.class);
-        ComponentMapper<HealthComponent> healthMapper = world.getMapper(HealthComponent.class);
-
-        if (!statsMapper.has(playerEntityId) || !healthMapper.has(playerEntityId)) {
-            log.warn("Attempted to send points info for entity {} which is missing required components.", playerEntityId);
-            return;
-        }
-
-        StatsComponent stats = statsMapper.get(playerEntityId);
-        HealthComponent health = healthMapper.get(playerEntityId);
-
-        SmMeLoadPoint packet = new SmMeLoadPoint(
-                stats.baseHp,
-                stats.baseMp,
-                stats.baseDamage,
-                health.maxHP,
-                health.maxMP,
-                health.currentHP,
-                health.currentMP,
-                stats.movementSpeed,
-                health.hpPer1000Potential,
-                health.mpPer1000Potential,
-                health.damagePer1000Potential,
-                stats.currentDamage,
-                stats.totalDefense,
-                stats.totalCriticalChance,
-                stats.potential,
-                stats.expPerStatIncrease,
-                stats.baseDefense,
-                stats.baseCrit
-        );
-
-        conn.sendPacket(packet);
-    }
-
 }

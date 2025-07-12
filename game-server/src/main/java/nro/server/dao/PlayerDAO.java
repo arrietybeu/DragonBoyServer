@@ -74,6 +74,9 @@ public class PlayerDAO {
             loadPlayerLocation(conn, playerEntity, playerId);
             loadPlayerStatsAndHealth(conn, playerEntity, playerId);
             loadPlayerCurrencies(conn, playerEntity, playerId);
+
+            InventoryDAO.loadInventoryForPlayer(conn, playerId);
+
             log.info("Successfully loaded entity for player ID: {}", playerId);
             return playerEntity;
         } catch (Exception e) {

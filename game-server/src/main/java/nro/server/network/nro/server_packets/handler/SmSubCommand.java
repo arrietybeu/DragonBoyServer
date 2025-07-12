@@ -1,16 +1,14 @@
 package nro.server.network.nro.server_packets.handler;
 
+import com.artemis.Entity;
 import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgSubCommand;
-import nro.server.data_holders.data.ItemData;
-import nro.server.data_holders.data.SkillData;
+import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
-import nro.server.model.ecs.component.player.*;
+import nro.server.model.ecs.component.player.TaskComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
-
-import java.util.List;
 
 /**
  * @author Arriety
@@ -19,37 +17,8 @@ import java.util.List;
 public class SmSubCommand extends NroServerPacket {
 
     private final byte subCommand;
-
     private String text;
-
-    private InfoComponent info;
-    private StatsComponent stats;
-    private TaskComponent task;
-    private AppearanceComponent appearance;
-    private StateComponent state;
-    private BuffComponent buff;
-    private FusionComponent fusion;
-    private List<SkillData> skills;
-    private CurrencyComponent currency;
-    private List<ItemData> itemsBody, itemsBag, itemsBox;
-    private int serverTimestamp;
-
-    public SmSubCommand(int subCommand, InfoComponent info, StatsComponent stats, TaskComponent task, AppearanceComponent appearance, StateComponent state, BuffComponent buff, FusionComponent fusion, List<SkillData> skills, CurrencyComponent currency, List<ItemData> itemsBody, List<ItemData> itemsBag, List<ItemData> itemsBox, int serverTimestamp) {
-        this.subCommand = (byte) subCommand;
-        this.info = info;
-        this.stats = stats;
-        this.task = task;
-        this.appearance = appearance;
-        this.state = state;
-        this.buff = buff;
-        this.fusion = fusion;
-        this.skills = skills;
-        this.currency = currency;
-        this.itemsBody = itemsBody;
-        this.itemsBag = itemsBag;
-        this.itemsBox = itemsBox;
-        this.serverTimestamp = serverTimestamp;
-    }
+    private int playerID = -1;
 
     public SmSubCommand(int subCommand, String text) {
         this.subCommand = (byte) subCommand;
@@ -60,6 +29,11 @@ public class SmSubCommand extends NroServerPacket {
         this.subCommand = (byte) subCommand;
     }
 
+    public SmSubCommand(int subCommand, int playerID) {
+        this.subCommand = (byte) subCommand;
+        this.playerID = playerID;
+    }
+
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
         writeByte(subCommand);
@@ -68,9 +42,42 @@ public class SmSubCommand extends NroServerPacket {
                 writeUTF(text);
                 // send skill shortcut
             }
-            case ConstMsgSubCommand.INIT_MY_CHARACTER -> {
-            }
+            case ConstMsgSubCommand.INIT_MY_CHARACTER -> sendInfoCharacter();
         }
+    }
+
+    private void sendInfoCharacter() {
+        if (playerID == -1) {
+            throw new RuntimeException("Player ID is not set for sub command: " + subCommand);
+        }
+
+        Entity playerEntity = GameWorld.getInstance().getWorld().getEntity(playerID);
+
+        if (playerEntity == null) {
+            throw new RuntimeException("Player entity not found for ID: " + playerID);
+        }
+
+        var taskComponent = playerEntity.getComponent(TaskComponent.class);
+        var infoComponent = playerEntity.getComponent(InfoComponent.class);
+        var appearanceComponent = playerEntity.getComponent(AppearanceComponent.class);
+        var stateComponent = playerEntity.getComponent(StateComponent.class);
+        var statsComponent = playerEntity.getComponent(StatsComponent.class);
+        var buffComponent = playerEntity.getComponent(BuffComponent.class);
+
+        writeInt(playerEntity.getId());
+        writeByte(taskComponent.taskId);
+        writeByte(infoComponent.gender);
+        writeShort(appearanceComponent.head);
+        writeUTF(infoComponent.name);
+        writeByte(0); // write type pk
+        writeByte(stateComponent.typePk);
+        writeLong(statsComponent.power);
+        writeShort(buffComponent.eff5BuffHp);
+        writeShort(buffComponent.eff5BuffMp);
+        writeByte(infoComponent.gender);
+
+        // ============ Send Skills ============
+
     }
 
 }
