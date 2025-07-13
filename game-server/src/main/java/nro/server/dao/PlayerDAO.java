@@ -118,7 +118,11 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new PositionComponent(rs.getInt("map_id"), rs.getShort("pos_x"), rs.getShort("pos_y")));
+                    entity.edit().add(new PositionComponent(
+                            rs.getInt("map_id"),
+                            rs.getShort("pos_x"),
+                            rs.getShort("pos_y"))
+                    );
                 }
             }
         }
@@ -130,7 +134,20 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new StatsComponent(rs.getLong("power"), rs.getLong("tiem_nang"), (int) rs.getLong("hp"), (int) rs.getLong("mp"), rs.getInt("dame_default"), rs.getInt("defense"), rs.getByte("crit"))).add(new HealthComponent(rs.getLong("hp_current"), rs.getLong("hp_max"), rs.getLong("mp_current"), rs.getLong("mp_max")));
+                    entity.edit().add(new StatsComponent(
+                            rs.getLong("power"),
+                            rs.getLong("tiem_nang"),
+                            (int) rs.getLong("hp"),
+                            (int) rs.getLong("mp"),
+                            rs.getInt("dame_default"),
+                            rs.getInt("defense"),
+                            rs.getByte("crit"))
+                    ).add(new HealthComponent(
+                            rs.getLong("hp_current"),
+                            rs.getLong("hp_max"),
+                            rs.getLong("mp_current"),
+                            rs.getLong("mp_max"))
+                    );
                 }
             }
         }
@@ -142,14 +159,21 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new CurrencyComponent(rs.getLong("gold"), rs.getInt("gem"), rs.getInt("ruby")));
+                    entity.edit().add(new CurrencyComponent(
+                            rs.getLong("gold"),
+                            rs.getInt("gem"),
+                            rs.getInt("ruby"))
+                    );
                 }
             }
         }
     }
 
     public static int[] getUsedIDs() {
-        try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT id FROM player", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
+        try (Connection con = DatabaseFactory.getConnection();
+             PreparedStatement stmt = con.prepareStatement("SELECT id FROM player",
+                     ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+             ResultSet rs = stmt.executeQuery()) {
             rs.last();
             int count = rs.getRow();
             rs.beforeFirst();

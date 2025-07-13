@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * @Author Arriety
+ */
 public class DatabaseFactory {
 
     private static HikariDataSource dataSource;
@@ -25,6 +28,7 @@ public class DatabaseFactory {
         HikariConfig config = new HikariConfig();
 
         config.setJdbcUrl(DatabaseConfig.getDatabaseUrl());
+        config.setPoolName("NRO-Game-Server-Pool");
         config.setUsername(DatabaseConfig.DATABASE_USER);
         config.setPassword(DatabaseConfig.DATABASE_PASSWORD);
         config.setMaximumPoolSize(DatabaseConfig.DATABASE_CONNECTIONS_MAX);

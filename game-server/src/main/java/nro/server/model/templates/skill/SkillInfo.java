@@ -15,21 +15,21 @@ public class SkillInfo {
     // current skill id
     private short skillId;
 
-    private int point; // hiểu nôm na là level của skill
+    private byte point; // hiểu nôm na là level của skill
 
     private long powRequire;// sức mạnh yêu cầu
 
-    private long baseCooldown;// thời gian hồi chiêu
+    private int baseCooldown;// thời gian hồi chiêu
 
     private long currentCooldown;
 
-    private int dx;
+    private short dx;
 
-    private int dy;
+    private short dy;
 
-    private int maxFight;
+    private byte maxFight;
 
-    private int manaUse;
+    private short manaUse;
 
     private short damage;
 

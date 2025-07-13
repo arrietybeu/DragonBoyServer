@@ -68,7 +68,7 @@ public class GameServer {
     private static void intEntityComponentSystem() {
 
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-//        builder.with();
+//        builder.with(); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();

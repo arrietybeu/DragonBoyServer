@@ -59,7 +59,7 @@ public class ItemService {
 
         // 3. Gắn các component cần thiết
         editor.add(new DatabaseIdComponent(newDbId));
-        editor.add(new ItemInfoComponent(templateId, quantity));
+        editor.add(new ItemInfoComponent(templateId, quantity, ownerEntityId));
         editor.add(new OwnershipComponent(ownerEntityId, ItemLocation.BAG));
 
         // 4. Gắn component chỉ số nếu có

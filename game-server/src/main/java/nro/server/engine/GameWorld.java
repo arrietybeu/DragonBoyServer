@@ -32,7 +32,6 @@ public class GameWorld implements Runnable {
             log.warn("GameWorld has already been initialized.");
             return;
         }
-        log.info("Initializing Artemis-odb World...");
         WorldConfiguration config = builder.build();
         this.world = new World(config);
         log.info("Artemis-odb World initialized successfully.");

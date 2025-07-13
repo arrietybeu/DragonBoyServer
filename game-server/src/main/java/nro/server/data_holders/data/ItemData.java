@@ -2,10 +2,12 @@ package nro.server.data_holders.data;
 
 import lombok.Getter;
 import nro.commons.database.Database;
+import nro.commons.utils.NetworkUtils;
 import nro.server.data_holders.IManager;
 import nro.server.model.item.ItemOptionData;
 import nro.server.model.templates.item.ItemOptionTemplate;
 import nro.server.model.templates.item.ItemTemplate;
+import nro.server.utils.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.slf4j.Logger;
@@ -78,7 +80,7 @@ public final class ItemData implements IManager {
         buf.put((byte) 0);// type send option
         buf.putShort((short) itemOptionTemplates.size()); // size option
         for (var option : itemOptionTemplates.values()) {
-            this.putString(buf, option.name());
+            NetworkUtils.putString(buf, option.name());
             buf.put(option.type());
         }
 
@@ -136,8 +138,8 @@ public final class ItemData implements IManager {
             }
             buf.put(item.type());
             buf.put(item.gender());
-            this.putString(buf, item.name());
-            this.putString(buf, item.description());
+            NetworkUtils.putString(buf, item.name());
+            NetworkUtils.putString(buf, item.description());
             buf.put(item.level());
             buf.putShort(item.iconID());
             buf.putShort(item.part());
@@ -181,17 +183,6 @@ public final class ItemData implements IManager {
         buf.get(this.dataArrHead2Fr);
     }
 
-    private void putString(ByteBuffer buf, String str) throws RuntimeException {
-        if (str == null || str.isEmpty()) {
-            buf.putShort((short) 0);
-            return;
-        }
-        byte[] data = str.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        if (data.length > Short.MAX_VALUE)
-            throw new IllegalArgumentException("String quá dài: " + data.length);
-        buf.putShort((short) data.length);
-        buf.put(data);
-    }
 
     public static ItemData getInstance() {
         return ItemDataHolder.INSTANCE;

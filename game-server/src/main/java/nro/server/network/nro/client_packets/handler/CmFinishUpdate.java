@@ -20,7 +20,8 @@ public class CmFinishUpdate extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-        if (getConnection().getSessionInfo().isLogin()) return;
+        if (getConnection().getSessionInfo().isLogin())
+            throw new IllegalStateException("Cannot finish update while logged in - " + getConnection());
         PlayerEnterWorldService.enterWorld(getConnection());
     }
 

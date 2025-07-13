@@ -17,10 +17,10 @@ public class SkillTemplate {
     private byte id;
     private int classId;
     private String name;
-    private int maxPoint;
-    private int manaUseType;
-    private int type;
-    private int iconId;
+    private byte maxPoint;
+    private byte manaUseType;
+    private byte type;
+    private short iconId;
     private String description;
     private String damInfo;
 

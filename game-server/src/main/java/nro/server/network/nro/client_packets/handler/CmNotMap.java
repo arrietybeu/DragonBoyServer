@@ -29,7 +29,6 @@ public class CmNotMap extends NroClientPacket {
     @Override
     protected void readImpl() {
         this.status = readByte();
-        System.out.println("CmNotMap status: " + status + " connection: " + getConnection());
         switch (status) {
             case SmNotMap.CREATE_CHARACTER -> {
                 this.name = this.readUTF().toLowerCase();
@@ -37,12 +36,16 @@ public class CmNotMap extends NroClientPacket {
                 this.hair = this.readByte();
             }
             case SmNotMap.UPDATE_MAP -> {
-                if (!getConnection().getSessionInfo().isUpdateMap())
+                if (!getConnection().getSessionInfo().isUpdateMap()) {
                     sendPacket(new SmNotMap(status));
+                    getConnection().getSessionInfo().setUpdateMap(true);
+                }
             }
             case SmNotMap.UPDATE_SKILL -> {
-                if (!getConnection().getSessionInfo().isUpdateSkill())
+                if (!getConnection().getSessionInfo().isUpdateSkill()) {
                     sendPacket(new SmNotMap(status));
+                    getConnection().getSessionInfo().setUpdateSkill(true);
+                }
             }
             case SmNotMap.UPDATE_ITEM -> {
                 if (!getConnection().getSessionInfo().isUpdateItem()) {
@@ -62,7 +65,6 @@ public class CmNotMap extends NroClientPacket {
                 // sendTileSetInfo
                 // sendSmallVersion
                 // sendBackgroundVersion
-
                 sendPacket(new SmItemBackground());
                 sendPacket(new SmTileSet());
                 sendPacket(new SmSmallImageVersion());
@@ -83,6 +85,7 @@ public class CmNotMap extends NroClientPacket {
                 var playerResponseType = PlayerService.storeNewPlayer(name, gender, hair, getConnection().getAccount());
                 switch (playerResponseType) {
                     case PlayerResponseType.SUCCESS -> {
+                        //
                     }
                     default -> sendPacket(new SmDialogMessage(playerResponseType.getDefaultMessage()));
                 }

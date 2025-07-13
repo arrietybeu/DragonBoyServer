@@ -38,7 +38,6 @@ public class CMNotLogin extends NroClientPacket {
     @Override
     protected void readImpl() {
         this.command = readByte();
-        System.out.println("CMNotLogin command: " + command + " connection: " + getConnection());
         switch (command) {
             case 0 -> {
                 this.username = readUTF().toLowerCase();
@@ -85,20 +84,13 @@ public class CMNotLogin extends NroClientPacket {
                 NroAuthResponse response = AccountController.Login(username, password, connection);
                 if (response == null) return;
 
-                switch (response) {
-                    case NroAuthResponse.ACCOUNT_NOT_FOUND ->
-                            connection.sendPacket(new SmDialogMessage("Thông tin đăng nhập không chính xác"));
-                    case NroAuthResponse.ACCOUNT_BANNED ->
-                            connection.sendPacket(new SmDialogMessage("Tài Khoản của bạn đã bị khóa!"));
-                    case NroAuthResponse.IP_BLOCKED ->
-                            connection.sendPacket(new SmDialogMessage("IP của bạn đã bị chặn!"));
-                    case NroAuthResponse.SUCCESS -> {
-                        sendPacket(new SmSmallImageVersion());
-                        sendPacket(new SmBackgroundItemVersion());
+                if (response == NroAuthResponse.SUCCESS) {
+                    sendPacket(new SmSmallImageVersion());
+                    sendPacket(new SmBackgroundItemVersion());
 //                        if (!connection.getSessionInfo().isUpdateData())
-                            sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
-                    }
-                    default -> connection.sendPacket(new SmDialogMessage("Vui lòng nhập thông tin đăng nhập hợp lệ"));
+                    sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
+                } else {
+                    connection.sendPacket(new SmDialogMessage(NroAuthResponse.ACCOUNT_NOT_FOUND.getCode()));
                 }
             }
             case 2 -> {

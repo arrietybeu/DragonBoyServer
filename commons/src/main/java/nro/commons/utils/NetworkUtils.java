@@ -92,4 +92,17 @@ public class NetworkUtils {
         }
         return true;
     }
+
+    public static void putString(ByteBuffer buf, String str) throws RuntimeException {
+        if (str == null || str.isEmpty()) {
+            buf.putShort((short) 0);
+            return;
+        }
+        byte[] data = str.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        if (data.length > Short.MAX_VALUE)
+            throw new IllegalArgumentException("String quá dài: " + data.length);
+        buf.putShort((short) data.length);
+        buf.put(data);
+    }
+
 }

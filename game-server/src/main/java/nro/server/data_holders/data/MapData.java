@@ -2,9 +2,12 @@ package nro.server.data_holders.data;
 
 import lombok.Getter;
 import nro.commons.database.Database;
+import nro.commons.utils.NetworkUtils;
+import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.IManager;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.world.*;
+import nro.server.utils.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
@@ -33,6 +36,7 @@ public final class MapData implements IManager {
     public int[][] tileType = new int[MAX_TILE_SET][];
     public int[][][] tileIndex = new int[MAX_TILE_SET][][];
     public byte[] tileSetInfoData;
+    public byte[] dataMapData;
 
     @Getter
     private final Map<Short, WorldMapTemplate> worldMaps = new LinkedHashMap<>();
@@ -42,6 +46,8 @@ public final class MapData implements IManager {
         loadMapTemplate();
         setQueryLoadMapItemBackground();
         loadTileSetInfo();
+
+        setUpdateDataMap();
     }
 
     @Override
@@ -265,6 +271,47 @@ public final class MapData implements IManager {
         tileSetInfoData = new byte[buf.remaining()];
         buf.get(tileSetInfoData);
     }
+
+    private void setUpdateDataMap() {
+        ByteBuffer buf = ByteBuffer.allocate(100_000);
+
+        var mapTemplates = this.worldMaps.values();
+        buf.put((byte) ConfigServer.VERSION_DATA_MAP);
+        buf.putShort((short) mapTemplates.size());
+
+        for (var map : mapTemplates) {
+            NetworkUtils.putString(buf, map.getName());
+        }
+
+        var npcTemplates = NpcData.getInstance().getNpcTemplates();
+
+        buf.put((byte) npcTemplates.size());
+        for (var npc : npcTemplates) {
+            NetworkUtils.putString(buf, npc.name());
+            buf.putShort((short) npc.head());
+            buf.putShort((short) npc.body());
+            buf.putShort((short) npc.leg());
+            buf.put((byte) 0);
+//            this.writeByte(1);
+//            this.writeUTF("Nói chuyện");
+        }
+
+        var monsterTemplates = MonsterData.getInstance().getMonsters();
+        buf.putShort((short) monsterTemplates.size());// client version thap send byte
+        for (var monster : monsterTemplates) {
+            buf.put(monster.type());
+            NetworkUtils.putString(buf, monster.NAME());
+            buf.putLong(monster.hp());
+            buf.put(monster.rangeMove());
+            buf.put(monster.speed());
+            buf.put(monster.dartType());
+        }
+
+        buf.flip();
+        dataMapData = new byte[buf.remaining()];
+        buf.get(dataMapData);
+    }
+
 
     public void forEachParalllel(Consumer<WorldMapTemplate> consumer) {
         worldMaps.values().parallelStream().forEach(consumer);

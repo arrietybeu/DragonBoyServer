@@ -21,11 +21,11 @@ public final class DataManager {
             ImageData.getInstance(),
             ResourcesData.getInstance(),
             CaptionData.getInstance(),
-            MapData.getInstance(),
             NpcData.getInstance(),
             MonsterData.getInstance(),
             SkillData.getInstance(),
-            ItemData.getInstance()
+            ItemData.getInstance(),
+            MapData.getInstance()
     );
 
     private DataManager() {

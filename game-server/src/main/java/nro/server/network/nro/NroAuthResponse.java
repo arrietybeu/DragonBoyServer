@@ -2,21 +2,21 @@ package nro.server.network.nro;
 
 public enum NroAuthResponse {
 
-    SUCCESS(0),
-    INVALID_CREDENTIALS(1),
-    ACCOUNT_BANNED(2),
-    ACCOUNT_NOT_FOUND(3),
-    SERVER_MAINTENANCE(4),
-    VERSION_MISMATCH(5),
-    IP_BLOCKED(6);
+    SUCCESS(""),
+    INVALID_CREDENTIALS("Vui lòng nhập thông tin đăng nhập hợp lệ"),
+    ACCOUNT_BANNED("Tài Khoản của bạn đã bị khóa!"),
+    ACCOUNT_NOT_FOUND("Thông tin đăng nhập không chính xác"),
+    SERVER_MAINTENANCE("Máy chủ đang bảo trì!"),
+    VERSION_MISMATCH("Phiên bản game không tương thích với máy chủ"),
+    IP_BLOCKED("IP của bạn đã bị chặn!");
 
-    private final int code;
+    private final String code;
 
-    NroAuthResponse(int code) {
+    NroAuthResponse(String code) {
         this.code = code;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 

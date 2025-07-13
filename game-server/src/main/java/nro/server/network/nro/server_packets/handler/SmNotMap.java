@@ -49,18 +49,9 @@ public class SmNotMap extends NroServerPacket {
                 sendAllDataGame();
                 con.getSessionInfo().setUpdateData(true);
             }
-            case UPDATE_MAP -> {
-                sendUpdateMap();
-                con.getSessionInfo().setUpdateMap(true);
-            }
-            case UPDATE_SKILL -> {
-                sendUpdateSkill();
-                con.getSessionInfo().setUpdateSkill(true);
-            }
-            case UPDATE_ITEM -> {
-                sendUpdateItem(type);
-                con.getSessionInfo().setUpdateItem(true);
-            }
+            case UPDATE_MAP -> sendUpdateMap();
+            case UPDATE_SKILL -> sendUpdateSkill();
+            case UPDATE_ITEM -> sendUpdateItem(type);
         }
     }
 
@@ -79,78 +70,11 @@ public class SmNotMap extends NroServerPacket {
     }
 
     private void sendUpdateMap() {
-        var mapTemplates = MapData.getInstance().getWorldMaps();
-        writeByte(ConfigServer.VERSION_DATA_MAP);
-        writeShort(mapTemplates.size());// client version thap send byte
-
-        for (var map : mapTemplates.values()) {
-            writeUTF(map.getName());
-        }
-
-        var npcTemplates = NpcData.getInstance().getNpcTemplates();
-        // write npc
-        writeUnsignedByte(npcTemplates.size());
-        for (var npc : npcTemplates) {
-            this.writeUTF(npc.name());
-            this.writeShort(npc.head());
-            this.writeShort(npc.body());
-            this.writeShort(npc.leg());
-            this.writeByte(0);
-//            this.writeByte(1);
-//            this.writeUTF("Nói chuyện");
-        }
-
-        var monsterTemplates = MonsterData.getInstance().getMonsters();
-        writeShort(monsterTemplates.size());// client version thap send byte
-        for (var monster : monsterTemplates) {
-            this.writeByte(monster.type());
-            this.writeUTF(monster.NAME());
-            this.writeLong(monster.hp());
-            this.writeByte(monster.rangeMove());
-            this.writeByte(monster.speed());
-            this.writeByte(monster.dartType());
-        }
+        writeBytes(MapData.getInstance().dataMapData);
     }
 
     private void sendUpdateSkill() {
-
-        var skillData = SkillData.getInstance();
-        var nClasses = skillData.getNClassTemplates();
-
-        this.writeByte(ConfigServer.VERSION_DATA_SKILL);
-        this.writeByte(0);
-
-        // write skill nClass
-        this.writeByte(nClasses.size());
-
-        for (var classSkill : nClasses) {
-            this.writeUTF(classSkill.name());
-            this.writeByte(classSkill.skillTemplates().size());
-            for (var skillTemplate : classSkill.skillTemplates()) {
-                this.writeByte(skillTemplate.getId());
-                this.writeUTF(skillTemplate.getName());
-                this.writeByte(skillTemplate.getMaxPoint());
-                this.writeByte(skillTemplate.getManaUseType());
-                this.writeByte(skillTemplate.getType());
-                this.writeShort(skillTemplate.getIconId());
-                this.writeUTF(skillTemplate.getDamInfo());
-                this.writeUTF(skillTemplate.getDescription());
-                this.writeByte(skillTemplate.getSkills().size());
-                for (var skill : skillTemplate.getSkills()) {
-                    this.writeShort(skill.getSkillId());
-                    this.writeByte(skill.getPoint());
-                    this.writeLong(skill.getPowRequire());
-                    this.writeShort(skill.getManaUse());
-                    this.writeInt((int) skill.getBaseCooldown());
-                    this.writeShort(skill.getDx());
-                    this.writeShort(skill.getDy());
-                    this.writeByte(skill.getMaxFight());
-                    this.writeShort(skill.getDamage());
-                    this.writeShort(skill.getPrice());
-                    this.writeUTF(skill.getMoreInfo());
-                }
-            }
-        }
+        writeBytes(SkillData.getInstance().skillData);
     }
 
     private void sendUpdateItem(int type) {

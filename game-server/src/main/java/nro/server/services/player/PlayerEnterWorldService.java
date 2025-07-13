@@ -1,13 +1,7 @@
 package nro.server.services.player;
 
-import com.artemis.ComponentMapper;
-import com.artemis.Entity;
-import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
 import nro.server.dao.PlayerDAO;
-import nro.server.engine.GameWorld;
-import nro.server.model.ecs.component.HealthComponent;
-import nro.server.model.ecs.component.StatsComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;

@@ -2,7 +2,6 @@ package nro.server.dao;
 
 import com.artemis.World;
 import nro.server.engine.GameWorld;
-import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.item.*;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.item.ItemOptionData;
@@ -22,7 +21,9 @@ import java.sql.SQLException;
 public class InventoryDAO {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryDAO.class);
-    private static final String SELECT_QUERY = "SELECT id, template_id, quantity, options FROM `player_inventory` WHERE `player_id`= ? AND `location`= ? ORDER BY `row_index` ASC";
+    private static final String SELECT_QUERY = """
+            SELECT id, template_id, quantity, options FROM `player_inventory` WHERE `player_id`= ? AND `location`= ? ORDER BY `row_index` ASC
+            """;
 
     public static void loadInventoryForPlayer(Connection conn, int playerEntityId) throws SQLException {
         InventoryComponent playerInventory = new InventoryComponent();
@@ -36,7 +37,6 @@ public class InventoryDAO {
     private static void loadItemsForLocation(Connection conn, int playerEntityId, ItemLocation location) throws SQLException {
         World world = GameWorld.getInstance().getWorld();
         InventoryComponent playerInventory = world.getMapper(InventoryComponent.class).get(playerEntityId);
-
         try (PreparedStatement ps = conn.prepareStatement(SELECT_QUERY)) {
             ps.setInt(1, playerEntityId);
             ps.setInt(2, location.getType());
@@ -51,7 +51,7 @@ public class InventoryDAO {
                     var editor = world.edit(itemEntityId);
 
                     editor.add(new DatabaseIdComponent(itemDbId));
-                    editor.add(new ItemInfoComponent(templateId, rs.getInt("quantity")));
+                    editor.add(new ItemInfoComponent(templateId, rs.getInt("quantity"), rs.getInt("creator_id")));
                     editor.add(new OwnershipComponent(playerEntityId, location));
 
                     String optionsJson = rs.getString("options");
