@@ -11,6 +11,8 @@ public class CurrencyComponent extends Component {
     public int gem;
     public int ruby;
 
+    public CurrencyComponent() {}
+
     public CurrencyComponent(long gold, int gem, int ruby) {
         this.gold = gold;
         this.gem = gem;

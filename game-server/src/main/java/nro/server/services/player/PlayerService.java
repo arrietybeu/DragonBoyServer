@@ -5,7 +5,6 @@ import nro.server.dao.PlayerDAO;
 import nro.server.model.account.Account;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.utils.Utils;
-import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,14 +54,12 @@ public class PlayerService {
                 return PlayerResponseType.CREATION_FAILED_ACCOUNT_HAS_CHAR;
             }
 
-            int newPlayerId = IDFactory.getInstance().nextId();
-            boolean success = PlayerDAO.saveNewPlayer(connection, newPlayerId, account.getId(), name, gender, hair);
+            boolean success = PlayerDAO.saveNewPlayer(connection, account.getId(), name, gender, hair);
             if (success) {
                 connection.commit();
                 return PlayerResponseType.SUCCESS;
             } else {
                 connection.rollback();
-                IDFactory.getInstance().releaseId(newPlayerId);
                 return PlayerResponseType.CREATION_FAILED_SERVER_ERROR;
             }
 

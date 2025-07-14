@@ -2,6 +2,7 @@ package nro.server.network.nro.client_packets;
 
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroClientPacket;
+import nro.server.network.nro.server_packets.handler.SmLoginFail;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

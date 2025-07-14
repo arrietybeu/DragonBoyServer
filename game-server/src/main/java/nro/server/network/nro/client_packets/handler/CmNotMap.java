@@ -13,7 +13,10 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.NOT_MAP, validStates = {NroConnection.State.CONNECTED, NroConnection.State.AUTHED})
+@AClientPacketHandler(command = ConstsCmd.NOT_MAP, validStates = {
+        NroConnection.State.CONNECTED,
+        NroConnection.State.AUTHED,
+        NroConnection.State.IN_GAME})
 public class CmNotMap extends NroClientPacket {
 
     private byte status;
@@ -57,9 +60,8 @@ public class CmNotMap extends NroClientPacket {
             }
             case 13 -> {
                 if (getConnection().getSessionInfo().isClientOk())
-                    throw new RuntimeException(
-                            "Client already sent NOT_MAP with status 13, but connection is still in CONNECTED state. This should not happen."
-                    );
+                    return;
+
                 // client ok
                 // sendDataBackgroundMapTemplate
                 // sendTileSetInfo

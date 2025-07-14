@@ -14,35 +14,20 @@ public class SkillInfo {
 
     // current skill id
     private short skillId;
-
     private byte point; // hiểu nôm na là level của skill
-
     private long powRequire;// sức mạnh yêu cầu
-
     private int baseCooldown;// thời gian hồi chiêu
-
     private long currentCooldown;
-
     private short dx;
-
     private short dy;
-
     private byte maxFight;
-
     private short manaUse;
-
     private short damage;
-
     private short price;
-
     private short curExp;
-
     private long lastTimeUseThisSkill;
-
     private boolean paintCanNotUseSkill;
-
     private SkillTemplate template;
-
     private String moreInfo;
 
     public SkillInfo copy() {

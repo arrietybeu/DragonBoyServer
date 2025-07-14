@@ -1,7 +1,9 @@
 package nro.server.services.player;
 
+import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
 import nro.server.dao.PlayerDAO;
+import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;
@@ -32,23 +34,25 @@ public class PlayerEnterWorldService {
         if (playerId == -1) {
             client.sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
         } else {
-            var playerEntity = PlayerDAO.loadPlayerEntity(playerId, accountId);
-            if (playerEntity == null) {
+            int playerEntityID = PlayerDAO.loadPlayerEntity(playerId, accountId);
+            if (playerEntityID == -1) {
                 log.error("Failed to load player entity for player ID: {}. Cannot enter world.", playerId);
                 client.close(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
                 return;
             }
-            client.attachPlayerEntity(playerEntity.getId());
+            client.attachPlayerEntity(playerEntityID);
 
-            if (!enteringWorld.contains(playerEntity.getId()) && enteringWorld.add(playerEntity.getId())) {
+            if (!enteringWorld.contains(playerEntityID) && enteringWorld.add(playerEntityID)) {
                 try {
+                    World world = GameWorld.getInstance().getWorld();
+                    var playerEntity = world.getEntity(playerEntityID);
                     playerEntity.edit().add(new PlayerComponent(client));
 
 //                    this.sendSelectSkillShortCut(player, "KSkill");
 //                    this.sendSelectSkillShortCut(player, "OSkill");
 
                     client.sendPacket(new SmSpecialSkill());
-                    client.sendPacket(new SmMeLoadPoint(playerId));
+                    client.sendPacket(new SmMeLoadPoint(playerEntityID));
                     // send task
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
 
@@ -71,9 +75,9 @@ public class PlayerEnterWorldService {
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
                 } catch (Throwable e) {
-                    log.error("Error during enter world of {}", playerEntity.getId(), e);
+                    log.error("Error during enter world of {}", playerEntityID, e);
                 } finally {
-                    enteringWorld.remove(playerEntity.getId());
+                    enteringWorld.remove(playerEntityID);
                 }
             }
         }

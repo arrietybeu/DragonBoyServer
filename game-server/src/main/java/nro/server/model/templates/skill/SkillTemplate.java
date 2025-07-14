@@ -30,22 +30,4 @@ public class SkillTemplate {
         this.skills.add(skill);
     }
 
-    public SkillInfo getSkillByTemplateId(short skillId, int level) {
-        for (SkillInfo skillInfo : this.skills) {
-            if (skillInfo.getTemplate().getId() == skillId && skillInfo.getPoint() == level) {
-                return skillInfo;
-            }
-        }
-        return null;
-    }
-
-    public SkillInfo getSkillById(int skillId) {
-        for (SkillInfo skillInfo : this.skills) {
-            if (skillInfo.getSkillId() == skillId) {
-                return skillInfo;
-            }
-        }
-        return null;
-    }
-
 }

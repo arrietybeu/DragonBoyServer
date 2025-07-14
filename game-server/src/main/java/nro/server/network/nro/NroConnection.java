@@ -173,8 +173,6 @@ public class NroConnection extends AConnection<NroServerPacket> {
             } else {
                 log.warn("Invalid packet cmd={} in state={}", cmd, state);
             }
-        } else {
-            log.warn("Unknown packet cmd={} in state={}", cmd, state);
         }
         return true;
     }

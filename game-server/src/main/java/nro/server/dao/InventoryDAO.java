@@ -46,11 +46,9 @@ public class InventoryDAO {
                     int templateId = rs.getInt("template_id");
                     if (templateId == -1) continue;
 
-                    int itemDbId = rs.getInt("id");
                     int itemEntityId = world.create();
                     var editor = world.edit(itemEntityId);
 
-                    editor.add(new DatabaseIdComponent(itemDbId));
                     editor.add(new ItemInfoComponent(templateId, rs.getInt("quantity"), rs.getInt("creator_id")));
                     editor.add(new OwnershipComponent(playerEntityId, location));
 
@@ -65,7 +63,7 @@ public class InventoryDAO {
                             }
                             editor.add(stats);
                         } catch (Exception e) {
-                            log.error("Failed to parse item options JSON for item dbId {}", itemDbId, e);
+                            log.error("Failed to parse item options for player entity ID: {} and template ID: {}. Options JSON: {}", playerEntityId, templateId, optionsJson, e);
                         }
                     }
 

@@ -17,6 +17,10 @@ public class HealthComponent extends Component {
     public byte mpPer1000Potential;
     public byte damagePer1000Potential;
 
+    public HealthComponent() {
+        // Default constructor for Artemis
+    }
+
     public HealthComponent(long currentHP, long maxHP, long currentMP, long maxMP) {
         this.currentHP = currentHP;
         this.maxHP = maxHP;

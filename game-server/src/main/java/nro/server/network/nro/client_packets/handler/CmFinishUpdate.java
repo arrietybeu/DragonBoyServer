@@ -11,7 +11,9 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.FINISH_UPDATE, validStates = {NroConnection.State.AUTHED})
+@AClientPacketHandler(command = ConstsCmd.FINISH_UPDATE, validStates = {NroConnection.State.AUTHED,
+        NroConnection.State.IN_GAME})
+
 public class CmFinishUpdate extends NroClientPacket {
 
     public CmFinishUpdate(int command, Set<NroConnection.State> validStates) {

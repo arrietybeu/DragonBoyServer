@@ -14,7 +14,10 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {NroConnection.State.CONNECTED, NroConnection.State.AUTHED})
+@AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {
+        NroConnection.State.CONNECTED,
+        NroConnection.State.AUTHED,
+        NroConnection.State.IN_GAME})
 public class CMNotLogin extends NroClientPacket {
 
     private String username;

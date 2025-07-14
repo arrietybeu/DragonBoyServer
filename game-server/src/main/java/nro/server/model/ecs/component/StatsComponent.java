@@ -26,6 +26,10 @@ public class StatsComponent extends Component {
     public byte totalCriticalChance;
     public byte movementSpeed = 5;
 
+    public StatsComponent() {
+        // Default constructor for Artemis
+    }
+
     public StatsComponent(long power, long potential,
                           int baseHp, int baseMp, int baseDamage, int baseDefense, byte baseCrit) {
         this.power = power;

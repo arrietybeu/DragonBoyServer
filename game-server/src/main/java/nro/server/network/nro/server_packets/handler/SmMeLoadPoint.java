@@ -24,6 +24,9 @@ public class SmMeLoadPoint extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) {
         Entity playerEntity = GameWorld.getInstance().getWorld().getEntity(playerEntityId);
+        if (playerEntity == null) {
+            throw new RuntimeException("Player entity not found: " + playerEntityId);
+        }
         StatsComponent stats = playerEntity.getComponent(StatsComponent.class);
         HealthComponent health = playerEntity.getComponent(HealthComponent.class);
         if (stats == null) {

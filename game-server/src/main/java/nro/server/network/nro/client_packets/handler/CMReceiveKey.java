@@ -5,6 +5,7 @@ import nro.commons.network.Crypt;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
+import nro.server.network.nro.server_packets.handler.SmLoginFail;
 
 import java.util.Set;
 
@@ -22,6 +23,9 @@ public class CMReceiveKey extends NroClientPacket {
     @Override
     protected void runImpl() {
         Crypt crypt = getConnection().getCrypt();
+        if (crypt == null) {
+            throw new IllegalStateException("Crypt is not initialized - " + getConnection());
+        }
         crypt.resetKeyIndex();
         crypt.setSendKey(true);
     }

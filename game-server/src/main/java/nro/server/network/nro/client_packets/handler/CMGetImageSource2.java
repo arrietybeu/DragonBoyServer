@@ -9,7 +9,7 @@ import nro.server.network.nro.server_packets.handler.SMNotLogin;
 
 import java.util.Set;
 
-@AClientPacketHandler(command = ConstsCmd.GET_IMAGE_SOURCE2, validStates = {NroConnection.State.CONNECTED})
+@AClientPacketHandler(command = ConstsCmd.GET_IMAGE_SOURCE2, validStates = {NroConnection.State.CONNECTED, NroConnection.State.IN_GAME})
 public class CMGetImageSource2 extends NroClientPacket {
 
     public CMGetImageSource2(int command, Set<NroConnection.State> validStates) {

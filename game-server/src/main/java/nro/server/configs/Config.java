@@ -7,6 +7,7 @@ import nro.commons.configuration.ConfigurableProcessor;
 import nro.commons.utils.NetworkUtils;
 import nro.commons.utils.PropertiesUtils;
 import nro.server.GameServerError;
+import nro.server.configs.main.ConfigCharacter;
 import nro.server.configs.main.ConfigServer;
 import nro.server.configs.main.PacketConfig;
 import nro.server.configs.main.ThreadConfig;
@@ -27,7 +28,7 @@ import java.util.Set;
 public class Config {
 
     private static final List<Class<?>> CONFIGS = Arrays.asList(
-            ConfigServer.class, ThreadConfig.class, NetworkConfig.class, PacketConfig.class, DatabaseConfig.class);
+            ConfigServer.class, ThreadConfig.class, NetworkConfig.class, PacketConfig.class, DatabaseConfig.class, ConfigCharacter.class);
 
     public static void load(Class<?>... allowedConfigs) {
         Properties properties = loadProperties();

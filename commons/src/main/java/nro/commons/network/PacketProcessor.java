@@ -22,21 +22,14 @@ public class PacketProcessor<T extends AConnection<?>> {
     private static final Logger log = LoggerFactory.getLogger(PacketProcessor.class.getName());
 
     private final int threadSpawnThreshold;
-
     private final int threadKillThreshold;
-
     private final Lock lock = new ReentrantLock();
 
     private final Condition notEmpty = lock.newCondition();
-
     private final List<BaseClientPacket<T>> packets = new LinkedList<>();
-
     private final List<Thread> threads = new ArrayList<>();
-
     private final int minThreads;
-
     private final int maxThreads;
-
     private final Executor executor;
 
     public PacketProcessor(int minThreads, int maxThreads, int threadSpawnThreshold, int threadKillThreshold) {
