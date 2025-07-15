@@ -64,9 +64,9 @@ public class PlayerDAO {
         String sql = "INSERT INTO player_currencies (player_id, gold, gem, ruby) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
-            ps.setInt(2, 2000); // gold
-            ps.setInt(3, 0);    // gem
-            ps.setInt(4, 50);   // ruby
+            ps.setInt(2, ConfigCharacter.CREATION_GOLD); // gold
+            ps.setInt(3, ConfigCharacter.CREATION_GEM);    // gem
+            ps.setInt(4, ConfigCharacter.CREATION_RUBY);   // ruby
             if (ps.executeUpdate() <= 0) {
                 log.error("No rows were inserted into player_currencies for playerId: {}", playerId);
                 return false;
@@ -207,9 +207,8 @@ public class PlayerDAO {
             playerId = stmt.getInt(8);
         }
 
-        if (playerId <= 0) {
+        if (playerId <= 0)
             throw new SQLException("Failed to create player.");
-        }
         return playerId;
     }
 
@@ -298,6 +297,26 @@ public class PlayerDAO {
                 if (rs.next()) {
                     entity.edit().add(new CurrencyComponent(rs.getLong("gold"), rs.getInt("gem"), rs.getInt("ruby")));
                 }
+            }
+        }
+    }
+
+    private static void loadPlayerSkills(Connection conn, Entity entity, int playerId) throws SQLException {
+        String sql = "SELECT slot_1 FROM player_skills_shortcut WHERE player_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, playerId);
+            try (var resultSet = ps.executeQuery()) {
+                if (!resultSet.next()) {
+                    throw new SQLException("Không tìm thấy skill short cut cho player id: " + playerId);
+                }
+
+                byte[] skillShortCut = new byte[10];
+
+                for (int i = 0; i < 10; i++) {
+                    skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
+                }
+
+                entity.edit().add(new SkillComponent());
             }
         }
     }

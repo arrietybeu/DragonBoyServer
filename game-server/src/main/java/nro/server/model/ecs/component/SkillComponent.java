@@ -14,4 +14,10 @@ public class SkillComponent extends Component {
     protected byte[] skillShortCut;
     protected SkillInfo skillSelect;
 
+    public SkillComponent() {
+        // Default constructor for Artemis
+    }
+
+
+
 }
