@@ -12,7 +12,7 @@ import java.util.*;
 @Setter
 public class WorldMapTemplate {
 
-    private final int id;
+    private final short id;
     private int pixelWidth;
     private int pixelHeight;
     private final String name;
@@ -32,7 +32,7 @@ public class WorldMapTemplate {
                             byte typeMap, List<BgItem> bgItems,
                             List<BackgroundEffect> backgroundEffects,
                             List<Waypoint> waypoints, TileMap tileMap) {
-        this.id = id;
+        this.id = (short) id;
         this.name = name;
         this.maxArea = maxArea;
         this.maxPlayer = maxPlayer;

@@ -14,5 +14,6 @@ public class AppearanceComponent extends Component {
     public short aura; // Hào quang
     public short effSetItem; // Hiệu ứng set đồ
     public short idHat; // Nón thời trang
+    public boolean isMonkey = false;
 
 }

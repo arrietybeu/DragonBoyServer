@@ -9,15 +9,21 @@ import com.artemis.Component;
 public class PositionComponent extends Component {
 
     public int mapId;
+    public byte areaId;
+
     public short x;
     public short y;
 
-    public PositionComponent(){}
+    public short teleport = 0;
 
-    public PositionComponent(int mapId, short x, short y) {
+    public PositionComponent() {
+    }
+
+    public PositionComponent(int mapId, int areaId, short x, short y) {
         this.mapId = mapId;
         this.x = x;
         this.y = y;
+        this.areaId = (byte) areaId;
     }
 
 }

@@ -37,11 +37,15 @@ public final class ItemData implements IManager {
     private final List<ItemTemplate.ArrHead2Frames> arrHead2Frames = new ArrayList<>();
     private byte[] dataArrHead2Fr;
 
+    private final List<ItemTemplate.HeadAvatar> itemHeadAvatars = new ArrayList<>();
+    private byte[] dataItemHead;
+
     @Override
     public void init() throws Throwable {
         loadItemOptionTemplate();
         loadItemTemplate();
         loadItemArrHead2Frame();
+        loadItemHead();
     }
 
     @Override
@@ -52,6 +56,34 @@ public final class ItemData implements IManager {
     public void clear() throws Throwable {
         this.itemOptionTemplates.clear();
         this.dataItemOption = null;
+    }
+
+    private void loadItemHead() {
+        String query = "SELECT * FROM item_head";
+        Database.select(query, rs -> {
+            while (rs.next()) {
+                int headId = rs.getInt("head_id");
+                int avatarId = rs.getInt("avatar_id");
+                ItemTemplate.HeadAvatar headAvatar = new ItemTemplate.HeadAvatar(headId, avatarId);
+                itemHeadAvatars.add(headAvatar);
+            }
+        });
+
+        setItemHead();
+    }
+
+    private void setItemHead() {
+        ByteBuffer buf = ByteBuffer.allocate(100_000);
+
+        buf.putShort((short) itemHeadAvatars.size());
+        for (var head : itemHeadAvatars) {
+            buf.putShort((short) head.headId());
+            buf.putShort((short) head.avatarId());
+        }
+
+        buf.flip();
+        this.dataItemHead = new byte[buf.remaining()];
+        buf.get(this.dataItemHead);
     }
 
     private void loadItemOptionTemplate() {

@@ -65,12 +65,14 @@ public class WorldMap {
         return createUniqueInstance(playerId);
     }
 
-    public WorldMapInstance getSharedZoneForOnline() {
-        for (int i = 0; i < template.getMaxArea(); i++) {
-            WorldMapInstance inst = areas.get(i);
-            if (inst != null && inst.getPlayerCount() < template.getMaxPlayer()) {
-                return inst;
-            }
+    public WorldMapInstance getSharedZoneForOnline(int zoneID) {
+        if (zoneID < 0 || zoneID >= template.getMaxArea()) {
+            log.warn("Invalid zoneID: {} for map: {}", zoneID, id);
+            return null;
+        }
+        WorldMapInstance inst = areas.get(zoneID);
+        if (inst != null && inst.getPlayerCount() < template.getMaxPlayer()) {
+            return inst;
         }
         return null;
     }
@@ -142,7 +144,7 @@ public class WorldMap {
         if (entity.getComponent(PlayerComponent.class) != null) {
             return switch (typeMap) {
                 case 0 -> map.createInstanceForPlayer(entityId); // offline
-                case 1 -> map.getSharedZoneForOnline();          // online
+                case 1 -> map.getSharedZoneForOnline(areaId);          // online
                 // case 2 -> {
                 //     ClanComponent clan = entity.getComponent(ClanComponent.class);
                 //     int guildId = (clan != null) ? clan.id : -1;

@@ -17,4 +17,7 @@ public class PlayerComponent extends Component {
         this.connection = conn;
     }
 
+    public boolean isOnline() {
+        return connection != null;
+    }
 }

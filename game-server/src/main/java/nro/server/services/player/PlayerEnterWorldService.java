@@ -2,13 +2,15 @@ package nro.server.services.player;
 
 import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
+import nro.server.consts.ConstMsgSubCommand;
 import nro.server.dao.PlayerDAO;
 import nro.server.engine.GameWorld;
+import nro.server.model.ecs.component.AppearanceComponent;
+import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;
-import nro.server.network.nro.server_packets.handler.SmMeLoadPoint;
-import nro.server.network.nro.server_packets.handler.SmSpecialSkill;
+import nro.server.network.nro.server_packets.handler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,21 +50,20 @@ public class PlayerEnterWorldService {
                     var playerEntity = world.getEntity(playerEntityID);
                     playerEntity.edit().add(new PlayerComponent(client));
 
-//                    this.sendSelectSkillShortCut(player, "KSkill");
-//                    this.sendSelectSkillShortCut(player, "OSkill");
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill", playerEntityID));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill", playerEntityID));
 
                     client.sendPacket(new SmSpecialSkill());
                     client.sendPacket(new SmMeLoadPoint(playerEntityID));
-                    // send task
+                    client.sendPacket(new SmTaskInfo());
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
 
-                    // send info player -30
-                    // send clan info  -53
-                    // send flag bag -64
-                    // send player body -90
-                    // send map info  -24
-                    // send current hp mp -30
-
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER, playerEntityID));
+                    client.sendPacket(new SmClanInfo());
+                    client.sendPacket(new SmUpdateBag(playerEntityID, playerEntity.getComponent(AppearanceComponent.class)));
+                    client.sendPacket(new SmUpdateBody(playerEntityID, playerEntity.getComponent(AppearanceComponent.class)));
+                    client.sendPacket(new SmMapInfo(playerEntity.getComponent(PositionComponent.class)));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP, playerEntityID));
                     //this.sendThongBaoInfoTask(player, serverService);
                     // send max stamina -69
                     // send stamina -68

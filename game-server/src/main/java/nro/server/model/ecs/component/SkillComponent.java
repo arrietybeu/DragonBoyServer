@@ -10,14 +10,13 @@ import java.util.List;
  */
 public class SkillComponent extends Component {
 
-    protected List<SkillInfo> skills;
-    protected byte[] skillShortCut;
-    protected SkillInfo skillSelect;
+    public List<SkillInfo> skills;
+    public byte[] skillShortCut;
+    public SkillInfo skillSelect;
 
     public SkillComponent() {
         // Default constructor for Artemis
     }
-
 
 
 }

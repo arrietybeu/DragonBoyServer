@@ -53,6 +53,7 @@ public class PlayerDAO {
             if (!createDefaultLocation(conn, playerId, gender)) return false;
             if (!createDefaultPoints(conn, playerId, gender)) return false;
             if (!createDefaultMagicTree(conn, playerId)) return false;
+            if (!createDefaultSkills(conn, playerId, gender)) return false;
             return createDefaultSkillShortcuts(conn, playerId, gender);
         } catch (SQLException e) {
             log.error("Failed to create player base for account ID: {} with name: {}. Error: {}", accountId, name, e.getMessage());
@@ -191,6 +192,31 @@ public class PlayerDAO {
         return true;
     }
 
+    private static boolean createDefaultSkills(Connection connection, int playerId, int gender) throws SQLException {
+        String query = "INSERT INTO player_skills (player_id, skill_id," +
+                " current_level, last_time_use_skill) VALUES (?, ?, ?, ?);";
+
+        int[] skills = gender == 0 ? new int[]{0, 1, 6, 9, 10, 20, 22, 19, 24}
+                : gender == 1 ? new int[]{2, 3, 7, 11, 12, 17, 18, 19, 26}
+                : new int[]{4, 5, 8, 13, 14, 21, 23, 19, 25};
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            for (int i = 0; i < skills.length; i++) {
+                statement.setInt(1, playerId);
+                statement.setInt(2, skills[i]);
+                statement.setInt(3, (i == 0) ? 1 : 0);
+                statement.setLong(4, 0);
+                statement.addBatch();
+            }
+            int[] rowsAffected = statement.executeBatch();
+            if (rowsAffected.length != skills.length) {
+                log.error("Not all skills were inserted for playerId: {}", playerId);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head) throws SQLException {
         // var ms = System.currentTimeMillis();
         int playerId;
@@ -229,6 +255,7 @@ public class PlayerDAO {
             loadPlayerLocation(conn, playerEntity, playerId);
             loadPlayerStatsAndHealth(conn, playerEntity, playerId);
             loadPlayerCurrencies(conn, playerEntity, playerId);
+            loadPlayerSkills(conn, playerEntity, playerId);
             InventoryDAO.loadInventoryForPlayer(conn, playerId);
             log.info("Successfully loaded entity for player ID: {}", playerId);
             return playerEntityID;
@@ -316,7 +343,9 @@ public class PlayerDAO {
                     skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
                 }
 
-                entity.edit().add(new SkillComponent());
+                var skillShortCutComponent = new SkillComponent();
+                skillShortCutComponent.skillShortCut = skillShortCut;
+                entity.edit().add(skillShortCutComponent);
             }
         }
     }

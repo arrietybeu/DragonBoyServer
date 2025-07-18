@@ -90,7 +90,6 @@ public class GameServer {
         initCommandService();
         CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
 
-
         LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);
     }
 
