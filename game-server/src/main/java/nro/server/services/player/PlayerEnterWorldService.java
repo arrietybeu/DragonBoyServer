@@ -9,6 +9,7 @@ import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
+import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.*;
 import org.slf4j.Logger;
@@ -34,17 +35,23 @@ public class PlayerEnterWorldService {
         int playerId = PlayerDAO.findPlayerIdByAccountId(accountId);
 
         if (playerId == -1) {
+            // show UI create chảr
             client.sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
         } else {
-            int playerEntityID = PlayerDAO.loadPlayerEntity(playerId, accountId);
-            if (playerEntityID == -1) {
-                log.error("Failed to load player entity for player ID: {}. Cannot enter world.", playerId);
-                client.close(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
-                return;
-            }
-            client.attachPlayerEntity(playerEntityID);
 
-            if (!enteringWorld.contains(playerEntityID) && enteringWorld.add(playerEntityID)) {
+            int playerEntityID = client.getPlayerEntityId();
+            if (playerEntityID <= 0) {
+                playerEntityID = PlayerDAO.loadPlayerEntity(playerId, accountId);
+                if (playerEntityID == -1) {
+                    log.error("Failed to load player entity for player ID: {}. Cannot enter world.", playerId);
+                    client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_DATA_LOAD_ERROR.getDefaultMessage()));
+                    return;
+                }
+                client.attachPlayerEntity(playerEntityID);
+                client.setPlayerID(playerId);
+            }
+
+            if (!enteringWorld.contains(playerEntityID) && enteringWorld.add (playerEntityID)) {
                 try {
                     World world = GameWorld.getInstance().getWorld();
                     var playerEntity = world.getEntity(playerEntityID);
@@ -55,7 +62,7 @@ public class PlayerEnterWorldService {
 
                     client.sendPacket(new SmSpecialSkill());
                     client.sendPacket(new SmMeLoadPoint(playerEntityID));
-                    client.sendPacket(new SmTaskInfo());
+//                    client.sendPacket(new SmTaskInfo());
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
 
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER, playerEntityID));
@@ -64,15 +71,18 @@ public class PlayerEnterWorldService {
                     client.sendPacket(new SmUpdateBody(playerEntityID, playerEntity.getComponent(AppearanceComponent.class)));
                     client.sendPacket(new SmMapInfo(playerEntity.getComponent(PositionComponent.class)));
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP, playerEntityID));
+
                     //this.sendThongBaoInfoTask(player, serverService);
-                    // send max stamina -69
-                    // send stamina -68
-                    // send actiove point -97
-                    // send player is pet -107
-                    // send player ranks -119
-                    // send skill shortcut -113
-                    // send game noti 50
-                    // send caption -41
+
+                    client.sendPacket(new SmMaxStamina());
+                    client.sendPacket(new SmStamina());
+                    client.sendPacket(new SmActivePoint());
+                    client.sendPacket(new SmPetInfo());
+                    client.sendPacket(new SmRank());
+                    client.sendPacket(new SmChangeOnSkill());
+                    client.sendPacket(new SmGameInfo());
+                    client.sendPacket(new SmUpdateCaption());
+
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
                 } catch (Throwable e) {

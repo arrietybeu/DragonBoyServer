@@ -8,10 +8,12 @@ import nro.server.configs.main.ConfigCharacter;
 import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
+import nro.server.model.ecs.component.player.TaskComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.time.Instant;
 
 /**
  * @author Arriety
@@ -54,9 +56,11 @@ public class PlayerDAO {
             if (!createDefaultPoints(conn, playerId, gender)) return false;
             if (!createDefaultMagicTree(conn, playerId)) return false;
             if (!createDefaultSkills(conn, playerId, gender)) return false;
+            if (!createDefaultTask(conn, playerId)) return false;
+            InventoryDAO.createPlayerInventory(conn, playerId, gender);
             return createDefaultSkillShortcuts(conn, playerId, gender);
         } catch (SQLException e) {
-            log.error("Failed to create player base for account ID: {} with name: {}. Error: {}", accountId, name, e.getMessage());
+            log.error("Failed to create player base for account ID: {} with name: {}. Error: {}", accountId, name, e.getMessage(), e);
             return false;
         }
     }
@@ -192,6 +196,22 @@ public class PlayerDAO {
         return true;
     }
 
+    private static boolean createDefaultTask(Connection con, int playerId) throws SQLException {
+        String query = "INSERT INTO player_task (player_id, task_id, task_index, task_count) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setInt(1, playerId);
+            statement.setInt(2, ConfigCharacter.CREATION_TASK_START_ID); // task_id
+            statement.setInt(3, ConfigCharacter.CREATION_TASK_START_INDEX); // task_index
+            statement.setInt(4, ConfigCharacter.CREATION_TASK_START_COUNT); // task_count
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected <= 0) {
+                log.error("No rows were inserted into player_task for playerId: {}", playerId);
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static boolean createDefaultSkills(Connection connection, int playerId, int gender) throws SQLException {
         String query = "INSERT INTO player_skills (player_id, skill_id," +
                 " current_level, last_time_use_skill) VALUES (?, ?, ?, ?);";
@@ -246,9 +266,14 @@ public class PlayerDAO {
         info.id = playerId;
         info.accountId = accountId;
 
-        world.edit(playerEntityID).add(info);
-
         var playerEntity = world.getEntity(playerEntityID);
+
+        var edit = world.edit(playerEntityID);
+        edit.add(info);
+        edit.add(new AppearanceComponent());
+        edit.add(new StateComponent());
+        edit.add(new BuffComponent());
+        edit.add(new FusionComponent());
 
         try (Connection conn = DatabaseFactory.getConnection()) {
             loadPlayerInfo(conn, playerEntity, playerId);
@@ -256,7 +281,8 @@ public class PlayerDAO {
             loadPlayerStatsAndHealth(conn, playerEntity, playerId);
             loadPlayerCurrencies(conn, playerEntity, playerId);
             loadPlayerSkills(conn, playerEntity, playerId);
-            InventoryDAO.loadInventoryForPlayer(conn, playerId);
+            InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
+            loadPlayerTask(conn, playerEntity, playerId);
             log.info("Successfully loaded entity for player ID: {}", playerId);
             return playerEntityID;
         } catch (Exception e) {
@@ -278,7 +304,7 @@ public class PlayerDAO {
     }
 
     private static void loadPlayerInfo(Connection conn, Entity entity, int playerId) throws SQLException {
-        String sql = "SELECT name, gender, is_online FROM player WHERE id = ?";
+        String sql = "SELECT name, gender, is_online, created_at, max_bag_size, max_box_size FROM player WHERE id = ?";
         InfoComponent info = entity.getComponent(InfoComponent.class);
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
@@ -287,6 +313,9 @@ public class PlayerDAO {
                     info.name = rs.getString("name");
                     info.gender = rs.getByte("gender");
                     info.isOnline = rs.getBoolean("is_online");
+                    info.createdAt = rs.getTimestamp("created_at").toInstant();
+                    info.maxBagSize = rs.getByte("max_bag_size");
+                    info.maxBoxSize = rs.getByte("max_box_size");
                 }
             }
         }
@@ -298,7 +327,17 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new PositionComponent(rs.getInt("map_id"), rs.getShort("pos_x"), rs.getShort("pos_y")));
+
+                    var mapId = rs.getInt("map_id");
+                    var x = rs.getShort("pos_x");
+                    var y = rs.getShort("pos_y");
+
+                    var position = nro.server.world.World.getInstance().createPosition(mapId, playerId, x, y);
+
+                    if (position == null)
+                        throw new SQLException("Khong load duoc position cua World: " + mapId);
+
+                    entity.edit().add(new PositionComponent(position.mapId(), position.zoneId(), position.x(), position.y()));
                 }
             }
         }
@@ -329,7 +368,7 @@ public class PlayerDAO {
     }
 
     private static void loadPlayerSkills(Connection conn, Entity entity, int playerId) throws SQLException {
-        String sql = "SELECT slot_1 FROM player_skills_shortcut WHERE player_id = ?";
+        String sql = "SELECT * FROM player_skills_shortcut WHERE player_id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
             try (var resultSet = ps.executeQuery()) {
@@ -350,8 +389,27 @@ public class PlayerDAO {
         }
     }
 
+    private static void loadPlayerTask(Connection conn, Entity entity, int playerId) throws SQLException {
+        String sql = "SELECT * FROM player_task WHERE player_id = ?";
+        try (var ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, playerId);
+            try (var rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new SQLException("Không tìm thấy player task cho player id: " + playerId);
+                }
+
+                var taskId = rs.getInt("task_id");
+                var taskIndex = rs.getInt("task_index");
+                var taskCount = rs.getInt("task_count");
+
+                entity.edit().add(new TaskComponent(taskId, taskIndex, taskCount));
+            }
+        }
+    }
+
     public static int[] getUsedIDs() {
-        try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT id FROM player", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
+        try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT id FROM player",
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
             rs.last();
             int count = rs.getRow();
             rs.beforeFirst();

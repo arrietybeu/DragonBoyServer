@@ -37,26 +37,33 @@ public class World {
 
         byte typeMap = map.getTemplate().getTypeMap();
 
-        return switch (typeMap) {
-            case 0 -> // Offline map
-                    map.createInstanceForPlayer(ownerId);
-            case 1 -> // Online map
-                    map.getSharedZoneForOnline(zoneID[0]);
+        switch (typeMap) {
+            case 0 -> {
+                return map.createInstanceForPlayer(ownerId);
+            }
+            case 1 -> {
+                if (zoneID == null || zoneID.length == 0) {
+                    return map.getRandomInstanceForOnline();
+                }
+                return map.getSharedZoneForOnline(zoneID[0]);
+            }
             case 2 -> // Pho ban
-                    map.createInstanceForGuild(ownerId);
+            {
+                return map.createInstanceForGuild(ownerId);
+            }
             default -> throw new IllegalArgumentException("Unknown typeMap: " + typeMap);
-        };
+        }
     }
 
-    public WorldPosition createPosition(int mapId, int playerId, short x, short y, int zoneID) {
-        var mr = this.getAvailableInstance(mapId, playerId, zoneID);
+    public WorldPosition createPosition(int mapId, int playerId, short x, short y, int... zoneID) {
+        WorldMapInstance mr = this.getAvailableInstance(mapId, playerId, zoneID);
         if (mr == null) {
             log.info("Failed to create position (invalid coords: x={}, y={} for mapId {} in instanceId {})"
                     , x, y, mapId, zoneID);
-            // dua ve nha
+            // đưa về nhà map base của các gender
             return null;
         }
-        return new WorldPosition((short) mapId, x, y, zoneID, mr);
+        return new WorldPosition(mr.getParent().getTemplate().getId(), x, y, mr.getInstanceId(), mr);
     }
 
     public static World getInstance() {

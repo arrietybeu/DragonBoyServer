@@ -53,9 +53,9 @@ public class SmMapInfo extends NroServerPacket {
         writeByte(0);
 
         // send background map
-        writeByte(0);
+        writeShort(0);
         // send effect map
-        writeByte(0);
+        writeShort(0);
 
         writeByte(mapTemplate.getBgType());
         writeByte(positionComponent.teleport);

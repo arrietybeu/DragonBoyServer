@@ -16,6 +16,7 @@ public class SmUpdateBody extends NroServerPacket {
     private final AppearanceComponent appearance;
 
     public SmUpdateBody(final int entityId, final AppearanceComponent appearance) {
+        System.out.println("write UPDATABE BODY");
         this.entityId = entityId;
         this.appearance = appearance;
     }

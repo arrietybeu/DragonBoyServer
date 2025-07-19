@@ -6,6 +6,7 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.handler.*;
+import nro.server.services.player.PlayerEnterWorldService;
 import nro.server.services.player.PlayerService;
 
 import java.util.Set;
@@ -62,11 +63,6 @@ public class CmNotMap extends NroClientPacket {
                 if (getConnection().getSessionInfo().isClientOk())
                     return;
 
-                // client ok
-                // sendDataBackgroundMapTemplate
-                // sendTileSetInfo
-                // sendSmallVersion
-                // sendBackgroundVersion
                 sendPacket(new SmItemBackground());
                 sendPacket(new SmTileSet());
                 sendPacket(new SmSmallImageVersion());
@@ -86,9 +82,8 @@ public class CmNotMap extends NroClientPacket {
             case SmNotMap.CREATE_CHARACTER -> {
                 var playerResponseType = PlayerService.storeNewPlayer(name, gender, hair, getConnection().getAccount());
                 switch (playerResponseType) {
-                    case PlayerResponseType.SUCCESS -> {
-                        //
-                    }
+                    case PlayerResponseType.SUCCESS ->
+                            PlayerEnterWorldService.enterWorld(getConnection());
                     default -> sendPacket(new SmDialogMessage(playerResponseType.getDefaultMessage()));
                 }
             }

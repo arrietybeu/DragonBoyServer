@@ -3,7 +3,6 @@ package nro.server.model.ecs.component.player;
 
 import com.artemis.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,8 +10,9 @@ import java.util.List;
  */
 public class InventoryComponent extends Component {
 
-    public List<Integer> itemsBody = new ArrayList<>();
-    public List<Integer> itemsBag = new ArrayList<>();
-    public List<Integer> itemsBox = new ArrayList<>();
+    public List<Integer> itemsBody;
+    public List<Integer> itemsBag;
+    public List<Integer> itemsBox;
 
+    public boolean isDirty = true;
 }

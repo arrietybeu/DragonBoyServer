@@ -16,4 +16,5 @@ public record ItemTemplate(short id, byte type, byte gender, String name, String
 
     public record HeadAvatar(int headId, int avatarId) {
     }
+
 }

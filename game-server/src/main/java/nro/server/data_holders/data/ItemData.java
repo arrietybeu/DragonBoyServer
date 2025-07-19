@@ -7,14 +7,12 @@ import nro.server.data_holders.IManager;
 import nro.server.model.item.ItemOptionData;
 import nro.server.model.templates.item.ItemOptionTemplate;
 import nro.server.model.templates.item.ItemTemplate;
-import nro.server.utils.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

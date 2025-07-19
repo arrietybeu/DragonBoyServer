@@ -28,9 +28,7 @@ public enum PlayerResponseType {
     //================================================================
     LOGIN_SUCCESS(20, ""),
 
-    LOGIN_FAILED_CHAR_NOT_FOUND(21, "Không tìm thấy nhân vật nào cho tài khoản này."),
-
-    LOGIN_FAILED_DATA_LOAD_ERROR(22, "Xảy ra lỗi trong quá trình tải dữ liệu nhân vật. Vui lòng thử lại."),
+    LOGIN_FAILED_DATA_LOAD_ERROR(21, "Xảy ra lỗi trong quá trình tải dữ liệu nhân vật. Vui lòng thử lại."),
 
     LOGIN_FAILED_SERVER_FULL(23, "Máy chủ hiện đã đầy. Vui lòng thử lại sau ít phút."),
 

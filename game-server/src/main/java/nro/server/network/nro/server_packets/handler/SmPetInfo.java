@@ -8,10 +8,10 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 /**
  * @author Arriety
  */
-@ServerPacketCommand(ConstsCmd.MAXSTAMINA)
-public class SmMaxStamina extends NroServerPacket {
+@ServerPacketCommand(ConstsCmd.PET_INFO)
+public class SmPetInfo extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-        writeShort(0);
+        writeByte(0);
     }
 }

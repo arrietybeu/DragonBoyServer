@@ -197,10 +197,11 @@ public final class MapData implements IManager {
         ByteBuffer buf = ByteBuffer.allocate(100_000);
         buf.putShort((short) this.backgroundMapTemplates.size());
         for (var template : backgroundMapTemplates) {
-            buf.putShort((short) template.getId());
+            buf.putShort(template.getImage());
             buf.put(template.getLayer());
             buf.putShort(template.getDx());
             buf.putShort(template.getDy());
+            buf.put((byte) 0);
         }
         buf.flip();
         dataBackgroundMapTemplates = new byte[buf.remaining()];

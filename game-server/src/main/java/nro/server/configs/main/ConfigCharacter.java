@@ -55,6 +55,9 @@ public class ConfigCharacter {
     @Property(key = "character.creation.task.start_index", defaultValue = "0")
     public static int CREATION_TASK_START_INDEX;
 
+    @Property(key = "character.creation.task.start_count", defaultValue = "0")
+    public static int CREATION_TASK_START_COUNT;
+
     @Property(key = "character.creation.magic_tree.level", defaultValue = "1")
     public static int MAGIC_TREE_LEVEL;
 

@@ -8,11 +8,10 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 /**
  * @author Arriety
  */
-@ServerPacketCommand(ConstsCmd.TASK_GET)
-public class SmTaskGet extends NroServerPacket {
-
+@ServerPacketCommand(ConstsCmd.STAMINA)
+public class SmStamina extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-
+        writeShort(0);
     }
 }

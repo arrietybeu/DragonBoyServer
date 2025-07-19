@@ -18,6 +18,7 @@ import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
+import nro.server.system.FashionUpdateSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;
@@ -42,20 +43,25 @@ public class GameServer {
     private static NioServer nioServer;
 
     public static void main(String[] args) {
-        initUtilityServicesAndConfig();
-        DatabaseFactory.init();
-        //noinspection ResultOfMethodCallIgnored
-        DataManager.getInstance();
-        IDFactory.getInstance();
-        World.getInstance();
-        BannedIpController.start();
+        try {
+            initUtilityServicesAndConfig();
+            DatabaseFactory.init();
+            //noinspection ResultOfMethodCallIgnored
+            DataManager.getInstance();
+            IDFactory.getInstance();
+            World.getInstance();
+            BannedIpController.start();
 
-        intEntityComponentSystem();
+            intEntityComponentSystem();
 
-        System.gc();
-        nioServer = initNioServer();
-        Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
-        LOGGER.info("Game server started successfully. Listening on: {}", NetworkConfig.CLIENT_SOCKET_ADDRESS);
+            System.gc();
+            nioServer = initNioServer();
+            Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
+            LOGGER.info("Game server started successfully. Listening on: {}", NetworkConfig.CLIENT_SOCKET_ADDRESS);
+        } catch (Throwable e) {
+            LOGGER.error("Error : {}", e.getMessage(), e);
+            System.exit(1);
+        }
     }
 
     private static NioServer initNioServer() {
@@ -68,7 +74,7 @@ public class GameServer {
     private static void intEntityComponentSystem() {
 
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-//        builder.with(); // add systems here if needed
+        builder.with(new FashionUpdateSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();
@@ -87,14 +93,11 @@ public class GameServer {
         ThreadPoolManager.getInstance();
 
         // Initialize scanner
-        initCommandService();
+        Thread.startVirtualThread(CommandService::ActiveCommandLine);
+
         CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
 
         LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);
-    }
-
-    private static void initCommandService() {
-        new Thread(CommandService::ActiveCommandLine, "CommandLine Thread").start();
     }
 
     public static void shutdownNioServer() {

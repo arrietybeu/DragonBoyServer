@@ -77,6 +77,23 @@ public class WorldMap {
         return null;
     }
 
+    public WorldMapInstance getRandomInstanceForOnline() {
+
+        for (int i = 0; i < areas.size(); i++) {
+
+            WorldMapInstance inst = areas.get(i);
+            if (inst == null) {
+                throw new RuntimeException("zone id: " + i + " is null");
+            }
+            if (inst.getPlayerCount() > template.getMaxPlayer()) {
+                continue;
+            }
+
+            return inst;
+        }
+        return null;
+    }
+
     /**
      * Dùng cho bản đồ dạng phó bản (typeMap = 2), nơi mỗi bang hội sẽ có một bản sao riêng của bản đồ (area riêng biệt).
      *

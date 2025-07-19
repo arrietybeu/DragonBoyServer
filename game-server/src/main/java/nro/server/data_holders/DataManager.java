@@ -25,17 +25,18 @@ public final class DataManager {
             MonsterData.getInstance(),
             SkillData.getInstance(),
             ItemData.getInstance(),
-            MapData.getInstance()
+            MapData.getInstance(),
+            ItemInventoryData.getInstance()
     );
 
-    private DataManager() {
+    private DataManager() throws RuntimeException {
         long start = System.currentTimeMillis();
         for (IManager manager : MANAGERS) {
             try {
                 manager.init();
                 log.info("Initialized manager class: [{}]", manager.getClass().getSimpleName());
             } catch (Throwable e) {
-                log.error("Error initializing manager: {} - {}", manager.getClass().getSimpleName(), e.getMessage(), e);
+                throw new RuntimeException("Error initializing manager: {} " + manager.getClass().getSimpleName(), e);
             }
         }
         long time = System.currentTimeMillis() - start;

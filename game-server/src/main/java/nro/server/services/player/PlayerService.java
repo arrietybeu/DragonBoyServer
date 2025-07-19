@@ -47,10 +47,12 @@ public class PlayerService {
 
             // kiem tra ten nhan vat
             if (PlayerDAO.isNameTaken(connection, name)) {
+                connection.rollback();
                 return PlayerResponseType.CREATION_FAILED_NAME_TAKEN;
             }
             // kiem tra account co nhan vat nao chua
             if (PlayerDAO.accountHasCharacter(connection, account.getId())) {
+                connection.rollback();
                 return PlayerResponseType.CREATION_FAILED_ACCOUNT_HAS_CHAR;
             }
 
@@ -62,7 +64,6 @@ public class PlayerService {
                 connection.rollback();
                 return PlayerResponseType.CREATION_FAILED_SERVER_ERROR;
             }
-
         } catch (Exception e) {
             log.error("Failed to store new player: {}, account{}. Error: {}", name, e.getMessage(), account, e);
         }

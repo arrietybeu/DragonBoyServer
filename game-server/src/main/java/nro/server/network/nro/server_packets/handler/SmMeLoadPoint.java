@@ -54,5 +54,7 @@ public class SmMeLoadPoint extends NroServerPacket {
         writeShort(stats.expPerStatIncrease);
         writeInt(stats.baseDefense);
         writeByte(stats.baseCrit);
+        writeByte(stats.giamST);
+        writeShort(stats.cCritDameFull);
     }
 }
