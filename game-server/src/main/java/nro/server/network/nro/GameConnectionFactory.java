@@ -21,10 +21,12 @@ public class GameConnectionFactory implements ConnectionFactory {
 
     public GameConnectionFactory() {
         if (NetworkConfig.ENABLE_FLOOD_CONNECTIONS) {
-            floodAcceptor = new FloodManager(NetworkConfig.FLOOD_TICK, new FloodManager.FloodFilter(NetworkConfig.FLOOD_SWARN,
-                    NetworkConfig.FLOOD_SREJECT,// từ chối
-                    NetworkConfig.FLOOD_STICK), // thời gian ngắn
-                    new FloodManager.FloodFilter(NetworkConfig.FLOOD_LWARN, NetworkConfig.FLOOD_LREJECT, NetworkConfig.FLOOD_LTICK)); // long period
+            floodAcceptor = new FloodManager(NetworkConfig.FLOOD_TICK,
+                    new FloodManager.FloodFilter(NetworkConfig.FLOOD_SWARN,
+                            NetworkConfig.FLOOD_SREJECT, // từ chối
+                            NetworkConfig.FLOOD_STICK), // thời gian ngắn
+                    new FloodManager.FloodFilter(NetworkConfig.FLOOD_LWARN, NetworkConfig.FLOOD_LREJECT,
+                            NetworkConfig.FLOOD_LTICK)); // long period
         }
     }
 
@@ -40,6 +42,9 @@ public class GameConnectionFactory implements ConnectionFactory {
                     return null;
                 case WARNED:// cảnh báo
                     log.warn("IP vuot qua gioi han gui packet: {}", host);
+                    break;
+                default:
+                    log.info("IP: {} is not flooding", host);
                     break;
             }
         }

@@ -8,14 +8,12 @@ import nro.server.GameServer;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
 import nro.server.model.templates.data.PartTemplate;
-import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class CommandService {
@@ -23,27 +21,29 @@ public class CommandService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandService.class);
 
     public static void ActiveCommandLine() {
-        Scanner sc = new Scanner(System.in);
-        while (true) {
-            try {
-                String _line = sc.nextLine();
-                switch (_line) {
-                    case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
+        try (Scanner sc = new Scanner(System.in)) {
+            while (true) {
+                try {
+                    String _line = sc.nextLine();
+                    switch (_line) {
+                        case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
 
-//                    case "thread" -> ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
-                    case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
-                    case "session" ->
+                        // case "thread" ->
+                        // ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
+                        case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
+                        case "session" ->
                             LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
-                    case "system_info" -> SystemInfo.logAll();
-                    case "gc" -> System.gc();
-                    case "dump_packet" -> RunnableStatsManager.dumpClassStats();
-                    case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
-                    case "dart" ->
+                        case "system_info" -> SystemInfo.logAll();
+                        case "gc" -> System.gc();
+                        case "dump_packet" -> RunnableStatsManager.dumpClassStats();
+                        case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
+                        case "dart" ->
                             DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
-                    case "part" -> System.out.println("PartData size: " + buildNrPartData().length);
+                        case "part" -> System.out.println("PartData size: " + buildNrPartData().length);
+                    }
+                } catch (Exception exception) {
+                    LOGGER.error("", exception);
                 }
-            } catch (Exception exception) {
-                LOGGER.error("", exception);
             }
         }
     }
@@ -59,7 +59,8 @@ public class CommandService {
             buf.put((byte) part.type());
             PartTemplate.PartImage[] pi = part.data();
             for (PartTemplate.PartImage img : pi) {
-                System.out.println("PartImage: id: " + part.id() + " icon: " + img.icon() + ", dx: " + img.dx() + ", dy: " + img.dy());
+                System.out.println("PartImage: id: " + part.id() + " icon: " + img.icon() + ", dx: " + img.dx()
+                        + ", dy: " + img.dy());
                 buf.putShort(img.icon());
                 buf.put(img.dx());
                 buf.put(img.dy());

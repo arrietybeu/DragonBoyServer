@@ -1,6 +1,5 @@
 package nro.server.configs;
 
-
 import ch.qos.logback.classic.ClassicConstants;
 import nro.commons.configs.DatabaseConfig;
 import nro.commons.configuration.ConfigurableProcessor;
@@ -28,7 +27,8 @@ import java.util.Set;
 public class Config {
 
     private static final List<Class<?>> CONFIGS = Arrays.asList(
-            ConfigServer.class, ThreadConfig.class, NetworkConfig.class, PacketConfig.class, DatabaseConfig.class, ConfigCharacter.class);
+            ConfigServer.class, ThreadConfig.class, NetworkConfig.class, PacketConfig.class, DatabaseConfig.class,
+            ConfigCharacter.class);
 
     public static void load(Class<?>... allowedConfigs) {
         Properties properties = loadProperties();
@@ -40,18 +40,23 @@ public class Config {
 
         boolean processAllConfigs = allowedConfigs.length == 0;
 
-        Set<String> unusedProperties = ConfigurableProcessor.process(properties, processAllConfigs ? CONFIGS.toArray() : allowedConfigs);
+        Set<String> unusedProperties = ConfigurableProcessor.process(properties,
+                processAllConfigs ? CONFIGS.toArray() : allowedConfigs);
         if (processAllConfigs && !unusedProperties.isEmpty()) {
             removePropertiesUsedInLogbackXml(unusedProperties);
-            unusedProperties.forEach(p -> LoggerFactory.getLogger(Config.class).warn("Config property {} is unknown and therefore ignored.", p));
+            unusedProperties.forEach(p -> LoggerFactory.getLogger(Config.class)
+                    .warn("Config property {} is unknown and therefore ignored.", p));
         }
 
         if (NetworkConfig.CLIENT_CONNECT_ADDRESS.getAddress().isAnyLocalAddress()) {
             InetAddress localIPv4 = NetworkUtils.findLocalIPv4();
             if (localIPv4 == null)
-                throw new GameServerError("No IP for Nro client advertisement configured and local IP discovery failed. Please configure gameserver.network.client.connect_address");
-            NetworkConfig.CLIENT_CONNECT_ADDRESS = new InetSocketAddress(localIPv4, NetworkConfig.CLIENT_CONNECT_ADDRESS.getPort());
-            LoggerFactory.getLogger(Config.class).info("No IP for Aion client advertisement configured, using {}", localIPv4.getHostAddress());
+                throw new GameServerError(
+                        "No IP for Nro client advertisement configured and local IP discovery failed. Please configure gameserver.network.client.connect_address");
+            NetworkConfig.CLIENT_CONNECT_ADDRESS = new InetSocketAddress(localIPv4,
+                    NetworkConfig.CLIENT_CONNECT_ADDRESS.getPort());
+            LoggerFactory.getLogger(Config.class).info("No IP for Aion client advertisement configured, using {}",
+                    localIPv4.getHostAddress());
         }
     }
 
@@ -69,8 +74,9 @@ public class Config {
 
     private static Properties loadProperties() {
         Logger log = LoggerFactory.getLogger(Config.class);
-        List<String> defaultsFolders = List.of(/*"./config/administration", */"resources/configs");
-//        List<String> defaultsFolders = Arrays.asList("config/main", "config/network");
+        List<String> defaultsFolders = List.of(/* "./config/administration", */"resources/configs");
+        // List<String> defaultsFolders = Arrays.asList("config/main",
+        // "config/network");
 
         Properties defaults = new Properties();
         try {

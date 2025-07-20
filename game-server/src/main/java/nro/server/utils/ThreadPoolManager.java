@@ -24,7 +24,8 @@ public final class ThreadPoolManager implements Executor {
         DeadLockDetector.start(Duration.ofMinutes(1), () -> System.exit(ExitCode.RESTART));
 
         int availableProcessors = Runtime.getRuntime().availableProcessors();
-        int instantExecutorSize = Math.max(4, ThreadConfig.BASE_THREAD_POOL_SIZE == 0 ? availableProcessors : ThreadConfig.BASE_THREAD_POOL_SIZE);
+        int instantExecutorSize = Math.max(4,
+                ThreadConfig.BASE_THREAD_POOL_SIZE == 0 ? availableProcessors : ThreadConfig.BASE_THREAD_POOL_SIZE);
 
         int scheduledSize = ThreadConfig.SCHEDULED_THREAD_POOL_SIZE > 0
                 ? ThreadConfig.SCHEDULED_THREAD_POOL_SIZE
@@ -35,14 +36,15 @@ public final class ThreadPoolManager implements Executor {
         longRunningExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
         log.info("ThreadPoolManager: Initialized with {} instant, {} scheduler and {} long running threads",
-                instantExecutor.getCorePoolSize(), scheduledExecutor.getCorePoolSize(), longRunningExecutor.getPoolSize());
+                instantExecutor.getCorePoolSize(), scheduledExecutor.getCorePoolSize(),
+                longRunningExecutor.getPoolSize());
 
     }
 
     private ThreadPoolExecutor instantiateExecutor(int corePoolSize, int maximumPoolSize) {
         var executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 0, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(100_000), new PriorityThreadFactory("InstantPool",
-                ThreadConfig.USE_PRIORITIES ? 7 : Thread.NORM_PRIORITY));
+                        ThreadConfig.USE_PRIORITIES ? 7 : Thread.NORM_PRIORITY));
 
         executor.setRejectedExecutionHandler(new NroRejectedExecutionHandler());
         executor.prestartAllCoreThreads();
@@ -58,12 +60,14 @@ public final class ThreadPoolManager implements Executor {
     }
 
     /**
-     * Lên lịch thực hiện một task sau một khoảng thời gian delay (một lần duy nhất).
+     * Lên lịch thực hiện một task sau một khoảng thời gian delay (một lần duy
+     * nhất).
      * <p>
      * Chỉ nên dùng cho:
      * - Task nhẹ, non-blocking
      * - Không cần thực hiện định kỳ
-     * - Dùng trong logic game như: delay skill, spawn NPC, gửi hiệu ứng, hồi sinh,...
+     * - Dùng trong logic game như: delay skill, spawn NPC, gửi hiệu ứng, hồi
+     * sinh,...
      * <p>
      * Nếu task có I/O hoặc chạy lâu → sử dụng longRunningExecutor.
      *
@@ -79,7 +83,8 @@ public final class ThreadPoolManager implements Executor {
     }
 
     /**
-     * Lên lịch thực thi một tác vụ một lần duy nhất sau một khoảng delay tính bằng mili giây.
+     * Lên lịch thực thi một tác vụ một lần duy nhất sau một khoảng delay tính bằng
+     * mili giây.
      * <p>
      * Ví dụ:
      * - Hồi kỹ năng sau 5000ms
@@ -94,13 +99,16 @@ public final class ThreadPoolManager implements Executor {
     }
 
     /**
-     * Lên lịch chạy một tác vụ định kỳ (fixed rate), nghĩa là mỗi `periodMillis` ms,
+     * Lên lịch chạy một tác vụ định kỳ (fixed rate), nghĩa là mỗi `periodMillis`
+     * ms,
      * task sẽ được gọi lại bất kể lần trước mất bao lâu để thực thi.
      * <p>
      * Phù hợp cho:
-     * - Tác vụ lặp đều: hồi máu/mana, NPC shout, auto save, kiểm tra trạng thái boss,...
+     * - Tác vụ lặp đều: hồi máu/mana, NPC shout, auto save, kiểm tra trạng thái
+     * boss,...
      * <p>
-     * ❗ Nếu task có thể mất thời gian dài → cân nhắc dùng longRunningExecutor hoặc scheduleWithFixedDelay().
+     * ❗ Nếu task có thể mất thời gian dài → cân nhắc dùng longRunningExecutor hoặc
+     * scheduleWithFixedDelay().
      * ❗ Task nên không blocking, để không ảnh hưởng đến thread pool định kỳ.
      *
      * @param task         Task cần thực hiện
@@ -240,4 +248,3 @@ public final class ThreadPoolManager implements Executor {
         return SingletonHolder.INSTANCE;
     }
 }
-

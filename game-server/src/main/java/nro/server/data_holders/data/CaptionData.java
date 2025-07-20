@@ -5,6 +5,7 @@ import nro.server.data_holders.IManager;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.data.CaptionTemplate;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
@@ -18,8 +19,10 @@ public final class CaptionData implements IManager {
 
     @Override
     public void init() throws Throwable {
-        this.captionLevels = YamlDataLoader.loadList("resources/data/update_data/NR_caption_level.yml", CaptionTemplate.CaptionLevel.class);
-        this.captionTemplates = YamlDataLoader.loadList("resources/data/update_data/NR_caption.yml", CaptionTemplate.class);
+        this.captionLevels = YamlDataLoader.loadList("resources/data/update_data/NR_caption_level.yml",
+                CaptionTemplate.CaptionLevel.class);
+        this.captionTemplates = YamlDataLoader.loadList("resources/data/update_data/NR_caption.yml",
+                CaptionTemplate.class);
     }
 
     @Override
@@ -36,6 +39,11 @@ public final class CaptionData implements IManager {
         if (captionTemplates != null)
             captionTemplates.clear();
         captionTemplates = null;
+    }
+
+    public void setDataCaptionLevel() {
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+
     }
 
     private static final class SingletonHolder {
