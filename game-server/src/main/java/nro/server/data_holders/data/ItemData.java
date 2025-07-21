@@ -110,7 +110,7 @@ public final class ItemData implements IManager {
         buf.put((byte) 0);// type send option
         buf.putShort((short) itemOptionTemplates.size()); // size option
         for (var option : itemOptionTemplates.values()) {
-            NetworkUtils.putString(buf, option.name());
+            NetworkUtils.writeString(buf, option.name());
             buf.put(option.type());
         }
 
@@ -168,8 +168,8 @@ public final class ItemData implements IManager {
             }
             buf.put(item.type());
             buf.put(item.gender());
-            NetworkUtils.putString(buf, item.name());
-            NetworkUtils.putString(buf, item.description());
+            NetworkUtils.writeString(buf, item.name());
+            NetworkUtils.writeString(buf, item.description());
             buf.put(item.level());
             buf.putShort(item.iconID());
             buf.putShort(item.part());

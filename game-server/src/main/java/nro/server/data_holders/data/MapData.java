@@ -281,14 +281,14 @@ public final class MapData implements IManager {
         buf.putShort((short) mapTemplates.size());
 
         for (var map : mapTemplates) {
-            NetworkUtils.putString(buf, map.getName());
+            NetworkUtils.writeString(buf, map.getName());
         }
 
         var npcTemplates = NpcData.getInstance().getNpcTemplates();
 
         buf.put((byte) npcTemplates.size());
         for (var npc : npcTemplates) {
-            NetworkUtils.putString(buf, npc.name());
+            NetworkUtils.writeString(buf, npc.name());
             buf.putShort((short) npc.head());
             buf.putShort((short) npc.body());
             buf.putShort((short) npc.leg());
@@ -301,7 +301,7 @@ public final class MapData implements IManager {
         buf.putShort((short) monsterTemplates.size());// client version thap send byte
         for (var monster : monsterTemplates) {
             buf.put(monster.type());
-            NetworkUtils.putString(buf, monster.NAME());
+            NetworkUtils.writeString(buf, monster.NAME());
             buf.putLong(monster.hp());
             buf.put(monster.rangeMove());
             buf.put(monster.speed());

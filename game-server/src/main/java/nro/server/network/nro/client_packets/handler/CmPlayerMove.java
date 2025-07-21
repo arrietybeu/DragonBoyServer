@@ -11,11 +11,10 @@ import nro.server.network.nro.client_packets.AClientPacketHandler;
 /**
  * @author Arriety
  */
+@AClientPacketHandler(command = ConstsCmd.PLAYER_MOVE, validStates = { NroConnection.State.IN_GAME })
+public class CmPlayerMove extends NroClientPacket {
 
-@AClientPacketHandler(command = ConstsCmd.UPDATE_CAPTION, validStates = { NroConnection.State.IN_GAME })
-public class CmUpdateCaption extends NroClientPacket {
-
-    public CmUpdateCaption(int command, Set<State> validStates) {
+    public CmPlayerMove(int command, Set<State> validStates) {
         super(command, validStates);
     }
 
@@ -26,5 +25,4 @@ public class CmUpdateCaption extends NroClientPacket {
     @Override
     protected void runImpl() {
     }
-
 }

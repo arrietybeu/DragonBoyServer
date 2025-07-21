@@ -12,19 +12,19 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 @ServerPacketCommand(ConstsCmd.UPDATE_BODY)
 public class SmUpdateBody extends NroServerPacket {
 
-    private final int entityId;
+    private final int playerId;
     private final AppearanceComponent appearance;
 
-    public SmUpdateBody(final int entityId, final AppearanceComponent appearance) {
-        System.out.println("write UPDATABE BODY");
-        this.entityId = entityId;
+    public SmUpdateBody(final int playerId, final AppearanceComponent appearance) {
+        System.out.println("write UPDATABE BODY: " + playerId);
+        this.playerId = playerId;
         this.appearance = appearance;
     }
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
         writeByte(1);
-        writeInt(entityId);
+        writeInt(playerId);
         writeShort(appearance.head);
         writeShort(appearance.body);
         writeShort(appearance.leg);

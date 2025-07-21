@@ -5,11 +5,13 @@ import nro.commons.network.Crypt;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
-import nro.server.network.nro.server_packets.handler.SmLoginFail;
 
 import java.util.Set;
 
-@AClientPacketHandler(command = ConstsCmd.GET_SESSION_ID, validStates = {NroConnection.State.CONNECTED})
+/**
+ * @author Arriety
+ */
+@AClientPacketHandler(command = ConstsCmd.GET_SESSION_ID, validStates = { NroConnection.State.CONNECTED })
 public class CMReceiveKey extends NroClientPacket {
 
     public CMReceiveKey(int command, Set<NroConnection.State> validStates) {

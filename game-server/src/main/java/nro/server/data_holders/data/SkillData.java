@@ -110,17 +110,17 @@ public final class SkillData implements IManager {
         buffer.put((byte) 0);
         buffer.put((byte) nClasses.size());
         for (var classSkill : nClasses) {
-            NetworkUtils.putString(buffer, classSkill.name());
+            NetworkUtils.writeString(buffer, classSkill.name());
             buffer.put((byte) classSkill.skillTemplates().size());
             for (var skillTemplate : classSkill.skillTemplates()) {
                 buffer.put(skillTemplate.getId());
-                NetworkUtils.putString(buffer, skillTemplate.getName());
+                NetworkUtils.writeString(buffer, skillTemplate.getName());
                 buffer.put(skillTemplate.getMaxPoint());
                 buffer.put(skillTemplate.getManaUseType());
                 buffer.put(skillTemplate.getType());
                 buffer.putShort(skillTemplate.getIconId());
-                NetworkUtils.putString(buffer, skillTemplate.getDamInfo());
-                NetworkUtils.putString(buffer, skillTemplate.getDescription());
+                NetworkUtils.writeString(buffer, skillTemplate.getDamInfo());
+                NetworkUtils.writeString(buffer, skillTemplate.getDescription());
                 buffer.put((byte) skillTemplate.getSkills().size());
                 for (var skill : skillTemplate.getSkills()) {
                     buffer.putShort(skill.getSkillId());
@@ -133,7 +133,7 @@ public final class SkillData implements IManager {
                     buffer.put(skill.getMaxFight());
                     buffer.putShort(skill.getDamage());
                     buffer.putShort(skill.getPrice());
-                    NetworkUtils.putString(buffer, skill.getMoreInfo());
+                    NetworkUtils.writeString(buffer, skill.getMoreInfo());
                 }
             }
         }

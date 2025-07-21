@@ -93,7 +93,7 @@ public class NetworkUtils {
         return true;
     }
 
-    public static void putString(ByteBuffer buf, String str) throws RuntimeException {
+    public static void writeString(ByteBuffer buf, String str) throws RuntimeException {
         if (str == null || str.isEmpty()) {
             buf.putShort((short) 0);
             return;
