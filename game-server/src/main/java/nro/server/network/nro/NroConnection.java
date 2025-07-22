@@ -1,5 +1,6 @@
 package nro.server.network.nro;
 
+import com.artemis.Entity;
 import lombok.Getter;
 import lombok.Setter;
 import nro.commons.configs.CommonsConfig;
@@ -55,7 +56,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
     private final Crypt crypt;
 
     @Getter
-    private volatile int playerEntityId = -1;
+    private volatile Entity entity;
 
     @Getter
     @Setter
@@ -104,8 +105,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
      *
      * @param entityId ID của entity người chơi
      */
-    public void attachPlayerEntity(int entityId) {
-        this.playerEntityId = entityId;
+    public void attachPlayerEntity(Entity entityId) {
+        this.entity = entityId;
         setState(State.IN_GAME);
     }
 
@@ -113,7 +114,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
      * Tách Entity ra khỏi Connection, thường dùng khi đăng xuất.
      */
     public void detachPlayerEntity() {
-        this.playerEntityId = -1;
+        this.entity = null;
         setState(State.AUTHED);
     }
 

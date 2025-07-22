@@ -15,25 +15,19 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 @ServerPacketCommand(ConstsCmd.ME_LOAD_POINT)
 public class SmMeLoadPoint extends NroServerPacket {
 
-    private final int playerEntityId;
-
-    public SmMeLoadPoint(int playerEntityId) {
-        this.playerEntityId = playerEntityId;
-    }
-
     @Override
     protected void writeImpl(NroConnection con) {
-        Entity playerEntity = GameWorld.getInstance().getWorld().getEntity(playerEntityId);
+        Entity playerEntity = con.getEntity();
         if (playerEntity == null) {
-            throw new RuntimeException("Player entity not found: " + playerEntityId);
+            throw new RuntimeException("Player entity not found: " + con);
         }
         StatsComponent stats = playerEntity.getComponent(StatsComponent.class);
         HealthComponent health = playerEntity.getComponent(HealthComponent.class);
         if (stats == null) {
-            throw new RuntimeException("Player entity does not have StatsComponent: " + playerEntityId);
+            throw new RuntimeException("Player entity does not have StatsComponent: " + con);
         }
         if (health == null) {
-            throw new RuntimeException("Player entity does not have HealthComponent: " + playerEntityId);
+            throw new RuntimeException("Player entity does not have HealthComponent: " + con);
         }
 
         writeInt(stats.baseHp);

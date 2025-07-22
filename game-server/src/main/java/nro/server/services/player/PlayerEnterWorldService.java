@@ -1,10 +1,8 @@
 package nro.server.services.player;
 
-import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgSubCommand;
 import nro.server.dao.PlayerDAO;
-import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
@@ -40,42 +38,40 @@ public class PlayerEnterWorldService {
             client.sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
         } else {
 
-            int playerEntityID = client.getPlayerEntityId();
-            if (playerEntityID <= 0) {
-                playerEntityID = PlayerDAO.loadPlayerEntity(playerId, accountId);
-                if (playerEntityID == -1) {
+            var entity = client.getEntity();
+            if (entity == null) {
+                entity = PlayerDAO.loadPlayerEntity(playerId, accountId);
+                if (entity == null) {
                     log.error("Failed to load player entity for player ID: {}. Cannot enter world.", playerId);
                     client.close(
                             new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_DATA_LOAD_ERROR.getDefaultMessage()));
                     return;
                 }
-                client.attachPlayerEntity(playerEntityID);
+                client.attachPlayerEntity(entity);
                 client.setPlayerID(playerId);
             }
 
-            if (!enteringWorld.contains(playerEntityID) && enteringWorld.add(playerEntityID)) {
+            if (!enteringWorld.contains(playerId) && enteringWorld.add(playerId)) {
                 try {
-                    World world = GameWorld.getInstance().getWorld();
-                    var playerEntity = world.getEntity(playerEntityID);
-                    playerEntity.edit().add(new PlayerComponent(client));
+                    entity.edit().add(new PlayerComponent(client));
 
                     client.sendPacket(
-                            new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill", playerEntityID));
+                            new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill"));
                     client.sendPacket(
-                            new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill", playerEntityID));
+                            new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill"));
 
                     client.sendPacket(new SmSpecialSkill());
-                    client.sendPacket(new SmMeLoadPoint(playerEntityID));
+                    client.sendPacket(new SmMeLoadPoint());
                     // client.sendPacket(new SmTaskInfo());
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
 
-                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER, playerEntityID));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER));
                     client.sendPacket(new SmClanInfo());
                     client.sendPacket(
-                            new SmUpdateBag(playerEntityID, playerEntity.getComponent(AppearanceComponent.class)));
-                    client.sendPacket(new SmUpdateBody(playerId, playerEntity.getComponent(AppearanceComponent.class)));
-                    client.sendPacket(new SmMapInfo(playerEntity.getComponent(PositionComponent.class)));
-                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP, playerEntityID));
+                            new SmUpdateBag(playerId, entity.getComponent(AppearanceComponent.class)));
+                    client.sendPacket(new SmUpdateBody(playerId, entity.getComponent(AppearanceComponent.class)));
+                    client.sendPacket(new SmMapInfo(entity.getComponent(PositionComponent.class)));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP));
 
                     // this.sendThongBaoInfoTask(player, serverService);
 
@@ -86,14 +82,14 @@ public class PlayerEnterWorldService {
                     client.sendPacket(new SmRank());
                     client.sendPacket(new SmChangeOnSkill());
                     client.sendPacket(new SmGameInfo());
-                    client.sendPacket(new SmUpdateCaption(playerEntity.getComponent(InfoComponent.class).gender));
+                    client.sendPacket(new SmUpdateCaption(entity.getComponent(InfoComponent.class).gender));
 
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
                 } catch (Throwable e) {
-                    log.error("Error during enter world of {}", playerEntityID, e);
+                    log.error("Error during enter world of {}", entity, e);
                 } finally {
-                    enteringWorld.remove(playerEntityID);
+                    enteringWorld.remove(playerId);
                 }
             }
         }

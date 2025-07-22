@@ -25,22 +25,15 @@ public class SmSubCommand extends NroServerPacket {
 
     private final byte subCommand;
     private String text;
-    private int playerEntityID = -1;
     private final World world = GameWorld.getInstance().getWorld();
 
-    public SmSubCommand(int subCommand, String text, int playerID) {
+    public SmSubCommand(int subCommand, String text) {
         this.subCommand = (byte) subCommand;
         this.text = text;
-        this.playerEntityID = playerID;
     }
 
     public SmSubCommand(int subCommand) {
         this.subCommand = (byte) subCommand;
-    }
-
-    public SmSubCommand(int subCommand, int playerID) {
-        this.subCommand = (byte) subCommand;
-        this.playerEntityID = playerID;
     }
 
     @Override
@@ -49,27 +42,26 @@ public class SmSubCommand extends NroServerPacket {
         switch (subCommand) {
             case ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT -> {
                 writeUTF(text);
-                var playerEntity = getEntity();
-                var skillComponent = playerEntity.getComponent(SkillComponent.class);
+
+                var skillComponent = con.getEntity().getComponent(SkillComponent.class);
 
                 if (skillComponent == null) {
-                    throw new RuntimeException("SkillComponent not found for player entity ID: " + playerEntityID);
+                    throw new RuntimeException("SkillComponent not found for player ID: " + con.getPlayerID());
                 }
 
                 writeInt(skillComponent.skillShortCut.length);
                 writeBytes(skillComponent.skillShortCut);
             }
-            case ConstMsgSubCommand.INIT_MY_CHARACTER -> sendInfoCharacter();
+            case ConstMsgSubCommand.INIT_MY_CHARACTER -> sendInfoCharacter(con);
 
             case ConstMsgSubCommand.LOAD_CHAR_IN_MAP -> sendLoadMapCharInMap(con);
             case ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP -> {
-                var playerEntity = getEntity();
-                var currency = playerEntity.getComponent(CurrencyComponent.class);
+                var currency = con.getEntity().getComponent(CurrencyComponent.class);
                 if (currency == null)
-                    throw new RuntimeException("Currency not found for player entity ID: " + playerEntityID);
-                var health = playerEntity.getComponent(HealthComponent.class);
+                    throw new RuntimeException("Currency not found for player entity ID: " + con.getPlayerID());
+                var health = con.getEntity().getComponent(HealthComponent.class);
                 if (health == null)
-                    throw new RuntimeException("Health not found for player entity ID: " + playerEntityID);
+                    throw new RuntimeException("Health not found for player entity ID: " + con.getPlayerID());
                 writeLong(currency.gold);
                 writeInt(currency.gem);
                 writeLong(health.currentHP);
@@ -82,17 +74,13 @@ public class SmSubCommand extends NroServerPacket {
     private <T extends Component> T getRequiredComponent(Entity playerEntity, Class<T> clazz) {
         T component = playerEntity.getComponent(clazz);
         if (component == null) {
-            throw new RuntimeException("Missing required component: [" + clazz.getSimpleName() + "] for player ID: " + playerEntityID);
+            throw new RuntimeException("Missing required component: [" + clazz.getSimpleName() + "] for player ID: " + playerEntity.getId());
         }
         return component;
     }
 
-    private void sendInfoCharacter() {
-        if (playerEntityID == -1) {
-            throw new RuntimeException("Player ID is not set for sub command: " + subCommand);
-        }
-
-        var playerEntity = getEntity();
+    private void sendInfoCharacter(NroConnection con) {
+        var playerEntity = con.getEntity();
 
         var taskComponent = getRequiredComponent(playerEntity, TaskComponent.class);
         var infoComponent = getRequiredComponent(playerEntity, InfoComponent.class);
@@ -105,7 +93,7 @@ public class SmSubCommand extends NroServerPacket {
         var inventoryComponent = getRequiredComponent(playerEntity, InventoryComponent.class);
         var fusionComponent = getRequiredComponent(playerEntity, FusionComponent.class);
 
-        writeInt(playerEntity.getId());
+        writeInt(con.getPlayerID());
         writeByte(taskComponent.taskId);
         writeByte(infoComponent.gender);
         writeShort(appearanceComponent.head);
@@ -148,7 +136,7 @@ public class SmSubCommand extends NroServerPacket {
     }
 
     private void sendLoadMapCharInMap(NroConnection connection) {
-        var entity = getEntity();
+        var entity = connection.getEntity();
         var appearance = entity.getComponent(AppearanceComponent.class);
         writeInt(connection.getPlayerID());
         writeInt(-1);
@@ -197,14 +185,6 @@ public class SmSubCommand extends NroServerPacket {
         this.writeShort(frames[0]); // frame1
         this.writeShort(frames[1]); // frame2
         this.writeShort(frames[2]); // avatar
-    }
-
-    private Entity getEntity() {
-        var playerEntity = world.getEntity(playerEntityID);
-        if (playerEntity == null) {
-            throw new RuntimeException("Player entity not found for ID: " + playerEntityID);
-        }
-        return playerEntity;
     }
 
 

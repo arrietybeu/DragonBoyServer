@@ -13,16 +13,16 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 public class SmUpdateBag extends NroServerPacket {
 
     private final AppearanceComponent appearanceComponent;
-    private final int entityId;
+    private final int playerID;
 
     public SmUpdateBag(final int entityId, final AppearanceComponent appearanceComponent) {
         this.appearanceComponent = appearanceComponent;
-        this.entityId = entityId;
+        this.playerID = entityId;
     }
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-        writeInt(entityId);
+        writeInt(playerID);
         writeShort(appearanceComponent.flagBag);
     }
 }

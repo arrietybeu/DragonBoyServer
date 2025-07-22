@@ -258,7 +258,7 @@ public class PlayerDAO {
         return playerId;
     }
 
-    public static int loadPlayerEntity(int playerId, int accountId) {
+    public static Entity loadPlayerEntity(int playerId, int accountId) {
         World world = GameWorld.getInstance().getWorld();
         int playerEntityID = world.create();
 
@@ -284,11 +284,11 @@ public class PlayerDAO {
             InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
             loadPlayerTask(conn, playerEntity, playerId);
             log.info("Successfully loaded entity for player ID: {}", playerId);
-            return playerEntityID;
+            return playerEntity;
         } catch (Exception e) {
             log.error("Failed to load entity for player ID: {}. Rolling back.", playerId, e);
             world.delete(playerEntityID);
-            return -1;
+            return null;
         }
     }
 
