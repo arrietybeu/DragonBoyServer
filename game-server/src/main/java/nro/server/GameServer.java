@@ -19,6 +19,7 @@ import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
 import nro.server.system.FashionUpdateSystem;
+import nro.server.system.MovementSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;
@@ -72,9 +73,8 @@ public class GameServer {
     }
 
     private static void intEntityComponentSystem() {
-
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-        builder.with(new FashionUpdateSystem()); // add systems here if needed
+        builder.with(new FashionUpdateSystem(), new MovementSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();

@@ -14,6 +14,8 @@ public class InfoComponent extends Component {
     public int id;
     public int accountId;
     public String name;
+
+
     public byte gender;
     public boolean isOnline;
     public Instant createdAt;
@@ -30,4 +32,19 @@ public class InfoComponent extends Component {
     private long getDaysSinceCreation() {
         return ChronoUnit.DAYS.between(createdAt, Instant.now());
     }
+
+    @Override
+    public String toString() {
+        return "InfoComponent{" +
+                "id=" + id +
+                ", accountId=" + accountId +
+                ", name='" + name + '\'' +
+                ", gender=" + gender +
+                ", isOnline=" + isOnline +
+                ", createdAt=" + createdAt +
+                ", maxBagSize=" + maxBagSize +
+                ", maxBoxSize=" + maxBoxSize +
+                '}';
+    }
+
 }

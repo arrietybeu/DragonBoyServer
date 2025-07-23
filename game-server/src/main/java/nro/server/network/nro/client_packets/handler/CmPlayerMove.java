@@ -2,7 +2,11 @@ package nro.server.network.nro.client_packets.handler;
 
 import java.util.Set;
 
+import com.artemis.ComponentMapper;
+import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
+import nro.server.engine.GameWorld;
+import nro.server.model.ecs.component.PositionComponent;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroConnection.State;
@@ -11,8 +15,12 @@ import nro.server.network.nro.client_packets.AClientPacketHandler;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.PLAYER_MOVE, validStates = { NroConnection.State.IN_GAME })
+@AClientPacketHandler(command = ConstsCmd.PLAYER_MOVE, validStates = {NroConnection.State.IN_GAME})
 public class CmPlayerMove extends NroClientPacket {
+
+    private byte isOnGround;
+    private short newX;
+    private short newY;
 
     public CmPlayerMove(int command, Set<State> validStates) {
         super(command, validStates);
@@ -20,32 +28,25 @@ public class CmPlayerMove extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-
-        byte isOnGround = this.readByte();//  0: on ground, 1: in air
-
-        if (isOnGround == 1) {
-//            player.getPoints().reduceMPWhenFlying();
+        var pos = getConnection().getEntity().getComponent(PositionComponent.class);
+        this.isOnGround = this.readByte();
+        this.newX = this.readShort();
+        this.newY = pos.y;
+        if(this.getRemainingBytes() > 0) {
+            this.newY = this.readShort();
         }
-
-        short newX = this.readShort();
-        short newY /*= player.getY()*/;
-
-        if (this.getRemainingBytes() > 0) {
-            newY = this.readShort();
-        }
-
-//        player.setX(newX);
-//        player.setY(newY);
-
-//        if (player.getPlayerTask().getTaskMain().getId() == 0) {
-//            player.getPlayerTask().checkDoneTaskGoMap();
-//        }
-
-//        AreaService.getInstance().playerMove(player);
-
     }
 
     @Override
     protected void runImpl() {
+        NroConnection con = getConnection();
+        if (con == null || con.getEntity() == null) return;
+        var pos = con.getEntity().getComponent(PositionComponent.class);
+        if (pos != null) {
+            pos.x = newX;
+            pos.y = newY;
+            pos.isOnGround = this.isOnGround;
+            pos.isDirty = true;
+        }
     }
 }

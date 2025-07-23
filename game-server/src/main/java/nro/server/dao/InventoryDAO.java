@@ -146,7 +146,7 @@ public class InventoryDAO {
                         log.error("Duplicate row_index {} in location {} for player ID {}", rowIndex, location, playerID);
                         continue;
                     }
-                    int itemEntityId = world.create();
+                    int itemEntityId = GameWorld.getInstance().createEntity();
                     var editor = world.edit(itemEntityId);
 
                     editor.add(new ItemInfoComponent(templateId, rs.getInt("quantity"), rs.getInt("creator_id")));

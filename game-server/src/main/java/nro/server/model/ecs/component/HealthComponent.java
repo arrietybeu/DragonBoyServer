@@ -17,6 +17,8 @@ public class HealthComponent extends Component {
     public byte mpPer1000Potential;
     public byte damagePer1000Potential;
 
+    public boolean isDirty;
+
     public HealthComponent() {
         // Default constructor for Artemis
     }

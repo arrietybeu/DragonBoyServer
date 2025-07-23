@@ -34,7 +34,7 @@ public class PlayerLeaveWorldService {
         worldMapInstance.removeEntity(entity.getId());
 
         // Delete entity from the world ecs
-        GameWorld.getInstance().getWorld().delete(entity.getId());
+        GameWorld.getInstance().deleteEntity(entity.getId());
 
         // Detach player entity
         connection.detachPlayerEntity();

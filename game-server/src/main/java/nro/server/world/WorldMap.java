@@ -7,14 +7,12 @@ import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.boss.BossComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.templates.world.TileMap;
+import nro.server.model.templates.world.Waypoint;
 import nro.server.model.templates.world.WorldMapTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -178,6 +176,36 @@ public class WorldMap {
         }
 
         throw new UnsupportedOperationException("Unsupported entity type: " + entity.getClass().getSimpleName());
+    }
+
+    public Waypoint getWayPointInMap(int x, int y, int playerID) {
+        try {
+            if (this.id == 46) {
+                int deltaX = 1000;
+                NavigableMap<Integer, List<Waypoint>> subMap = template.getWaypointMap().subMap(x - deltaX, true,
+                        x + deltaX, true);
+                for (List<Waypoint> waypoints : subMap.values()) {
+                    for (Waypoint wp : waypoints) {
+                        if (x >= wp.getMinX() - deltaX && x <= wp.getMaxX() + deltaX &&
+                                y >= wp.getMinY() && y <= wp.getMaxY()) {
+                            return wp;
+                        }
+                    }
+                }
+            } else {
+                Map.Entry<Integer, List<Waypoint>> entry = template.getWaypointMap().floorEntry(x);
+                if (entry != null) {
+                    for (Waypoint wp : entry.getValue()) {
+                        if (x >= wp.getMinX() && x <= wp.getMaxX() && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                            return wp;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Error getting waypoint for player: " + playerID, ex);
+        }
+        return null;
     }
 
 

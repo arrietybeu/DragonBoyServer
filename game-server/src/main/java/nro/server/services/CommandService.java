@@ -7,6 +7,7 @@ import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
+import nro.server.engine.GameWorld;
 import nro.server.model.templates.data.PartTemplate;
 import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;
@@ -26,19 +27,20 @@ public class CommandService {
                 try {
                     String _line = sc.nextLine();
                     switch (_line) {
+                        case "entity" -> GameWorld.getInstance().getEntityCount();
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
 
                         // case "thread" ->
                         // ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
                         case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                         case "session" ->
-                            LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
+                                LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
                         case "system_info" -> SystemInfo.logAll();
                         case "gc" -> System.gc();
                         case "dump_packet" -> RunnableStatsManager.dumpClassStats();
                         case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
                         case "dart" ->
-                            DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
+                                DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
                         case "part" -> System.out.println("PartData size: " + buildNrPartData().length);
                     }
                 } catch (Exception exception) {

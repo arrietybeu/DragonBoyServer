@@ -260,7 +260,7 @@ public class PlayerDAO {
 
     public static Entity loadPlayerEntity(int playerId, int accountId) {
         World world = GameWorld.getInstance().getWorld();
-        int playerEntityID = world.create();
+        int playerEntityID = GameWorld.getInstance().createEntity();
 
         InfoComponent info = new InfoComponent();
         info.id = playerId;

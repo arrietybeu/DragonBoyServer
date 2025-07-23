@@ -15,6 +15,9 @@ public class PositionComponent extends Component {
     public short y;
 
     public short teleport = 0;
+    public boolean isDirty;
+    public byte isOnGround;
+    public boolean wantsToChangeMap;
 
     public PositionComponent() {
     }
