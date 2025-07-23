@@ -26,7 +26,8 @@ public final class DataManager {
             SkillData.getInstance(),
             ItemData.getInstance(),
             MapData.getInstance(),
-            ItemInventoryData.getInstance()
+            ItemInventoryData.getInstance(),
+            GameNotifyData.getInstance()
     );
 
     private DataManager() throws RuntimeException {

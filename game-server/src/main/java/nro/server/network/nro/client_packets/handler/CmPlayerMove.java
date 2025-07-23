@@ -20,6 +20,29 @@ public class CmPlayerMove extends NroClientPacket {
 
     @Override
     protected void readImpl() {
+
+        byte isOnGround = this.readByte();//  0: on ground, 1: in air
+
+        if (isOnGround == 1) {
+//            player.getPoints().reduceMPWhenFlying();
+        }
+
+        short newX = this.readShort();
+        short newY /*= player.getY()*/;
+
+        if (this.getRemainingBytes() > 0) {
+            newY = this.readShort();
+        }
+
+//        player.setX(newX);
+//        player.setY(newY);
+
+//        if (player.getPlayerTask().getTaskMain().getId() == 0) {
+//            player.getPlayerTask().checkDoneTaskGoMap();
+//        }
+
+//        AreaService.getInstance().playerMove(player);
+
     }
 
     @Override

@@ -21,6 +21,7 @@ public class CmUpdateCaption extends NroClientPacket {
 
     @Override
     protected void readImpl() {
+        var gender = readByte();
     }
 
     @Override

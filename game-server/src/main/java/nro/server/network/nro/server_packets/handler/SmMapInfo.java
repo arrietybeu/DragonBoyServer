@@ -40,8 +40,23 @@ public class SmMapInfo extends NroServerPacket {
     private void loadMapInfo(WorldMapTemplate mapTemplate) {
         writeShort(positionComponent.x);
         writeShort(positionComponent.y);
+
+        var wayPoints = mapTemplate.getWaypoints();
+        var bgItems = mapTemplate.getBgItems();
+        var backgroundEffects = mapTemplate.getBackgroundEffects();
+
         // send waypoint
-        writeByte(0);
+        writeByte(wayPoints.size());
+        for (var wayPoint : wayPoints) {
+            this.writeShort(wayPoint.getMinX());
+            this.writeShort(wayPoint.getMinY());
+            this.writeShort(wayPoint.getMaxX());
+            this.writeShort(wayPoint.getMaxY());
+            this.writeBoolean(wayPoint.isEnter());
+            this.writeBoolean(wayPoint.isOffline());
+            this.writeUTF(wayPoint.getName());
+        }
+
         // send monster
         writeByte(0);
         writeByte(0);
@@ -53,9 +68,18 @@ public class SmMapInfo extends NroServerPacket {
         writeByte(0);
 
         // send background map
-        writeShort(0);
+        this.writeShort(bgItems.size());
+        for (var bgItem : bgItems) {
+            this.writeShort(bgItem.getId());
+            this.writeShort(bgItem.getX());
+            this.writeShort(bgItem.getY());
+        }
         // send effect map
-        writeShort(0);
+        this.writeShort(backgroundEffects.size());//write effect
+        for (var backgroundEffect : backgroundEffects) {
+            this.writeUTF(backgroundEffect.key());
+            this.writeUTF(backgroundEffect.value());
+        }
 
         writeByte(mapTemplate.getBgType());
         writeByte(positionComponent.teleport);

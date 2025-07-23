@@ -29,12 +29,15 @@ public class StatsComponent extends Component {
     public byte giamST;
     public short cCritDameFull;
 
+    public int activePoint;
+
     public StatsComponent() {
         // Default constructor for Artemis
     }
 
     public StatsComponent(long power, long potential,
-                          int baseHp, int baseMp, int baseDamage, int baseDefense, byte baseCrit) {
+                          int baseHp, int baseMp, int baseDamage,
+                          int baseDefense, byte baseCrit, int activePoint) {
         this.power = power;
         this.potential = potential;
         this.baseHp = baseHp;
@@ -42,6 +45,7 @@ public class StatsComponent extends Component {
         this.baseDamage = baseDamage;
         this.baseDefense = baseDefense;
         this.baseCrit = baseCrit;
+        this.activePoint = activePoint;
     }
 
 }

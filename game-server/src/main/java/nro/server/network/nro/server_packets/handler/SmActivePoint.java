@@ -10,8 +10,18 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
  */
 @ServerPacketCommand(ConstsCmd.UPDATE_ACTIVEPOINT)
 public class SmActivePoint extends NroServerPacket {
+
+    private final int activePoint;
+
+    public SmActivePoint(int activePoint) {
+        this.activePoint = activePoint;
+        if (activePoint < 0) {
+            throw new IllegalArgumentException("Active point cannot be negative: " + activePoint);
+        }
+    }
+
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-        writeInt(0);
+        writeInt(activePoint);
     }
 }

@@ -351,7 +351,40 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    entity.edit().add(new StatsComponent(rs.getLong("power"), rs.getLong("tiem_nang"), (int) rs.getLong("hp"), (int) rs.getLong("mp"), rs.getInt("dame_default"), rs.getInt("defense"), rs.getByte("crit"))).add(new HealthComponent(rs.getLong("hp_current"), rs.getLong("hp_max"), rs.getLong("mp_current"), rs.getLong("mp_max")));
+
+                    long hp = rs.getLong("hp");
+                    int hp_default = rs.getInt("hp_default");
+                    long hp_max = rs.getLong("hp_max");
+                    long hp_current = rs.getLong("hp_current");
+
+                    long mp = rs.getLong("mp");
+                    int mp_default = rs.getInt("mp_default");
+                    long mp_max = rs.getLong("mp_max");
+                    long mp_current = rs.getLong("mp_current");
+
+                    long dame = rs.getLong("dame");
+                    long dame_max = rs.getLong("dame_max");
+                    int dame_default = rs.getInt("dame_default");
+
+                    int stamina = rs.getInt("stamina");
+                    int max_stamina = rs.getInt("max_stamina");
+
+                    byte crit = rs.getByte("crit");
+                    byte crit_default = rs.getByte("crit_default");
+
+                    int defense = rs.getInt("defense");
+                    int def_default = rs.getInt("def_default");
+
+                    long power = rs.getLong("power");
+                    long limit_power = rs.getLong("limit_power");
+                    long tiem_nang = rs.getLong("tiem_nang");
+
+                    int nang_dong = rs.getInt("nang_dong");
+
+                    var stats = new StatsComponent(power, tiem_nang, hp_default, mp_default,
+                            dame_default, def_default, crit_default, nang_dong);
+                    var health = new HealthComponent(hp_current, hp_max, mp_current, mp_max);
+                    entity.edit().add(stats).add(health);
                 }
             }
         }

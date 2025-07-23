@@ -6,6 +6,7 @@ import nro.server.dao.PlayerDAO;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.ecs.component.StatsComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
@@ -76,7 +77,7 @@ public class PlayerEnterWorldService {
 
                     client.sendPacket(new SmMaxStamina());
                     client.sendPacket(new SmStamina());
-                    client.sendPacket(new SmActivePoint());
+                    client.sendPacket(new SmActivePoint(entity.getComponent(StatsComponent.class).activePoint));
                     client.sendPacket(new SmPetInfo());
                     client.sendPacket(new SmRank());
                     client.sendPacket(new SmChangeOnSkill());

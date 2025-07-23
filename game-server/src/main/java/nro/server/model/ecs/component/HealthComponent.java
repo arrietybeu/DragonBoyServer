@@ -27,4 +27,5 @@ public class HealthComponent extends Component {
         this.currentMP = currentMP;
         this.maxMP = maxMP;
     }
+
 }
