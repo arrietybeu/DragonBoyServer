@@ -16,7 +16,6 @@ public class SmUpdateBody extends NroServerPacket {
     private final AppearanceComponent appearance;
 
     public SmUpdateBody(final int playerId, final AppearanceComponent appearance) {
-        System.out.println("write UPDATABE BODY: " + playerId);
         this.playerId = playerId;
         this.appearance = appearance;
     }
@@ -28,6 +27,7 @@ public class SmUpdateBody extends NroServerPacket {
         writeShort(appearance.head);
         writeShort(appearance.body);
         writeShort(appearance.leg);
+        System.out.println("write UPDATABE BODY: " + playerId + " head: " + appearance.head + " body: " + appearance.body + " leg: " + appearance.leg);
         writeByte(appearance.isMonkey ? 1 : 0);
     }
 

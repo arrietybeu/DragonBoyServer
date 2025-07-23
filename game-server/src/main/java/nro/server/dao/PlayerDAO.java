@@ -304,8 +304,9 @@ public class PlayerDAO {
     }
 
     private static void loadPlayerInfo(Connection conn, Entity entity, int playerId) throws SQLException {
-        String sql = "SELECT name, gender, is_online, created_at, max_bag_size, max_box_size FROM player WHERE id = ?";
+        String sql = "SELECT name, gender, is_online, created_at, max_bag_size, max_box_size, head FROM player WHERE id = ?";
         InfoComponent info = entity.getComponent(InfoComponent.class);
+        var appearance = entity.getComponent(AppearanceComponent.class);
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -316,6 +317,7 @@ public class PlayerDAO {
                     info.createdAt = rs.getTimestamp("created_at").toInstant();
                     info.maxBagSize = rs.getByte("max_bag_size");
                     info.maxBoxSize = rs.getByte("max_box_size");
+                    appearance.headDefault = rs.getByte("head");
                 }
             }
         }

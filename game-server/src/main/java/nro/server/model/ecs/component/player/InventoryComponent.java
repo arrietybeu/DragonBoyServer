@@ -14,5 +14,5 @@ public class InventoryComponent extends Component {
     public List<Integer> itemsBag;
     public List<Integer> itemsBox;
 
-    public boolean isDirty = true;
+    public boolean isDirty = false;
 }

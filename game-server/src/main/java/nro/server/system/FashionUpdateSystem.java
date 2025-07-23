@@ -28,9 +28,11 @@ public class FashionUpdateSystem extends IteratingSystem {
     @Override
     protected void process(int entityId) {
         InventoryComponent inventory = inventoryMapper.get(entityId);
+
+
         if (!inventory.isDirty) return;
         AppearanceComponent appearance = fashionMapper.get(entityId);
-
+        System.out.println("load system fashion update for entity: " + entityId );
         // reset
         appearance.head = appearance.body = appearance.leg = appearance.flagBag = appearance.aura = appearance.effSetItem = appearance.idHat = -1;
         appearance.isMonkey = false;
@@ -62,6 +64,10 @@ public class FashionUpdateSystem extends IteratingSystem {
                 }
                 case 8 -> appearance.flagBag = template.part();
             }
+
+            if (appearance.head == -1) {
+                appearance.head = appearance.headDefault;
+            }
         }
 
         TaskComponent task = taskMapper.get(entityId);
@@ -69,6 +75,9 @@ public class FashionUpdateSystem extends IteratingSystem {
             appearance.flagBag = 28;
         }
 
+        System.out.println("head : " + appearance.head + ", body: " + appearance.body + ", leg: " + appearance.leg +
+                ", flagBag: " + appearance.flagBag + ", aura: " + appearance.aura + ", effSetItem: " + appearance.effSetItem +
+                ", idHat: " + appearance.idHat);
         inventory.isDirty = false;
     }
 }

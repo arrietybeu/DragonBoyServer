@@ -67,8 +67,7 @@ public class PlayerEnterWorldService {
 
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER));
                     client.sendPacket(new SmClanInfo());
-                    client.sendPacket(
-                            new SmUpdateBag(playerId, entity.getComponent(AppearanceComponent.class)));
+                    client.sendPacket(new SmUpdateBag(playerId, entity.getComponent(AppearanceComponent.class)));
                     client.sendPacket(new SmUpdateBody(playerId, entity.getComponent(AppearanceComponent.class)));
                     client.sendPacket(new SmMapInfo(entity.getComponent(PositionComponent.class)));
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP));
@@ -94,4 +93,5 @@ public class PlayerEnterWorldService {
             }
         }
     }
+
 }

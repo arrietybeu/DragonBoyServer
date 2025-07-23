@@ -111,6 +111,12 @@ public class InventoryDAO {
         loadItemsForLocation(conn, entity.getId(), playerId, ItemLocation.BODY);
         loadItemsForLocation(conn, entity.getId(), playerId, ItemLocation.BAG);
         loadItemsForLocation(conn, entity.getId(), playerId, ItemLocation.BOX);
+
+        playerInventory.isDirty = true; // Mark inventory as dirty after loading
+
+        GameWorld.getInstance().getWorld().process();
+
+        System.out.println("load xong inventory");
     }
 
     private static void loadItemsForLocation(Connection conn, int playerEntityId, int playerID, ItemLocation location) throws SQLException {

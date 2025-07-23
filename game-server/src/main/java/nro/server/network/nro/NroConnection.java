@@ -17,6 +17,7 @@ import nro.server.model.account.Account;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
+import nro.server.services.player.PlayerLeaveWorldService;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,6 +236,13 @@ public class NroConnection extends AConnection<NroServerPacket> {
                 sendMsgQueue.clear();
             }
         }
+
+        var player = getEntity();
+        if (player != null) {
+
+            PlayerLeaveWorldService.leaveWorld(player);
+        }
+
         log.info("Client disconnected successfully: IP={}, state={}", getIP(), state + " time delay" + pendingCloseUntilMillis);
     }
 
@@ -251,16 +259,16 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     private void safeLogout() {
-//        synchronized (this) {
-//            Player player = getActivePlayer();
-//            if (player == null) // player was already saved
-//                return;
-//            try {
-//                PlayerLeaveWorldService.leaveWorld(player);
-//            } catch (Exception e) {
-//                log.error("Error saving " + player, e);
-//            }
-//        }
+        synchronized (this) {
+            Entity player = getEntity();
+            if (player == null) // player was already saved
+                return;
+            try {
+                PlayerLeaveWorldService.leaveWorld(player);
+            } catch (Exception e) {
+                log.error("Error saving player id {}", this.playerID, e);
+            }
+        }
     }
 
     private class ConnectionAliveChecker implements Runnable {

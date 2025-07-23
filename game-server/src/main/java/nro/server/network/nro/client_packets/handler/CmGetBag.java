@@ -10,19 +10,21 @@ import java.util.Set;
 /**
  * @author Arriety
  */
+@AClientPacketHandler(command = ConstsCmd.GET_BAG, validStates = {NroConnection.State.IN_GAME})
+public class CmGetBag extends NroClientPacket {
 
-@AClientPacketHandler(command = ConstsCmd.FINISH_LOADMAP, validStates = {NroConnection.State.IN_GAME})
-public class CmFinishLoadMap extends NroClientPacket {
-
-    public CmFinishLoadMap(int command, Set<NroConnection.State> validStates) {
+    public CmGetBag(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
 
     @Override
     protected void readImpl() {
+        var idFlagBag = this.readShort();
+        System.out.println("client get id flag bag: " + idFlagBag);
     }
 
     @Override
     protected void runImpl() {
+
     }
 }

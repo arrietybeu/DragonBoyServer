@@ -8,6 +8,7 @@ import com.artemis.Component;
 public class AppearanceComponent extends Component {
 
     public short head;
+    public short headDefault = -1;
     public short body;
     public short leg;
     public short flagBag; // Cờ
