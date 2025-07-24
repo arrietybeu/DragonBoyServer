@@ -11,7 +11,6 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
 import nro.server.world.World;
-import nro.server.world.WorldMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +63,6 @@ public class MapChangeSystem extends IteratingSystem {
             client.sendPacket(new SmChatTheGioi("Map không tồn tại"));
             return;
         }
-
-        
 
         pos.wantsToChangeMap = false;
     }
