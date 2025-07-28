@@ -27,6 +27,7 @@ public class DatabaseFactory {
 
         HikariConfig config = new HikariConfig();
 
+
         config.setJdbcUrl(DatabaseConfig.getDatabaseUrl());
         config.setPoolName("NRO-Game-Server-Pool");
         config.setUsername(DatabaseConfig.DATABASE_USER);

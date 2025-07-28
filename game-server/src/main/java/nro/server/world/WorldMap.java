@@ -28,7 +28,7 @@ public class WorldMap {
     private final WorldMapTemplate template;
 
     private final List<WorldMapInstance> areas = new ArrayList<>();
-    private final Map<Integer, Integer> ownerToInstance = new ConcurrentHashMap<>();
+    private final Map<Integer, Byte> ownerToInstance = new ConcurrentHashMap<>();
 
     private final int[] types;
     private final TileMap tileMap;
@@ -46,12 +46,12 @@ public class WorldMap {
         this.types = new int[tileMap.tiles().length];
         loadTileTypes();
 
-        if (template.getTypeMap() == 1) {
-            for (int i = 0; i < template.getMaxArea(); i++) {
+        if (template.getTypeMap() == ConstMap.MAP_TYPE_NORMAL) {
+            for (byte i = 0; i < template.getMaxArea(); i++) {
                 areas.add(i, new WorldMapInstance(this, i));
             }
         } else {
-            areas.addFirst(new WorldMapInstance(this, 0));
+            areas.addFirst(new WorldMapInstance(this, (byte) 0));
         }
     }
 
@@ -61,6 +61,51 @@ public class WorldMap {
 
     public WorldMapInstance createInstanceForPlayer(int playerId) {
         return createUniqueInstance(playerId);
+    }
+
+    public synchronized WorldMapInstance getOrCreateUniqueInstance(int ownerId) {
+        if (ownerId < 0) {
+            throw new IllegalArgumentException("Invalid ownerId: " + ownerId);
+        }
+
+        Byte instanceId = ownerToInstance.get(ownerId);
+        if (instanceId != null) {
+            WorldMapInstance instance = areas.get(instanceId);
+            if (instance != null) {
+                return instance;
+            }
+        }
+
+        byte nextId = generateNextInstanceId();
+        WorldMapInstance instance = new WorldMapInstance(this, nextId, ownerId);
+        if (nextId < areas.size()) {
+            areas.set(nextId, instance);
+        } else {
+            areas.add(instance);
+        }
+        ownerToInstance.put(ownerId, nextId);
+        return instance;
+    }
+
+    public WorldMapInstance getSharedInstance(int zoneId) {
+        if (zoneId < 0 || zoneId >= areas.size()) {
+            log.warn("Invalid zoneId: {} for map: {}", zoneId, id);
+            return null;
+        }
+        WorldMapInstance instance = areas.get(zoneId);
+        if (instance != null && instance.getPlayerCount() < template.getMaxPlayer()) {
+            return instance;
+        }
+        return null;
+    }
+
+    public WorldMapInstance getRandomSharedInstance() {
+        for (WorldMapInstance instance : areas) {
+            if (instance != null && instance.getPlayerCount() < template.getMaxPlayer()) {
+                return instance;
+            }
+        }
+        return null;
     }
 
     public WorldMapInstance getSharedZoneForOnline(int zoneID) {
@@ -104,15 +149,28 @@ public class WorldMap {
     }
 
     private synchronized WorldMapInstance createUniqueInstance(int ownerId) {
-        int nextId = generateNextInstanceId();
+        if (ownerId < 0) {
+            throw new IllegalArgumentException("Owner ID must be non-negative, got: " + ownerId);
+        }
+
+        if (ownerToInstance.containsKey(ownerId)) {
+            int existingInstanceId = ownerToInstance.get(ownerId);
+            WorldMapInstance existingInstance = areas.get(existingInstanceId);
+            if (existingInstance != null) {
+                return existingInstance;
+            }
+        }
+
+        byte nextId = generateNextInstanceId();
         WorldMapInstance instance = new WorldMapInstance(this, nextId, ownerId);
+
         areas.add(nextId, instance);
         if (ownerId != 0) ownerToInstance.put(ownerId, nextId);
         return instance;
     }
 
-    private int generateNextInstanceId() {
-        int id = 1;
+    private byte generateNextInstanceId() {
+        byte id = 1;
 //        while (area.containsKey(id)) id++;
         while (id < areas.size() && areas.get(id) != null) id++;
         return id;
@@ -135,13 +193,13 @@ public class WorldMap {
     }
 
     public WorldMapInstance createNewInstance() {
-        int nextId = generateNextInstanceId();
+        byte nextId = generateNextInstanceId();
         WorldMapInstance instance = new WorldMapInstance(this, nextId);
         areas.add(nextId, instance);
         return instance;
     }
 
-    public static WorldMapInstance getArea(int mapId, int areaId, int entityId) {
+    public static WorldMapInstance getArea(int mapId, int areaId, int entityId, int playerId) {
         WorldMap map = World.getInstance().getMap(mapId);
         if (map == null) {
             throw new IllegalArgumentException("Invalid mapId: " + mapId);
@@ -149,33 +207,28 @@ public class WorldMap {
 
         var ecsWorld = GameWorld.getInstance().getWorld();
         var entity = ecsWorld.getEntity(entityId);
-
         if (entity == null) {
-            throw new IllegalArgumentException("Entity with ID " + entityId + " not found.");
+            throw new IllegalArgumentException("Entity not found: " + entityId);
         }
 
         byte typeMap = map.getTemplate().getTypeMap();
 
         if (entity.getComponent(PlayerComponent.class) != null) {
             return switch (typeMap) {
-                case 0 -> map.createInstanceForPlayer(entityId); // offline
-                case 1 -> map.getSharedZoneForOnline(areaId);          // online
-                // case 2 -> {
-                //     ClanComponent clan = entity.getComponent(ClanComponent.class);
-                //     int guildId = (clan != null) ? clan.id : -1;
-                //     yield map.createInstanceForGuild(guildId); // phó bản
-                // }
-                default -> throw new IllegalStateException("Unknown typeMap for Player: " + typeMap);
+                case ConstMap.MAP_OFFLINE -> map.getOrCreateUniqueInstance(playerId); // Offline: unique per player.
+                case ConstMap.MAP_TYPE_NORMAL ->
+                        (areaId >= 0) ? map.getSharedInstance(areaId) : map.getRandomSharedInstance(); // Online: shared.
+//                case ConstMap.MAP_PHO_BAN ->
+//                        map.getOrCreateUniqueInstance(playerId); // Phó bản: unique (giả sử guildId = playerId hoặc adjust).
+                default -> throw new IllegalStateException("Unknown typeMap: " + typeMap);
             };
         }
 
         if (entity.getComponent(BossComponent.class) != null) {
-            return (areaId >= 0)
-                    ? map.getWorldMapInstance(areaId)
-                    : map.getWorldMapInstance(0);
+            return (areaId >= 0) ? map.getInstance(areaId) : map.getInstance(0);
         }
 
-        throw new UnsupportedOperationException("Unsupported entity type: " + entity.getClass().getSimpleName());
+        throw new UnsupportedOperationException("Unsupported entity: " + entity.getComponent(PlayerComponent.class).connection.getPlayerID());
     }
 
     public Waypoint getWayPointInMap(int x, int y, int playerID) {
@@ -207,7 +260,6 @@ public class WorldMap {
         }
         return null;
     }
-
 
     private void loadTileTypes() {
         int tileId = template.getTileId() - 1;

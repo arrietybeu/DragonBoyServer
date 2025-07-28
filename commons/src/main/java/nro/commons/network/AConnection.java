@@ -250,7 +250,7 @@ public abstract class AConnection<T extends BaseServerPacket> {
      * @param data
      * @return True nếu dữ liệu được xử lý đúng, False nếu xảy ra lỗi kết nối phải <code>close()</code> ngay bây giờ
      */
-    protected abstract boolean processData(ByteBuffer data);
+    protected abstract boolean processData(ByteBuffer data) throws RuntimeException;
 
     /**
      * Thís method này sẽ được gọi ở <code>Dispatcher</code> sẽ được lặp lại cho đến khi trả về False

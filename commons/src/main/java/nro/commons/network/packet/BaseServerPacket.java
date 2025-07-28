@@ -45,7 +45,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeShort(int value) {
+    public final void writeShort(int value) {
         byteBuffer.putShort((short) value);
     }
 
@@ -54,7 +54,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeByte(int value) {
+    public final void writeByte(int value) {
         byteBuffer.put((byte) value);
     }
 
@@ -105,7 +105,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param str
      */
-    protected final void writeUTF(String str) {
+    public final void writeUTF(String str) {
         if (str == null || str.isEmpty()) {
             writeShort(0);
             return;
@@ -123,7 +123,7 @@ public abstract class BaseServerPacket extends BasePacket {
     /**
      * @param value
      */
-    protected final void writeBoolean(boolean value) {
+    public final void writeBoolean(boolean value) {
         this.writeByte((value ? 1 : 0));
     }
 

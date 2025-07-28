@@ -50,5 +50,8 @@ public class SmMeLoadPoint extends NroServerPacket {
         writeByte(stats.baseCrit);
         writeByte(stats.giamST);
         writeShort(stats.cCritDameFull);
+
+        // log toàn bộ info đã write
+        System.out.println("SmMeLoadPoint: " + stats + ", Health: " + health);
     }
 }

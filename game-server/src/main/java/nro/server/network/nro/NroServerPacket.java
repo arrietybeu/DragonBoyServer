@@ -5,6 +5,7 @@ import nro.commons.network.packet.BaseServerPacket;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 
+import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 
@@ -38,7 +39,7 @@ public abstract class NroServerPacket extends BaseServerPacket {
         super(command);
     }
 
-    protected abstract void writeImpl(NroConnection con) throws RuntimeException;
+    protected abstract void writeImpl(NroConnection con) throws RuntimeException, IOException;
 
     /**
      * Ghi một packet vào ByteBuffer để chuẩn bị gửi cho client.
@@ -49,7 +50,7 @@ public abstract class NroServerPacket extends BaseServerPacket {
      *               - Task: buffer này sẽ được SocketChannel.write(buffer) ngay sau khi ghi xong.
      *               - buffer này thường chính là con.writeBuffer (ByteBuffer đã được cấp phát sẵn khi accept kết nối).
      */
-    public final void write(NroConnection con, ByteBuffer buffer) throws RuntimeException {
+    public final void write(NroConnection con, ByteBuffer buffer) throws RuntimeException, IOException {
 
         ByteBuffer temp = TEMP_BUFFER.get();
         temp.clear();

@@ -48,4 +48,24 @@ public class StatsComponent extends Component {
         this.activePoint = activePoint;
     }
 
+    @Override
+    public String toString() {
+        return "StatsComponent{" +
+                "power=" + power +
+                ", potential=" + potential +
+                ", baseHp=" + baseHp +
+                ", baseMp=" + baseMp +
+                ", baseDamage=" + baseDamage +
+                ", baseDefense=" + baseDefense +
+                ", baseCrit=" + baseCrit +
+                ", expPerStatIncrease=" + expPerStatIncrease +
+                ", currentDamage=" + currentDamage +
+                ", totalDefense=" + totalDefense +
+                ", totalCriticalChance=" + totalCriticalChance +
+                ", movementSpeed=" + movementSpeed +
+                ", giamST=" + giamST +
+                ", cCritDameFull=" + cCritDameFull +
+                ", activePoint=" + activePoint +
+                '}';
+    }
 }

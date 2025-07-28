@@ -9,10 +9,11 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.MAP_OFFLINE, validStates = {NroConnection.State.IN_GAME})
-public class CmMapOffline extends CmMapChangeBase {
 
-    public CmMapOffline(int command, Set<NroConnection.State> validStates) {
+@AClientPacketHandler(command = ConstsCmd.MAP_CHANGE, validStates = {NroConnection.State.IN_GAME})
+public class CmMapChange extends CmMapChangeBase {
+
+    public CmMapChange(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
 }

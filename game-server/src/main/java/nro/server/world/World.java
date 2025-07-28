@@ -1,5 +1,7 @@
 package nro.server.world;
 
+import nro.commons.consts.ConstsCmd;
+import nro.server.consts.ConstMap;
 import nro.server.data_holders.data.MapData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,29 +32,33 @@ public class World {
         return worldMaps.get((short) mapId);
     }
 
+    public WorldMapInstance getAreaInMap(int mapId, int areaId) {
+        WorldMap map = getMap(mapId);
+        if (map == null) {
+            throw new NullPointerException("Invalid mapId: " + mapId);
+        }
+        return map.getWorldMapInstance(areaId);
+    }
+
     public WorldMapInstance getAvailableInstance(int mapId, int ownerId, int... zoneID) {
         WorldMap map = getMap(mapId);
-        if (map == null)
-            throw new NullPointerException("Failed to create position (invalid mapId: " + mapId + ")");
+        if (map == null) {
+            throw new NullPointerException("Invalid mapId: " + mapId);
+        }
 
         byte typeMap = map.getTemplate().getTypeMap();
 
-        switch (typeMap) {
-            case 0 -> {
-                return map.createInstanceForPlayer(ownerId);
-            }
-            case 1 -> {
-                if (zoneID == null || zoneID.length == 0) {
-                    return map.getRandomInstanceForOnline();
+        return switch (typeMap) {
+            case ConstMap.MAP_OFFLINE -> map.getOrCreateUniqueInstance(ownerId); // Offline: unique per player.
+            case ConstMap.MAP_TYPE_NORMAL -> {
+                if (zoneID != null && zoneID.length > 0) {
+                    yield map.getSharedInstance(zoneID[0]);
                 }
-                return map.getSharedZoneForOnline(zoneID[0]);
+                yield map.getRandomSharedInstance();
             }
-            case 2 -> // Pho ban
-            {
-                return map.createInstanceForGuild(ownerId);
-            }
+            case ConstMap.MAP_PHO_BAN -> map.getOrCreateUniqueInstance(ownerId); // Phó bản: unique per guild.
             default -> throw new IllegalArgumentException("Unknown typeMap: " + typeMap);
-        }
+        };
     }
 
     public WorldPosition createPosition(int mapId, int playerId, short x, short y, int... zoneID) {

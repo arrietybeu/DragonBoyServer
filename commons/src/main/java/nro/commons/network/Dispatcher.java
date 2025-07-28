@@ -168,7 +168,7 @@ public abstract class Dispatcher extends Thread {
                     closeConnectionImpl(con);
                     return;
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("Error processing packet from {}, content: {}", con, NetworkUtils.toHex(packetBuf), e);
                 closeConnectionImpl(con);
                 return;

@@ -2,15 +2,21 @@ package nro.server.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.Entity;
 import com.artemis.systems.IteratingSystem;
+import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.ecs.component.player.TaskComponent;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.network.nro.NroConnection;
+import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
+import nro.server.network.nro.server_packets.handler.SmMapInfo;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
+import nro.server.services.AreaService;
 import nro.server.world.World;
+import nro.server.world.WorldMapInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +33,7 @@ public class MapChangeSystem extends IteratingSystem {
     private ComponentMapper<PlayerComponent> clients;
 
     public MapChangeSystem() {
-        super(Aspect.all(PositionComponent.class));
+        super(Aspect.all(PositionComponent.class, InfoComponent.class, PlayerComponent.class));
     }
 
     @Override
@@ -39,12 +45,14 @@ public class MapChangeSystem extends IteratingSystem {
 
         if (!pos.wantsToChangeMap) return;
 
-        log.info("Entity {} requesting map change", entityId);
+        log.info("Entity {} requesting map change x {} y {} map id {}", entityId + " (" + info.name + ")", pos.x, pos.y, pos.mapId);
 
         var currentMap = World.getInstance().getMap(pos.mapId);
 
-        if (currentMap == null)
+        if (currentMap == null) {
+            this.keepInSafeZone(null, client, pos);
             throw new RuntimeException("Current map is null for entity " + info + " with mapId " + pos.mapId);
+        }
         var currentArea = currentMap.getInstance(pos.areaId);
         if (currentArea == null)
             throw new RuntimeException("Current area is null for entity " + info + " in map " + pos.mapId);
@@ -52,26 +60,76 @@ public class MapChangeSystem extends IteratingSystem {
         var waypoint = currentMap.getWayPointInMap(pos.x, pos.y, info.id);
 
         if (waypoint == null) {
-            keepInSafeZone(entityId, null, client);
-            return;
+            keepInSafeZone(null, client, pos);
+            client.sendPacket(new SmChatTheGioi("Bạn không thể đi đến đây!"));
+            throw new RuntimeException("Waypoint is null for entity " + info + " with mapId " + pos.mapId);
         }
 
         var newArea = World.getInstance().getAvailableInstance(waypoint.getGoMap(), info.id);
 
         if (newArea == null) {
-            this.keepInSafeZone(entityId, waypoint, client);
-            client.sendPacket(new SmChatTheGioi("Map không tồn tại"));
+            this.keepInSafeZone(waypoint, client, pos);
+            client.sendPacket(new SmChatTheGioi("Khu vực này không có người quản lý, bạn không thể đi đến đây!"));
             return;
         }
 
+        log.info("player wants to change map: {} to mapId: {} at areaId: {}", info.name, waypoint.getGoMap(), newArea.getInstanceId());
+
+        if (!this.transferEntity(client, waypoint, pos, currentArea, newArea)) {
+            return;
+        }
         pos.wantsToChangeMap = false;
     }
 
-    private void keepInSafeZone(int entityId, Waypoint waypoint, NroConnection con) {
-        PositionComponent pos = posMapper.get(entityId);
+    private boolean transferEntity(NroConnection client, Waypoint waypoint, PositionComponent pos, WorldMapInstance currentArea, WorldMapInstance newArea) {
+        if (newArea == null) {
+            this.keepInSafeZone(waypoint, client, pos);
+
+            client.sendPacket(new SmChatTheGioi("Khu vực này không có người quản lý, bạn không thể đi đến đây!"));
+            return false;
+        }
+
+        if (newArea.isFullPlayer()) {
+            this.keepInSafeZone(waypoint, client, pos);
+            client.sendPacket(new SmChatTheGioi("Khu vực này đã đầy người chơi, bạn không thể đi đến đây!"));
+            return false;
+        }
+
+        // xoa entity ra khoi khu cu
+        this.playerExitArea(client, pos, currentArea);
+
+        int xNew = waypoint.getGoX();
+        int yNew = waypoint.getGoY();
+
+        // add entity vào area mới
+        newArea.addEntity(client.getPlayerID());
+
+        pos.mapId = waypoint.getGoMap();
+        pos.areaId = newArea.getInstanceId();
+        pos.x = (short) xNew;
+        pos.y = (short) yNew;
+
+        this.sendMessageChangerMap(client, pos);
+//        AreaService.getInstance().sendInfoAllLiveObjectsTo(client.getEntity());
+        return true;
+    }
+
+    public void sendMessageChangerMap(NroConnection client, PositionComponent pos) {
+        client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
+        client.sendPacket(new SmMapInfo(pos));
+    }
+
+
+    public void playerExitArea(NroConnection client, PositionComponent pos, WorldMapInstance oldArea) {
+        if (pos == null || oldArea == null) return;
+        oldArea.removeEntity(client.getPlayerID());
+    }
+
+
+    private void keepInSafeZone(Waypoint waypoint, NroConnection con, PositionComponent pos) {
         if (pos == null) return;
 
-        short safeX = pos.x;
+        short safeX;
         short safeY = pos.y;
 
         if (waypoint == null) {
@@ -86,6 +144,8 @@ public class MapChangeSystem extends IteratingSystem {
         pos.y = safeY;
 
         con.sendPacket(new SmResetPoint(pos.x, pos.y));
+
+        pos.wantsToChangeMap = false;
     }
 
 }

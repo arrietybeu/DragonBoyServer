@@ -1,6 +1,7 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
+import nro.server.consts.ConstMsgNotMap;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
@@ -33,7 +34,15 @@ public class CmNotMap extends NroClientPacket {
     @Override
     protected void readImpl() {
         this.status = readByte();
+        System.out.println("Received CmNotMap with status: " + status);
         switch (status) {
+            case ConstMsgNotMap.REQUEST_MAP_TEMPLATE -> {
+                if (isValideInGame()) {
+                    sendPacket(new SmNotMap(status));
+                } else {
+                    getConnection().close(new SmDialogMessage("Cut ra khoi game anh di em"));
+                }
+            }
             case SmNotMap.CREATE_CHARACTER -> {
                 this.name = this.readUTF().toLowerCase();
                 this.gender = this.readByte();
@@ -82,8 +91,7 @@ public class CmNotMap extends NroClientPacket {
             case SmNotMap.CREATE_CHARACTER -> {
                 var playerResponseType = PlayerService.storeNewPlayer(name, gender, hair, getConnection().getAccount());
                 switch (playerResponseType) {
-                    case PlayerResponseType.SUCCESS ->
-                            PlayerEnterWorldService.enterWorld(getConnection());
+                    case PlayerResponseType.SUCCESS -> PlayerEnterWorldService.enterWorld(getConnection());
                     default -> sendPacket(new SmDialogMessage(playerResponseType.getDefaultMessage()));
                 }
             }

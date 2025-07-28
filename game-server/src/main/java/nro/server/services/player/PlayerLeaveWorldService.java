@@ -4,6 +4,7 @@ import com.artemis.Entity;
 import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
+import nro.server.network.nro.NroConnection;
 import nro.server.world.World;
 import nro.server.world.WorldMapInstance;
 import org.slf4j.Logger;
@@ -16,8 +17,9 @@ public class PlayerLeaveWorldService {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerLeaveWorldService.class);
 
-    public static void leaveWorld(Entity entity) {
+    public static void leaveWorld(NroConnection con) {
 
+        var entity = con.getEntity();
         var connection = entity.getComponent(PlayerComponent.class).connection;
 
         var positionComponent = entity.getComponent(PositionComponent.class);
@@ -31,7 +33,7 @@ public class PlayerLeaveWorldService {
             return;
         }
 
-        worldMapInstance.removeEntity(entity.getId());
+        worldMapInstance.removeEntity(con.getPlayerID());
 
         // Delete entity from the world ecs
         GameWorld.getInstance().deleteEntity(entity.getId());

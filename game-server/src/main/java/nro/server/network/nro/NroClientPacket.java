@@ -27,6 +27,10 @@ public abstract class NroClientPacket extends BaseClientPacket<NroConnection> {
         return validStates.contains(getConnection().getState());
     }
 
+    public final boolean isValideInGame () {
+        return getConnection().getState() == State.IN_GAME;
+    }
+
     @Override
     public void run() {
         try {

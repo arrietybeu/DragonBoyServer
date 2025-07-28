@@ -1,6 +1,7 @@
 package nro.server;
 
 import com.artemis.WorldConfigurationBuilder;
+import com.artemis.managers.GroupManager;
 import lombok.Getter;
 import nro.commons.database.DatabaseFactory;
 import nro.commons.network.NioServer;
@@ -19,6 +20,7 @@ import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
 import nro.server.system.FashionUpdateSystem;
+import nro.server.system.MapChangeSystem;
 import nro.server.system.MovementSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
@@ -58,7 +60,7 @@ public class GameServer {
             System.gc();
             nioServer = initNioServer();
             Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
-            LOGGER.info("Game server started successfully. Listening on: {}", NetworkConfig.CLIENT_SOCKET_ADDRESS);
+//            LOGGER.info("Game server started successfully. Listening on: {}", NetworkConfig.CLIENT_SOCKET_ADDRESS);
         } catch (Throwable e) {
             LOGGER.error("Error : {}", e.getMessage(), e);
             System.exit(1);
@@ -74,7 +76,7 @@ public class GameServer {
 
     private static void intEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-        builder.with(new FashionUpdateSystem(), new MovementSystem()); // add systems here if needed
+        builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();

@@ -131,7 +131,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
     }
 
     @Override
-    public boolean processData(ByteBuffer rb) {
+    public boolean processData(ByteBuffer rb) throws RuntimeException {
         final boolean isEncrypted = getCrypt().isSendKey();
 
         int startPos = rb.position();
@@ -178,6 +178,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
                 packetProcessor.executePacket(p);
             } else {
                 log.warn("Invalid packet cmd={} in state={}", cmd, state);
+                return false;
             }
         }
         return true;
@@ -240,7 +241,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
         var player = getEntity();
         if (player != null) {
 
-            PlayerLeaveWorldService.leaveWorld(player);
+            PlayerLeaveWorldService.leaveWorld(this);
         }
 
         log.info("Client disconnected successfully: IP={}, state={}", getIP(), state + " time delay" + pendingCloseUntilMillis);
@@ -264,7 +265,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
             if (player == null) // player was already saved
                 return;
             try {
-                PlayerLeaveWorldService.leaveWorld(player);
+                PlayerLeaveWorldService.leaveWorld(this);
             } catch (Exception e) {
                 log.error("Error saving player id {}", this.playerID, e);
             }

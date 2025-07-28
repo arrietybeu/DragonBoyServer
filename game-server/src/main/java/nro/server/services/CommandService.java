@@ -45,6 +45,7 @@ public class CommandService {
                     }
                 } catch (Exception exception) {
                     LOGGER.error("", exception);
+                    break;
                 }
             }
         }

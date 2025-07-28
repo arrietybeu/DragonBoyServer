@@ -30,4 +30,17 @@ public class HealthComponent extends Component {
         this.maxMP = maxMP;
     }
 
+    @Override
+    public String toString() {
+        return "HealthComponent{" +
+                "currentHP=" + currentHP +
+                ", maxHP=" + maxHP +
+                ", currentMP=" + currentMP +
+                ", maxMP=" + maxMP +
+                ", hpPer1000Potential=" + hpPer1000Potential +
+                ", mpPer1000Potential=" + mpPer1000Potential +
+                ", damagePer1000Potential=" + damagePer1000Potential +
+                ", isDirty=" + isDirty +
+                '}';
+    }
 }

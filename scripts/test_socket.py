@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 HOST = '127.0.0.1'
 PORT = 14445
 
-TOTAL_CLIENTS = 1000
+TOTAL_CLIENTS = 100000
 
 def client_worker(id):
     try:
@@ -21,7 +21,7 @@ def client_worker(id):
         print(f"⚠️ Client {id} lỗi: {e}")
 
 def main():
-    with ThreadPoolExecutor(max_workers=1000) as executor:
+    with ThreadPoolExecutor(max_workers=100000) as executor:
         for i in range(TOTAL_CLIENTS):
             executor.submit(client_worker, i)
 

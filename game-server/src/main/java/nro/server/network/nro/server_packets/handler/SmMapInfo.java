@@ -7,8 +7,11 @@ import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
+import nro.server.utils.PacketSendUtility;
 import nro.server.world.World;
 import nro.server.world.WorldMap;
+
+import java.io.IOException;
 
 /**
  * @author Arriety
@@ -23,7 +26,7 @@ public class SmMapInfo extends NroServerPacket {
     }
 
     @Override
-    protected void writeImpl(NroConnection con) throws RuntimeException {
+    protected void writeImpl(NroConnection con) throws RuntimeException, IOException {
         WorldMap map = World.getInstance().getMap(positionComponent.mapId);
         var mapTemplate = map.getTemplate();
         writeByte(map.getId());
@@ -33,7 +36,10 @@ public class SmMapInfo extends NroServerPacket {
         writeByte(0);
         writeUTF(mapTemplate.getName());
         writeByte(positionComponent.areaId);
-        this.loadMapInfo(mapTemplate);
+//        this.loadMapInfo(mapTemplate);
+
+        PacketSendUtility.writeMapInfo(this, map.getTemplate(), positionComponent);
+
         writeByte(mapTemplate.getIsMapDouble());
     }
 

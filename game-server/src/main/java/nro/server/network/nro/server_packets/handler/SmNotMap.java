@@ -2,10 +2,16 @@ package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
 import nro.server.configs.main.ConfigServer;
+import nro.server.consts.ConstMsgNotMap;
 import nro.server.data_holders.data.*;
+import nro.server.model.ecs.component.PositionComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
+import nro.server.utils.PacketSendUtility;
+import nro.server.world.World;
+
+import java.io.IOException;
 
 /**
  * @author Arriety
@@ -23,7 +29,7 @@ public class SmNotMap extends NroServerPacket {
     public static final byte ITEM_TEMPLATE = 1;
     public static final byte ITEM_ARR_HEAD_2FR = 100;
 
-    private final byte status;
+    private final int status;
     private byte type;
 
     public SmNotMap(int status) {
@@ -42,16 +48,17 @@ public class SmNotMap extends NroServerPacket {
     }
 
     @Override
-    protected void writeImpl(NroConnection con) throws RuntimeException {
+    protected void writeImpl(NroConnection con) throws RuntimeException, IOException {
         this.writeByte(status);
         switch (status) {
-            case ALL_DATA_GAME -> {
+            case ConstMsgNotMap.REQUEST_MAP_TEMPLATE -> this.requestMapTemplate(con);
+            case ConstMsgNotMap.SEND_VERSION -> {
                 sendAllDataGame();
                 con.getSessionInfo().setUpdateData(true);
             }
-            case UPDATE_MAP -> sendUpdateMap();
-            case UPDATE_SKILL -> sendUpdateSkill();
-            case UPDATE_ITEM -> sendUpdateItem(type);
+            case ConstMsgNotMap.UPDATE_MAP -> sendUpdateMap();
+            case ConstMsgNotMap.UPDATE_SKILL -> sendUpdateSkill();
+            case ConstMsgNotMap.UPDATE_ITEM -> sendUpdateItem(type);
         }
     }
 
@@ -67,6 +74,31 @@ public class SmNotMap extends NroServerPacket {
         for (var caption : captionTemplates) {
             this.writeLong(caption.exp());
         }
+    }
+
+    public void requestMapTemplate(NroConnection client) throws IOException {
+        PositionComponent position = client.getEntity().getComponent(PositionComponent.class);
+
+        if (position == null) {
+            throw new IllegalArgumentException("PositionComponent cannot be null for SmNotMap requestMapTemplate");
+        }
+
+        var map = World.getInstance().getMap(position.mapId);
+        if (map == null) {
+            throw new IllegalArgumentException("Map not found for mapId: " + position.mapId);
+        }
+
+        this.writeByte(map.getTemplate().getTileMap().width());
+        this.writeByte(map.getTemplate().getTileMap().height());
+        for (int i = 0; i < map.getTileMap().tiles().length; i++) {
+            this.writeByte(map.getTileMap().tiles()[i]);
+        }
+
+        PacketSendUtility.writeMapInfo(this, map.getTemplate(), position);
+
+
+        writeByte(map.getTemplate().getIsMapDouble());
+
     }
 
     private void sendUpdateMap() {
@@ -93,5 +125,4 @@ public class SmNotMap extends NroServerPacket {
     private void sendItemArr_Head_2Fr() {
         writeBytes(ItemData.getInstance().getDataArrHead2Fr());
     }
-
 }

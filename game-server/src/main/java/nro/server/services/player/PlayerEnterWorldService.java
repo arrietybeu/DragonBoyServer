@@ -3,6 +3,7 @@ package nro.server.services.player;
 import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgSubCommand;
 import nro.server.dao.PlayerDAO;
+import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
@@ -12,6 +13,9 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.*;
+import nro.server.world.World;
+import nro.server.world.WorldMap;
+import nro.server.world.WorldMapInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +60,18 @@ public class PlayerEnterWorldService {
                 try {
                     entity.edit().add(new PlayerComponent(client));
 
+                    PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
+
+                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, playerId, positionComponent.areaId);
+                    if (instance == null) {
+                        log.error("No available instance for player: {}", playerId);
+                        client.close(
+                                new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));
+                        return;
+                    }
+                    instance.addEntity(playerId);
+                    positionComponent.areaId = instance.getInstanceId();
+
                     client.sendPacket(
                             new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill"));
                     client.sendPacket(
@@ -70,7 +86,7 @@ public class PlayerEnterWorldService {
                     client.sendPacket(new SmClanInfo());
                     client.sendPacket(new SmUpdateBag(playerId, entity.getComponent(AppearanceComponent.class)));
                     client.sendPacket(new SmUpdateBody(playerId, entity.getComponent(AppearanceComponent.class)));
-                    client.sendPacket(new SmMapInfo(entity.getComponent(PositionComponent.class)));
+                    client.sendPacket(new SmMapInfo(positionComponent));
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP));
 
                     // this.sendThongBaoInfoTask(player, serverService);
@@ -86,11 +102,14 @@ public class PlayerEnterWorldService {
 
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
+
                 } catch (Throwable e) {
                     log.error("Error during enter world of {}", entity, e);
                 } finally {
                     enteringWorld.remove(playerId);
                 }
+            } else {
+                log.warn("Player with ID {} is already entering the world or is in the process of entering.", playerId);
             }
         }
     }

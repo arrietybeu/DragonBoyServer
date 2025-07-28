@@ -5,6 +5,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
+import com.artemis.managers.GroupManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +176,10 @@ public class GameWorld {
         } finally {
             lock.unlock();
         }
+    }
+
+    public GroupManager getGroupManager() {
+        return world.getSystem(GroupManager.class);
     }
 
     private static class SingletonHolder {
