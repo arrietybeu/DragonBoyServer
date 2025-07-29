@@ -88,13 +88,15 @@ public class SmNotMap extends NroServerPacket {
             throw new IllegalArgumentException("Map not found for mapId: " + position.mapId);
         }
 
+        var worldMapInstance = map.getWorldMapInstance(position.areaId);
+
         this.writeByte(map.getTemplate().getTileMap().width());
         this.writeByte(map.getTemplate().getTileMap().height());
         for (int i = 0; i < map.getTileMap().tiles().length; i++) {
             this.writeByte(map.getTileMap().tiles()[i]);
         }
 
-        PacketSendUtility.writeMapInfo(this, map.getTemplate(), position);
+        PacketSendUtility.writeMapInfo(this, worldMapInstance, position);
 
 
         writeByte(map.getTemplate().getIsMapDouble());

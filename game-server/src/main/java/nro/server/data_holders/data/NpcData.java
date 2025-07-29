@@ -28,6 +28,13 @@ public final class NpcData implements IManager {
     public void clear() throws Throwable {
     }
 
+    public NpcTemplate getTemplateById(int id) {
+        return npcTemplates.stream()
+                .filter(template -> template.id() == id)
+                .findFirst()
+                .orElseThrow(() -> new NullPointerException("NpcTemplate not found for id: " + id));
+    }
+
     private static final class SingletonHolder {
         private static final NpcData INSTANCE = new NpcData();
     }

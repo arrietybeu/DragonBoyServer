@@ -1,5 +1,6 @@
 package nro.server;
 
+import com.artemis.EntityManager;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.managers.GroupManager;
 import lombok.Getter;
@@ -51,11 +52,13 @@ public class GameServer {
             DatabaseFactory.init();
             //noinspection ResultOfMethodCallIgnored
             DataManager.getInstance();
+
             IDFactory.getInstance();
+            intEntityComponentSystem();
+
             World.getInstance();
             BannedIpController.start();
 
-            intEntityComponentSystem();
 
             System.gc();
             nioServer = initNioServer();
@@ -76,13 +79,15 @@ public class GameServer {
 
     private static void intEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-        builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
+        builder.with( new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
+        gameWorld.expandEntityCapacity(10000);
         gameWorld.start();
 
         LOGGER.info("ECS Game World started successfully.");
     }
+
 
     private static void initUtilityServicesAndConfig() {
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());

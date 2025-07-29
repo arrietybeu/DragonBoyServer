@@ -6,6 +6,7 @@ import nro.commons.utils.NetworkUtils;
 import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.IManager;
 import nro.server.data_holders.YamlDataLoader;
+import nro.server.model.templates.entity.NpcTemplate;
 import nro.server.model.templates.world.*;
 import nro.server.utils.Utils;
 import org.json.simple.JSONArray;
@@ -83,12 +84,32 @@ public final class MapData implements IManager {
                 List<BackgroundEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
                 List<Waypoint> waypoints = this.loadWaypoints(id);
                 TileMap tileMap = tileMaps.get(id);
+                List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(id);
 
                 var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId,
-                        isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap);
+                        isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
                 worldMaps.put(id, worldMapTemplate);
             }
         });
+    }
+
+    private List<NpcTemplate.NpcInfo> loadNpcs(int mapID) {
+        String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
+        List<NpcTemplate.NpcInfo> npcs = new ArrayList<>();
+        Database.select(query, rs -> {
+            while (rs.next()) {
+                var id = rs.getInt("npc_id");
+                var status = rs.getByte("status");
+                var x = rs.getShort("x");
+                var y = rs.getShort("y");
+                var avatar = rs.getShort("avatar");
+
+                NpcTemplate template = NpcData.getInstance().getTemplateById(id);
+                var npc = new NpcTemplate.NpcInfo(id, x, y, status, avatar, template);
+                npcs.add(npc);
+            }
+        }, preparedStatement -> preparedStatement.setInt(1, mapID));
+        return npcs;
     }
 
     private List<Waypoint> loadWaypoints(int mapId) {

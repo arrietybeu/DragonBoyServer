@@ -50,6 +50,24 @@ public class GameWorld {
         }
     }
 
+    public void expandEntityCapacity(int targetCapacity) {
+        lock.lock();
+        try {
+            log.debug("Expanding entity capacity to {}", targetCapacity);
+            int[] dummyIds = new int[targetCapacity];
+            for (int i = 0; i < targetCapacity; i++) {
+                dummyIds[i] = world.create();
+            }
+            for (int id : dummyIds) {
+                world.delete(id);
+            }
+            log.debug("Entity capacity expanded, current active entities: {}",
+                    getEntityCount());
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void start() {
         lock.lock();
         try {

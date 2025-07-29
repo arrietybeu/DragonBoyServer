@@ -1,13 +1,16 @@
 package nro.server.utils;
 
 import com.artemis.Entity;
+import com.artemis.utils.ImmutableBag;
 import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
 import nro.server.world.World;
+import nro.server.world.WorldMapInstance;
 
 import java.io.IOException;
 
@@ -50,12 +53,13 @@ public class PacketSendUtility {
         }
     }
 
-    public static void writeMapInfo(NroServerPacket packet, WorldMapTemplate mapTemplate, PositionComponent position) throws IOException {
+    public static void writeMapInfo(NroServerPacket packet, WorldMapInstance instance, PositionComponent position) throws IOException {
         // Write player position
         packet.writeShort(position.x);
         packet.writeShort(position.y);
 
         // Write waypoints
+        var mapTemplate = instance.getParent().getTemplate();
         var wayPoints = mapTemplate.getWaypoints();
         packet.writeByte(wayPoints.size());
         for (var wayPoint : wayPoints) {
@@ -74,6 +78,29 @@ public class PacketSendUtility {
 
         // Write NPC data (currently empty)
         packet.writeByte(0); // NPC count
+//        ImmutableBag<Entity> entities = instance.getEntities();
+//
+//        int npcCount = 0;
+//        for (int i = 0; i < entities.size(); i++) {
+//            NpcComponent npcComp = entities.get(i).getComponent(NpcComponent.class);
+//            if (npcComp != null) {
+//                System.out.println("NpcComponent found: " + npcComp.npcId + " mapId: " + mapTemplate.getId());
+//                npcCount++;
+//            }
+//        }
+//        packet.writeByte(npcCount);
+//        for (int i = 0; i < npcCount; i++) {
+//            Entity entity = entities.get(i);
+//            NpcComponent npcComp = entity.getComponent(NpcComponent.class);
+//            if (npcComp != null) {
+//                PositionComponent npcPos = entity.getComponent(PositionComponent.class);
+//                packet.writeByte(npcComp.status);
+//                packet.writeShort(npcPos.x);
+//                packet.writeShort(npcPos.y);
+//                packet.writeByte(npcComp.npcId);
+//                packet.writeShort(npcComp.avatar);
+//            }
+//        }
 
         // Write item map data (currently empty)
         packet.writeByte(0); // Item map count

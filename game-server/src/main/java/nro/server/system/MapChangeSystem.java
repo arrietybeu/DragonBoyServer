@@ -2,7 +2,6 @@ package nro.server.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.Entity;
 import com.artemis.systems.IteratingSystem;
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.*;
@@ -14,7 +13,6 @@ import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
 import nro.server.network.nro.server_packets.handler.SmMapInfo;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
-import nro.server.services.AreaService;
 import nro.server.world.World;
 import nro.server.world.WorldMapInstance;
 import org.slf4j.Logger;

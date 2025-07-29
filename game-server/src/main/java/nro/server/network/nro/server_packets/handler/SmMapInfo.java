@@ -28,6 +28,11 @@ public class SmMapInfo extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException, IOException {
         WorldMap map = World.getInstance().getMap(positionComponent.mapId);
+        if (map == null) {
+            throw new NullPointerException("Map not found for mapId: " + positionComponent.mapId);
+        }
+        var worldMapInstance = map.getWorldMapInstance(positionComponent.areaId);
+
         var mapTemplate = map.getTemplate();
         writeByte(map.getId());
         writeByte(mapTemplate.getPlanetId());
@@ -38,7 +43,7 @@ public class SmMapInfo extends NroServerPacket {
         writeByte(positionComponent.areaId);
 //        this.loadMapInfo(mapTemplate);
 
-        PacketSendUtility.writeMapInfo(this, map.getTemplate(), positionComponent);
+        PacketSendUtility.writeMapInfo(this, worldMapInstance, positionComponent);
 
         writeByte(mapTemplate.getIsMapDouble());
     }

@@ -25,6 +25,7 @@ public class World {
                 worldMaps.put(template.getId(), wm);
             }
         });
+
         log.info("World: {} world maps created.", worldMaps.size());
     }
 

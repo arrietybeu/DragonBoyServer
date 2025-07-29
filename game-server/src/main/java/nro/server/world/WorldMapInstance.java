@@ -6,7 +6,12 @@ import com.artemis.utils.ImmutableBag;
 import lombok.Getter;
 import lombok.Setter;
 import nro.server.engine.GameWorld;
+import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
+import nro.server.model.templates.entity.NpcTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -31,6 +36,8 @@ public class WorldMapInstance {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    private static final Logger log = LoggerFactory.getLogger(WorldMapInstance.class);
+
     public WorldMapInstance(WorldMap parent, byte instanceId) {
         this(parent, instanceId, 0);
     }
@@ -42,15 +49,59 @@ public class WorldMapInstance {
         this.createTime = System.currentTimeMillis();
         this.handler = new InstanceHandler(this);
         this.groupName = "map_" + parent.getId() + "_instance_" + instanceId;
+
+        if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
+            initNpc(); // Initialize NPCs if any are defined in the template
+        } else {
+            log.warn("No NPCs defined for map: {}, instanceId: {}", parent.getTemplate().getId(), instanceId);
+        }
+    }
+
+    private void initNpc() {
+        lock.writeLock().lock();
+        try {
+            var npcs = this.parent.getTemplate().getNpcInfos();
+
+            if (parent.getTemplate().getId() == 40) {
+                System.out.println("initNpc for map: " + this.parent.getTemplate().getId() + ", instanceId: " + instanceId + ", npc count: " + npcs.size());
+            }
+            var world = GameWorld.getInstance().getWorld();
+            GroupManager groupManager = GameWorld.getInstance().getGroupManager();
+
+            for (NpcTemplate.NpcInfo npcInfo : npcs) {
+
+                Entity npcEntity = world.createEntity();
+                NpcComponent npcComp = new NpcComponent();
+                npcComp.npcId = npcInfo.npcId();
+                npcComp.status = npcInfo.status();
+                npcComp.avatar = npcInfo.avatar();
+
+                PositionComponent posComp = new PositionComponent();
+                posComp.x = (short) npcInfo.x();
+                posComp.y = (short) npcInfo.y();
+                posComp.mapId = this.parent.getTemplate().getId();
+                posComp.areaId = instanceId;
+                npcEntity.edit()
+                        .add(npcComp)
+                        .add(posComp);
+
+                groupManager.add(npcEntity, groupName);
+            }
+        } catch (Exception e) {
+            log.error("Error initializing NPCs for instance {}: {}", instanceId, e.getMessage(), e);
+        } finally {
+            // Ensure that the lock is released even if an exception occurs
+            lock.writeLock().unlock();
+        }
+
     }
 
     public void addEntity(int id) {
         lock.writeLock().lock();
         try {
             var entity = GameWorld.getInstance().getWorld().getEntity(id);
-            if (entity == null) {
+            if (entity == null)
                 throw new IllegalArgumentException("Entity not found: " + id);
-            }
             GroupManager groupManager = GameWorld.getInstance().getGroupManager();
             groupManager.add(entity, groupName);
         } finally {

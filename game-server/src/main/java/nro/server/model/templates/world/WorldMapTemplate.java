@@ -2,6 +2,7 @@ package nro.server.model.templates.world;
 
 import lombok.Getter;
 import lombok.Setter;
+import nro.server.model.templates.entity.NpcTemplate;
 
 import java.util.*;
 
@@ -24,6 +25,7 @@ public class WorldMapTemplate {
     private final NavigableMap<Integer, List<Waypoint>> waypointMap;
     private final List<BgItem> bgItems;
     private final List<BackgroundEffect> backgroundEffects;
+    private final List<NpcTemplate.NpcInfo> npcInfos;
     public int[] types;
 
     public WorldMapTemplate(int id, String name, byte maxArea, byte maxPlayer,
@@ -31,7 +33,7 @@ public class WorldMapTemplate {
                             byte isMapDouble, byte bgId, byte bgType,
                             byte typeMap, List<BgItem> bgItems,
                             List<BackgroundEffect> backgroundEffects,
-                            List<Waypoint> waypoints, TileMap tileMap) {
+                            List<Waypoint> waypoints, TileMap tileMap, List<NpcTemplate.NpcInfo> npcInfos) {
         this.id = (short) id;
         this.name = name;
         this.maxArea = maxArea;
@@ -50,5 +52,6 @@ public class WorldMapTemplate {
         for (Waypoint wp : waypoints) {
             waypointMap.computeIfAbsent((int) wp.getMinX(), k -> new ArrayList<>()).add(wp);
         }
+        this.npcInfos = npcInfos;
     }
 }
