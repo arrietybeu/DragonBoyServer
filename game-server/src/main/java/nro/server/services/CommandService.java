@@ -27,7 +27,7 @@ public class CommandService {
                 try {
                     String _line = sc.nextLine();
                     switch (_line) {
-                        case "entity" -> GameWorld.getInstance().getEntityCount();
+                        case "entity" -> GameWorld.getInstance().logWorldSummary();
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
 
                         // case "thread" ->

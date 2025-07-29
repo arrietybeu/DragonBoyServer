@@ -11,6 +11,7 @@ public class ServerPacketsCommand {
 
     private static final Map<Class<? extends NroServerPacket>, Integer> commands = new HashMap<>();
 
+    @SuppressWarnings("unchecked")
     public static void init(String basePackage) {
         try {
             Reflections reflections = new Reflections(basePackage);
@@ -26,7 +27,6 @@ public class ServerPacketsCommand {
                                 "Duplicate opcode: " + opcode + " for class: " + clazz.getSimpleName());
                     }
 
-                    // noinspection unchecked
                     commands.put((Class<? extends NroServerPacket>) clazz, opcode);
                 }
             }

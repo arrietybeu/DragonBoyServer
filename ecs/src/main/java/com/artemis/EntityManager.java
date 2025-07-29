@@ -18,9 +18,9 @@ import static com.artemis.Aspect.all;
 @SkipWire
 public class EntityManager extends BaseSystem {
 	/** Contains all entities in the manager. */
-	final Bag<Entity> entities;
+	public final Bag<Entity> entities;
 	private final BitVector recycled = new BitVector();
-	private final IntDeque limbo = new IntDeque();
+	public final IntDeque limbo = new IntDeque();
 	private int nextId;
 	private Bag<BitVector> entityBitVectors = new Bag<BitVector>(BitVector.class);
 

@@ -25,6 +25,7 @@ public class ItemInventoryData implements IManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void validateTemplates() {
         if (templates == null || templates.isEmpty()) {
             throw new RuntimeException("YAML data is empty or null");

@@ -59,7 +59,6 @@ public class GameServer {
             World.getInstance();
             BannedIpController.start();
 
-
             System.gc();
             nioServer = initNioServer();
             Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
@@ -82,7 +81,7 @@ public class GameServer {
         builder.with( new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
-        gameWorld.expandEntityCapacity(10000);
+        gameWorld.expandEntityCapacity(10_000);
         gameWorld.start();
 
         LOGGER.info("ECS Game World started successfully.");

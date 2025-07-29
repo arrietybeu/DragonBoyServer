@@ -1,13 +1,12 @@
 package nro.server.engine;
 
-import com.artemis.Entity;
-import com.artemis.World;
-import com.artemis.WorldConfiguration;
-import com.artemis.WorldConfigurationBuilder;
+import com.artemis.*;
 import com.artemis.managers.GroupManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,6 @@ public class GameWorld {
     private World world;
     private volatile boolean running = false;
     private ExecutorService executor;
-    private int activeEntityCount = 0;
     private final long tickInterval;
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -60,8 +58,6 @@ public class GameWorld {
             for (int id : dummyIds) {
                 world.delete(id);
             }
-            log.debug("Entity capacity expanded, current active entities: {}",
-                    getEntityCount());
         } finally {
             lock.unlock();
         }
@@ -151,8 +147,6 @@ public class GameWorld {
                 return -1;
             }
             Entity entity = world.createEntity();
-            activeEntityCount++; // Tăng counter
-            log.info("Created entity ID: {}, Active count: {}", entity.getId(), activeEntityCount);
             return entity.getId();
         } finally {
             lock.unlock();
@@ -171,8 +165,6 @@ public class GameWorld {
             }
             if (world.getEntity(entityId) != null) {
                 world.delete(entityId);
-                activeEntityCount--; // Giảm counter
-                log.info("Deleted entity ID: {}, Active count: {}", entityId, activeEntityCount);
             } else {
                 log.warn("Entity ID {} not found, cannot delete.", entityId);
             }
@@ -181,17 +173,86 @@ public class GameWorld {
         }
     }
 
-    public int getEntityCount() {
-        lock.lock();
-        try {
-            if (world == null) {
-                log.error("World not initialized, cannot get entity count.");
-                return 0;
+    public void logWorldSummary() {
+        if (world == null) {
+            log.warn("World is null, cannot log summary.");
+            return;
+        }
+
+        var em = world.getEntityManager();
+        var cm = world.getComponentManager();
+
+        log.info("======= ECS World Summary =======");
+
+        // Log tổng số entity đang hoạt động (theo cách hợp lệ)
+        int activeEntities = world.getAspectSubscriptionManager()
+                .get(Aspect.all())  // Aspect.all() sẽ match mọi entity
+                .getActiveEntityIds()
+                .cardinality();
+        log.info("Total entities (active): {}", activeEntities);
+        log.info("Next entity ID: {}", getNextEntityId(em));
+
+        // Log các Component Type đã đăng ký
+        var componentTypes = cm.getComponentTypes();
+        log.info("Registered component types: {}", componentTypes.size());
+        for (var type : componentTypes) {
+            log.info(" - Component: {} [id={}]",
+                    type.getType().getSimpleName(),
+                    type.getIndex()
+            );
+        }
+
+        // Log các hệ thống đang được active
+        log.info("Active systems ({}):", world.getSystems().size());
+        for (var system : world.getSystems()) {
+            log.info(" - {}", system.getClass().getSimpleName());
+        }
+
+        // Log các group đang tồn tại
+        GroupManager gm = getGroupManager();
+        if (gm != null) {
+            log.info("GroupManager groups:");
+            var field = getPrivateField(gm.getClass(), "entitiesByGroup");
+            if (field != null) {
+                try {
+                    @SuppressWarnings("unchecked")
+                    Map<String, ?> map = (Map<String, ?>) field.get(gm);
+                    for (Map.Entry<String, ?> entry : map.entrySet()) {
+                        String group = entry.getKey();
+                        Object bag = entry.getValue();
+                        int size = bag instanceof com.artemis.utils.Bag
+                                ? ((com.artemis.utils.Bag<?>) bag).size()
+                                : -1;
+                        log.info(" - Group '{}' has {} entities", group, size);
+                    }
+                } catch (IllegalAccessException e) {
+                    log.error("Failed to access entitiesByGroup", e);
+                }
             }
-            log.info("Current active entities: {}", activeEntityCount);
-            return activeEntityCount;
-        } finally {
-            lock.unlock();
+        }
+
+        log.info("==================================");
+    }
+
+    private Field getPrivateField(Class<?> clazz, String name) {
+        try {
+            Field field = clazz.getDeclaredField(name);
+            field.setAccessible(true);
+            return field;
+        } catch (NoSuchFieldException e) {
+            log.warn("Field {} not found in class {}", name, clazz.getSimpleName());
+            return null;
+        }
+    }
+
+    private int getNextEntityId(EntityManager em) {
+        try {
+            var field = EntityManager.class.getDeclaredField("nextId");
+            field.setAccessible(true);
+            return field.getInt(em);
+        } catch (Exception e) {
+            log.warn("Failed to access nextId from EntityManager", e);
+            return -1;
         }
     }
 

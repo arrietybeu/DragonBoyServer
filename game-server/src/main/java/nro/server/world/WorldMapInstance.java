@@ -50,9 +50,9 @@ public class WorldMapInstance {
         this.handler = new InstanceHandler(this);
         this.groupName = "map_" + parent.getId() + "_instance_" + instanceId;
 
-        if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
-            initNpc();
-        }
+//        if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
+//            initNpc();
+//        }
     }
 
     private void initNpc() {
@@ -85,6 +85,8 @@ public class WorldMapInstance {
 
                 groupManager.add(npcEntity, groupName);
             }
+//            world.process();
+
         } catch (Exception e) {
             log.error("Error initializing NPCs for instance {}: {}", instanceId, e.getMessage(), e);
         } finally {
