@@ -1,6 +1,5 @@
 package nro.server.engine;
 
-import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;

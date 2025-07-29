@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.BACKGROUND_TEMPLATE, validStates = {NroConnection.State.AUTHED})
+@AClientPacketHandler(command = ConstsCmd.BACKGROUND_TEMPLATE, validStates = {NroConnection.State.AUTHED, NroConnection.State.IN_GAME})
 public class CmBackgroundTemplate extends NroClientPacket {
 
     protected static final Logger log = LoggerFactory.getLogger(CmBackgroundTemplate.class);

@@ -51,9 +51,7 @@ public class WorldMapInstance {
         this.groupName = "map_" + parent.getId() + "_instance_" + instanceId;
 
         if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
-            initNpc(); // Initialize NPCs if any are defined in the template
-        } else {
-            log.warn("No NPCs defined for map: {}, instanceId: {}", parent.getTemplate().getId(), instanceId);
+            initNpc();
         }
     }
 
