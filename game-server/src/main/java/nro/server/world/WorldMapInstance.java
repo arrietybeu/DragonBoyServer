@@ -50,9 +50,10 @@ public class WorldMapInstance {
         this.handler = new InstanceHandler(this);
         this.groupName = "map_" + parent.getId() + "_instance_" + instanceId;
 
-//        if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
-//            initNpc();
-//        }
+        // FIXME : Cách init NPC hiện tại KHÔNG tối ưu – cần refactor lại (Béo nhắc bạn)
+        if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
+            initNpc();
+        }
     }
 
     private void initNpc() {

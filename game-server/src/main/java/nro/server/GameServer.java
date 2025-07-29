@@ -78,10 +78,10 @@ public class GameServer {
 
     private static void intEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-        builder.with( new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
+        builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
-        gameWorld.expandEntityCapacity(10_000);
+        gameWorld.expandEntityCapacity(100_000);
         gameWorld.start();
 
         LOGGER.info("ECS Game World started successfully.");

@@ -17,6 +17,7 @@ import nro.server.model.account.Account;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
+import nro.server.network.nro.server_packets.handler.SmDialogMessage;
 import nro.server.services.player.PlayerLeaveWorldService;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -197,8 +198,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
             try {
                 packet.write(this, buffer);
             } catch (Exception e) {
+                var msg = "Error processing packet write: " + packet.getClass().getSimpleName() + " for ID: " + playerID;
                 log.error("Error processing packet write: [{}] for ID:", packet.getClass().getSimpleName(), e);
-                close();
+                close(new SmDialogMessage(msg));
                 return false;
             } finally {
                 if (CommonsConfig.RUNNABLESTATS_ENABLE) {

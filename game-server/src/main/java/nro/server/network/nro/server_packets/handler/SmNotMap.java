@@ -98,7 +98,6 @@ public class SmNotMap extends NroServerPacket {
 
         PacketSendUtility.writeMapInfo(this, worldMapInstance, position);
 
-
         writeByte(map.getTemplate().getIsMapDouble());
 
     }

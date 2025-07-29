@@ -12,7 +12,7 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 public class SmTaskInfo extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-        writeShort(30); // Task ID
+        writeShort(15); // Task ID
         writeByte(0); // Task index
         writeUTF("Arriety");
         writeUTF("Task");

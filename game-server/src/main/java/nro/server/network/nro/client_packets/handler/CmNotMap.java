@@ -38,6 +38,8 @@ public class CmNotMap extends NroClientPacket {
         switch (status) {
             case ConstMsgNotMap.REQUEST_MAP_TEMPLATE -> {
                 if (isValideInGame()) {
+                    var mapTemplateID = readByte();
+                    // ngày xưa client write cái id dữ liệu byte lên nhưng giờ map nó lên short rồi nên là bỏ thui :3
                     sendPacket(new SmNotMap(status));
                 } else {
                     getConnection().close(new SmDialogMessage("Cut ra khoi game anh di em"));
