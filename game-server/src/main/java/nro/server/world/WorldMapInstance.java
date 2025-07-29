@@ -5,7 +5,7 @@ import com.artemis.managers.GroupManager;
 import com.artemis.utils.ImmutableBag;
 import lombok.Getter;
 import lombok.Setter;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;

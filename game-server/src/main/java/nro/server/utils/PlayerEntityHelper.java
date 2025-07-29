@@ -3,7 +3,7 @@ package nro.server.utils;
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 
 /**
  * @author Arriety

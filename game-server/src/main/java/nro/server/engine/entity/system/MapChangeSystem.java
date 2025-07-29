@@ -1,4 +1,4 @@
-package nro.server.system;
+package nro.server.engine.entity.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;

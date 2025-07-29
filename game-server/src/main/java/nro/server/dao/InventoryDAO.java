@@ -4,7 +4,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import nro.server.configs.main.ConfigCharacter;
 import nro.server.data_holders.data.ItemInventoryData;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.item.*;
 import nro.server.model.ecs.component.player.InventoryComponent;

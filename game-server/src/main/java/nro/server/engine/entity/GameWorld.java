@@ -1,4 +1,4 @@
-package nro.server.engine;
+package nro.server.engine.entity;
 
 import com.artemis.*;
 import com.artemis.managers.GroupManager;

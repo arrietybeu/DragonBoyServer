@@ -1,15 +1,11 @@
 package nro.server.world;
 
-import com.artemis.Entity;
 import lombok.Getter;
 import nro.server.consts.ConstMap;
 import nro.server.data_holders.data.MapData;
-import nro.server.engine.GameWorld;
-import nro.server.model.ecs.component.PositionComponent;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.boss.BossComponent;
-import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.model.templates.entity.NpcTemplate;
 import nro.server.model.templates.world.TileMap;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.model.templates.world.WorldMapTemplate;

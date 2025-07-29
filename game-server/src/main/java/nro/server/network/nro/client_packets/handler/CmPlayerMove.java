@@ -2,10 +2,7 @@ package nro.server.network.nro.client_packets.handler;
 
 import java.util.Set;
 
-import com.artemis.ComponentMapper;
-import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
-import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;

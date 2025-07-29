@@ -2,11 +2,10 @@ package nro.server.utils;
 
 import com.artemis.Entity;
 import com.artemis.utils.ImmutableBag;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
 import nro.server.world.World;

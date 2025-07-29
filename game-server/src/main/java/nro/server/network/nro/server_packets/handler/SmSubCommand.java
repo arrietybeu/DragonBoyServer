@@ -7,7 +7,7 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.GameServer;
 import nro.server.consts.ConstMsgSubCommand;
 import nro.server.data_holders.data.ItemData;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;

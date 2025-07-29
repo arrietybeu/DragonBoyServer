@@ -1,6 +1,5 @@
 package nro.server;
 
-import com.artemis.EntityManager;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.managers.GroupManager;
 import lombok.Getter;
@@ -15,14 +14,14 @@ import nro.server.configs.main.PacketConfig;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
-import nro.server.system.FashionUpdateSystem;
-import nro.server.system.MapChangeSystem;
-import nro.server.system.MovementSystem;
+import nro.server.engine.entity.system.FashionUpdateSystem;
+import nro.server.engine.entity.system.MapChangeSystem;
+import nro.server.engine.entity.system.MovementSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;

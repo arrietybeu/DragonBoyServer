@@ -1,7 +1,6 @@
 package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
-import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroConnection;

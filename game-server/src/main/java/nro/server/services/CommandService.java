@@ -7,7 +7,7 @@ import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.templates.data.PartTemplate;
 import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;

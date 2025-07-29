@@ -1,7 +1,6 @@
 package nro.server.services.player;
 
-import com.artemis.Entity;
-import nro.server.engine.GameWorld;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;

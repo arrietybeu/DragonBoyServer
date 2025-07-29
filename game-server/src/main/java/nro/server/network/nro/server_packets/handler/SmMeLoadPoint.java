@@ -2,7 +2,6 @@ package nro.server.network.nro.server_packets.handler;
 
 import com.artemis.Entity;
 import nro.commons.consts.ConstsCmd;
-import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.HealthComponent;
 import nro.server.model.ecs.component.StatsComponent;
 import nro.server.network.nro.NroConnection;
