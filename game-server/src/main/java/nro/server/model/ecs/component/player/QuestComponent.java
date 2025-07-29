@@ -5,15 +5,15 @@ import com.artemis.Component;
 /**
  * @author Arriety
  */
-public class TaskComponent extends Component {
+public class QuestComponent extends Component {
     public int taskId;
     public int taskIndex;
     public int taskCount;
 
-    public TaskComponent() {
+    public QuestComponent() {
     }
 
-    public TaskComponent(int taskId, int taskIndex, int taskCount) {
+    public QuestComponent(int taskId, int taskIndex, int taskCount) {
         this.taskId = taskId;
         this.taskIndex = taskIndex;
         this.taskCount = taskCount;

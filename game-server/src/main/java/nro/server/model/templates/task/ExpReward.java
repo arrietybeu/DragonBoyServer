@@ -3,5 +3,10 @@ package nro.server.model.templates.task;
 /**
  * @author Arriety
  */
-public class ExpReward {
+public class ExpReward extends QuestReward {
+    public int amount;
+
+    @Override
+    public void apply(int playerId) {
+    }
 }

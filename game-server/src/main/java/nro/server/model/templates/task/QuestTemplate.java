@@ -1,5 +1,7 @@
 package nro.server.model.templates.task;
 
+import java.util.List;
+
 /**
  * @author Arriety
  */

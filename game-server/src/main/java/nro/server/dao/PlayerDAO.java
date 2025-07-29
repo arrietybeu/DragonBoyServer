@@ -8,7 +8,7 @@ import nro.server.configs.main.ConfigCharacter;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
-import nro.server.model.ecs.component.player.TaskComponent;
+import nro.server.model.ecs.component.player.QuestComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -436,7 +436,7 @@ public class PlayerDAO {
                 var taskIndex = rs.getInt("task_index");
                 var taskCount = rs.getInt("task_count");
 
-                entity.edit().add(new TaskComponent(taskId, taskIndex, taskCount));
+                entity.edit().add(new QuestComponent(taskId, taskIndex, taskCount));
             }
         }
     }
