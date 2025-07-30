@@ -1,6 +1,7 @@
 package nro.server.network.nro;
 
 import com.artemis.Entity;
+import com.artemis.World;
 import lombok.Getter;
 import lombok.Setter;
 import nro.commons.configs.CommonsConfig;

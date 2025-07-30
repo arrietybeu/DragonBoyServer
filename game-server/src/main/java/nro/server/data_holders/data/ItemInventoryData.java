@@ -2,7 +2,7 @@ package nro.server.data_holders.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -11,17 +11,17 @@ import java.util.*;
 /**
  * @author Arriety
  */
-public class ItemInventoryData implements IManager {
+public class ItemInventoryData implements GameEngine {
     private List<Map<String, Object>> templates = new ArrayList<>();
 
     @Override
     public void init() throws Throwable {
-        try (InputStream input = new FileInputStream("resources/data_hodler/player_inventory.yml")) {
+        try (InputStream input = new FileInputStream("resources/data_holder/player_inventory.yml")) {
             ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
             templates = mapper.readValue(input, mapper.getTypeFactory().constructCollectionType(List.class, Map.class));
             validateTemplates();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load YAML from resources/data_hodler/player_inventory.yml", e);
+            throw new RuntimeException("Failed to load YAML from resources/data_holder/player_inventory.yml", e);
         }
     }
 

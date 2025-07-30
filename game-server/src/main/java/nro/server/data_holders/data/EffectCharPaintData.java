@@ -1,12 +1,12 @@
 package nro.server.data_holders.data;
 
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.data.EffectCharPaintTemplate;
 
 import java.util.List;
 
-public final class EffectCharPaintData implements IManager {
+public final class EffectCharPaintData implements GameEngine {
 
     public List<EffectCharPaintTemplate> effectCharPaintTemplates;
 

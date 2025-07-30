@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,5 +43,15 @@ public class YamlDataLoader {
             throw new RuntimeException("Failed to load YAML map from " + filePath, e);
         }
     }
+
+    public static <T> T loadObject(String filePath, Class<T> type) {
+        try (InputStream input = new FileInputStream(filePath)) {
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            return mapper.readValue(input, type);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load YAML object from " + filePath, e);
+        }
+    }
+
 
 }

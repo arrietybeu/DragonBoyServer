@@ -4,7 +4,7 @@ import lombok.Getter;
 import nro.commons.database.Database;
 import nro.commons.utils.NetworkUtils;
 import nro.server.configs.main.ConfigServer;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.model.templates.skill.NClassTemplate;
 import nro.server.model.templates.skill.SkillInfo;
 import nro.server.model.templates.skill.SkillTemplate;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
-public final class SkillData implements IManager {
+public final class SkillData implements GameEngine {
 
     @Getter
     private final List<NClassTemplate> nClassTemplates = new ArrayList<>();

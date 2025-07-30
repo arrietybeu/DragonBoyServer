@@ -1,18 +1,13 @@
 package nro.server.model.templates.task;
 
-import com.fasterxml.jackson.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Arriety
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ItemReward.class, name = "item"),
-        @JsonSubTypes.Type(value = ExpReward.class, name = "exp")
-})
-public abstract class QuestReward {
-
-    public String type;
-
-    public abstract void apply(int playerId);
+public class QuestReward {
+    public int index;
+    public List<Integer> item_id;
+    public List<Integer> count;
 }

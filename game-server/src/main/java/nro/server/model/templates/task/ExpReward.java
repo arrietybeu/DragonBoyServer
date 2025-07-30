@@ -5,8 +5,4 @@ package nro.server.model.templates.task;
  */
 public class ExpReward extends QuestReward {
     public int amount;
-
-    @Override
-    public void apply(int playerId) {
-    }
 }

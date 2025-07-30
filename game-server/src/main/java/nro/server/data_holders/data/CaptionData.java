@@ -2,7 +2,7 @@ package nro.server.data_holders.data;
 
 import lombok.Getter;
 import nro.commons.utils.NetworkUtils;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.data.CaptionTemplate;
 
@@ -15,7 +15,7 @@ import java.nio.BufferOverflowException;
  * @author Arriety
  */
 @Getter
-public final class CaptionData implements IManager {
+public final class CaptionData implements GameEngine {
 
     private List<CaptionTemplate.CaptionLevel> captionLevels;
     private List<CaptionTemplate> captionTemplates;

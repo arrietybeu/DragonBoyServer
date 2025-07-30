@@ -8,7 +8,7 @@ import nro.server.configs.main.ConfigCharacter;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
-import nro.server.model.ecs.component.player.QuestComponent;
+import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,21 +163,6 @@ public class PlayerDAO {
         return true;
     }
 
-    private static boolean createDefaultInventory(Connection connection, int playerId) throws SQLException {
-        String query = "INSERT INTO player_inventory (player_id, item_id, quantity) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            // Example: Insert a default item (e.g., Item ID 1 with quantity 1)
-            statement.setInt(1, playerId);
-            statement.setInt(2, 1); // Default item ID
-            statement.setInt(3, 1); // Default quantity
-            if (statement.executeUpdate() <= 0) {
-                log.error("No rows were inserted into player_inventory for playerId: {}", playerId);
-                return false;
-            }
-        }
-        return true;
-    }
-
     private static boolean createDefaultSkillShortcuts(Connection connection, int playerId, int gender) throws SQLException {
         String query = "INSERT INTO player_skills_shortcut (player_id, slot_1) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -256,6 +241,10 @@ public class PlayerDAO {
             throw new SQLException("Failed to create player.");
         return playerId;
     }
+
+
+    private static final int ________________LOAD_PLAYER_ENTITY________________ = -1;
+
 
     public static Entity loadPlayerEntity(int playerId, int accountId) {
         World world = GameWorld.getInstance().getWorld();
@@ -424,19 +413,16 @@ public class PlayerDAO {
     }
 
     private static void loadPlayerTask(Connection conn, Entity entity, int playerId) throws SQLException {
-        String sql = "SELECT * FROM player_task WHERE player_id = ?";
-        try (var ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, playerId);
-            try (var rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new SQLException("Không tìm thấy player task cho player id: " + playerId);
-                }
-
-                var taskId = rs.getInt("task_id");
-                var taskIndex = rs.getInt("task_index");
-                var taskCount = rs.getInt("task_count");
-
-                entity.edit().add(new QuestComponent(taskId, taskIndex, taskCount));
+        String sql = "SELECT task_id, task_index, task_count FROM player_task WHERE player_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, playerId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                QuestInstanceComponent quest = entity.edit().create(QuestInstanceComponent.class);
+                quest.questId = rs.getInt("task_id");
+                quest.currentStep = rs.getInt("task_index");
+                quest.currentCount = rs.getInt("task_count");
+                quest.completed = false;
             }
         }
     }

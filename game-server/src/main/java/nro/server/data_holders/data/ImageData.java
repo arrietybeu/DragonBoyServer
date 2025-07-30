@@ -1,10 +1,10 @@
 package nro.server.data_holders.data;
 
 import lombok.Getter;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 
-public final class ImageData implements IManager {
+public final class ImageData implements GameEngine {
 
     @Getter
     private int[][] versionImage;

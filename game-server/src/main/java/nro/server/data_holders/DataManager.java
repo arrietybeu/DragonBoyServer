@@ -1,6 +1,7 @@
 package nro.server.data_holders;
 
 import nro.server.data_holders.data.*;
+import nro.server.engine.quest.QuestEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,7 @@ public final class DataManager {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);
 
-    private static final List<IManager> MANAGERS = List.of(
+    private static final List<GameEngine> MANAGERS = List.of(
             VersionImageData.getInstance(),
             TileImageData.getInstance(),
             DartData.getInstance(),
@@ -27,12 +28,13 @@ public final class DataManager {
             ItemData.getInstance(),
             MapData.getInstance(),
             ItemInventoryData.getInstance(),
-            GameNotifyData.getInstance()
+            GameNotifyData.getInstance(),
+            QuestEngine.getInstance()
     );
 
     private DataManager() throws RuntimeException {
         long start = System.currentTimeMillis();
-        for (IManager manager : MANAGERS) {
+        for (GameEngine manager : MANAGERS) {
             try {
                 manager.init();
                 log.info("Initialized manager class: [{}]", manager.getClass().getSimpleName());

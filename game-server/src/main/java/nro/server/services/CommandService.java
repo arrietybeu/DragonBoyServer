@@ -8,7 +8,9 @@ import nro.server.GameServer;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
 import nro.server.engine.entity.GameWorld;
+import nro.server.engine.quest.QuestEngine;
 import nro.server.model.templates.data.PartTemplate;
+import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +32,7 @@ public class CommandService {
                         case "entity" -> GameWorld.getInstance().logWorldSummary();
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
 
-                        // case "thread" ->
-                        // ThreadPoolManager.getInstance().getStats().forEach(LOGGER::info);
+                         case "thread" -> LOGGER.info(ThreadPoolManager.getInstance().getStats());
                         case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                         case "session" ->
                                 LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
@@ -42,6 +43,7 @@ public class CommandService {
                         case "dart" ->
                                 DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
                         case "part" -> System.out.println("PartData size: " + buildNrPartData().length);
+                        case "task" -> QuestEngine.getInstance().logTask0Info();
                     }
                 } catch (Exception exception) {
                     LOGGER.error("", exception);

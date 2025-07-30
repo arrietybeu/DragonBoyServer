@@ -1,6 +1,6 @@
 package nro.server.data_holders;
 
-public interface IManager {
+public interface GameEngine {
 
     void init() throws Throwable;
 

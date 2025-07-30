@@ -1,6 +1,6 @@
 package nro.server.data_holders.data;
 
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.utils.FileNio;
 
 import java.io.File;
@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class TileImageData implements IManager {
+public final class TileImageData implements GameEngine {
 
     private final Map<Integer, List<File>> cachedResources = new HashMap<>();
 

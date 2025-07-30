@@ -1,13 +1,13 @@
 package nro.server.data_holders.data;
 
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.data.SkillPaintTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SkillPaintData implements IManager {
+public final class SkillPaintData implements GameEngine {
 
     public List<SkillPaintTemplate> templates = new ArrayList<>();
 

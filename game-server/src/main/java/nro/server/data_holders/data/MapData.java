@@ -4,17 +4,15 @@ import lombok.Getter;
 import nro.commons.database.Database;
 import nro.commons.utils.NetworkUtils;
 import nro.server.configs.main.ConfigServer;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.entity.NpcTemplate;
 import nro.server.model.templates.world.*;
-import nro.server.utils.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Consumer;
@@ -22,7 +20,7 @@ import java.util.function.Consumer;
 /**
  * @author Arriety
  */
-public final class MapData implements IManager {
+public final class MapData implements GameEngine {
 
     private final static String QUERY_LOAD_MAP_TEMPLATE = "SELECT * FROM `map_template`";
     private final static String QUERY_LOAD_MAP_ITEM_BACKGROUND = "SELECT * FROM `map_item_background` WHERE `map_id` = ?";

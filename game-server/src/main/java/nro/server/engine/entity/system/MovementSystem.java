@@ -5,7 +5,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.model.ecs.component.player.QuestComponent;
+import nro.server.model.ecs.component.player.QuestInstanceComponent;
 
 /**
  * @author Arriety
@@ -14,7 +14,7 @@ public class MovementSystem extends IteratingSystem {
 
     private ComponentMapper<PositionComponent> posMapper;
     private ComponentMapper<PlayerComponent> playerMapper;
-    private ComponentMapper<QuestComponent> taskMapper;
+    private ComponentMapper<QuestInstanceComponent> taskMapper;
 
     public MovementSystem() {
         super(Aspect.all(PositionComponent.class, PlayerComponent.class));

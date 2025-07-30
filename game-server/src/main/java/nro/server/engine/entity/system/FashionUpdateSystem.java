@@ -8,7 +8,7 @@ import nro.server.data_holders.data.ItemData;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
-import nro.server.model.ecs.component.player.QuestComponent;
+import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.model.templates.item.ItemTemplate;
 
 /**
@@ -19,7 +19,7 @@ public class FashionUpdateSystem extends IteratingSystem {
     private ComponentMapper<InventoryComponent> inventoryMapper;
     private ComponentMapper<AppearanceComponent> fashionMapper;
     private ComponentMapper<ItemInfoComponent> itemInfoMapper;
-    private ComponentMapper<QuestComponent> taskMapper;
+    private ComponentMapper<QuestInstanceComponent> taskMapper;
 
     public FashionUpdateSystem() {
         super(Aspect.all(InventoryComponent.class, AppearanceComponent.class));
@@ -69,8 +69,8 @@ public class FashionUpdateSystem extends IteratingSystem {
             }
         }
 
-        QuestComponent task = taskMapper.get(entityId);
-        if (appearance.flagBag == -1 && task != null && task.taskId == 3 && task.taskIndex == 2) {
+        QuestInstanceComponent task = taskMapper.get(entityId);
+        if (appearance.flagBag == -1 && task != null && task.questId == 3 && task.currentStep == 2) {
             appearance.flagBag = 28;
         }
 

@@ -6,7 +6,7 @@ import com.artemis.systems.IteratingSystem;
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.model.ecs.component.player.QuestComponent;
+import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;
@@ -26,7 +26,7 @@ public class MapChangeSystem extends IteratingSystem {
     private static final Logger log = LoggerFactory.getLogger(MapChangeSystem.class);
 
     private ComponentMapper<PositionComponent> posMapper;
-    private ComponentMapper<QuestComponent> taskMapper;
+    private ComponentMapper<QuestInstanceComponent> taskMapper;
     private ComponentMapper<InfoComponent> infoMapper;
     private ComponentMapper<PlayerComponent> clients;
 

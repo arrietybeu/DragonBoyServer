@@ -13,5 +13,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public abstract class QuestCondition {
     public String type;
+
     public abstract String getKey();
 }

@@ -8,9 +8,7 @@ import java.util.List;
 public class QuestTemplate {
 
     public int id;
-    public String name;
-    public int start_npc;
-    public int end_npc;
-    public List<QuestCondition> conditions;
-    public List<QuestReward> rewards;
+    public List<String> title;
+    public List<String> detail;
+    public List<QuestStep> steps;
 }

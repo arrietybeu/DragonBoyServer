@@ -1,7 +1,7 @@
 package nro.server.data_holders.data;
 
 import lombok.Getter;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.entity.MonsterTemplate;
 
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
-public final class MonsterData implements IManager {
+public final class MonsterData implements GameEngine {
 
     @Getter
     private List<MonsterTemplate> monsters;

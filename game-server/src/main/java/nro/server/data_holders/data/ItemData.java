@@ -3,7 +3,7 @@ package nro.server.data_holders.data;
 import lombok.Getter;
 import nro.commons.database.Database;
 import nro.commons.utils.NetworkUtils;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.model.item.ItemOptionData;
 import nro.server.model.templates.item.ItemOptionTemplate;
 import nro.server.model.templates.item.ItemTemplate;
@@ -22,7 +22,7 @@ import java.util.Map;
  * @author Arriety
  */
 @Getter
-public final class ItemData implements IManager {
+public final class ItemData implements GameEngine {
 
     private static final Logger log = LoggerFactory.getLogger(ItemData.class);
 

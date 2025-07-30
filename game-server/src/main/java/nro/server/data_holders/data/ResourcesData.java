@@ -1,7 +1,7 @@
 package nro.server.data_holders.data;
 
 import lombok.Getter;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.utils.FileNio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import java.util.*;
  * @author Arriety
  */
 @Getter
-public final class ResourcesData implements IManager {
+public final class ResourcesData implements GameEngine {
 
     private static final Logger log = LoggerFactory.getLogger(ResourcesData.class);
 

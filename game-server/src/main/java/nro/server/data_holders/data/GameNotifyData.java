@@ -2,7 +2,7 @@ package nro.server.data_holders.data;
 
 import lombok.Getter;
 import nro.commons.utils.NetworkUtils;
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.data.GameNotify;
 
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
-public class GameNotifyData implements IManager {
+public class GameNotifyData implements GameEngine {
 
     private List<GameNotify> notifyList;
 
@@ -21,7 +21,7 @@ public class GameNotifyData implements IManager {
 
     @Override
     public void init() throws Throwable {
-        notifyList = YamlDataLoader.loadList("resources/data_hodler/game_notify.yml", GameNotify.class);
+        notifyList = YamlDataLoader.loadList("resources/data_holder/game_notify.yml", GameNotify.class);
         setDataGameNotify();
     }
 

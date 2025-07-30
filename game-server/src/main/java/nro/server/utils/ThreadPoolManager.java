@@ -200,44 +200,39 @@ public final class ThreadPoolManager implements Executor {
     }
 
     public String getStats() {
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("\nScheduled pool:\n");
-        sb.append("=================================================\n");
-        sb.append("getActiveCount: ...... ").append(scheduledExecutor.getActiveCount()).append("\n");
-        sb.append("getCorePoolSize: ..... ").append(scheduledExecutor.getCorePoolSize()).append("\n");
-        sb.append("getPoolSize: ......... ").append(scheduledExecutor.getPoolSize()).append("\n");
-        sb.append("getLargestPoolSize: .. ").append(scheduledExecutor.getLargestPoolSize()).append("\n");
-        sb.append("getMaximumPoolSize: .. ").append(scheduledExecutor.getMaximumPoolSize()).append("\n");
-        sb.append("getCompletedTaskCount: ").append(scheduledExecutor.getCompletedTaskCount()).append("\n");
-        sb.append("getQueuedTaskCount: .. ").append(scheduledExecutor.getQueue().size()).append("\n");
-        sb.append("getTaskCount: ........ ").append(scheduledExecutor.getTaskCount()).append("\n\n");
-
-        sb.append("Instant pool:\n");
-        sb.append("=================================================\n");
-        sb.append("getActiveCount: ...... ").append(instantExecutor.getActiveCount()).append("\n");
-        sb.append("getCorePoolSize: ..... ").append(instantExecutor.getCorePoolSize()).append("\n");
-        sb.append("getPoolSize: ......... ").append(instantExecutor.getPoolSize()).append("\n");
-        sb.append("getLargestPoolSize: .. ").append(instantExecutor.getLargestPoolSize()).append("\n");
-        sb.append("getMaximumPoolSize: .. ").append(instantExecutor.getMaximumPoolSize()).append("\n");
-        sb.append("getCompletedTaskCount: ").append(instantExecutor.getCompletedTaskCount()).append("\n");
-        sb.append("getQueuedTaskCount: .. ").append(instantExecutor.getQueue().size()).append("\n");
-        sb.append("getTaskCount: ........ ").append(instantExecutor.getTaskCount()).append("\n\n");
-
-        sb.append("Long running pool:\n");
-        sb.append("=================================================\n");
-        sb.append("getActiveCount: ...... ").append(longRunningExecutor.getActiveCount()).append("\n");
-        sb.append("getCorePoolSize: ..... ").append(longRunningExecutor.getCorePoolSize()).append("\n");
-        sb.append("getPoolSize: ......... ").append(longRunningExecutor.getPoolSize()).append("\n");
-        sb.append("getLargestPoolSize: .. ").append(longRunningExecutor.getLargestPoolSize()).append("\n");
-        sb.append("getMaximumPoolSize: .. ").append(longRunningExecutor.getMaximumPoolSize()).append("\n");
-        sb.append("getCompletedTaskCount: ").append(longRunningExecutor.getCompletedTaskCount()).append("\n");
-        sb.append("getQueuedTaskCount: .. ").append(longRunningExecutor.getQueue().size()).append("\n");
-        sb.append("getTaskCount: ........ ").append(longRunningExecutor.getTaskCount()).append("\n");
-        sb.append("=================================================\n");
-        sb.append("TỔNG SỐ LUỒNG JVM ĐANG HOẠT ĐỘNG: ").append(Thread.activeCount()).append("\n");
-
-        return sb.toString();
+        return "\nScheduled pool:\n" +
+                "=================================================\n" +
+                "getActiveCount: ...... " + scheduledExecutor.getActiveCount() + "\n" +
+                "getCorePoolSize: ..... " + scheduledExecutor.getCorePoolSize() + "\n" +
+                "getPoolSize: ......... " + scheduledExecutor.getPoolSize() + "\n" +
+                "getLargestPoolSize: .. " + scheduledExecutor.getLargestPoolSize() + "\n" +
+                "getMaximumPoolSize: .. " + scheduledExecutor.getMaximumPoolSize() + "\n" +
+                "getCompletedTaskCount: " + scheduledExecutor.getCompletedTaskCount() + "\n" +
+                "getQueuedTaskCount: .. " + scheduledExecutor.getQueue().size() + "\n" +
+                "getTaskCount: ........ " + scheduledExecutor.getTaskCount() + "\n\n" +
+                "Instant pool:\n" +
+                "=================================================\n" +
+                "getActiveCount: ...... " + instantExecutor.getActiveCount() + "\n" +
+                "getCorePoolSize: ..... " + instantExecutor.getCorePoolSize() + "\n" +
+                "getPoolSize: ......... " + instantExecutor.getPoolSize() + "\n" +
+                "getLargestPoolSize: .. " + instantExecutor.getLargestPoolSize() + "\n" +
+                "getMaximumPoolSize: .. " + instantExecutor.getMaximumPoolSize() + "\n" +
+                "getCompletedTaskCount: " + instantExecutor.getCompletedTaskCount() + "\n" +
+                "getQueuedTaskCount: .. " + instantExecutor.getQueue().size() + "\n" +
+                "getTaskCount: ........ " + instantExecutor.getTaskCount() + "\n\n" +
+                "Long running pool:\n" +
+                "=================================================\n" +
+                "getActiveCount: ...... " + longRunningExecutor.getActiveCount() + "\n" +
+                "getCorePoolSize: ..... " + longRunningExecutor.getCorePoolSize() + "\n" +
+                "getPoolSize: ......... " + longRunningExecutor.getPoolSize() + "\n" +
+                "getLargestPoolSize: .. " + longRunningExecutor.getLargestPoolSize() + "\n" +
+                "getMaximumPoolSize: .. " + longRunningExecutor.getMaximumPoolSize() + "\n" +
+                "getCompletedTaskCount: " + longRunningExecutor.getCompletedTaskCount() + "\n" +
+                "getQueuedTaskCount: .. " + longRunningExecutor.getQueue().size() + "\n" +
+                "getTaskCount: ........ " + longRunningExecutor.getTaskCount() + "\n" +
+                "=================================================\n" +
+                "TỔNG SỐ LUỒNG JVM ĐANG HOẠT ĐỘNG: " + Thread.activeCount() + "\n";
     }
 
     private static final class SingletonHolder {

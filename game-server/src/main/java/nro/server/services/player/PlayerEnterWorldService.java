@@ -77,7 +77,7 @@ public class PlayerEnterWorldService {
 
                     client.sendPacket(new SmSpecialSkill());
                     client.sendPacket(new SmMeLoadPoint());
-                    // client.sendPacket(new SmTaskInfo());
+                     client.sendPacket(new SmTaskInfo());
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
 
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER));

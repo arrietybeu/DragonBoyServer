@@ -11,7 +11,7 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
-import nro.server.model.ecs.component.player.QuestComponent;
+import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
@@ -82,7 +82,7 @@ public class SmSubCommand extends NroServerPacket {
     private void sendInfoCharacter(NroConnection con) {
         var playerEntity = con.getEntity();
 
-        var taskComponent = getRequiredComponent(playerEntity, QuestComponent.class);
+        var taskComponent = getRequiredComponent(playerEntity, QuestInstanceComponent.class);
         var infoComponent = getRequiredComponent(playerEntity, InfoComponent.class);
         var appearanceComponent = getRequiredComponent(playerEntity, AppearanceComponent.class);
         var stateComponent = getRequiredComponent(playerEntity, StateComponent.class);
@@ -94,7 +94,7 @@ public class SmSubCommand extends NroServerPacket {
         var fusionComponent = getRequiredComponent(playerEntity, FusionComponent.class);
 
         writeInt(con.getPlayerID());
-        writeByte(taskComponent.taskId);
+        writeByte(taskComponent.questId);
         writeByte(infoComponent.gender);
         writeShort(appearanceComponent.head);
         writeUTF(infoComponent.name);

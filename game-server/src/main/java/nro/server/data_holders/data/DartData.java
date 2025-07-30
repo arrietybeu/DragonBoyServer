@@ -1,12 +1,12 @@
 package nro.server.data_holders.data;
 
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.data.DartTemplate;
 
 import java.util.List;
 
-public final class DartData implements IManager {
+public final class DartData implements GameEngine {
 
     public List<DartTemplate> darts;
 

@@ -1,13 +1,13 @@
 package nro.server.data_holders.data;
 
-import nro.server.data_holders.IManager;
+import nro.server.data_holders.GameEngine;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-public final class VersionImageData implements IManager {
+public final class VersionImageData implements GameEngine {
 
     private int[] versionImage;
 
