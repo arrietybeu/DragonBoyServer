@@ -15,6 +15,8 @@ import nro.server.configs.network.NetworkConfig;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
 import nro.server.engine.entity.GameWorld;
+import nro.server.engine.quest.system.MoveQuestSystem;
+import nro.server.engine.quest.system.QuestSystem;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
@@ -77,7 +79,8 @@ public class GameServer {
 
     private static void intEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-        builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(), new MapChangeSystem()); // add systems here if needed
+        builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(),
+                new MapChangeSystem(), new QuestSystem(), new MoveQuestSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.expandEntityCapacity(100_000);

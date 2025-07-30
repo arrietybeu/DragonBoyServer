@@ -37,7 +37,6 @@ public class QuestSystem extends BaseEntitySystem {
             QuestTemplate quest = QuestEngine.getInstance().getTask(q.questId);
             if (quest == null) continue;
 
-
             if (q.currentStep >= quest.steps.size()) {
                 q.completed = true;
                 log.info("Player {} hoàn thành nhiệm vụ {}", entityId, q.questId);

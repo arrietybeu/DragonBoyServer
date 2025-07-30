@@ -42,10 +42,10 @@ public class SmTaskInfo extends NroServerPacket {
         writeByte(stepCount);
 
         for (QuestStep step : quest.steps) {
-            writeUTF(step.name.get(info.gender));
-            writeByte(step.npc_id != null ? step.npc_id.get(info.gender) : -1);
-            writeShort(step.map_id != null ? step.map_id.get(info.gender) : -1);
-            writeUTF(step.detail != null ? step.detail.get(info.gender) : "");
+            writeUTF(step.getName(info.gender));
+            writeByte(step.getNpcId(info.gender));
+            writeShort(step.getMapId(info.gender));
+            writeUTF(step.getDetail(info.gender));
         }
 
         writeShort(quest.steps.get(questData.currentStep).count);

@@ -8,7 +8,7 @@ import com.artemis.Component;
  */
 public class PositionComponent extends Component {
 
-    public int mapId;
+    public short mapId;
     public byte areaId;
 
     public short x;
@@ -23,7 +23,7 @@ public class PositionComponent extends Component {
     }
 
     public PositionComponent(int mapId, int areaId, short x, short y) {
-        this.mapId = mapId;
+        this.mapId = (short) mapId;
         this.x = x;
         this.y = y;
         this.areaId = (byte) areaId;
