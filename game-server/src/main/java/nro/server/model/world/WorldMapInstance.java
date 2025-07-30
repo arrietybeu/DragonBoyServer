@@ -1,4 +1,4 @@
-package nro.server.world;
+package nro.server.model.world;
 
 import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
@@ -36,6 +36,10 @@ public class WorldMapInstance {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+    private long lastEmptyTime = -1;
+
+    private boolean scheduledForRemoval = false;
+
     private static final Logger log = LoggerFactory.getLogger(WorldMapInstance.class);
 
     public WorldMapInstance(WorldMap parent, byte instanceId) {
@@ -50,16 +54,13 @@ public class WorldMapInstance {
         this.handler = new InstanceHandler(this);
         this.groupName = "map_" + parent.getId() + "_instance_" + instanceId;
 
-        // FIXME : Cách init NPC hiện tại KHÔNG tối ưu – cần refactor lại (Béo nhắc bạn)
-        if (parent.getTemplate().getNpcInfos() != null && !parent.getTemplate().getNpcInfos().isEmpty()) {
-            initNpc();
-        }
     }
 
-    private void initNpc() {
+    public void initNpc() {
         lock.writeLock().lock();
         try {
             var npcs = this.parent.getTemplate().getNpcInfos();
+            if (npcs == null || npcs.isEmpty()) return;
 
             if (parent.getTemplate().getId() == 40) {
                 System.out.println("initNpc for map: " + this.parent.getTemplate().getId() + ", instanceId: " + instanceId + ", npc count: " + npcs.size());

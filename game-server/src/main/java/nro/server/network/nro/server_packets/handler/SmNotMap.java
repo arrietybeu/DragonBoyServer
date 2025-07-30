@@ -9,7 +9,7 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
 import nro.server.utils.PacketSendUtility;
-import nro.server.world.World;
+import nro.server.model.world.World;
 
 import java.io.IOException;
 

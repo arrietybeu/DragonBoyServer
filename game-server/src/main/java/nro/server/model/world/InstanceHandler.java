@@ -1,4 +1,4 @@
-package nro.server.world;
+package nro.server.model.world;
 
 import lombok.Getter;
 

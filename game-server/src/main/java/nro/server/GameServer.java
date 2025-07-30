@@ -17,6 +17,7 @@ import nro.server.data_holders.DataManager;
 import nro.server.engine.entity.GameWorld;
 import nro.server.engine.quest.system.MoveQuestSystem;
 import nro.server.engine.quest.system.QuestSystem;
+import nro.server.engine.world.WorldGarbageCollectionSystem;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
@@ -27,7 +28,7 @@ import nro.server.engine.entity.system.MovementSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;
-import nro.server.world.World;
+import nro.server.model.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +52,14 @@ public class GameServer {
         try {
             initUtilityServicesAndConfig();
             DatabaseFactory.init();
-            //noinspection ResultOfMethodCallIgnored
             DataManager.getInstance();
-
             IDFactory.getInstance();
+            //noinspection ResultOfMethodCallIgnored
             intEntityComponentSystem();
 
             World.getInstance();
+
+
             BannedIpController.start();
 
             System.gc();
@@ -80,7 +82,7 @@ public class GameServer {
     private static void intEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
         builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(),
-                new MapChangeSystem(), new QuestSystem(), new MoveQuestSystem()); // add systems here if needed
+                new MapChangeSystem(), new QuestSystem(), new MoveQuestSystem(), new WorldGarbageCollectionSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.expandEntityCapacity(100_000);

@@ -4,8 +4,8 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
-import nro.server.world.World;
-import nro.server.world.WorldMapInstance;
+import nro.server.model.world.World;
+import nro.server.model.world.WorldMapInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

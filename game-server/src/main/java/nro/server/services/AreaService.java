@@ -5,7 +5,7 @@ import com.artemis.Entity;
 import com.artemis.utils.ImmutableBag;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.world.World;
+import nro.server.model.world.World;
 
 
 /**

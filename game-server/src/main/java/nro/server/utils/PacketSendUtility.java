@@ -8,8 +8,8 @@ import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
-import nro.server.world.World;
-import nro.server.world.WorldMapInstance;
+import nro.server.model.world.World;
+import nro.server.model.world.WorldMapInstance;
 
 import java.io.IOException;
 

@@ -12,8 +12,8 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.*;
-import nro.server.world.World;
-import nro.server.world.WorldMapInstance;
+import nro.server.model.world.World;
+import nro.server.model.world.WorldMapInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
