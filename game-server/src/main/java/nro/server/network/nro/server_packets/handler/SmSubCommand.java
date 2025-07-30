@@ -25,7 +25,6 @@ public class SmSubCommand extends NroServerPacket {
 
     private final byte subCommand;
     private String text;
-    private final World world = GameWorld.getInstance().getWorld();
 
     public SmSubCommand(int subCommand, String text) {
         this.subCommand = (byte) subCommand;

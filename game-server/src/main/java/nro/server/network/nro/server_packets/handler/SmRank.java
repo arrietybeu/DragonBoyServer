@@ -12,6 +12,6 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 public class SmRank extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-
+        writeInt(1);
     }
 }

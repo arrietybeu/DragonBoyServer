@@ -75,28 +75,28 @@ public class PlayerEnterWorldService {
                     client.sendPacket(
                             new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill"));
 
-                    client.sendPacket(new SmSpecialSkill());
-                    client.sendPacket(new SmMeLoadPoint());
-                     client.sendPacket(new SmTaskInfo());
-                    client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
+                    client.sendPacket(new SmSpecialSkill());// TODO chua xong
+                    client.sendPacket(new SmMeLoadPoint());// DONE
+                     client.sendPacket(new SmTaskInfo()); // FIXME 1 số cái hơi sai
+                    client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));// DONE
 
-                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER));
-                    client.sendPacket(new SmClanInfo());
-                    client.sendPacket(new SmUpdateBag(playerId, entity.getComponent(AppearanceComponent.class)));
-                    client.sendPacket(new SmUpdateBody(playerId, entity.getComponent(AppearanceComponent.class)));
-                    client.sendPacket(new SmMapInfo(positionComponent));
-                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER));// FIXME 1 số cái chưa hoàn thiện
+                    client.sendPacket(new SmClanInfo());// FIXME chưa xong
+                    client.sendPacket(new SmUpdateBag(playerId, entity.getComponent(AppearanceComponent.class)));// DONE
+                    client.sendPacket(new SmUpdateBody(playerId, entity.getComponent(AppearanceComponent.class)));// DONE
+                    client.sendPacket(new SmMapInfo(positionComponent));// FIXME 1 số cái chưa xong
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_MY_CURRENCY_HPMP));// DONE RỒI
 
                     // this.sendThongBaoInfoTask(player, serverService);
 
-                    client.sendPacket(new SmMaxStamina());
-                    client.sendPacket(new SmStamina());
-                    client.sendPacket(new SmActivePoint(entity.getComponent(StatsComponent.class).activePoint));
-                    client.sendPacket(new SmPetInfo());
-                    client.sendPacket(new SmRank());
-                    client.sendPacket(new SmChangeOnSkill());
-                    client.sendPacket(new SmGameInfo());
-                    client.sendPacket(new SmUpdateCaption(entity.getComponent(InfoComponent.class).gender));
+                    client.sendPacket(new SmMaxStamina());// FIXME chua xong
+                    client.sendPacket(new SmStamina());// FIXME chua xong
+                    client.sendPacket(new SmActivePoint(entity.getComponent(StatsComponent.class).activePoint));// DONE
+                    client.sendPacket(new SmPetInfo());// FIXME chua xong
+                    client.sendPacket(new SmRank());// FIXME chua xong
+                    client.sendPacket(new SmChangeOnSkill());// FIXME chua xong
+                    client.sendPacket(new SmGameInfo());// DONE
+                    client.sendPacket(new SmUpdateCaption(entity.getComponent(InfoComponent.class).gender));// DONE
 
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);

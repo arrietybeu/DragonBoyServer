@@ -40,7 +40,6 @@ public class SmMapInfo extends NroServerPacket {
         writeByte(0);
         writeUTF(mapTemplate.getName());
         writeByte(positionComponent.areaId);
-//        this.loadMapInfo(mapTemplate);
 
         PacketSendUtility.writeMapInfo(this, worldMapInstance, positionComponent);
 

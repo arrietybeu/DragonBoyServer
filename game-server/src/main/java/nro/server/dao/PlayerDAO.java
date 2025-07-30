@@ -242,7 +242,6 @@ public class PlayerDAO {
         return playerId;
     }
 
-
     private static final int ________________LOAD_PLAYER_ENTITY________________ = -1;
 
 
