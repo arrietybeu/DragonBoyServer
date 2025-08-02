@@ -56,8 +56,8 @@ public class WorldMap {
             for (byte i = 0; i < template.getMaxArea(); i++) {
                 addArea(new WorldMapInstance(this, i));
             }
-        } else {
-            addArea(new WorldMapInstance(this, (byte) 0));
+//        } else {
+//            addArea(new WorldMapInstance(this, (byte) 0));
         }
     }
 
@@ -77,12 +77,26 @@ public class WorldMap {
     }
 
     /**
-     * Thread‑safe snapshot
+     * Dùng getAllAreasSafe() cho mọi thao tác chỉ đọc, an toàn và đơn giản.
      **/
     public List<WorldMapInstance> getAllAreasSafe() {
         areasLock.readLock().lock();
         try {
             return new ArrayList<>(areas);
+        } finally {
+            areasLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Dùng khi cần đọc, chỉnh sửa
+     *
+     * @return
+     */
+    public List<WorldMapInstance> getAllAreas() {
+        areasLock.readLock().lock();
+        try {
+            return areas;
         } finally {
             areasLock.readLock().unlock();
         }
@@ -181,20 +195,20 @@ public class WorldMap {
         return null;
     }
 
-    public WorldMapInstance getSharedZoneForOnline(int zoneID) {
-        return getSharedInstance(zoneID);
-    }
-
     public WorldMapInstance getRandomInstanceForOnline() {
         List<WorldMapInstance> list = getAllAreasSafe();
-        for (int i = 0; i < list.size(); i++) {
-            WorldMapInstance inst = list.get(i);
+        for (WorldMapInstance inst : list) {
             if (inst != null && inst.getPlayerCount() <= template.getMaxPlayer()) {
                 return inst;
             }
         }
         return null;
     }
+
+    public WorldMapInstance getSharedZoneForOnline(int zoneID) {
+        return getSharedInstance(zoneID);
+    }
+
 
     /**
      * Không thao tác trực tiếp vào areas, sử dụng helper

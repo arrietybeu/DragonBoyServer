@@ -28,7 +28,8 @@ public class WorldGarbageCollectionSystem extends BaseSystem {
             byte type = map.getTemplate().getTypeMap();
             if (type == ConstMap.MAP_TYPE_NORMAL) continue;
 
-            Iterator<WorldMapInstance> it = map.getAllAreasSafe().iterator();
+            Iterator<WorldMapInstance> it = map.getAllAreas().iterator();
+
             while (it.hasNext()) {
                 WorldMapInstance inst = it.next();
 
