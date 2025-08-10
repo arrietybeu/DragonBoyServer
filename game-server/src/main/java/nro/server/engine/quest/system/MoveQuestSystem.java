@@ -25,7 +25,7 @@ public class MoveQuestSystem extends IteratingSystem {
     protected void process(int entityId) {
 
         PositionComponent pos = posMapper.get(entityId);
-        if (!pos.isDirty) return;
+//        if (!pos.isDirty) return;
 
         QuestInstanceComponent quest = questMapper.get(entityId);
         if (quest.completed) return;

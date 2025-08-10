@@ -128,5 +128,4 @@ public class GameServer {
     public static boolean isShuttingDownSoon() {
         return ShutdownHook.getInstance().isRunning() && ShutdownHook.getInstance().getRemainingSeconds() <= 30;
     }
-
 }

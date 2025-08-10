@@ -97,26 +97,32 @@ public class QuestEngine implements GameEngine {
                     log.info("  --- Step {} ---", step.index);
 
                     if (step.name != null) {
-                        for (int i = 0; i < step.name.size(); i++) {
-                            log.info("    Name[{}]: {}", i, step.name.get(i));
+                        for (int i = 0; i < step.name.length; i++) {
+                            log.info("    Name[{}]: {}", i, step.name[i]);
                         }
                     }
 
                     if (step.detail != null) {
-                        for (int i = 0; i < step.detail.size(); i++) {
-                            log.info("    Detail[{}]: {}", i, step.detail.get(i));
+                        for (int i = 0; i < step.detail.length; i++) {
+                            log.info("    Detail[{}]: {}", i, step.detail[i]);
                         }
                     }
 
                     if (step.npc_id != null) {
-                        for (int i = 0; i < step.npc_id.size(); i++) {
-                            log.info("    NpcId[{}]: {}", i, step.npc_id.get(i));
+                        for (int i = 0; i < step.npc_id.length; i++) {
+                            log.info("    NpcId[{}]: {}", i, step.npc_id[i]);
                         }
                     }
 
                     if (step.map_id != null) {
-                        for (int i = 0; i < step.map_id.size(); i++) {
-                            log.info("    MapId[{}]: {}", i, step.map_id.get(i));
+                        for (int i = 0; i < step.map_id.length; i++) {
+                            log.info("    MapId[{}]: {}", i, step.map_id[i]);
+                        }
+                    }
+
+                    if (step.content != null) {
+                        for (int i = 0; i < step.content.length; i++) {
+                            log.info("    Content[{}]: {}", i, step.content[i]);
                         }
                     }
 

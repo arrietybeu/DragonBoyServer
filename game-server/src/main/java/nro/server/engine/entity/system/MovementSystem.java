@@ -27,7 +27,7 @@ public class MovementSystem extends IteratingSystem {
 
         System.out.println("entity di chuyen : " + entityId + " to " + pos.x + ", " + pos.y);
         if (pos.isOnGround == 1) {
-//            player.getPoints().reduceMPWhenFlying();
+//         player.getPoints().reduceMPWhenFlying();
         }
 
         pos.isDirty = false;

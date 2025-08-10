@@ -33,10 +33,11 @@ public class SmTaskInfo extends NroServerPacket {
         if (info == null)
             throw new NullPointerException("InfoComponent not found for entity ID: " + entityId);
 
-        writeShort(quest.id);                        // task ID
+//        writeShort(quest.id);                        // task ID
+        writeShort(30);                        // task ID
         writeByte(questData.currentStep);            // step index
-        writeUTF(quest.title.get(info.gender));
-        writeUTF(quest.detail.get(info.gender));
+        writeUTF(quest.getTitle(info.gender));
+        writeUTF(quest.getDetail(info.gender));
 
         int stepCount = quest.steps.size();
         writeByte(stepCount);

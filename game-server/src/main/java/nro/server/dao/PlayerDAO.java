@@ -25,24 +25,6 @@ public class PlayerDAO {
     private static final String QUERY_NAME_TAKEN = "SELECT 1 FROM player WHERE name = ? LIMIT 1";
     private static final String QUERY_ACCOUNT_HAS_CHARACTER = "SELECT 1 FROM player WHERE account_id = ? LIMIT 1";
 
-    public static boolean isNameTaken(Connection conn, String name) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(QUERY_NAME_TAKEN)) {
-            ps.setString(1, name);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
-    public static boolean accountHasCharacter(Connection conn, int accountId) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(QUERY_ACCOUNT_HAS_CHARACTER)) {
-            ps.setInt(1, accountId);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-        }
-    }
-
     public static boolean saveNewPlayer(Connection conn, int accountId, String name, byte gender, int hair) {
         try {
             int playerId = createPlayerBase(conn, accountId, name, gender, hair);
@@ -439,6 +421,25 @@ public class PlayerDAO {
         } catch (SQLException e) {
             log.error("Can't get list of IDs from players table", e);
             return null;
+        }
+    }
+
+
+    public static boolean isNameTaken(Connection conn, String name) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(QUERY_NAME_TAKEN)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public static boolean accountHasCharacter(Connection conn, int accountId) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(QUERY_ACCOUNT_HAS_CHARACTER)) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         }
     }
 
