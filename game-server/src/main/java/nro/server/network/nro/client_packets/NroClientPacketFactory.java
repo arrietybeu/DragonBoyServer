@@ -41,6 +41,8 @@ public class NroClientPacketFactory {
         PacketInfo<? extends NroClientPacket> info = packetMap.get(command);
         if (info == null || !info.isValid(client.getState())) {
             log.warn("Unknown or invalid packet command: {} state: {}", command, client.getState());
+            // TODO send msg notification to client
+
             return null;
         }
         try {

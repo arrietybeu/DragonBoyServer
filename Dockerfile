@@ -11,7 +11,6 @@ COPY commons ./commons
 COPY game-server ./game-server
 COPY resources ./resources
 
-# Build project và đóng gói shadow jar (fat jar)
 RUN ./gradlew :game-server:shadowJar --no-daemon
 
 

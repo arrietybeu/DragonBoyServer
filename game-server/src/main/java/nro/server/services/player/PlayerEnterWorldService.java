@@ -40,7 +40,6 @@ public class PlayerEnterWorldService {
             // show UI create chảr
             client.sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
         } else {
-
             var entity = client.getEntity();
             if (entity == null) {
                 entity = PlayerDAO.loadPlayerEntity(playerId, accountId);

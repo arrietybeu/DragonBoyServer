@@ -12,6 +12,7 @@ public record NpcTemplate(int id,
                           int body, int leg,
                           @JsonProperty("avatar_id")
                           short avatarId, String chat) {
+
     public record NpcInfo(int npcId, int x, int y,
                           int status, int avatar, NpcTemplate template) {
     }

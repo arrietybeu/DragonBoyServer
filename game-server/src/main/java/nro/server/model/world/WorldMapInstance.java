@@ -23,21 +23,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class WorldMapInstance {
 
     private final byte instanceId;
-
     private final WorldMap parent;
-
     private final int ownerId;
-
     private final long createTime;
-
     private final InstanceHandler handler;
-
     private final String groupName;
-
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
     private long lastEmptyTime = -1;
-
     private boolean scheduledForRemoval = false;
 
     private static final Logger log = LoggerFactory.getLogger(WorldMapInstance.class);
@@ -95,7 +87,6 @@ public class WorldMapInstance {
             // Ensure that the lock is released even if an exception occurs
             lock.writeLock().unlock();
         }
-
     }
 
     public void addEntity(int id) {

@@ -226,7 +226,6 @@ public class PlayerDAO {
 
     private static final int ________________LOAD_PLAYER_ENTITY________________ = -1;
 
-
     public static Entity loadPlayerEntity(int playerId, int accountId) {
         World world = GameWorld.getInstance().getWorld();
         int playerEntityID = GameWorld.getInstance().createEntity();
@@ -423,7 +422,6 @@ public class PlayerDAO {
             return null;
         }
     }
-
 
     public static boolean isNameTaken(Connection conn, String name) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(QUERY_NAME_TAKEN)) {

@@ -56,12 +56,8 @@ public class GameServer {
             IDFactory.getInstance();
             //noinspection ResultOfMethodCallIgnored
             intEntityComponentSystem();
-
             World.getInstance();
-
-
             BannedIpController.start();
-
             System.gc();
             nioServer = initNioServer();
             Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());

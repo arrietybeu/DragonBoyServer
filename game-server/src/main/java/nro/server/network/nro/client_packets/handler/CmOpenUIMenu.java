@@ -19,9 +19,12 @@ public class CmOpenUIMenu extends NroClientPacket {
 
     @Override
     protected void readImpl() {
+        var npcId = this.readShort();
+        System.out.println("npc id: " + npcId);
     }
 
     @Override
     protected void runImpl() {
     }
+
 }
