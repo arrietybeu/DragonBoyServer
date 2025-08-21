@@ -5,6 +5,7 @@ import com.artemis.World;
 import lombok.Getter;
 import lombok.Setter;
 import nro.commons.configs.CommonsConfig;
+import nro.commons.consts.ConstsCmd;
 import nro.commons.network.AConnection;
 import nro.commons.network.Crypt;
 import nro.commons.network.Dispatcher;
@@ -139,7 +140,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
         int startPos = rb.position();
 
         byte cmd = rb.get();
-        System.out.println("Received command: " + cmd);
+        if (!ConstsCmd.IGNORE_CMD.contains(cmd)) {
+            System.out.println("Received command: " + cmd);
+        }
         byte b1 = rb.get();
         byte b2 = rb.get();
 

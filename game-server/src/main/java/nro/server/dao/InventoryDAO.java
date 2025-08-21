@@ -115,10 +115,6 @@ public class InventoryDAO {
         playerInventory.isDirty = true; // Mark inventory as dirty after loading
 
         GameWorld.getInstance().getWorld().process();
-
-        log.info("entity ID {}: Loaded inventory for player ID {}, DATA inventory: {}", entity.getId(), playerId,
-                "Body: " + playerInventory.itemsBody + ", Bag: " + playerInventory.itemsBag + ", Box: " + playerInventory.itemsBox);)
-        ;
     }
 
     private static void loadItemsForLocation(Connection conn, int playerEntityId, int playerID, ItemLocation location) throws SQLException {

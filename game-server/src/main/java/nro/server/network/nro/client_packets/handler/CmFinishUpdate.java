@@ -4,6 +4,7 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
+import nro.server.network.nro.server_packets.handler.SmDialogMessage;
 import nro.server.services.player.PlayerEnterWorldService;
 
 import java.util.Set;
@@ -22,8 +23,10 @@ public class CmFinishUpdate extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-        if (getConnection().getSessionInfo().isLogin())
-            throw new IllegalStateException("Cannot finish update while logged in - " + getConnection());
+        if (getConnection().getSessionInfo().isLogin()) {
+            this.getConnection().close(new SmDialogMessage("Vui lòng đăng nhập lại!"));
+            return;
+        }
         PlayerEnterWorldService.enterWorld(getConnection());
         getConnection().getSessionInfo().setLogin(true);
     }

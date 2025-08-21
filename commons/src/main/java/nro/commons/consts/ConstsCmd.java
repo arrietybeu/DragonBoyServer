@@ -1,6 +1,7 @@
 package nro.commons.consts;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -884,4 +885,6 @@ public final class ConstsCmd {
     public static final byte RADA_CARD = Byte.MAX_VALUE;
 
     public static final byte CHAR_EFFECT = Byte.MIN_VALUE;
+
+    public static final List<Byte> IGNORE_CMD = List.of(PLAYER_MOVE);
 }

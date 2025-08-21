@@ -6,7 +6,9 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
+import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
+import nro.server.network.nro.server_packets.handler.SmChatMap;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
@@ -20,23 +22,21 @@ public class PacketSendUtility {
 
     public static void sendMessage(int entityId, String msg) {
         var playerComponent = GameWorld.getInstance().getWorld().getEntity(entityId).getComponent(PlayerComponent.class);
-        if (playerComponent == null)
-            throw new NullPointerException();
+        if (playerComponent == null) throw new NullPointerException();
 
         sendPacket(playerComponent, new SmChatTheGioi(msg));
     }
 
     public static void sendPacket(PlayerComponent player, NroServerPacket packet) {
-        if (player.isOnline())
-            player.connection.sendPacket(packet);
+        if (player.isOnline()) player.connection.sendPacket(packet);
     }
 
-    public static void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet) {
+    public static void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet)  throws RuntimeException {
 
         var area = World.getInstance().getAreaInMap(mapID, areaID);
 
         if (area == null)
-            throw new IllegalArgumentException("No area found for map ID " + mapID + " and area ID " + areaID);
+            throw new RuntimeException("No area found for map ID " + mapID + " and area ID " + areaID);
 
         var entities = area.getEntities();
         for (int i = 0; i < entities.size(); i++) {
@@ -47,7 +47,13 @@ public class PacketSendUtility {
             var playerComponent = e.getComponent(PlayerComponent.class);
 
             if (playerComponent != null && playerComponent.isOnline()) {
-                playerComponent.connection.sendPacket(packet);
+                var connect = playerComponent.connection;
+                if (connect == null)
+                    throw new RuntimeException("PlayerComponent connection is null for entity ID: " + e.getId());
+
+                if (connect.getState() != NroConnection.State.IN_GAME) continue;
+
+                connect.sendPacket(packet);
             }
         }
     }

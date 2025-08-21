@@ -131,6 +131,8 @@ public class GameWorld {
     }
 
     public World getWorld() {
+        if (this.world == null)
+            throw new IllegalStateException("GameWorld is not initialized. Call initialize() first.");
         return this.world;
     }
 
