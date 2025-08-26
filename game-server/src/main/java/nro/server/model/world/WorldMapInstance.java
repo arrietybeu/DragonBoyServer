@@ -1,11 +1,14 @@
 package nro.server.model.world;
 
+import com.artemis.ComponentMapper;
 import com.artemis.Entity;
+import com.artemis.EntityManager;
 import com.artemis.managers.GroupManager;
 import com.artemis.utils.ImmutableBag;
 import lombok.Getter;
 import lombok.Setter;
 import nro.server.engine.entity.GameWorld;
+import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
@@ -72,7 +75,7 @@ public class WorldMapInstance {
                 posComp.x = (short) npcInfo.x();
                 posComp.y = (short) npcInfo.y();
                 posComp.mapId = this.parent.getTemplate().getId();
-                posComp.areaId = instanceId;
+                posComp.setAreaId(instanceId);
                 npcEntity.edit()
                         .add(npcComp)
                         .add(posComp);
@@ -102,21 +105,6 @@ public class WorldMapInstance {
         }
     }
 
-    public void removeEntity(int id) {
-        lock.writeLock().lock();
-        try {
-            var entity = GameWorld.getInstance().getWorld().getEntity(id);
-            if (entity != null) {
-                GroupManager groupManager = GameWorld.getInstance().getGroupManager();
-                groupManager.remove(entity, groupName);
-            }
-//            if (getPlayerCount() == 0) {
-//                parent.releaseInstance(instanceId); // Clear nếu empty
-//            }
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
 
     public int getPlayerCount() {
         lock.readLock().lock();
@@ -138,6 +126,44 @@ public class WorldMapInstance {
         }
     }
 
+    public boolean removeEntity(int id) {
+        lock.writeLock().lock();
+        try {
+            var world = GameWorld.getInstance().getWorld();
+            EntityManager em = world.getEntityManager();
+
+            if (!em.isActive(id)) {
+                log.debug("removeEntity({}): entity not active -> no-op", id);
+                return false;
+            }
+
+            Entity e = world.getEntity(id);
+            GroupManager gm = GameWorld.getInstance().getGroupManager();
+
+            ComponentMapper<PositionComponent> mPos = world.getMapper(PositionComponent.class);
+            PositionComponent pos = mPos.get(e);
+            if (pos != null && pos.getAreaId() != this.instanceId) {
+                log.warn("removeEntity({}): areaId mismatch (entity area={}, this.instance={})",
+                        id, pos.getAreaId(), this.instanceId);
+                return true;
+            }
+
+            gm.remove(e, groupName);
+
+            if (pos != null) {
+                pos.setAreaId(-1);  // sentinel cho "không thuộc instance nào"
+                // pos.mapId = 0; // nếu muốn reset map
+            }
+
+            return true;
+        } catch (Exception ex) {
+            log.error("removeEntity({}) failed: {}", id, ex.getMessage(), ex);
+            return false;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
     public boolean isFullPlayer() {
         lock.readLock().lock();
         try {
@@ -145,9 +171,13 @@ public class WorldMapInstance {
             int playerCount = 0;
             int maxPlayer = parent.getTemplate().getMaxPlayer();
 
+            System.out.println("max player: " + maxPlayer + ", current player: " + entities.size());
+
             for (int i = 0; i < entities.size(); i++) {
                 Entity e = entities.get(i);
                 if (e.getComponent(PlayerComponent.class) != null) {
+                    var info = e.getComponent(InfoComponent.class);
+                    System.out.println("Player: " + info.name);
                     playerCount++;
                 }
             }

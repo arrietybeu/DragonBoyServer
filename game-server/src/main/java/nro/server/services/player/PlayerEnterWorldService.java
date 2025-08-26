@@ -61,7 +61,7 @@ public final class PlayerEnterWorldService {
 
                     PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
 
-                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, playerId, positionComponent.areaId);
+                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, playerId, positionComponent.getAreaId());
                     if (instance == null) {
                         log.error("No available instance for player: {}", playerId);
                         client.close(
@@ -69,7 +69,7 @@ public final class PlayerEnterWorldService {
                         return;
                     }
 
-                    positionComponent.areaId = instance.getInstanceId();
+                    positionComponent.setAreaId(instance.getInstanceId());
 
                     client.sendPacket(
                             new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill"));

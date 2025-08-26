@@ -307,7 +307,7 @@ public class PlayerDAO {
                     if (position == null)
                         throw new SQLException("Khong load duoc position cua World: " + mapId);
 
-                    entity.edit().add(new PositionComponent(position.mapId(), position.zoneId(), position.x(), position.y()));
+                    entity.edit().add(new PositionComponent(position.mapId(), position.x(), position.y(), position.zoneId()));
                 }
             }
         }

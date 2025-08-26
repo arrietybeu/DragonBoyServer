@@ -28,6 +28,7 @@ public abstract class CmMapChangeBase extends NroClientPacket {
         PositionComponent pos = con.getEntity().getComponent(PositionComponent.class);
         if (pos != null) {
             pos.wantsToChangeMap = true; // Trigger MapChangeSystem
+            System.out.println(" duoc phep qua map");
             pos.isDirty = true; // Process in next tick
         }
     }

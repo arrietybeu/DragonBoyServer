@@ -51,7 +51,7 @@ public class MapChangeSystem extends IteratingSystem {
             this.keepInSafeZone(null, client, pos);
             throw new RuntimeException("Current map is null for entity " + info + " with mapId " + pos.mapId);
         }
-        var currentArea = currentMap.getInstance(pos.areaId);
+        var currentArea = currentMap.getInstance(pos.getAreaId());
         if (currentArea == null)
             throw new RuntimeException("Current area is null for entity " + info + " in map " + pos.mapId);
 
@@ -93,7 +93,7 @@ public class MapChangeSystem extends IteratingSystem {
             return false;
         }
 
-        // xoa entity ra khoi khu cu
+        // xoa entity ra khoi khu  cu
         this.playerExitArea(client, pos, currentArea);
 
         int xNew = waypoint.getGoX();
@@ -103,7 +103,7 @@ public class MapChangeSystem extends IteratingSystem {
         newArea.addEntity(client.getEntity().getId());
 
         pos.mapId = (short) waypoint.getGoMap();
-        pos.areaId = newArea.getInstanceId();
+        pos.setAreaId(newArea.getInstanceId());
         pos.x = (short) xNew;
         pos.y = (short) yNew;
 
@@ -120,9 +120,11 @@ public class MapChangeSystem extends IteratingSystem {
 
     public void playerExitArea(NroConnection client, PositionComponent pos, WorldMapInstance oldArea) {
         if (pos == null || oldArea == null) return;
-        oldArea.removeEntity(client.getPlayerID());
+        if (!oldArea.removeEntity(client.getPlayerID())) {
+            throw new RuntimeException("Can't remove entity " + client.getPlayerID() + " from old area");
+        }
+        log.info("Player with account {} has left the area {} in map {} area SIZE {}.", client.getAccount(), oldArea.getInstanceId(), pos.mapId, oldArea.getPlayerCount());
     }
-
 
     private void keepInSafeZone(Waypoint waypoint, NroConnection con, PositionComponent pos) {
         if (pos == null) return;

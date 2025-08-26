@@ -88,7 +88,7 @@ public class SmNotMap extends NroServerPacket {
             throw new IllegalArgumentException("Map not found for mapId: " + position.mapId);
         }
 
-        var worldMapInstance = map.getWorldMapInstance(position.areaId);
+        var worldMapInstance = map.getWorldMapInstance(position.getAreaId());
 
         this.writeByte(map.getTemplate().getTileMap().width());
         this.writeByte(map.getTemplate().getTileMap().height());

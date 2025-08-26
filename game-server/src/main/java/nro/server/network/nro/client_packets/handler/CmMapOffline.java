@@ -15,4 +15,5 @@ public class CmMapOffline extends CmMapChangeBase {
     public CmMapOffline(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
+
 }

@@ -26,7 +26,7 @@ public class ChatService {
             System.out.println("ChatService.sendChatMessage: " + message);
             // FIXME viet check message ki doan nafy
 
-            AreaService.getInstance().sendPacketForALLPlayerInArea(po.mapId, po.areaId, new SmChatMap(message));
+            AreaService.getInstance().sendPacketForALLPlayerInArea(po.mapId, po.getAreaId(), new SmChatMap(message));
 
         } catch (RuntimeException e) {
             LOGGER.error("Error sending chat message: {}", e.getMessage(), e);

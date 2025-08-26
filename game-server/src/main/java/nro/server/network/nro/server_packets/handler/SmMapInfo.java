@@ -30,7 +30,7 @@ public class SmMapInfo extends NroServerPacket {
         if (map == null) {
             throw new NullPointerException("Map not found for mapId: " + positionComponent.mapId);
         }
-        var worldMapInstance = map.getWorldMapInstance(positionComponent.areaId);
+        var worldMapInstance = map.getWorldMapInstance(positionComponent.getAreaId());
 
         var mapTemplate = map.getTemplate();
         writeByte(map.getId());
@@ -39,7 +39,7 @@ public class SmMapInfo extends NroServerPacket {
         writeByte(mapTemplate.getBgId());
         writeByte(0);
         writeUTF(mapTemplate.getName());
-        writeByte(positionComponent.areaId);
+        writeByte(positionComponent.getAreaId());
 
         PacketSendUtility.writeMapInfo(this, worldMapInstance, positionComponent);
 

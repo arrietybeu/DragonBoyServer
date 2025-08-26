@@ -24,11 +24,11 @@ public class PlayerLeaveWorldService {
         var positionComponent = entity.getComponent(PositionComponent.class);
 
         var world = World.getInstance().getMap(positionComponent.mapId);
-        WorldMapInstance worldMapInstance = world.getWorldMapInstance(positionComponent.areaId);
+        WorldMapInstance worldMapInstance = world.getWorldMapInstance(positionComponent.getAreaId());
 
         if (worldMapInstance == null) {
             log.warn("No world map instance found for map ID {} and area ID {}. Cannot leave world.",
-                    positionComponent.mapId, positionComponent.areaId);
+                    positionComponent.mapId, positionComponent.getAreaId());
             return;
         }
 

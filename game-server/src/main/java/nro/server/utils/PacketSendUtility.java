@@ -55,14 +55,12 @@ public class PacketSendUtility {
         packet.writeByte(0); // Monster extra data
 
         // Write NPC data (currently empty)
-//        packet.writeByte(0); // NPC count
         ImmutableBag<Entity> entities = instance.getEntities();
-//
+
         int npcCount = 0;
         for (int i = 0; i < entities.size(); i++) {
             NpcComponent npcComp = entities.get(i).getComponent(NpcComponent.class);
             if (npcComp != null) {
-                System.out.println("NpcComponent found: " + npcComp.npcId + " mapId: " + mapTemplate.getId());
                 npcCount++;
             }
         }
@@ -77,8 +75,6 @@ public class PacketSendUtility {
                 packet.writeShort(npcPos.y);
                 packet.writeByte(npcComp.npcId);
                 packet.writeShort(npcComp.avatar);
-
-                System.out.println("Writing NPC: " + npcComp.npcId + " at position (" + npcPos.x + ", " + npcPos.y + ") with status " + npcComp.status + " and avatar " + npcComp.avatar);
             }
         }
 
