@@ -1,5 +1,6 @@
 package nro.server.services.player;
 
+import lombok.NoArgsConstructor;
 import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgSubCommand;
 import nro.server.dao.PlayerDAO;
@@ -22,7 +23,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * @author Arriety
  */
-public class PlayerEnterWorldService {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class PlayerEnterWorldService {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerEnterWorldService.class);
 
@@ -66,7 +68,7 @@ public class PlayerEnterWorldService {
                                 new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));
                         return;
                     }
-                    instance.addEntity(playerId);
+
                     positionComponent.areaId = instance.getInstanceId();
 
                     client.sendPacket(
@@ -76,7 +78,7 @@ public class PlayerEnterWorldService {
 
                     client.sendPacket(new SmSpecialSkill());// TODO chua xong
                     client.sendPacket(new SmMeLoadPoint());// DONE
-                     client.sendPacket(new SmTaskInfo()); // FIXME 1 số cái hơi sai
+                    client.sendPacket(new SmTaskInfo()); // FIXME 1 số cái hơi sai
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));// DONE
 
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.INIT_MY_CHARACTER));// FIXME 1 số cái chưa hoàn thiện
@@ -99,7 +101,7 @@ public class PlayerEnterWorldService {
 
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
-
+                    instance.addEntity(entity.getId());
                 } catch (Throwable e) {
                     log.error("Error during enter world of {}", entity, e);
                 } finally {

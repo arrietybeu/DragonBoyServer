@@ -14,6 +14,7 @@ public class PlayerComponent extends Component {
     }
 
     public PlayerComponent(NroConnection conn) {
+        System.out.println("kho chua vai ca lon");
         this.connection = conn;
     }
 

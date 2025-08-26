@@ -15,7 +15,6 @@ public class InfoComponent extends Component {
     public int accountId;
     public String name;
 
-
     public byte gender;
     public boolean isOnline;
     public Instant createdAt;

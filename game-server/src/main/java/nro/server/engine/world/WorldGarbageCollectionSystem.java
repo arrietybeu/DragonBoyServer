@@ -21,7 +21,9 @@ public class WorldGarbageCollectionSystem extends BaseSystem {
     @Override
     protected void processSystem() {
         long now = System.currentTimeMillis();
+
         if (now - lastRunTime < GC_INTERVAL_MS) return;
+
         lastRunTime = now;
 
         for (WorldMap map : World.getInstance().getWorldMaps().values()) {

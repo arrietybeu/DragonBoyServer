@@ -3,6 +3,8 @@ package nro.server;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.managers.GroupManager;
 import lombok.Getter;
+import net.namekdev.entity_tracker.EntityTracker;
+import net.namekdev.entity_tracker.network.EntityTrackerServer;
 import nro.commons.database.DatabaseFactory;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;
@@ -77,16 +79,19 @@ public class GameServer {
 
     private static void intEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
-        builder.with(new GroupManager(), new FashionUpdateSystem(), new MovementSystem(),
-                new MapChangeSystem(), new QuestSystem(), new MoveQuestSystem(), new WorldGarbageCollectionSystem()); // add systems here if needed
+
+        builder.with(
+                new GroupManager(), new FashionUpdateSystem(),
+                new MovementSystem(), new MapChangeSystem(),
+                new QuestSystem(), new MoveQuestSystem(),
+                new WorldGarbageCollectionSystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
-        gameWorld.expandEntityCapacity(100_000);
+//        gameWorld.expandEntityCapacity(1_000_000);
         gameWorld.start();
 
         LOGGER.info("ECS Game World started successfully.");
     }
-
 
     private static void initUtilityServicesAndConfig() {
         Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler());

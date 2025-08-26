@@ -1,3 +1,8 @@
+pluginManagement {
+    plugins {
+        id 'org.jetbrains.kotlin.jvm' version '2.2.0'
+    }
+}
 plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '0.4.0'
 }
@@ -8,3 +13,4 @@ include 'commons', 'game-server'
 //include 'login-server'
 include 'log-server'
 include 'ecs'
+include 'tool-kit'

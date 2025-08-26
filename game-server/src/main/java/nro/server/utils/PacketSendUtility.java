@@ -31,33 +31,6 @@ public class PacketSendUtility {
         if (player.isOnline()) player.connection.sendPacket(packet);
     }
 
-    public static void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet)  throws RuntimeException {
-
-        var area = World.getInstance().getAreaInMap(mapID, areaID);
-
-        if (area == null)
-            throw new RuntimeException("No area found for map ID " + mapID + " and area ID " + areaID);
-
-        var entities = area.getEntities();
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
-
-            if (e == null) continue;
-
-            var playerComponent = e.getComponent(PlayerComponent.class);
-
-            if (playerComponent != null && playerComponent.isOnline()) {
-                var connect = playerComponent.connection;
-                if (connect == null)
-                    throw new RuntimeException("PlayerComponent connection is null for entity ID: " + e.getId());
-
-                if (connect.getState() != NroConnection.State.IN_GAME) continue;
-
-                connect.sendPacket(packet);
-            }
-        }
-    }
-
     public static void writeMapInfo(NroServerPacket packet, WorldMapInstance instance, PositionComponent position) throws IOException {
         // Write player position
         packet.writeShort(position.x);

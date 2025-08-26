@@ -100,7 +100,7 @@ public class MapChangeSystem extends IteratingSystem {
         int yNew = waypoint.getGoY();
 
         // add entity vào area mới
-        newArea.addEntity(client.getPlayerID());
+        newArea.addEntity(client.getEntity().getId());
 
         pos.mapId = (short) waypoint.getGoMap();
         pos.areaId = newArea.getInstanceId();

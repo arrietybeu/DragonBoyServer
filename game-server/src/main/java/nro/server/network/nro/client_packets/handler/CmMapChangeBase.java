@@ -23,9 +23,7 @@ public abstract class CmMapChangeBase extends NroClientPacket {
     @Override
     protected void runImpl() {
         NroConnection con = getConnection();
-        if (con == null || con.getEntity() == null) {
-            return;
-        }
+        if (con == null || con.getEntity() == null) return;
 
         PositionComponent pos = con.getEntity().getComponent(PositionComponent.class);
         if (pos != null) {

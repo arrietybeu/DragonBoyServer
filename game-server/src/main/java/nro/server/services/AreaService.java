@@ -2,10 +2,13 @@ package nro.server.services;
 
 
 import com.artemis.Entity;
-import com.artemis.utils.ImmutableBag;
-import nro.server.model.ecs.component.PositionComponent;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.world.World;
+import nro.server.network.nro.NroConnection;
+import nro.server.network.nro.NroServerPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -13,22 +16,28 @@ import nro.server.model.world.World;
  */
 public class AreaService {
 
-    public void sendInfoAllLiveObjectsTo(Entity entity) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AreaService.class);
 
-        var position = entity.getComponent(PositionComponent.class);
-        var areaInMap = World.getInstance().getAreaInMap(position.mapId, position.areaId);
+    public void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet) throws RuntimeException {
 
-        if (areaInMap == null) {
-            throw new IllegalArgumentException("No area found for map ID " + position.mapId + " and area ID " + position.areaId);
-        }
+        var area = World.getInstance().getAreaInMap(mapID, areaID);
 
-        ImmutableBag<Entity> entities = areaInMap.getEntities();
+        if (area == null)
+            throw new RuntimeException("No area found for map ID " + mapID + " and area ID " + areaID);
+
+        var entities = area.getEntities();
         for (int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);
-            if (e.getId() == entity.getId()) continue; // Skip self
-            PlayerComponent playerComp = e.getComponent(PlayerComponent.class);
-            if (playerComp != null) {
 
+            if (e == null) continue;
+
+            var playerComponent = e.getComponent(PlayerComponent.class);
+
+            if (playerComponent != null && playerComponent.isOnline()) {
+                var connect = playerComponent.connection;
+                if (connect.getState() != NroConnection.State.IN_GAME) continue;
+
+                connect.sendPacket(packet);
             }
         }
     }

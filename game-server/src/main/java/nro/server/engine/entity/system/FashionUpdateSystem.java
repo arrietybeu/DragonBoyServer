@@ -31,7 +31,7 @@ public class FashionUpdateSystem extends IteratingSystem {
 
         if (!inventory.isDirty) return;
         AppearanceComponent appearance = fashionMapper.get(entityId);
-        System.out.println("load system fashion update for entity: " + entityId );
+        System.out.println("load system fashion update for entity: " + entityId);
         // reset
         appearance.head = appearance.body = appearance.leg = appearance.flagBag = appearance.aura = appearance.effSetItem = appearance.idHat = -1;
         appearance.isMonkey = false;
@@ -39,7 +39,7 @@ public class FashionUpdateSystem extends IteratingSystem {
         for (int i = 0; i < inventory.itemsBody.size(); i++) {
             int itemEntityId = inventory.itemsBody.get(i);
 
-            if (itemEntityId == -1) continue; // Ô trống
+            if (itemEntityId == -1) continue; // ô trống
 
             ItemInfoComponent itemInfo = itemInfoMapper.get(itemEntityId);
             if (itemInfo == null) continue;
