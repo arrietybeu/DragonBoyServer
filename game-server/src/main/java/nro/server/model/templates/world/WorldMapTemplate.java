@@ -54,4 +54,27 @@ public class WorldMapTemplate {
         }
         this.npcInfos = npcInfos;
     }
+
+    @Override
+    public String toString() {
+        return "WorldMapTemplate{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", maxArea=" + maxArea +
+                ", maxPlayer=" + maxPlayer +
+                ", planetId=" + planetId +
+                ", tileId=" + tileId +
+                ", isMapDouble=" + isMapDouble +
+                ", bgId=" + bgId +
+                ", bgType=" + bgType +
+                ", typeMap=" + typeMap +
+                ", pixelWidth=" + pixelWidth +
+                ", pixelHeight=" + pixelHeight +
+                ", tileMap=" + tileMap +
+                ", waypoints=" + waypoints.size() +
+                ", bgItems=" + bgItems.size() +
+                ", backgroundEffects=" + backgroundEffects.size() +
+                ", npcInfos=" + npcInfos.size() +
+                '}';
+    }
 }

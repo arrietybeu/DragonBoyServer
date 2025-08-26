@@ -1,24 +1,25 @@
 package nro.server.utils;
 
-import com.artemis.Entity;
-import com.artemis.utils.ImmutableBag;
+import lombok.NoArgsConstructor;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
-import nro.server.model.ecs.component.npc.NpcComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
-import nro.server.network.nro.server_packets.handler.SmChatMap;
 import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
-import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 /**
  * @author arriety
  */
-public class PacketSendUtility {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class PacketSendUtility {
+
+    private static final Logger log = LoggerFactory.getLogger(PacketSendUtility.class);
+
 
     public static void sendMessage(int entityId, String msg) {
         var playerComponent = GameWorld.getInstance().getWorld().getEntity(entityId).getComponent(PlayerComponent.class);
@@ -55,26 +56,17 @@ public class PacketSendUtility {
         packet.writeByte(0); // Monster extra data
 
         // Write NPC data (currently empty)
-        ImmutableBag<Entity> entities = instance.getEntities();
-
-        int npcCount = 0;
-        for (int i = 0; i < entities.size(); i++) {
-            NpcComponent npcComp = entities.get(i).getComponent(NpcComponent.class);
-            if (npcComp != null) {
-                npcCount++;
-            }
-        }
-        packet.writeByte(npcCount);
-        for (int i = 0; i < npcCount; i++) {
-            Entity entity = entities.get(i);
-            NpcComponent npcComp = entity.getComponent(NpcComponent.class);
-            if (npcComp != null) {
-                PositionComponent npcPos = entity.getComponent(PositionComponent.class);
-                packet.writeByte(npcComp.status);
-                packet.writeShort(npcPos.x);
-                packet.writeShort(npcPos.y);
-                packet.writeByte(npcComp.npcId);
-                packet.writeShort(npcComp.avatar);
+        var npcs = mapTemplate.getNpcInfos();
+        packet.writeByte(npcs.size());
+        for (var npc : npcs) {
+            if (npc != null) {
+                packet.writeByte(npc.status());
+                packet.writeShort(npc.x());
+                packet.writeShort(npc.y());
+                packet.writeByte(npc.npcId());
+                packet.writeShort(npc.avatar());
+            } else {
+                log.warn("NPC is null in Map {}", mapTemplate);
             }
         }
 

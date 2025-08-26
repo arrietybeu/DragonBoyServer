@@ -25,4 +25,5 @@ public final class PlayerEntityHelper {
     public static <T extends Component> T getComponent(int entityId, Class<T> componentClass) {
         return getEntity(entityId).getComponent(componentClass);
     }
+
 }

@@ -9,8 +9,6 @@ import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.templates.world.TileMap;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.model.templates.world.WorldMapTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,8 +20,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Getter
 public class WorldMap {
 
-    private static final Logger log = LoggerFactory.getLogger(WorldMap.class);
-
     private final int id;
     private final String name;
     private final WorldMapTemplate template;
@@ -33,7 +29,6 @@ public class WorldMap {
      */
     private final List<WorldMapInstance> areas = new ArrayList<>();
     private final Map<Integer, Byte> ownerToInstance = new ConcurrentHashMap<>();
-
     private final ReentrantReadWriteLock areasLock = new ReentrantReadWriteLock();
 
     private final int[] types;
@@ -67,9 +62,7 @@ public class WorldMap {
     public WorldMapInstance getArea(byte instanceId) {
         areasLock.readLock().lock();
         try {
-            if (instanceId < 0 || instanceId >= areas.size()) {
-                return null;
-            }
+            if (instanceId < 0 || instanceId >= areas.size()) return null;
             return areas.get(instanceId);
         } finally {
             areasLock.readLock().unlock();
@@ -77,6 +70,7 @@ public class WorldMap {
     }
 
     /**
+     * WARN: chỉ sửa dụng khi get areas thôi không thể sửa đổi dữ liệu trong areas
      * Dùng getAllAreasSafe() cho mọi thao tác chỉ đọc, an toàn và đơn giản.
      **/
     public List<WorldMapInstance> getAllAreasSafe() {
@@ -89,9 +83,9 @@ public class WorldMap {
     }
 
     /**
-     * Dùng khi cần đọc, chỉnh sửa
+     * WARN: Dùng khi cần, lấy tất cả area để thao tác, có thể sửa đổi dữ liệu trong areas
      *
-     * @return
+     * @return list areas (có thể null)
      */
     public List<WorldMapInstance> getAllAreas() {
         areasLock.readLock().lock();
@@ -103,7 +97,7 @@ public class WorldMap {
     }
 
     /**
-     * Thread‑safe write
+     * Warning: chỉ sử dụng khi tạo mới area, không được gọi tùy tiện
      **/
     public void addArea(WorldMapInstance instance) {
         areasLock.writeLock().lock();
@@ -168,7 +162,6 @@ public class WorldMap {
         byte nextId = generateNextInstanceId();
         WorldMapInstance instance = new WorldMapInstance(this, nextId, ownerId);
         GameWorld.getInstance().getWorld().inject(instance);
-        instance.initNpc();
         addArea(instance);
         ownerToInstance.put(ownerId, nextId);
         return instance;

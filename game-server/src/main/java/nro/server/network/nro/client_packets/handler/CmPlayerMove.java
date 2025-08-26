@@ -15,9 +15,8 @@ import nro.server.network.nro.client_packets.AClientPacketHandler;
 @AClientPacketHandler(command = ConstsCmd.PLAYER_MOVE, validStates = {NroConnection.State.IN_GAME})
 public class CmPlayerMove extends NroClientPacket {
 
-    private byte isOnGround;
-    private short newX;
-    private short newY;
+    private byte pIsOnGround;
+    private short pNewX, pNewY;
 
     public CmPlayerMove(int command, Set<State> validStates) {
         super(command, validStates);
@@ -25,25 +24,26 @@ public class CmPlayerMove extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-        var pos = getConnection().getEntity().getComponent(PositionComponent.class);
-        this.isOnGround = this.readByte();
-        this.newX = this.readShort();
-        this.newY = pos.y;
-        if(this.getRemainingBytes() > 0) {
-            this.newY = this.readShort();
-        }
+        pIsOnGround = this.readByte();
+        pNewX = this.readShort();
+        pNewY = getConnection().getEntity()
+                .getComponent(PositionComponent.class).y;
+        if (this.getRemainingBytes() > 0) pNewY = this.readShort();
     }
 
     @Override
     protected void runImpl() {
-        NroConnection con = getConnection();
+        var con = getConnection();
         if (con == null || con.getEntity() == null) return;
+        final byte isGround = pIsOnGround;
+        final short nx = pNewX, ny = pNewY;
+
         var pos = con.getEntity().getComponent(PositionComponent.class);
-        if (pos != null) {
-            pos.x = newX;
-            pos.y = newY;
-            pos.isOnGround = this.isOnGround;
-            pos.isDirty = true;
-        }
+        if (pos == null) return;
+        pos.isOnGroundNew = isGround;
+        pos.newX = nx;
+        pos.newY = ny;
+        pos.isDirtyMove = true;
     }
+
 }

@@ -22,6 +22,5 @@ public class SmBackgroundItemVersion extends NroServerPacket {
 
         this.writeShort(data.length);
         this.writeBytes(data);
-
     }
 }

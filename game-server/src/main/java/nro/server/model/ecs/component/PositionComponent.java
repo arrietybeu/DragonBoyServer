@@ -3,7 +3,6 @@ package nro.server.model.ecs.component;
 
 import com.artemis.Component;
 import lombok.Getter;
-import nro.server.utils.Utils;
 
 /**
  * @author Arriety
@@ -15,12 +14,11 @@ public class PositionComponent extends Component {
     @Getter
     private int areaId;
 
-    public short x;
-    public short y;
+    public short x, y, newX, newY;
 
     public short teleport = 0;
-    public boolean isDirty;
-    public byte isOnGround;
+    public boolean isDirtyMove;
+    public byte isOnGround, isOnGroundNew;
     public boolean wantsToChangeMap;
 
     public PositionComponent() {
@@ -34,10 +32,8 @@ public class PositionComponent extends Component {
     }
 
     public void setAreaId(int areaId) {
-        if (this.areaId != areaId) {
-            this.areaId = areaId;
-        }
-        Utils.logCall();
+        if (this.areaId != areaId) this.areaId = areaId;
+//        Utils.logCall();
     }
 
 }

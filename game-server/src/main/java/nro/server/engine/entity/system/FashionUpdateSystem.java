@@ -10,11 +10,15 @@ import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.model.templates.item.ItemTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Arriety
  */
 public class FashionUpdateSystem extends IteratingSystem {
+
+    private static final Logger log = LoggerFactory.getLogger(FashionUpdateSystem.class);
 
     private ComponentMapper<InventoryComponent> inventoryMapper;
     private ComponentMapper<AppearanceComponent> fashionMapper;
@@ -22,19 +26,37 @@ public class FashionUpdateSystem extends IteratingSystem {
     private ComponentMapper<QuestInstanceComponent> taskMapper;
 
     public FashionUpdateSystem() {
-        super(Aspect.all(InventoryComponent.class, AppearanceComponent.class));
+        super(Aspect.all(
+                InventoryComponent.class,
+                AppearanceComponent.class
+//                ItemInfoComponent.class,
+//                QuestInstanceComponent.class
+        ));
     }
 
     @Override
     protected void process(int entityId) {
+        try {
+            handler(entityId);
+        } catch (Throwable thirow) {
+            InventoryComponent inv = inventoryMapper.get(entityId);
+            if (inv != null) inv.isDirty = false;
+            log.error("FashionUpdateSystem error for entityId={}", entityId, thirow);
+        }
+    }
+
+    private void handler(int entityId) {
         InventoryComponent inventory = inventoryMapper.get(entityId);
+        AppearanceComponent appearance = fashionMapper.get(entityId);
+        QuestInstanceComponent task = taskMapper.get(entityId);
+
+        if (inventory == null || appearance == null || task == null) return;
 
         if (!inventory.isDirty) return;
-        AppearanceComponent appearance = fashionMapper.get(entityId);
-        System.out.println("load system fashion update for entity: " + entityId);
-        // reset
-        appearance.head = appearance.body = appearance.leg = appearance.flagBag = appearance.aura = appearance.effSetItem = appearance.idHat = -1;
-        appearance.isMonkey = false;
+
+        log.info("load system fashion update for entity: {}", entityId);
+        // khi người người chơi thay đồ, dùng skill thay đổi hình thể thì sẽ reset lại và load lại fashion
+        this.resetFashion(appearance);
 
         for (int i = 0; i < inventory.itemsBody.size(); i++) {
             int itemEntityId = inventory.itemsBody.get(i);
@@ -56,7 +78,6 @@ public class FashionUpdateSystem extends IteratingSystem {
                 }
                 case ConstItem.TYPE_AO -> {
                     if (appearance.body == -1) appearance.body = template.body();
-                    System.out.println("entity id: " + entityId + " cho cai ao : " + appearance.body);
                 }
                 case ConstItem.TYPE_QUAN -> {
                     if (appearance.leg == -1) appearance.leg = template.leg();
@@ -69,8 +90,9 @@ public class FashionUpdateSystem extends IteratingSystem {
             }
         }
 
-        QuestInstanceComponent task = taskMapper.get(entityId);
-        if (appearance.flagBag == -1 && task != null && task.questId == 3 && task.currentStep == 2) {
+
+        // hiển thị em bé sau lưng khi đến nhiệm vụ 3-2
+        if (appearance.flagBag == -1 && task.questId == 3 && task.currentStep == 2) {
             appearance.flagBag = 28;
         }
 
@@ -78,5 +100,16 @@ public class FashionUpdateSystem extends IteratingSystem {
                 ", flagBag: " + appearance.flagBag + ", aura: " + appearance.aura + ", effSetItem: " + appearance.effSetItem +
                 ", idHat: " + appearance.idHat);
         inventory.isDirty = false;
+    }
+
+    private void resetFashion(AppearanceComponent appearance) {
+        appearance.head = -1;
+        appearance.body = -1;
+        appearance.leg = -1;
+        appearance.flagBag = -1;
+        appearance.aura = -1;
+        appearance.effSetItem = -1;
+        appearance.idHat = -1;
+        appearance.isMonkey = false;
     }
 }

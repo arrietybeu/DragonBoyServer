@@ -3,11 +3,9 @@ package nro.server.model.world;
 import lombok.Getter;
 import nro.server.consts.ConstMap;
 import nro.server.data_holders.data.MapData;
-import nro.server.engine.entity.GameWorld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,26 +20,12 @@ public class World {
     private final Map<Short, WorldMap> worldMaps = new HashMap<>();
 
     public World() {
-        var ecsWorld = GameWorld.getInstance().getWorld();
-        var tempMapList = new ArrayList<WorldMap>();
-
         MapData.getInstance().forEachParalllel(template -> {
             WorldMap wm = new WorldMap(template);
-            synchronized (tempMapList) {
-                tempMapList.add(wm);
+            synchronized (worldMaps) {
+                worldMaps.put(wm.getTemplate().getId(), wm);
             }
         });
-
-        for (WorldMap wm : tempMapList) {
-            for (WorldMapInstance instance : wm.getAllAreasSafe()) {
-                if (instance != null && instance.getParent().getTemplate().getNpcInfos() != null && !instance.getParent().getTemplate().getNpcInfos().isEmpty()) {
-                    ecsWorld.inject(instance);
-                    instance.initNpc();
-                }
-            }
-            worldMaps.put(wm.getTemplate().getId(), wm);
-        }
-
         log.info("World: {} world maps created.", worldMaps.size());
     }
 

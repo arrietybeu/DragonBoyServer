@@ -39,7 +39,6 @@ public class Utils {
 
     public static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{5,15}$");
 
-
     public static void logCall() {
         StackTraceElement[] stackTraceElements = new Throwable().getStackTrace();
         for (int i = stackTraceElements.length - 1; i >= 0; --i) {

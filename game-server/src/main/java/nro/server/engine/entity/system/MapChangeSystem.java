@@ -6,7 +6,6 @@ import com.artemis.systems.IteratingSystem;
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;
@@ -21,12 +20,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class MapChangeSystem extends IteratingSystem {
+public final class MapChangeSystem extends IteratingSystem {
 
     private static final Logger log = LoggerFactory.getLogger(MapChangeSystem.class);
 
     private ComponentMapper<PositionComponent> posMapper;
-    private ComponentMapper<QuestInstanceComponent> taskMapper;
     private ComponentMapper<InfoComponent> infoMapper;
     private ComponentMapper<PlayerComponent> clients;
 
@@ -36,6 +34,25 @@ public class MapChangeSystem extends IteratingSystem {
 
     @Override
     protected void process(int entityId) {
+        try {
+            handler(entityId);
+        } catch (Throwable t) {
+            PositionComponent pos = posMapper.get(entityId);
+            PlayerComponent pc = clients.get(entityId);
+            if (pos != null) pos.wantsToChangeMap = false;
+            if (pc != null && pc.connection != null) {
+                pc.connection.sendPacket(new SmChatTheGioi("Có lỗi khi đổi map, đã đưa bạn về khu an toàn."));
+                if (pos != null) {
+                    keepInSafeZone(null, pc.connection, pos);
+                }
+            }
+            String name = infoMapper.has(entityId) ? infoMapper.get(entityId).name : "unknown";
+            Short mapId = (pos != null) ? pos.mapId : null;
+            log.error("MapChangeSystem error entityId={} name={} mapId={}", entityId, name, mapId, t);
+        }
+    }
+
+    private void handler(int entityId) {
         PositionComponent pos = posMapper.get(entityId);
         InfoComponent info = infoMapper.get(entityId);
         PlayerComponent player = clients.get(entityId);
@@ -116,7 +133,6 @@ public class MapChangeSystem extends IteratingSystem {
         client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
         client.sendPacket(new SmMapInfo(pos));
     }
-
 
     public void playerExitArea(NroConnection client, PositionComponent pos, WorldMapInstance oldArea) {
         if (pos == null || oldArea == null) return;
