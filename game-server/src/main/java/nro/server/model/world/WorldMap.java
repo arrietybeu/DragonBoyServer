@@ -1,11 +1,15 @@
 package nro.server.model.world;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import nro.server.consts.ConstMap;
 import nro.server.data_holders.data.MapData;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.boss.BossComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
+import nro.server.model.npc.Npc;
+import nro.server.model.npc.NpcFactory;
+import nro.server.model.templates.entity.NpcTemplate;
 import nro.server.model.templates.world.TileMap;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.model.templates.world.WorldMapTemplate;
@@ -17,6 +21,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * @author Arriety
  */
+@Slf4j
 @Getter
 public class WorldMap {
 
@@ -30,6 +35,8 @@ public class WorldMap {
     private final List<WorldMapInstance> areas = new ArrayList<>();
     private final Map<Integer, Byte> ownerToInstance = new ConcurrentHashMap<>();
     private final ReentrantReadWriteLock areasLock = new ReentrantReadWriteLock();
+
+    private final List<Npc> npcs = new ArrayList<>();
 
     private final int[] types;
     private final TileMap tileMap;
@@ -45,8 +52,10 @@ public class WorldMap {
         this.pixelHeight = tileMap.height() * SIZE;
         this.pixelWidth = tileMap.width() * SIZE;
         this.types = new int[tileMap.tiles().length];
+
         loadTileTypes();
 
+        initNpcMap(template.getNpcInfos());
         if (template.getTypeMap() == ConstMap.MAP_TYPE_NORMAL) {
             for (byte i = 0; i < template.getMaxArea(); i++) {
                 addArea(new WorldMapInstance(this, i));
@@ -54,6 +63,16 @@ public class WorldMap {
 //        } else {
 //            addArea(new WorldMapInstance(this, (byte) 0));
         }
+    }
+
+    private void initNpcMap(Collection<NpcTemplate.NpcInfo> npcInfos) {
+        for (var npcInfo : npcInfos) {
+            var npc = NpcFactory.createNpc(npcInfo.template().id(), npcInfo.status(), this.id, npcInfo.x(), npcInfo.y(), npcInfo.avatar());
+            if (npc == null) continue;
+            npcs.add(npc);
+        }
+
+//        log.info(" Loaded {} NPCs for map {}", npcs.size(), id);
     }
 
     /**
@@ -246,9 +265,8 @@ public class WorldMap {
         if (entity.getComponent(PlayerComponent.class) != null) {
             return switch (typeMap) {
                 case ConstMap.MAP_OFFLINE -> map.getOrCreateUniqueInstance(playerId);
-                case ConstMap.MAP_TYPE_NORMAL -> (areaId >= 0)
-                        ? map.getSharedInstance(areaId)
-                        : map.getRandomSharedInstance();
+                case ConstMap.MAP_TYPE_NORMAL ->
+                        (areaId >= 0) ? map.getSharedInstance(areaId) : map.getRandomSharedInstance();
                 case ConstMap.MAP_PHO_BAN -> map.getOrCreateUniqueInstance(playerId);
                 default -> throw new IllegalStateException("Unknown typeMap: " + typeMap);
             };
@@ -267,8 +285,7 @@ public class WorldMap {
 
                 for (var list : sub.values()) {
                     for (Waypoint wp : list) {
-                        if (x >= wp.getMinX() - delta && x <= wp.getMaxX() + delta
-                                && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                        if (x >= wp.getMinX() - delta && x <= wp.getMaxX() + delta && y >= wp.getMinY() && y <= wp.getMaxY()) {
                             return wp;
                         }
                     }
@@ -277,8 +294,7 @@ public class WorldMap {
                 var entry = template.getWaypointMap().floorEntry(x);
                 if (entry != null) {
                     for (Waypoint wp : entry.getValue()) {
-                        if (x >= wp.getMinX() && x <= wp.getMaxX()
-                                && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                        if (x >= wp.getMinX() && x <= wp.getMaxX() && y >= wp.getMinY() && y <= wp.getMaxY()) {
                             return wp;
                         }
                     }
@@ -346,15 +362,6 @@ public class WorldMap {
 
     @Override
     public String toString() {
-        return "WorldMap{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", template=" + template +
-                ", areas=" + areas.size() +
-                ", ownerToInstance=" + ownerToInstance.size() +
-                ", types=" + Arrays.toString(types) +
-                ", pixelWidth=" + pixelWidth +
-                ", pixelHeight=" + pixelHeight +
-                '}';
+        return "WorldMap{" + "id=" + id + ", name='" + name + '\'' + ", template=" + template + ", areas=" + areas.size() + ", ownerToInstance=" + ownerToInstance.size() + ", types=" + Arrays.toString(types) + ", pixelWidth=" + pixelWidth + ", pixelHeight=" + pixelHeight + '}';
     }
 }

@@ -60,8 +60,6 @@ public final class MapChangeSystem extends IteratingSystem {
 
         if (!pos.wantsToChangeMap) return;
 
-        log.info("Entity {} requesting map change x {} y {} map id {}", entityId + " (" + info.name + ")", pos.x, pos.y, pos.mapId);
-
         var currentMap = World.getInstance().getMap(pos.mapId);
 
         if (currentMap == null) {
@@ -88,7 +86,6 @@ public final class MapChangeSystem extends IteratingSystem {
             return;
         }
 
-        log.info("player wants to change map: {} to mapId: {} at areaId: {}", info.name, waypoint.getGoMap(), newArea.getInstanceId());
 
         if (!this.transferEntity(client, waypoint, pos, currentArea, newArea)) {
             return;
@@ -104,7 +101,6 @@ public final class MapChangeSystem extends IteratingSystem {
             return false;
         }
 
-        log.info(" zone new sẽ vào : {} map tempalte: {}", newArea.getInstanceId(), newArea.getParent().getTemplate());
         if (newArea.isFullPlayer()) {
             this.keepInSafeZone(waypoint, client, pos);
             client.sendPacket(new SmChatTheGioi("Khu vực này đã đầy người chơi, bạn không thể đi đến đây!"));
@@ -137,10 +133,10 @@ public final class MapChangeSystem extends IteratingSystem {
 
     public void playerExitArea(NroConnection client, PositionComponent pos, WorldMapInstance oldArea) {
         if (pos == null || oldArea == null) return;
-        if (!oldArea.removeEntity(client.getPlayerID())) {
+        if (!oldArea.removeEntity(client.getEntity().getId())) {
             throw new RuntimeException("Can't remove entity " + client.getPlayerID() + " from old area");
         }
-        log.info("Player with account {} has left the area {} in map {} area SIZE {}.", client.getAccount(), oldArea.getInstanceId(), pos.mapId, oldArea.getEntityCount());
+//        log.info("Player with account {} has left the area {} in map {} area SIZE {}.", client.getAccount(), oldArea.getInstanceId(), pos.mapId, oldArea.getEntityCount());
     }
 
     private void keepInSafeZone(Waypoint waypoint, NroConnection con, PositionComponent pos) {

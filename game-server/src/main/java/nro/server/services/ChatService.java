@@ -1,5 +1,6 @@
 package nro.server.services;
 
+import lombok.NoArgsConstructor;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.network.nro.server_packets.handler.SmChatMap;
 import org.slf4j.Logger;
@@ -8,13 +9,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class ChatService {
+
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class ChatService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatService.class);
-
-    private ChatService() {
-        throw new AssertionError();
-    }
 
     public static void sendChatMessage(PositionComponent po, String message) throws RuntimeException {
         try {

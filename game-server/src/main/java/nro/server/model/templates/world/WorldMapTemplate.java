@@ -25,6 +25,7 @@ public class WorldMapTemplate {
     private final NavigableMap<Integer, List<Waypoint>> waypointMap;
     private final List<BgItem> bgItems;
     private final List<BackgroundEffect> backgroundEffects;
+
     private final List<NpcTemplate.NpcInfo> npcInfos;
     public int[] types;
 

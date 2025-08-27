@@ -25,6 +25,7 @@ public class InventoryDAO {
     // FIXME WARNING: Class này chưa hoàn thiện logic id item template với id item entity đang sai
 
     private static final Logger log = LoggerFactory.getLogger(InventoryDAO.class);
+
     private static final String SELECT_QUERY = """
             SELECT id, template_id, quantity, options, row_index, creator_id FROM `player_inventory` WHERE `player_id`= ? AND `location`= ? ORDER BY `row_index` ASC
             """;
@@ -120,7 +121,6 @@ public class InventoryDAO {
                 ", Box items: " + playerInventory.itemsBox.size());
         playerInventory.isDirty = true; // Mark inventory as dirty after loading
 
-        System.out.println("Inventory được phép loadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         GameWorld.getInstance().getWorld().process();
     }
 

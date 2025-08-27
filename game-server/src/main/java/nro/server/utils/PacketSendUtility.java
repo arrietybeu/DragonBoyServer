@@ -32,13 +32,13 @@ public final class PacketSendUtility {
         if (player.isOnline()) player.connection.sendPacket(packet);
     }
 
-    public static void writeMapInfo(NroServerPacket packet, WorldMapInstance instance, PositionComponent position) throws IOException {
+    public static void writeMapInfo(NroServerPacket packet, WorldMapInstance zone, PositionComponent position) throws IOException {
         // Write player position
         packet.writeShort(position.x);
         packet.writeShort(position.y);
 
         // Write waypoints
-        var mapTemplate = instance.getParent().getTemplate();
+        var mapTemplate = zone.getParent().getTemplate();
         var wayPoints = mapTemplate.getWaypoints();
         packet.writeByte(wayPoints.size());
         for (var wayPoint : wayPoints) {
@@ -56,15 +56,15 @@ public final class PacketSendUtility {
         packet.writeByte(0); // Monster extra data
 
         // Write NPC data (currently empty)
-        var npcs = mapTemplate.getNpcInfos();
+        var npcs = zone.getParent().getNpcs();
         packet.writeByte(npcs.size());
         for (var npc : npcs) {
             if (npc != null) {
                 packet.writeByte(npc.status());
                 packet.writeShort(npc.x());
                 packet.writeShort(npc.y());
-                packet.writeByte(npc.npcId());
-                packet.writeShort(npc.avatar());
+                packet.writeByte(npc.id());
+                packet.writeShort(npc.avatarId());
             } else {
                 log.warn("NPC is null in Map {}", mapTemplate);
             }

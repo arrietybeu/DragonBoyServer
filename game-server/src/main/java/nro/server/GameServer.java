@@ -13,6 +13,7 @@ import nro.commons.utils.concurrent.UncaughtExceptionHandler;
 import nro.server.configs.Config;
 import nro.server.configs.main.ConfigServer;
 import nro.server.configs.main.PacketConfig;
+import nro.server.configs.main.PathPropeties;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
@@ -20,6 +21,7 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.engine.quest.system.MoveQuestSystem;
 import nro.server.engine.quest.system.QuestSystem;
 import nro.server.engine.world.WorldGarbageCollectionSystem;
+import nro.server.model.npc.NpcFactory;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
@@ -99,6 +101,8 @@ public class GameServer {
 
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
+
+        NpcFactory.init(PathPropeties.PATH_NPCS);
 
         //noinspection ResultOfMethodCallIgnored
         ThreadPoolManager.getInstance();
