@@ -15,6 +15,7 @@ public abstract class Npc {
     private final int x;
     private final int y;
     private final int avatarId;
+    private boolean isHide = false;
 
     public Npc(int id, int status, int mapID, int x, int y, int avatarId) {
         this.id = id;
@@ -55,6 +56,10 @@ public abstract class Npc {
 
     public int avatarId() {
         return avatarId;
+    }
+
+    public boolean isHide() {
+        return isHide;
     }
 
     @Override

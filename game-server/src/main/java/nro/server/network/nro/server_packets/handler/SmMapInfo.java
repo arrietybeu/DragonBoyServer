@@ -5,8 +5,8 @@ import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
+import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
-import nro.server.utils.PacketSendUtility;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMap;
 
@@ -41,7 +41,7 @@ public class SmMapInfo extends NroServerPacket {
         writeUTF(mapTemplate.getName());
         writeByte(positionComponent.getAreaId());
 
-        PacketSendUtility.writeMapInfo(this, worldMapInstance, positionComponent);
+        PacketHelper.writeMapInfo(this, worldMapInstance, positionComponent);
 
         writeByte(mapTemplate.getIsMapDouble());
     }

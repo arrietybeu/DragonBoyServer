@@ -1,6 +1,7 @@
 package nro.server.services;
 
 import lombok.NoArgsConstructor;
+import nro.commons.utils.Rnd;
 import nro.server.data_holders.data.ItemData;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class ChatService {
-
+//
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatService.class);
 
     public static void sendChatMessage(NroConnection client, PositionComponent po, String message) throws RuntimeException {
@@ -48,6 +49,7 @@ public final class ChatService {
     }
 
     private static void chatVIP(NroConnection client, String message) {
+
         switch (message) {
             case "inventory" -> {
 
@@ -67,6 +69,14 @@ public final class ChatService {
                 client.sendPacket(new SmDialogMessage(sb.toString()));
 
             }
+        }
+    }
+
+    private static long getNumber(String text) {
+        try {
+            return Long.parseLong(text.substring(2).trim());
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 

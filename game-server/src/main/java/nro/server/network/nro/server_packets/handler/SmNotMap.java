@@ -7,8 +7,8 @@ import nro.server.data_holders.data.*;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
+import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
-import nro.server.utils.PacketSendUtility;
 import nro.server.model.world.World;
 
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class SmNotMap extends NroServerPacket {
             this.writeByte(map.getTileMap().tiles()[i]);
         }
 
-        PacketSendUtility.writeMapInfo(this, worldMapInstance, position);
+        PacketHelper.writeMapInfo(this, worldMapInstance, position);
 
         writeByte(map.getTemplate().getIsMapDouble());
 

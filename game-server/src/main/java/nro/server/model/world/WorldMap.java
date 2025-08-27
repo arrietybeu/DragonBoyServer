@@ -306,6 +306,15 @@ public class WorldMap {
         return null;
     }
 
+    public Npc getNpcById(int npcId) {
+        for (Npc npc : npcs) {
+            if (npc.id() == npcId) {
+                return npc;
+            }
+        }
+        return null;
+    }
+
     private void loadTileTypes() {
         int tileId = template.getTileId() - 1;
         if (tileId < 0 || tileId >= MapData.getInstance().tileIndex.length) return;

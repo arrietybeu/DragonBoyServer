@@ -36,7 +36,7 @@ public abstract class BaseServerPacket extends BasePacket {
      *
      * @param value
      */
-    protected final void writeInt(int value) {
+    public final void writeInt(int value) {
         byteBuffer.putInt(value);
     }
 

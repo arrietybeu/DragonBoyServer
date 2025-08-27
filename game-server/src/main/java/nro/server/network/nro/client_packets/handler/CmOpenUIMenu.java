@@ -5,6 +5,7 @@ import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.PacketHelper;
+import nro.server.services.NpcService;
 
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class CmOpenUIMenu extends NroClientPacket {
     protected void readImpl() {
         var npcId = this.readShort();
         System.out.println("npc id: " + npcId);
-        getConnection().sendPacket(PacketHelper.empty(-99));
+        NpcService.getInstance().openMenuNpc(getConnection(), npcId);
     }
 
     @Override

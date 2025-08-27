@@ -10,11 +10,13 @@ import nro.server.data_holders.data.ItemData;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
+import nro.server.model.ecs.component.item.ItemStatsComponent;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
+import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
 import nro.server.utils.Utils;
 
@@ -119,15 +121,13 @@ public class SmSubCommand extends NroServerPacket {
         writeInt(currencyComponent.gem);
 
         // ============ Send Equipment To Body ============
-        sendInventoryForPlayer(inventoryComponent.itemsBody);
+        PacketHelper.sendInventoryForPlayer(this, inventoryComponent.itemsBody);
 
         // ============ Send Equipment To Bag ============
-        sendInventoryForPlayer(inventoryComponent.itemsBag);
+        PacketHelper.sendInventoryForPlayer(this, inventoryComponent.itemsBag);
 
         // ============ Send Equipment To Box ============
-        sendInventoryForPlayer(inventoryComponent.itemsBox);
-
-        System.out.println("SIZE BODY : " + inventoryComponent.itemsBody.size() + " | SIZE BAG : " + inventoryComponent.itemsBag.size() + " | SIZE BOX : " + inventoryComponent.itemsBox.size());
+        PacketHelper.sendInventoryForPlayer(this, inventoryComponent.itemsBox);
 
         // ============ Send Data Item Head ============
         writeBytes(ItemData.getInstance().getDataItemHead());
@@ -179,55 +179,6 @@ public class SmSubCommand extends NroServerPacket {
         writeShort(buff.eff5BuffMp);
         writeByte(0);
     }
-
-    //    public void sendInventoryForPlayer(DataOutputStream data, List<Item> items) throws IOException {
-//        data.writeByte(items.size());
-//        for (Item item : items) {
-//
-//            if (item.getTemplate() == null) {
-//                data.writeShort(-1);
-//                continue;
-//            }
-//
-//            data.writeShort(item.getTemplate().id());
-//            data.writeInt(item.getQuantity());
-//            data.writeUTF("");
-//            data.writeUTF("");
-//            item.writeDataOptions(data);
-//        }
-//    }
-//
-    private void sendInventoryForPlayer(List<Integer> listItems) {
-        writeByte(listItems.size());
-        for (var item : listItems) {
-            if (item == -1) {
-                writeShort(-1);
-                continue;
-            }
-
-            var world = GameWorld.getInstance().getWorld().getEntity(item);
-
-            System.out.println("ID : " + item + " | World : " + world.toString());
-
-            var itemInfo = world.getComponent(ItemInfoComponent.class);
-
-            writeShort(itemInfo.templateId);
-
-            writeInt(itemInfo.quantity);
-            System.out.println("ITEM ENTITY ID : " + item.shortValue());
-            System.out.println("Send item to player: " + itemInfo );
-
-            this.writeUTF("");
-            this.writeUTF("");
-
-//            item.writeDataOptions(data);
-
-            this.writeByte(1);
-            this.writeShort(73);
-            this.writeInt(0);
-        }
-    }
-
 
     private void sendPlayerBirdFrames(int gender) {
         short[] frames = Utils.getPlayerBirdFrames(gender);

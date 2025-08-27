@@ -43,7 +43,6 @@ public class NroClientPacketFactory {
         if (info == null || !info.isValid(client.getState())) {
             log.warn("Unknown or invalid packet command: {} state: {}", command, client.getState());
             // TODO send msg notification to client
-
             client.sendPacket(new SmDialogMessage("Opcode không hợp lệ: " + command));
             return null;
         }
