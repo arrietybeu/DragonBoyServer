@@ -4,29 +4,28 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
-import nro.server.network.nro.server_packets.PacketHelper;
+import nro.server.network.nro.server_packets.handler.SmDialogMessage;
 
 import java.util.Set;
 
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.OPEN_UI_MENU, validStates = {NroConnection.State.IN_GAME})
-public class CmOpenUIMenu extends NroClientPacket {
 
-    public CmOpenUIMenu(int command, Set<NroConnection.State> validStates) {
+@AClientPacketHandler(command = ConstsCmd.LOGIN2, validStates = {NroConnection.State.CONNECTED})
+public class CmLogin2 extends NroClientPacket {
+
+    // TODO chưa làm chức này
+    public CmLogin2(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
 
     @Override
     protected void readImpl() {
-        var npcId = this.readShort();
-        System.out.println("npc id: " + npcId);
-        getConnection().sendPacket(PacketHelper.empty(-99));
+        getConnection().sendPacket(new SmDialogMessage("deo co gi car"));
     }
 
     @Override
     protected void runImpl() {
     }
-
 }

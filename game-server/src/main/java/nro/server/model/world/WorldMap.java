@@ -264,6 +264,7 @@ public class WorldMap {
             if (id == 46) {
                 int delta = 1000;
                 var sub = template.getWaypointMap().subMap(x - delta, true, x + delta, true);
+
                 for (var list : sub.values()) {
                     for (Waypoint wp : list) {
                         if (x >= wp.getMinX() - delta && x <= wp.getMaxX() + delta

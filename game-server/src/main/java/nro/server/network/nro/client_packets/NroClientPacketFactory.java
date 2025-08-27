@@ -2,6 +2,7 @@ package nro.server.network.nro.client_packets;
 
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroClientPacket;
+import nro.server.network.nro.server_packets.handler.SmDialogMessage;
 import nro.server.network.nro.server_packets.handler.SmLoginFail;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class NroClientPacketFactory {
             log.warn("Unknown or invalid packet command: {} state: {}", command, client.getState());
             // TODO send msg notification to client
 
+            client.sendPacket(new SmDialogMessage("Opcode không hợp lệ: " + command));
             return null;
         }
         try {

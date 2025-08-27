@@ -241,6 +241,8 @@ public class PlayerDAO {
         edit.add(new AppearanceComponent());
         edit.add(new StateComponent());
         edit.add(new BuffComponent());
+
+        // cai nay luon o cuoi cung
         edit.add(new FusionComponent());
 
         try (Connection conn = DatabaseFactory.getConnection()) {
@@ -249,8 +251,10 @@ public class PlayerDAO {
             loadPlayerStatsAndHealth(conn, playerEntity, playerId);
             loadPlayerCurrencies(conn, playerEntity, playerId);
             loadPlayerSkills(conn, playerEntity, playerId);
-            InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
             loadPlayerTask(conn, playerEntity, playerId);
+
+            // cai nay load cuoi cung
+            InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
             log.info("Successfully loaded entity for player ID: {}", playerId);
             return playerEntity;
         } catch (Exception e) {

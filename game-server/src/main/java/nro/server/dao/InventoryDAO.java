@@ -120,6 +120,7 @@ public class InventoryDAO {
                 ", Box items: " + playerInventory.itemsBox.size());
         playerInventory.isDirty = true; // Mark inventory as dirty after loading
 
+        System.out.println("Inventory được phép loadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         GameWorld.getInstance().getWorld().process();
     }
 
