@@ -49,8 +49,6 @@ public class MovementSystem extends IteratingSystem {
 //         player.getPoints().reduceMPWhenFlying();
         }
 
-        log.info("entity di chuyen : {} to {}, {}", entityId, pos.x, pos.y);
-
         pos.isDirtyMove = false;
     }
 

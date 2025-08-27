@@ -36,7 +36,7 @@ public class WorldGarbageCollectionSystem extends BaseSystem {
                 WorldMapInstance inst = it.next();
 
                 if (inst == null) continue;
-                if (inst.getPlayerCount() > 0) {
+                if (inst.getEntityCount() > 0) {
                     inst.setScheduledForRemoval(false);
                     continue;
                 }

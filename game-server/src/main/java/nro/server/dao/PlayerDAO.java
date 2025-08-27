@@ -253,8 +253,9 @@ public class PlayerDAO {
             loadPlayerSkills(conn, playerEntity, playerId);
             loadPlayerTask(conn, playerEntity, playerId);
 
-            // cai nay load cuoi cung
+            // inventory nên load cuối cùng chắc vậy
             InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
+
             log.info("Successfully loaded entity for player ID: {}", playerId);
             return playerEntity;
         } catch (Exception e) {

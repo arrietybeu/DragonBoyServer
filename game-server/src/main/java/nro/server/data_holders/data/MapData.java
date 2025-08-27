@@ -45,7 +45,6 @@ public final class MapData implements GameEngine {
         loadMapTemplate();
         setQueryLoadMapItemBackground();
         loadTileSetInfo();
-
         setUpdateDataMap();
     }
 

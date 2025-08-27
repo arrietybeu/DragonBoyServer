@@ -104,6 +104,7 @@ public final class MapChangeSystem extends IteratingSystem {
             return false;
         }
 
+        log.info(" zone new sẽ vào : {} map tempalte: {}", newArea.getInstanceId(), newArea.getParent().getTemplate());
         if (newArea.isFullPlayer()) {
             this.keepInSafeZone(waypoint, client, pos);
             client.sendPacket(new SmChatTheGioi("Khu vực này đã đầy người chơi, bạn không thể đi đến đây!"));
@@ -139,7 +140,7 @@ public final class MapChangeSystem extends IteratingSystem {
         if (!oldArea.removeEntity(client.getPlayerID())) {
             throw new RuntimeException("Can't remove entity " + client.getPlayerID() + " from old area");
         }
-        log.info("Player with account {} has left the area {} in map {} area SIZE {}.", client.getAccount(), oldArea.getInstanceId(), pos.mapId, oldArea.getPlayerCount());
+        log.info("Player with account {} has left the area {} in map {} area SIZE {}.", client.getAccount(), oldArea.getInstanceId(), pos.mapId, oldArea.getEntityCount());
     }
 
     private void keepInSafeZone(Waypoint waypoint, NroConnection con, PositionComponent pos) {

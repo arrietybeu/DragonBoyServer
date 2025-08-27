@@ -61,7 +61,7 @@ public class WorldMapInstance {
         }
     }
 
-    public int getPlayerCount() {
+    public int getEntityCount() {
         lock.readLock().lock();
         try {
             return getEntities().size();
@@ -76,6 +76,33 @@ public class WorldMapInstance {
             GroupManager groupManager = GameWorld.getInstance().getGroupManager();
             ImmutableBag<Entity> entities = groupManager.getEntities(groupName);
             return entities != null ? entities : new com.artemis.utils.Bag<>();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public com.artemis.utils.Bag<Entity> getPlayerInZone() {
+        lock.readLock().lock();
+        try {
+            var world = GameWorld.getInstance().getWorld();
+            ComponentMapper<PlayerComponent> mPlayer = world.getMapper(PlayerComponent.class);
+
+            var gm = GameWorld.getInstance().getGroupManager();
+            ImmutableBag<Entity> group = gm.getEntities(groupName);
+
+            if (group == null) {
+                throw new RuntimeException("Group not found: " + groupName);
+            }
+
+            var result = new com.artemis.utils.Bag<Entity>(group.size());
+
+            for (int i = 0, n = group.size(); i < n; i++) {
+                Entity e = group.get(i);
+                if (mPlayer.has(e)) {
+                    result.add(e);
+                }
+            }
+            return result;
         } finally {
             lock.readLock().unlock();
         }

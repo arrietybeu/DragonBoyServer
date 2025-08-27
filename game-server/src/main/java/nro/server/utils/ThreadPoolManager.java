@@ -44,7 +44,7 @@ public final class ThreadPoolManager implements Executor {
     private ThreadPoolExecutor instantiateExecutor(int corePoolSize, int maximumPoolSize) {
         var executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 0, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(100_000), new PriorityThreadFactory("InstantPool",
-                        ThreadConfig.USE_PRIORITIES ? 7 : Thread.NORM_PRIORITY));
+                ThreadConfig.USE_PRIORITIES ? 7 : Thread.NORM_PRIORITY));
 
         executor.setRejectedExecutionHandler(new NroRejectedExecutionHandler());
         executor.prestartAllCoreThreads();

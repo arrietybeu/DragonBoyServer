@@ -35,8 +35,8 @@ public class ConstMap {
 
     // Map status
 
-    public static final int MAP_TYPE_NORMAL = 0;
     public static final int MAP_OFFLINE = 1;
+    public static final int MAP_TYPE_NORMAL = 0;
     public static final int MAP_PHO_BAN = 2;
 
     public static final long TIMEOUT_MILLIS = 60_000; // 60 giây

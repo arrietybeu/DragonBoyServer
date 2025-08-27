@@ -91,6 +91,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
         this.state = State.CONNECTED;
         String ip = getIP();
         connectionAliveChecker = new ConnectionAliveChecker();
+        lastClientMessageTime = System.currentTimeMillis();
         this.sessionInfo = new SessionInfo();
         this.crypt = new Crypt();
         log.debug("Connection established: {}", ip);
@@ -179,6 +180,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
         NroClientPacket p = NroClientPacketFactory.createPacket(cmd, bodyBuf, this);
 
         if (p != null) {
+            lastClientMessageTime = System.currentTimeMillis();
             if (p.read()) {
                 packetProcessor.executePacket(p);
             } else {
@@ -201,7 +203,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
             try {
                 packet.write(this, buffer);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 var msg = "Error processing packet write: " + packet.getClass().getSimpleName() + " for ID: " + playerID;
                 log.error("Error processing packet write: [{}] for ID:", packet.getClass().getSimpleName(), e);
                 close(new SmDialogMessage(msg));

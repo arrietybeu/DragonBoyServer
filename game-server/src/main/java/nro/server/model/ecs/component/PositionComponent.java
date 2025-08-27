@@ -11,7 +11,6 @@ public class PositionComponent extends Component {
 
     public short mapId;
 
-    @Getter
     private int areaId;
 
     public short x, y, newX, newY;
@@ -36,4 +35,25 @@ public class PositionComponent extends Component {
 //        Utils.logCall();
     }
 
+    public byte getAreaId() {
+        return (byte) areaId;
+    }
+
+
+    @Override
+    public String toString() {
+        return "PositionComponent{" +
+                "mapId=" + mapId +
+                ", areaId=" + areaId +
+                ", x=" + x +
+                ", y=" + y +
+                ", newX=" + newX +
+                ", newY=" + newY +
+                ", teleport=" + teleport +
+                ", isDirtyMove=" + isDirtyMove +
+                ", isOnGround=" + isOnGround +
+                ", isOnGroundNew=" + isOnGroundNew +
+                ", wantsToChangeMap=" + wantsToChangeMap +
+                '}';
+    }
 }

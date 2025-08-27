@@ -173,7 +173,7 @@ public class WorldMap {
 
     public WorldMapInstance getSharedInstance(int zoneId) {
         WorldMapInstance inst = getArea((byte) zoneId);
-        if (inst != null && inst.getPlayerCount() < template.getMaxPlayer()) {
+        if (inst != null && inst.getEntityCount() < template.getMaxPlayer()) {
             return inst;
         }
         return null;
@@ -181,7 +181,7 @@ public class WorldMap {
 
     public WorldMapInstance getRandomSharedInstance() {
         for (WorldMapInstance inst : getAllAreasSafe()) {
-            if (inst != null && inst.getPlayerCount() < template.getMaxPlayer()) {
+            if (inst != null && inst.getEntityCount() < template.getMaxPlayer()) {
                 return inst;
             }
         }
@@ -191,7 +191,7 @@ public class WorldMap {
     public WorldMapInstance getRandomInstanceForOnline() {
         List<WorldMapInstance> list = getAllAreasSafe();
         for (WorldMapInstance inst : list) {
-            if (inst != null && inst.getPlayerCount() <= template.getMaxPlayer()) {
+            if (inst != null && inst.getEntityCount() <= template.getMaxPlayer()) {
                 return inst;
             }
         }
@@ -341,5 +341,20 @@ public class WorldMap {
 
     public boolean isPlayerOnGround(int x, int y) {
         return (tileTypeAtPixel(x, y + 1) & ConstMap.T_TOP) != 0;
+    }
+
+
+    @Override
+    public String toString() {
+        return "WorldMap{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", template=" + template +
+                ", areas=" + areas.size() +
+                ", ownerToInstance=" + ownerToInstance.size() +
+                ", types=" + Arrays.toString(types) +
+                ", pixelWidth=" + pixelWidth +
+                ", pixelHeight=" + pixelHeight +
+                '}';
     }
 }
