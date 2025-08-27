@@ -19,4 +19,13 @@ public class ItemInfoComponent extends Component {
         this.quantity = quantity;
         this.creator_id = creator_id;
     }
+
+    @Override
+    public String toString() {
+        return "ItemInfoComponent{" +
+                "templateId=" + templateId +
+                ", quantity=" + quantity +
+                ", creator_id=" + creator_id +
+                '}';
+    }
 }

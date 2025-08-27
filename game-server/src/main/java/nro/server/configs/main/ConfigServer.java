@@ -19,7 +19,7 @@ public class ConfigServer {
     public static int VERSION_DATA_SKILL;
 
     @Property(key = "game-server.version.data-item", defaultValue = "1")
-    public static int VERSION_DATA_ITEM;
+    public static byte VERSION_DATA_ITEM;
 
     @Property(key = "game-server.timezone")
     public static ZoneId TIME_ZONE_ID;

@@ -34,7 +34,7 @@ public class CmChatMap extends NroClientPacket {
         if (this.message.isEmpty()) return;
 
         var entity = this.getConnection().getEntity();
-        var playerComponents =entity.getComponent(PlayerComponent.class);
+        var playerComponents = entity.getComponent(PlayerComponent.class);
         var po = entity.getComponent(PositionComponent.class);
         if (po == null) {
             throw new NullPointerException("PositionComponent is null for entity ID: " + this.getConnection().getEntity().getId());
@@ -42,6 +42,6 @@ public class CmChatMap extends NroClientPacket {
         if (playerComponents == null) {
             throw new NullPointerException("PlayerComponent is null for entity ID: " + this.getConnection().getEntity().getId());
         }
-        ChatService.sendChatMessage(po, this.message);
+        ChatService.sendChatMessage(getConnection(), po, this.message);
     }
 }

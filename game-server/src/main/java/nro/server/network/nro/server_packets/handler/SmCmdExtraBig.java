@@ -14,8 +14,6 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
 public class SmCmdExtraBig extends NroServerPacket {
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {
-        writeByte(0);
-        writeByte(ConfigServer.VERSION_DATA_ITEM);
         writeBytes(ItemData.getInstance().getDataItemTemplate());
     }
 }

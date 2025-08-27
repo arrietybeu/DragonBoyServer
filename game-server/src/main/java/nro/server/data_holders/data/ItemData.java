@@ -3,6 +3,7 @@ package nro.server.data_holders.data;
 import lombok.Getter;
 import nro.commons.database.Database;
 import nro.commons.utils.NetworkUtils;
+import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.GameEngine;
 import nro.server.model.item.ItemOptionData;
 import nro.server.model.templates.item.ItemOptionTemplate;
@@ -159,7 +160,10 @@ public final class ItemData implements GameEngine {
     }
 
     private void setDataItemTemplate() {
-        ByteBuffer buf = ByteBuffer.allocate(500_000);
+        ByteBuffer buf = ByteBuffer.allocate(1_500_000);
+        buf.put((byte) 0);
+        buf.put(ConfigServer.VERSION_DATA_ITEM);
+        buf.put((byte) 1);
         buf.putShort((short) itemTemplates.size());
         for (short i = 0; i < itemTemplates.size(); i++) {
             var item = this.itemTemplates.get(i);
@@ -171,6 +175,7 @@ public final class ItemData implements GameEngine {
             NetworkUtils.writeString(buf, item.name());
             NetworkUtils.writeString(buf, item.description());
             buf.put(item.level());
+            buf.putInt(item.strRequire());
             buf.putShort(item.iconID());
             buf.putShort(item.part());
             buf.put((byte) 0);

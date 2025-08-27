@@ -17,12 +17,15 @@ public class AccountDAO {
     private static final String QUERY_GET_ACCOUNT = "SELECT * FROM `account_data` WHERE `username` = ? AND `password` = ? LIMIT 1;";
 
     public static Account getAccount(String username, String password) {
-
         AtomicReference<Account> accountRef = new AtomicReference<>();
 
         Database.select(QUERY_GET_ACCOUNT, rs -> {
             if (rs.next()) {
-                Account account = new Account(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+                Account account = new Account(rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getBoolean("is_admin"),
+                        rs.getBoolean("ban"));
                 accountRef.set(account);
             }
         }, stmt -> {
@@ -32,4 +35,6 @@ public class AccountDAO {
 
         return accountRef.get();
     }
+
+
 }
