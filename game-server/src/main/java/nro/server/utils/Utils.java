@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 /**
  * @author Arriety
  */
-public class Utils {
+public final class Utils {
 
     public static final int[][] VALID_HAIR_IDS = {
             {64, 30, 31}, // Tóc cho Trái Đất (gender 0)
@@ -38,16 +38,5 @@ public class Utils {
     };
 
     public static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{5,15}$");
-
-    public static void logCall() {
-        StackTraceElement[] stackTraceElements = new Throwable().getStackTrace();
-        for (int i = stackTraceElements.length - 1; i >= 0; --i) {
-            String nameMethod = stackTraceElements[i].getMethodName();
-            String nameClass = stackTraceElements[i].getClassName();
-            int line = stackTraceElements[i].getLineNumber();
-            System.err.println(nameClass + ": " + nameMethod + " - line: " + line);
-        }
-        System.out.println("---------------------------------------------------------------");
-    }
 
 }

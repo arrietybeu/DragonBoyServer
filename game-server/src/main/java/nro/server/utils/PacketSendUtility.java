@@ -16,7 +16,6 @@ public final class PacketSendUtility {
 
     private static final Logger log = LoggerFactory.getLogger(PacketSendUtility.class);
 
-
     public static void sendMessage(int entityId, String msg) {
         var playerComponent = GameWorld.getInstance().getWorld().getEntity(entityId).getComponent(PlayerComponent.class);
         if (playerComponent == null) throw new NullPointerException();

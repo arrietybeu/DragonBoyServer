@@ -2,6 +2,7 @@ package nro.server.engine.entity.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
 import nro.server.consts.ConstItem;
 import nro.server.data_holders.data.ItemData;

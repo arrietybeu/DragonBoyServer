@@ -18,6 +18,7 @@ import nro.server.configs.network.NetworkConfig;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
 import nro.server.engine.entity.GameWorld;
+import nro.server.engine.entity.system.InventorySystem;
 import nro.server.engine.quest.system.MoveQuestSystem;
 import nro.server.engine.quest.system.QuestSystem;
 import nro.server.engine.world.WorldGarbageCollectionSystem;
@@ -59,7 +60,7 @@ public class GameServer {
             DataManager.getInstance();
             IDFactory.getInstance();
             //noinspection ResultOfMethodCallIgnored
-            intEntityComponentSystem();
+            initEntityComponentSystem();
             World.getInstance();
             BannedIpController.start();
             System.gc();
@@ -79,14 +80,14 @@ public class GameServer {
         return nioServer;
     }
 
-    private static void intEntityComponentSystem() {
+    private static void initEntityComponentSystem() {
         WorldConfigurationBuilder builder = new WorldConfigurationBuilder();
 
         builder.with(
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
                 new QuestSystem(), new MoveQuestSystem(),
-                new WorldGarbageCollectionSystem()); // add systems here if needed
+                new WorldGarbageCollectionSystem(), new InventorySystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
 //        gameWorld.expandEntityCapacity(1_000_000);
@@ -101,7 +102,6 @@ public class GameServer {
 
         ServerPacketsCommand.init(PacketConfig.SERVER_PACKET_COMMAND);
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
-
         NpcFactory.init(PathPropeties.PATH_NPCS);
 
         //noinspection ResultOfMethodCallIgnored

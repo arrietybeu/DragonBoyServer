@@ -1,18 +1,16 @@
 package nro.server.network.nro.server_packets;
 
+import com.artemis.Entity;
 import nro.server.engine.entity.GameWorld;
-import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.item.ItemStatsComponent;
 import nro.server.model.world.WorldMapInstance;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
-import nro.server.utils.PacketSendUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.List;
 
 
@@ -133,5 +131,31 @@ public final class PacketHelper {
 
         // Reset teleport flag
         position.teleport = 0;
+    }
+
+    public static boolean writePlayerInfo(NroServerPacket packet, Entity entity, StateComponent state, PositionComponent position, AppearanceComponent appearance) {
+        var buff = entity.getComponent(BuffComponent.class);
+        var info = entity.getComponent(InfoComponent.class);
+        var heal = entity.getComponent(HealthComponent.class);
+
+        packet.writeByte(1);// level
+        packet.writeBoolean(false); // write isInvisiblez
+        packet.writeByte(state.typePk);
+        packet.writeByte(info.gender);
+        packet.writeByte(info.gender);
+        packet.writeShort(appearance.head);
+        packet.writeUTF(info.name);
+        packet.writeLong(heal.currentHP);
+        packet.writeLong(heal.currentMP);
+        packet.writeShort(appearance.body);
+        packet.writeShort(appearance.leg);
+        packet.writeShort(appearance.flagBag);
+        packet.writeByte(0);
+        packet.writeShort(position.x);
+        packet.writeShort(position.y);
+        packet.writeShort(buff.eff5BuffHp);
+        packet.writeShort(buff.eff5BuffMp);
+        packet.writeByte(0);
+        return true;
     }
 }

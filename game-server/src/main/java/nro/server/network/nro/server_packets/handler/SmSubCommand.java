@@ -2,15 +2,11 @@ package nro.server.network.nro.server_packets.handler;
 
 import com.artemis.Component;
 import com.artemis.Entity;
-import com.artemis.World;
 import nro.commons.consts.ConstsCmd;
 import nro.server.GameServer;
 import nro.server.consts.ConstMsgSubCommand;
 import nro.server.data_holders.data.ItemData;
-import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
-import nro.server.model.ecs.component.item.ItemInfoComponent;
-import nro.server.model.ecs.component.item.ItemStatsComponent;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
@@ -19,8 +15,6 @@ import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
 import nro.server.utils.Utils;
-
-import java.util.List;
 
 /**
  * @author Arriety
@@ -143,41 +137,14 @@ public class SmSubCommand extends NroServerPacket {
     private void sendLoadMapCharInMap(NroConnection connection) {
         var entity = connection.getEntity();
         var appearance = entity.getComponent(AppearanceComponent.class);
+        var state = entity.getComponent(StateComponent.class);
+        var position = entity.getComponent(PositionComponent.class);
         writeInt(connection.getPlayerID());
         writeInt(-1);
-        writePlayerInfo(entity, appearance);
+        PacketHelper.writePlayerInfo(this, entity, state, position, appearance);
         writeShort(appearance.aura);
         writeByte(appearance.effSetItem);
         writeShort(appearance.idHat);
-    }
-
-    private void writePlayerInfo(Entity entity, AppearanceComponent appearance) {
-
-        var state = entity.getComponent(StateComponent.class);
-        var info = entity.getComponent(InfoComponent.class);
-
-        var heal = entity.getComponent(HealthComponent.class);
-        var position = entity.getComponent(PositionComponent.class);
-        var buff = entity.getComponent(BuffComponent.class);
-
-        writeByte(1);// level
-        writeBoolean(false); // write isInvisiblez
-        writeByte(state.typePk);
-        writeByte(info.gender);
-        writeByte(info.gender);
-        writeShort(appearance.head);
-        writeUTF(info.name);
-        writeLong(heal.currentHP);
-        writeLong(heal.currentMP);
-        writeShort(appearance.body);
-        writeShort(appearance.leg);
-        writeShort(appearance.flagBag);
-        writeByte(0);
-        writeShort(position.x);
-        writeShort(position.y);
-        writeShort(buff.eff5BuffHp);
-        writeShort(buff.eff5BuffMp);
-        writeByte(0);
     }
 
     private void sendPlayerBirdFrames(int gender) {

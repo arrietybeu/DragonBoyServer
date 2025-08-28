@@ -6,7 +6,7 @@ import java.io.*;
  * @author Arriety
  */
 
-public class LoadTileMap {
+public final class LoadTileMap {
 
     public static int tmw;
     public static int tmh;

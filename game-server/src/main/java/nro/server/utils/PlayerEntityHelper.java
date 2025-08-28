@@ -3,11 +3,14 @@ package nro.server.utils;
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import nro.server.engine.entity.GameWorld;
 
 /**
  * @author Arriety
  */
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public final class PlayerEntityHelper {
 
     private static World getWorld() {
