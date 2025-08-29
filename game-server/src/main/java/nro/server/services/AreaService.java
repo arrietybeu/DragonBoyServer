@@ -49,6 +49,34 @@ public final class AreaService {
         }
     }
 
+    public void sendPacketForALLPlayerInAreaNotMe(int entityId, int mapID, int areaID, NroServerPacket packet) {
+        try {
+
+            var area = World.getInstance().getAreaInMap(mapID, areaID);
+
+            var entities = area.getEntities();
+            for (int i = 0; i < entities.size(); i++) {
+                Entity e = entities.get(i);
+
+                if (e == null) continue;
+
+                if (e.getId() == entityId) continue;
+
+                var playerComponent = e.getComponent(PlayerComponent.class);
+
+                if (playerComponent != null && playerComponent.isOnline()) {
+                    var connect = playerComponent.connection;
+                    if (connect.getState() != NroConnection.State.IN_GAME) continue;
+
+                    System.out.println("send packet player move to player: " + mapID);
+                    connect.sendPacket(packet);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error sending packet to all players in area (mapID: {}, areaID: {}): {}", mapID, areaID, e.getMessage(), e);
+        }
+    }
+
     public void sendMyInfoToPlayersInZone(NroConnection client) {
         try {
             var entity = client.getEntity();

@@ -27,12 +27,15 @@ public class PlayerLeaveWorldService {
         WorldMapInstance worldMapInstance = world.getWorldMapInstance(positionComponent.getAreaId());
 
         if (worldMapInstance == null) {
-            log.warn("No world map instance found for map ID {} and area ID {}. Cannot leave world.",
-                    positionComponent.mapId, positionComponent.getAreaId());
+            // TODO fix me client bị kick vif treo lâu thì lỗi này sẽ xảy ra do bị kick khỏi map 2 lâần chắc ko sao dau hehe
+
+            log.warn("No world map instance found for map ID {} and area ID {}. Cannot leave world.", positionComponent.mapId, positionComponent.getAreaId());
             return;
         }
 
-        worldMapInstance.removeEntity(con.getPlayerID());
+        if (!worldMapInstance.removeEntity(con.getPlayerID())) {
+            log.error("Failed to remove player entity with ID {} from world map instance (map ID: {}, area ID: {}).", con.getPlayerID(), positionComponent.mapId, positionComponent.getAreaId());
+        }
 
         // Delete entity from the world ecs
         GameWorld.getInstance().deleteEntity(entity.getId());

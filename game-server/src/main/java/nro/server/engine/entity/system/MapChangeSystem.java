@@ -15,6 +15,7 @@ import nro.server.network.nro.server_packets.handler.SmResetPoint;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
 import nro.server.services.AreaService;
+import nro.server.services.NotifyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public final class MapChangeSystem extends IteratingSystem {
             PlayerComponent pc = clients.get(entityId);
             if (pos != null) pos.wantsToChangeMap = false;
             if (pc != null && pc.connection != null) {
-                pc.connection.sendPacket(new SmChatTheGioi("Có lỗi khi đổi map, đã đưa bạn về khu an toàn."));
+                NotifyService.SendNotifyPlayer(pc.connection, "Có lỗi khi đổi map, đã đưa bạn về khu an toàn.");
                 if (pos != null) {
                     keepInSafeZone(null, pc.connection, pos);
                 }
@@ -75,7 +76,7 @@ public final class MapChangeSystem extends IteratingSystem {
 
         if (waypoint == null) {
             keepInSafeZone(null, client, pos);
-            client.sendPacket(new SmChatTheGioi("Bạn không thể đi đến đây!"));
+            NotifyService.SendNotifyPlayer(client, "Bạn không thể đi đến đây!");
             throw new RuntimeException("Waypoint is null for entity " + info + " with mapId " + pos.mapId);
         }
 
@@ -83,10 +84,9 @@ public final class MapChangeSystem extends IteratingSystem {
 
         if (newArea == null) {
             this.keepInSafeZone(waypoint, client, pos);
-            client.sendPacket(new SmChatTheGioi("Khu vực này không có người quản lý, bạn không thể đi đến đây!"));
+            NotifyService.SendNotifyPlayer(client, "Khu vực này không có người quản lý, bạn không thể đi đến đây!");
             return;
         }
-
 
         if (!this.transferEntity(client, waypoint, pos, currentArea, newArea)) {
             return;
@@ -94,17 +94,21 @@ public final class MapChangeSystem extends IteratingSystem {
         pos.wantsToChangeMap = false;
     }
 
+    public void playerChangerMapByWayPoint() {
+
+    }
+
+
     private boolean transferEntity(NroConnection client, Waypoint waypoint, PositionComponent pos, WorldMapInstance currentArea, WorldMapInstance newArea) {
         if (newArea == null) {
             this.keepInSafeZone(waypoint, client, pos);
-
-            client.sendPacket(new SmChatTheGioi("Khu vực này không có người quản lý, bạn không thể đi đến đây!"));
+            NotifyService.SendNotifyPlayer(client, "Khu vực này không có người quản lý, bạn không thể đi đến đây!");
             return false;
         }
 
         if (newArea.isFullPlayer()) {
             this.keepInSafeZone(waypoint, client, pos);
-            client.sendPacket(new SmChatTheGioi("Khu vực này đã đầy người chơi, bạn không thể đi đến đây!"));
+            NotifyService.SendNotifyPlayer(client, "Khu vực này đã đầy người chơi, bạn không thể đi đến đây!");
             return false;
         }
 

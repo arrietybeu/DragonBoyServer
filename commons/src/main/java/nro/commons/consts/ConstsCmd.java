@@ -1,5 +1,7 @@
 package nro.commons.consts;
 
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,13 +10,10 @@ import java.util.Map;
  * @author Arriety
  */
 @SuppressWarnings("ALL")
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class ConstsCmd {
 
     private static final Map<Byte, String> msgMap = new HashMap<>();
-
-    public static String getMessageName(byte id) {
-        return msgMap.getOrDefault(id, "tên không xác định");
-    }
 
     public static void addListMsg() {
         msgMap.put(CMD_EXTRA_BIG, "CMD_EXTRA_BIG");
@@ -887,4 +886,9 @@ public final class ConstsCmd {
     public static final byte CHAR_EFFECT = Byte.MIN_VALUE;
 
     public static final List<Byte> IGNORE_CMD = List.of(PLAYER_MOVE);
+
+    public static String getMessageName(byte id) {
+        return msgMap.getOrDefault(id, "tên không xác định");
+    }
+
 }

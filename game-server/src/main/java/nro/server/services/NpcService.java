@@ -1,5 +1,6 @@
 package nro.server.services;
 
+import lombok.NoArgsConstructor;
 import nro.server.consts.ConstNpc;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.npc.Npc;
@@ -10,8 +11,8 @@ import nro.server.network.nro.NroConnection;
 /**
  * @author Arriety
  */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class NpcService {
-
 
     public void openMenuNpc(NroConnection client, int npcId) {
         var positions = client.getEntity().getComponent(PositionComponent.class);

@@ -71,8 +71,6 @@ public class WorldMap {
             if (npc == null) continue;
             npcs.add(npc);
         }
-
-//        log.info(" Loaded {} NPCs for map {}", npcs.size(), id);
     }
 
     /**
@@ -158,10 +156,6 @@ public class WorldMap {
         return getArea((byte) instanceId);
     }
 
-    public WorldMapInstance createInstanceForPlayer(int playerId) {
-        return getOrCreateUniqueInstance(playerId);
-    }
-
     /**
      * synchronized để đảm bảo ownerToInstance nhất quán
      */
@@ -186,9 +180,9 @@ public class WorldMap {
         return instance;
     }
 
-    public WorldMapInstance createInstanceForGuild(int guildId) {
-        return getOrCreateUniqueInstance(guildId);
-    }
+//    public WorldMapInstance createInstanceForGuild(int guildId) {
+//        return getOrCreateUniqueInstance(guildId);
+//    }
 
     public WorldMapInstance getSharedInstance(int zoneId) {
         WorldMapInstance inst = getArea((byte) zoneId);
@@ -244,37 +238,6 @@ public class WorldMap {
 
     public WorldMapInstance getInstance(int instanceId) {
         return getArea((byte) instanceId);
-    }
-
-    public WorldMapInstance createNewInstance() {
-        byte nextId = generateNextInstanceId();
-        WorldMapInstance instance = new WorldMapInstance(this, nextId);
-        addArea(instance);
-        return instance;
-    }
-
-    public static WorldMapInstance getArea(int mapId, int areaId, int entityId, int playerId) {
-        WorldMap map = World.getInstance().getMap(mapId);
-        if (map == null) throw new IllegalArgumentException("Invalid mapId: " + mapId);
-
-        var ecsWorld = GameWorld.getInstance().getWorld();
-        var entity = ecsWorld.getEntity(entityId);
-        if (entity == null) throw new IllegalArgumentException("Entity not found: " + entityId);
-
-        byte typeMap = map.getTemplate().getTypeMap();
-        if (entity.getComponent(PlayerComponent.class) != null) {
-            return switch (typeMap) {
-                case ConstMap.MAP_OFFLINE -> map.getOrCreateUniqueInstance(playerId);
-                case ConstMap.MAP_TYPE_NORMAL ->
-                        (areaId >= 0) ? map.getSharedInstance(areaId) : map.getRandomSharedInstance();
-                case ConstMap.MAP_PHO_BAN -> map.getOrCreateUniqueInstance(playerId);
-                default -> throw new IllegalStateException("Unknown typeMap: " + typeMap);
-            };
-        }
-        if (entity.getComponent(BossComponent.class) != null) {
-            return (areaId >= 0) ? map.getInstance(areaId) : map.getInstance(0);
-        }
-        throw new UnsupportedOperationException("Unsupported entity for playerId: " + playerId);
     }
 
     public Waypoint getWayPointInMap(int x, int y, int playerID) {

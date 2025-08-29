@@ -248,7 +248,6 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
         var player = getEntity();
         if (player != null) {
-
             PlayerLeaveWorldService.leaveWorld(this);
         }
 

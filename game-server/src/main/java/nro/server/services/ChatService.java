@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class ChatService {
-//
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatService.class);
 
     public static void sendChatMessage(NroConnection client, PositionComponent po, String message) throws RuntimeException {

@@ -3,9 +3,14 @@ package nro.server.engine.entity.system;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
+import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
+import nro.server.model.world.World;
+import nro.server.model.world.WorldMap;
+import nro.server.network.nro.server_packets.handler.SmPlayerMove;
+import nro.server.services.AreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +21,11 @@ public class MovementSystem extends IteratingSystem {
 
     private static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
     private ComponentMapper<PositionComponent> posMapper;
-    private ComponentMapper<PlayerComponent> playerMapper;
+    private ComponentMapper<InfoComponent> playerInfoMapper;
     private ComponentMapper<QuestInstanceComponent> taskMapper;
 
     public MovementSystem() {
-        super(Aspect.all(PositionComponent.class, PlayerComponent.class));
+        super(Aspect.all(PositionComponent.class, InfoComponent.class));
     }
 
     @Override
@@ -36,7 +41,9 @@ public class MovementSystem extends IteratingSystem {
 
     private void handler(int entityId) {
         PositionComponent pos = posMapper.get(entityId);
-        if (pos == null) return;
+        InfoComponent playerInfo = playerInfoMapper.get(entityId);
+        if (pos == null)
+            throw new RuntimeException("No position found for entityId=" + entityId);
 
         if (!pos.isDirtyMove) return;
 
@@ -48,6 +55,8 @@ public class MovementSystem extends IteratingSystem {
         if (pos.isOnGround == 1) {
 //         player.getPoints().reduceMPWhenFlying();
         }
+
+        AreaService.getInstance().sendPacketForALLPlayerInAreaNotMe(entityId, pos.mapId, pos.getAreaId(), new SmPlayerMove(playerInfo.id, pos.x, pos.y));
 
         pos.isDirtyMove = false;
     }

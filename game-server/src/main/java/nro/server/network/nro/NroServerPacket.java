@@ -1,5 +1,6 @@
 package nro.server.network.nro;
 
+import nro.commons.consts.ConstsCmd;
 import nro.commons.network.Crypt;
 import nro.commons.network.packet.BaseServerPacket;
 import nro.server.configs.network.NetworkConfig;
@@ -27,7 +28,10 @@ public abstract class NroServerPacket extends BaseServerPacket {
      * @return true if the command is special, false otherwise.
      */
     protected static boolean isSpecialCommand(int cmd) {
-        return cmd == -32 || cmd == -66 || cmd == 11 || cmd == -67 || cmd == -74 || cmd == -87 || cmd == 66 || cmd == 12;
+        return cmd == ConstsCmd.BACKGROUND_TEMPLATE || cmd == ConstsCmd.GET_EFFDATA
+                || cmd == ConstsCmd.REQUEST_MOB_TEMPLATE || cmd == ConstsCmd.REQUEST_ICON
+                || cmd == ConstsCmd.GET_IMAGE_SOURCE || cmd == ConstsCmd.UPDATE_DATA
+                || cmd == ConstsCmd.GET_IMG_BY_NAME || cmd == ConstsCmd.CMD_EXTRA_BIG;
     }
 
     protected NroServerPacket() {

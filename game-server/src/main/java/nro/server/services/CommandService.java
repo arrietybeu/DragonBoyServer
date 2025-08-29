@@ -1,5 +1,6 @@
 package nro.server.services;
 
+import lombok.NoArgsConstructor;
 import nro.commons.database.DatabaseFactory;
 import nro.commons.utils.ExitCode;
 import nro.commons.utils.SystemInfo;
@@ -20,7 +21,8 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Scanner;
 
-public class CommandService {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class CommandService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandService.class);
 
@@ -34,7 +36,7 @@ public class CommandService {
                         case "entity" -> GameWorld.getInstance().logWorldSummary();
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
 
-                         case "thread" -> LOGGER.info(ThreadPoolManager.getInstance().getStats());
+                        case "thread" -> LOGGER.info(ThreadPoolManager.getInstance().getStats());
                         case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                         case "session" ->
                                 LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());

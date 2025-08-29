@@ -57,7 +57,7 @@ public class World {
                 }
                 yield map.getRandomSharedInstance();
             }
-            case ConstMap.MAP_PHO_BAN -> map.getOrCreateUniqueInstance(ownerId); // Phó bản: unique per guild.
+//            case ConstMap.MAP_PHO_BAN -> map.getOrCreateUniqueInstance(ownerId); // Phó bản: unique per guild.
             default -> throw new IllegalArgumentException("Unknown typeMap: " + typeMap);
         };
     }
