@@ -3,7 +3,6 @@ package nro.server.services;
 
 import com.artemis.Entity;
 import lombok.NoArgsConstructor;
-import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.world.World;
@@ -12,6 +11,7 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.handler.SmPlayerAdd;
 import nro.server.network.nro.server_packets.handler.SmPlayerRemove;
+import nro.server.network.nro.server_packets.handler.SmTeleport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,17 +85,15 @@ public final class AreaService {
             var area = World.getInstance().getAreaInMap(position.mapId, position.getAreaId());
 
             for (var playerInZone : area.getPlayersInZone()) {
-                if (playerInZone == null || playerInZone.equals(entity)) continue;
+                if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;
 
                 var playerComponent = playerInZone.getComponent(PlayerComponent.class);
 
                 if (playerComponent != null && playerComponent.isOnline()) {
                     var connect = playerComponent.connection;
                     if (connect.getState() != NroConnection.State.IN_GAME) continue;
-
                     // send thông tin của client đến playerInZone
-                    connect.sendPacket(new SmPlayerAdd(playerInZone));
-
+                    connect.sendPacket(new SmPlayerAdd(entity));
                 }
             }
 
@@ -109,8 +107,10 @@ public final class AreaService {
     private void sendPlayersInfoInZoneToMe(Entity entity, WorldMapInstance area) {
 
         for (var playerInZone : area.getPlayersInZone()) {
-            if (playerInZone == null || playerInZone.equals(entity)) continue;
+
+            if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;
             var playerComponent = playerInZone.getComponent(PlayerComponent.class);
+
             if (playerComponent != null && playerComponent.isOnline()) {
                 var client = entity.getComponent(PlayerComponent.class);
                 client.connection.sendPacket(new SmPlayerAdd(playerInZone));
@@ -118,7 +118,7 @@ public final class AreaService {
         }
     }
 
-    public void sendPlayerOutZoneToMe(NroConnection ss, WorldMapInstance area) {
+    public void sendPacketPlayersInZoneNotMe(NroConnection ss, WorldMapInstance area) {
         var entity = ss.getEntity();
         var meID = ss.getPlayerID();
 
@@ -127,11 +127,11 @@ public final class AreaService {
             var playerComponent = playerInZone.getComponent(PlayerComponent.class);
             if (playerComponent != null && playerComponent.isOnline()) {
                 var client = entity.getComponent(PlayerComponent.class);
+                client.connection.sendPacket(new SmTeleport());
                 client.connection.sendPacket(new SmPlayerRemove(meID));
             }
         }
     }
-
 
     private static final class SingletonHolder {
         private static final AreaService INSTANCE = new AreaService();

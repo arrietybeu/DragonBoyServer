@@ -101,6 +101,8 @@ public class WorldMapInstance {
                     result.add(e);
                 }
             }
+
+            System.out.println("Players in zone " + groupName + ": " + result.size());
             return result;
         } finally {
             lock.readLock().unlock();
@@ -133,10 +135,10 @@ public class WorldMapInstance {
 
             gm.remove(e, groupName);
 
-            if (pos != null) {
-                pos.setAreaId(-1);  // sentinel cho "không thuộc instance nào"
-                // pos.mapId = 0; // nếu muốn reset map
-            }
+//            if (pos != null) {
+//                pos.setAreaId(-1);  // sentinel cho "không thuộc instance nào"
+//                // pos.mapId = 0; // nếu muốn reset map
+//            }
 
             return true;
         } catch (Exception ex) {

@@ -9,11 +9,11 @@ import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;
-import nro.server.network.nro.server_packets.handler.SmChatTheGioi;
 import nro.server.network.nro.server_packets.handler.SmMapInfo;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
+import nro.server.network.nro.server_packets.handler.SmTeleport;
 import nro.server.services.AreaService;
 import nro.server.services.NotifyService;
 import org.slf4j.Logger;
@@ -94,8 +94,15 @@ public final class MapChangeSystem extends IteratingSystem {
         pos.wantsToChangeMap = false;
     }
 
-    public void playerChangerMapByWayPoint() {
+    private void playerChangerMapByWayPoint() {
 
+    }
+
+    private void playerChangeArea() {
+
+    }
+
+    private void playerChangeMapByShip() {
     }
 
 
@@ -106,35 +113,41 @@ public final class MapChangeSystem extends IteratingSystem {
             return false;
         }
 
+        // TODO check thêm nếu player chưa hoàn thiện nhiệm vụ thì không cho đi
+
         if (newArea.isFullPlayer()) {
             this.keepInSafeZone(waypoint, client, pos);
             NotifyService.SendNotifyPlayer(client, "Khu vực này đã đầy người chơi, bạn không thể đi đến đây!");
             return false;
         }
 
-        // xoa entity ra khoi khu  cu
-        this.playerExitArea(client, pos, currentArea);
-
         int xNew = waypoint.getGoX();
         int yNew = waypoint.getGoY();
+
+
+        this.entityEnterArea(client, pos,currentArea, newArea, xNew, yNew);
+
+        this.sendMessageChangerMap(client, pos);
+
+        return true;
+    }
+
+
+    private void entityEnterArea(NroConnection client, PositionComponent pos, WorldMapInstance oldArea, WorldMapInstance newArea, int xNew, int yNew) {
+        // xoa entity khỏi area cũ
+        this.playerExitArea(client, pos, oldArea);
 
         // add entity vào area mới
         newArea.addEntity(client.getEntity().getId());
 
-        pos.mapId = (short) waypoint.getGoMap();
+        pos.mapId = (short) newArea.getParent().getId();
         pos.setAreaId(newArea.getInstanceId());
         pos.x = (short) xNew;
         pos.y = (short) yNew;
 
-        this.sendMessageChangerMap(client, pos);
         AreaService.getInstance().sendMyInfoToPlayersInZone(client);
-        return true;
     }
 
-    public void sendMessageChangerMap(NroConnection client, PositionComponent pos) {
-        client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
-        client.sendPacket(new SmMapInfo(pos));
-    }
 
     public void playerExitArea(NroConnection client, PositionComponent pos, WorldMapInstance oldArea) {
         if (pos == null || oldArea == null) return;
@@ -142,8 +155,9 @@ public final class MapChangeSystem extends IteratingSystem {
             throw new RuntimeException("Can't remove entity " + client.getPlayerID() + " from old area");
         }
 
-        AreaService.getInstance().sendPlayerOutZoneToMe(client, oldArea);
+        AreaService.getInstance().sendPacketPlayersInZoneNotMe(client, oldArea);
     }
+
 
     private void keepInSafeZone(Waypoint waypoint, NroConnection con, PositionComponent pos) {
         if (pos == null) return;
@@ -165,6 +179,12 @@ public final class MapChangeSystem extends IteratingSystem {
         con.sendPacket(new SmResetPoint(pos.x, pos.y));
 
         pos.wantsToChangeMap = false;
+    }
+
+    private void sendMessageChangerMap(NroConnection client, PositionComponent pos) {
+        client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));
+        // TODO send statmina, send current hp mp
+        client.sendPacket(new SmMapInfo(pos));
     }
 
 }
