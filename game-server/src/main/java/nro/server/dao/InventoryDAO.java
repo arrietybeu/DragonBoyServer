@@ -22,8 +22,6 @@ import java.util.*;
  */
 public class InventoryDAO {
 
-    // FIXME WARNING: Class này chưa hoàn thiện logic id item template với id item entity đang sai
-
     private static final Logger log = LoggerFactory.getLogger(InventoryDAO.class);
 
     private static final String SELECT_QUERY = """
@@ -182,6 +180,5 @@ public class InventoryDAO {
             case BOX -> playerInventory.itemsBox = inventorySlots;
         }
     }
-
 
 }

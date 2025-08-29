@@ -14,6 +14,7 @@ import nro.server.network.nro.server_packets.handler.SmMapInfo;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
+import nro.server.services.AreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,7 +123,7 @@ public final class MapChangeSystem extends IteratingSystem {
         pos.y = (short) yNew;
 
         this.sendMessageChangerMap(client, pos);
-//        AreaService.getInstance().sendInfoAllLiveObjectsTo(client.getEntity());
+        AreaService.getInstance().sendMyInfoToPlayersInZone(client);
         return true;
     }
 
@@ -136,7 +137,8 @@ public final class MapChangeSystem extends IteratingSystem {
         if (!oldArea.removeEntity(client.getEntity().getId())) {
             throw new RuntimeException("Can't remove entity " + client.getPlayerID() + " from old area");
         }
-//        log.info("Player with account {} has left the area {} in map {} area SIZE {}.", client.getAccount(), oldArea.getInstanceId(), pos.mapId, oldArea.getEntityCount());
+
+        AreaService.getInstance().sendPlayerOutZoneToMe(client, oldArea);
     }
 
     private void keepInSafeZone(Waypoint waypoint, NroConnection con, PositionComponent pos) {

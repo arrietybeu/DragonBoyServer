@@ -1,5 +1,6 @@
 package nro.server.utils;
 
+import com.artemis.Entity;
 import lombok.NoArgsConstructor;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.player.PlayerComponent;
@@ -17,14 +18,26 @@ public final class PacketSendUtility {
     private static final Logger log = LoggerFactory.getLogger(PacketSendUtility.class);
 
     public static void sendMessage(int entityId, String msg) {
-        var playerComponent = GameWorld.getInstance().getWorld().getEntity(entityId).getComponent(PlayerComponent.class);
-        if (playerComponent == null) throw new NullPointerException();
+        PlayerComponent playerComponent = null;
+        try {
+            playerComponent = GameWorld.getInstance().getWorld().getEntity(entityId).getComponent(PlayerComponent.class);
+            if (playerComponent == null) throw new NullPointerException();
 
-        sendPacket(playerComponent, new SmChatTheGioi(msg));
+            sendPacket(playerComponent, new SmChatTheGioi(msg));
+        } catch (Exception e) {
+            log.error("Error sending message to entityId {}: client: {} error: {}", entityId, (playerComponent == null ? "null" : playerComponent.connection), e.getMessage(), e);
+        }
     }
 
     public static void sendPacket(PlayerComponent player, NroServerPacket packet) {
         if (player.isOnline()) player.connection.sendPacket(packet);
     }
 
+    public static void sendPacketForPlayersInZoneNotMe(Entity entity, NroServerPacket packet) {
+        try {
+
+        } catch (Exception e) {
+
+        }
+    }
 }

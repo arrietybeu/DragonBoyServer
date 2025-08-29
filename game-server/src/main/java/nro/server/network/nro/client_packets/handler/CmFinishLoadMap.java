@@ -4,6 +4,7 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
+import nro.server.services.AreaService;
 
 import java.util.Set;
 
@@ -24,5 +25,6 @@ public class CmFinishLoadMap extends NroClientPacket {
 
     @Override
     protected void runImpl() {
+        AreaService.getInstance().sendMyInfoToPlayersInZone(getConnection());
     }
 }

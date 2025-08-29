@@ -265,17 +265,6 @@ public class PlayerDAO {
         }
     }
 
-    public static int findPlayerIdByAccountId(int accountId) {
-        final int[] playerId = {-1};
-        String sql = "SELECT id FROM player WHERE account_id = ? LIMIT 1";
-        Database.select(sql, rs -> {
-            if (rs.next()) {
-                playerId[0] = rs.getInt("id");
-            }
-        }, stmt -> stmt.setInt(1, accountId));
-        return playerId[0];
-    }
-
     private static void loadPlayerInfo(Connection conn, Entity entity, int playerId) throws SQLException {
         String sql = "SELECT name, gender, is_online, created_at, max_bag_size, max_box_size, head FROM player WHERE id = ?";
         InfoComponent info = entity.getComponent(InfoComponent.class);
@@ -412,6 +401,14 @@ public class PlayerDAO {
         }
     }
 
+    private static final int ________________SAVE_PLAYER_ENTITY________________ = -1;
+
+    public static boolean savePlayerEntity(Entity entity) {
+        return false;
+    }
+
+    private static final int ________________SUPPORT________________ = -1;
+
     public static int[] getUsedIDs() {
         try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT id FROM player",
                 ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
@@ -443,7 +440,18 @@ public class PlayerDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
+
         }
     }
 
+    public static int findPlayerIdByAccountId(int accountId) {
+        final int[] playerId = {-1};
+        String sql = "SELECT id FROM player WHERE account_id = ? LIMIT 1";
+        Database.select(sql, rs -> {
+            if (rs.next()) {
+                playerId[0] = rs.getInt("id");
+            }
+        }, stmt -> stmt.setInt(1, accountId));
+        return playerId[0];
+    }
 }

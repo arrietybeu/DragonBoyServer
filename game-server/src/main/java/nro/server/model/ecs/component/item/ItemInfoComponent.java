@@ -5,6 +5,7 @@ import com.artemis.Component;
 /**
  * @author Arriety
  */
+
 public class ItemInfoComponent extends Component {
 
     public short templateId;

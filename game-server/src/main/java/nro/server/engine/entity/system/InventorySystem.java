@@ -15,6 +15,5 @@ public class InventorySystem extends IteratingSystem {
 
     @Override
     protected void process(int entityId) {
-
     }
 }

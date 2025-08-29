@@ -57,7 +57,7 @@ public class SmOpenUiZone extends NroServerPacket {
                 log.info(" Zone is null for client: {} PositionComponent: {} currentMap: {}", con, pos, currentMap);
                 continue;
             }
-            final ImmutableBag<Entity> playersInZone = zone.getPlayerInZone();
+            final ImmutableBag<Entity> playersInZone = zone.getPlayersInZone();
 
             final int numPlayers = playersInZone.size();
 

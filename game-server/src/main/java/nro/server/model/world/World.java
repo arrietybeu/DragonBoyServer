@@ -36,7 +36,7 @@ public class World {
     public WorldMapInstance getAreaInMap(int mapId, int areaId) {
         WorldMap map = getMap(mapId);
         if (map == null) {
-            throw new NullPointerException("Invalid mapId: " + mapId);
+            throw new NullPointerException("Invalid mapId: " + mapId + " when getting areaId: " + areaId);
         }
         return map.getWorldMapInstance(areaId);
     }
@@ -71,6 +71,18 @@ public class World {
             return null;
         }
         return new WorldPosition(mr.getParent().getTemplate().getId(), x, y, mr.getInstanceId(), mr);
+    }
+
+    public String logInfo() {
+        StringBuilder sb = new StringBuilder();
+
+        for (var map : getInstance().getWorldMaps().values()) {
+            sb.append("Map ID: ").append(map.getTemplate().getId())
+                    .append(", Name: ").append(map.getTemplate().getName())
+                    .append(", Instances: ").append(map.getAreas().size())
+                    .append("\n");
+        }
+        return sb.toString();
     }
 
     public static World getInstance() {

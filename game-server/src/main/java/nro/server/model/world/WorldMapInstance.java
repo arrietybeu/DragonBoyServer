@@ -2,7 +2,6 @@ package nro.server.model.world;
 
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
-import com.artemis.EntityManager;
 import com.artemis.managers.GroupManager;
 import com.artemis.utils.ImmutableBag;
 import lombok.Getter;
@@ -81,7 +80,7 @@ public class WorldMapInstance {
         }
     }
 
-    public com.artemis.utils.Bag<Entity> getPlayerInZone() {
+    public com.artemis.utils.Bag<Entity> getPlayersInZone() {
         lock.readLock().lock();
         try {
             var world = GameWorld.getInstance().getWorld();

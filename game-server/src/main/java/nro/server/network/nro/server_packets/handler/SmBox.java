@@ -19,6 +19,8 @@ public class SmBox extends NroServerPacket {
     private final byte type;
 
     public SmBox(List<Integer> items, int type) {
+        if (items == null) throw new IllegalArgumentException("items is null");
+        if (items.isEmpty()) throw new IllegalArgumentException("items is empty");
         this.items = items;
         this.type = (byte) type;
     }

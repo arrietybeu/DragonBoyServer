@@ -18,6 +18,9 @@ public final class InventoryService {
     public static void openInventoryBox(NroConnection client) {
         try {
             InventoryComponent inventoryComponent = client.getEntity().getComponent(InventoryComponent.class);
+            if (inventoryComponent.isDirty) {
+                logger.warn("Inventory box is dirty for client {}. Items may not be up to date.", client);
+            }
             client.sendPacket(new SmBox(inventoryComponent.itemsBox, 0));
             client.sendPacket(new SmBox(inventoryComponent.itemsBox, 1));
         } catch (Exception e) {

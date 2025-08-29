@@ -32,7 +32,6 @@ public class SmPlayerAdd extends NroServerPacket {
         writeInt(con.getPlayerID());
         writeInt(-1);// clan id
 
-
         if (PacketHelper.writePlayerInfo(this, playerInZone, state, position, appearance)) {
             writeByte(position.teleport);
             writeByte(appearance.isMonkey ? 1 : 0);
