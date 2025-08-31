@@ -26,9 +26,7 @@ public class CmPlayerMove extends NroClientPacket {
     protected void readImpl() {
         pIsOnGround = this.readByte();
         pNewX = this.readShort();
-        pNewY = getConnection().getEntity()
-                .getComponent(PositionComponent.class).y;
-        if (this.getRemainingBytes() > 0) pNewY = this.readShort();
+        pNewY = (getRemainingBytes() > 0) ? readShort() : null;
     }
 
     @Override

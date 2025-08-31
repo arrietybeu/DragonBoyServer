@@ -40,6 +40,7 @@ public class CMNotLogin extends NroClientPacket {
 
     @Override
     protected void readImpl() {
+
         this.command = readByte();
         switch (command) {
             case 0 -> {

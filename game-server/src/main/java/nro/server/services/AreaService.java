@@ -3,6 +3,7 @@ package nro.server.services;
 
 import com.artemis.Entity;
 import lombok.NoArgsConstructor;
+import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.world.World;
@@ -59,16 +60,16 @@ public final class AreaService {
                 Entity e = entities.get(i);
 
                 if (e == null) continue;
-
                 if (e.getId() == entityId) continue;
-
                 var playerComponent = e.getComponent(PlayerComponent.class);
 
                 if (playerComponent != null && playerComponent.isOnline()) {
                     var connect = playerComponent.connection;
                     if (connect.getState() != NroConnection.State.IN_GAME) continue;
 
-                    System.out.println("send packet player move to player: " + mapID);
+                    var info = e.getComponent(InfoComponent.class);
+
+                    System.out.println("player move :" + entityId + " to " + info.name + " in area " + areaID + " map " + mapID);
                     connect.sendPacket(packet);
                 }
             }

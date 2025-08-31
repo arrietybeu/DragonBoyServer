@@ -27,7 +27,6 @@ public class SmUpdateBody extends NroServerPacket {
         writeShort(appearance.head);
         writeShort(appearance.body);
         writeShort(appearance.leg);
-        System.out.println("write UPDATABE BODY: " + playerId + " head: " + appearance.head + " body: " + appearance.body + " leg: " + appearance.leg);
         writeByte(appearance.isMonkey ? 1 : 0);
     }
 

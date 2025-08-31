@@ -34,7 +34,6 @@ public class CmNotMap extends NroClientPacket {
     @Override
     protected void readImpl() {
         this.status = readByte();
-        System.out.println("Received CmNotMap with status: " + status);
         switch (status) {
             case ConstMsgNotMap.REQUEST_MAP_TEMPLATE -> {
                 if (isValideInGame()) {

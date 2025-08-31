@@ -80,10 +80,15 @@ public class WorldMap {
         areasLock.readLock().lock();
         try {
             if (instanceId < 0 || instanceId >= areas.size()) return null;
-            return areas.get(instanceId);
+            for (var area : areas) {
+                if (area != null && area.getInstanceId() == instanceId) {
+                    return area;
+                }
+            }
         } finally {
             areasLock.readLock().unlock();
         }
+        return null;
     }
 
     /**
@@ -173,6 +178,7 @@ public class WorldMap {
         }
 
         byte nextId = generateNextInstanceId();
+        System.out.println("TAO ZONE: " + nextId + " CHO: " + ownerId);
         WorldMapInstance instance = new WorldMapInstance(this, nextId, ownerId);
         GameWorld.getInstance().getWorld().inject(instance);
         addArea(instance);

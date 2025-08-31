@@ -49,6 +49,7 @@ public class World {
 
         byte typeMap = map.getTemplate().getTypeMap();
 
+        System.out.println(" player :" + ownerId + " mapId: " + mapId + " typeMap: " + typeMap);
         return switch (typeMap) {
             case ConstMap.MAP_OFFLINE -> map.getOrCreateUniqueInstance(ownerId); // Offline: unique per player.
             case ConstMap.MAP_TYPE_NORMAL -> {

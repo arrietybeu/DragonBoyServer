@@ -33,7 +33,8 @@ public final class CommandService {
                     String _line = sc.nextLine();
                     switch (_line) {
                         case "map_info" -> LOGGER.info(World.getInstance().logInfo());
-                        case "entity" -> GameWorld.getInstance().logWorldSummary();
+                        case "ecs_info" -> GameWorld.getInstance().logWorldSummary();
+                        case "entity_info" -> GameWorld.getInstance().logEntitiesWithComponentsJson(100);
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
 
                         case "thread" -> LOGGER.info(ThreadPoolManager.getInstance().getStats());

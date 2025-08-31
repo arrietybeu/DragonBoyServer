@@ -35,7 +35,7 @@ public class WorldMapInstance {
     private static final Logger log = LoggerFactory.getLogger(WorldMapInstance.class);
 
     public WorldMapInstance(WorldMap parent, byte instanceId) {
-        this(parent, instanceId, 0);
+        this(parent, instanceId, -190606);
     }
 
     public WorldMapInstance(WorldMap parent, byte instanceId, int ownerId) {
@@ -102,7 +102,7 @@ public class WorldMapInstance {
                 }
             }
 
-            System.out.println("Players in zone " + groupName + ": " + result.size());
+//            System.out.println("Players in zone " + groupName + ": " + result.size());
             return result;
         } finally {
             lock.readLock().unlock();

@@ -2,6 +2,9 @@ package nro.server.engine.entity;
 
 import com.artemis.*;
 import com.artemis.managers.GroupManager;
+import com.artemis.utils.Bag;
+import com.artemis.utils.BitVector;
+import com.artemis.utils.IntBag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,22 +45,6 @@ public class GameWorld {
             WorldConfiguration config = builder.build();
             this.world = new World(config);
             log.info("Artemis-odb World initialized successfully.");
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void expandEntityCapacity(int targetCapacity) {
-        lock.lock();
-        try {
-            log.debug("Expanding entity capacity to {}", targetCapacity);
-            int[] dummyIds = new int[targetCapacity];
-            for (int i = 0; i < targetCapacity; i++) {
-                dummyIds[i] = world.create();
-            }
-            for (int id : dummyIds) {
-                world.delete(id);
-            }
         } finally {
             lock.unlock();
         }
@@ -235,6 +222,55 @@ public class GameWorld {
 
         log.info("==================================");
     }
+
+    public void logEntitiesWithComponentsJson(int maxEntitiesToShow) {
+        if (world == null) {
+            log.warn("World is null, cannot dump entities.");
+            return;
+        }
+
+        AspectSubscriptionManager asm = world.getAspectSubscriptionManager();
+        EntitySubscription subAll = asm.get(Aspect.all());
+        BitVector activeIds = subAll.getActiveEntityIds();
+
+        int total = activeIds.cardinality();
+        int shown = Math.min(total, maxEntitiesToShow);
+
+        log.info("=== Active Entities Dump (count={}, shown={}) ===", total, shown);
+
+        ComponentManager cm = world.getComponentManager();
+        Bag<Component> bag = new Bag<>(16);
+
+        int count = 0;
+        for (int entityId = activeIds.nextSetBit(0);
+             entityId >= 0 && count < shown;
+             entityId = activeIds.nextSetBit(entityId + 1), count++) {
+
+            bag.clear();
+            cm.getComponentsFor(entityId, bag);
+
+            String json = componentsToJsonArray(bag);
+            log.info(" - {}: {}", entityId, json);
+        }
+
+        if (shown < total) {
+            log.info("... ({} more not shown)", (total - shown));
+        }
+        log.info("===============================================");
+    }
+
+    private static String componentsToJsonArray(Bag<Component> bag) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (int j = 0, n = bag.size(); j < n; j++) {
+            if (j > 0) sb.append(',');
+            String name = bag.get(j).getClass().getSimpleName();
+            sb.append('"').append(name).append('"');
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+
 
     private Field getPrivateField(Class<?> clazz, String name) {
         try {

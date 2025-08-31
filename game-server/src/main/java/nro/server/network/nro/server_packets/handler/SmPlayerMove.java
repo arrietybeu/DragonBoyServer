@@ -25,6 +25,7 @@ public class SmPlayerMove extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException, IOException {
+        System.out.println("write Player Move: " + playerId + " to " + newX + ", " + newY);
         writeInt(playerId);
         writeShort(newX);
         writeShort(newY);

@@ -141,9 +141,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
         int startPos = rb.position();
 
         byte cmd = rb.get();
-        if (!ConstsCmd.IGNORE_CMD.contains(cmd)) {
-            System.out.println("Received command: " + cmd);
-        }
+//        if (!ConstsCmd.IGNORE_CMD.contains(cmd)) {
+//            System.out.println("Received command: " + cmd);
+//        }
         byte b1 = rb.get();
         byte b2 = rb.get();
 
