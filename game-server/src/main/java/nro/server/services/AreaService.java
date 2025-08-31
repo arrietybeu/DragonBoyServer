@@ -3,7 +3,6 @@ package nro.server.services;
 
 import com.artemis.Entity;
 import lombok.NoArgsConstructor;
-import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.world.World;
@@ -16,7 +15,6 @@ import nro.server.network.nro.server_packets.handler.SmTeleport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * @author Arriety
  */
@@ -25,6 +23,15 @@ public final class AreaService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AreaService.class);
 
+    /**
+     * Phương thức này dùng để gửi một gói tin (packet) đến tất cả người chơi trong một khu vực cụ thể trên bản đồ.
+     * <p>Ví dụ: Chat gửi packet cho toàn bộ người chơi trong map kể cả người chat</p>
+     *
+     * @param mapID
+     * @param areaID
+     * @param packet
+     * @throws RuntimeException
+     */
     public void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet) throws RuntimeException {
         try {
 
@@ -50,6 +57,15 @@ public final class AreaService {
         }
     }
 
+    /**
+     * Phương thức này dùng để gửi packet cho tất cả người chơi trong area ngoại trừ người chơi có entityId được chỉ định.
+     * <p>Ví dụ: Player A di chuyển thì các người chơi trong area được nhận packet này, nhưng người chơi A sẽ không được nhận packet này</p>
+     *
+     * @param entityId
+     * @param mapID
+     * @param areaID
+     * @param packet
+     */
     public void sendPacketForALLPlayerInAreaNotMe(int entityId, int mapID, int areaID, NroServerPacket packet) {
         try {
 
@@ -67,9 +83,9 @@ public final class AreaService {
                     var connect = playerComponent.connection;
                     if (connect.getState() != NroConnection.State.IN_GAME) continue;
 
-                    var info = e.getComponent(InfoComponent.class);
+//                    var info = e.getComponent(InfoComponent.class);
+//                    LOGGER.info("player move :{} to {} in area {} map {}", entityId, info.name, areaID, mapID);
 
-                    System.out.println("player move :" + entityId + " to " + info.name + " in area " + areaID + " map " + mapID);
                     connect.sendPacket(packet);
                 }
             }
@@ -77,6 +93,13 @@ public final class AreaService {
             LOGGER.error("Error sending packet to all players in area (mapID: {}, areaID: {}): {}", mapID, areaID, e.getMessage(), e);
         }
     }
+
+    /**
+     * Phương thức này dùng khi (client) vào area thì sẽ gửi thông tin của thằng (client) đến tất cả người chơi trong area
+     * <p>Ví dụ: Player A vào map 0 area 0 ngay lập tức toàn bộ những người trong map 0 area 0 sẽ được nhận thông tin về người A </p>
+     *
+     * @param client
+     */
 
     public void sendMyInfoToPlayersInZone(NroConnection client) {
         try {
@@ -105,6 +128,12 @@ public final class AreaService {
         }
     }
 
+    /**
+     * Đây là phương thức phụ trợ của {@link  #sendMyInfoToPlayersInZone(NroConnection)} dùng để gửi toàn bộ thông tin của người trong khu vực đến Entity (client)
+     *
+     * @param entity
+     * @param area
+     */
     private void sendPlayersInfoInZoneToMe(Entity entity, WorldMapInstance area) {
 
         for (var playerInZone : area.getPlayersInZone()) {
@@ -119,7 +148,7 @@ public final class AreaService {
         }
     }
 
-    public void sendPacketPlayersInZoneNotMe(NroConnection ss, WorldMapInstance area) {
+    public void sendPacketPlayerExitArea(NroConnection ss, WorldMapInstance area) {
         var entity = ss.getEntity();
         var meID = ss.getPlayerID();
 

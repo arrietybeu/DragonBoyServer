@@ -29,9 +29,9 @@ public class FashionUpdateSystem extends IteratingSystem {
     public FashionUpdateSystem() {
         super(Aspect.all(
                 InventoryComponent.class,
-                AppearanceComponent.class
+                AppearanceComponent.class,
 //                ItemInfoComponent.class,
-//                QuestInstanceComponent.class
+                QuestInstanceComponent.class
         ));
     }
 

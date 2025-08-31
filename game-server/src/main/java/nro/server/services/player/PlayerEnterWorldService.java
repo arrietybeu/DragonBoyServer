@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class PlayerEnterWorldService {
 
+    // FIXME đoạn player vào world phải được bọc trong system của ecs thì sẽ an toàn hơn chứ không thể cho nó add như này được sau này sẽ sửa lại sau
+
     private static final Logger log = LoggerFactory.getLogger(PlayerEnterWorldService.class);
 
     private static final ConcurrentLinkedQueue<Integer> enteringWorld = new ConcurrentLinkedQueue<>();

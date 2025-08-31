@@ -26,7 +26,7 @@ public class CmPlayerMove extends NroClientPacket {
     protected void readImpl() {
         pIsOnGround = this.readByte();
         pNewX = this.readShort();
-        pNewY = (getRemainingBytes() > 0) ? readShort() : null;
+        pNewY = (getRemainingBytes() > 0) ? readShort() : -1;
     }
 
     @Override
@@ -40,7 +40,10 @@ public class CmPlayerMove extends NroClientPacket {
         if (pos == null) return;
         pos.isOnGroundNew = isGround;
         pos.newX = nx;
-        pos.newY = ny;
+        if (ny != -1) {
+            pos.newY = ny;
+        }
+
         pos.isDirtyMove = true;
     }
 

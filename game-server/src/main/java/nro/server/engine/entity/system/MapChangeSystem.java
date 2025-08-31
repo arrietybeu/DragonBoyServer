@@ -13,7 +13,6 @@ import nro.server.network.nro.server_packets.handler.SmMapInfo;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
-import nro.server.network.nro.server_packets.handler.SmTeleport;
 import nro.server.services.AreaService;
 import nro.server.services.NotifyService;
 import org.slf4j.Logger;
@@ -155,7 +154,7 @@ public final class MapChangeSystem extends IteratingSystem {
             throw new RuntimeException("Can't remove entity " + client.getPlayerID() + " from old area");
         }
 
-        AreaService.getInstance().sendPacketPlayersInZoneNotMe(client, oldArea);
+        AreaService.getInstance().sendPacketPlayerExitArea(client, oldArea);
     }
 
 
