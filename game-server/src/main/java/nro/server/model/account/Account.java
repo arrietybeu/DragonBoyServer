@@ -16,15 +16,17 @@ public class Account {
     private final String password;
     private final boolean ban;
     private boolean isAdmin;
+    private String ipForce;
 
+    private AccountTime accountTime;
 
-
-    public Account(int id, String username, String password, boolean isAdmin, boolean isBan) {
+    public Account(int id, String username, String password, boolean isAdmin, boolean isBan, String ipForce) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.isAdmin = isAdmin;
         this.ban = isBan;
+        this.ipForce = ipForce;
     }
 
     @Override

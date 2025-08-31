@@ -76,7 +76,7 @@ public final class MapChangeSystem extends IteratingSystem {
         if (waypoint == null) {
             keepInSafeZone(null, client, pos);
             NotifyService.SendNotifyPlayer(client, "Bạn không thể đi đến đây!");
-            throw new RuntimeException("Waypoint is null for entity " + info + " with mapId " + pos.mapId);
+            throw new RuntimeException("Waypoint is null for entity " + info + " with mapId " + pos.mapId + " at position " + pos.x + ", " + pos.y + " in area " + pos.getAreaId());
         }
 
         var newArea = World.getInstance().getAvailableInstance(waypoint.getGoMap(), info.id);
@@ -124,7 +124,7 @@ public final class MapChangeSystem extends IteratingSystem {
         int yNew = waypoint.getGoY();
 
 
-        this.entityEnterArea(client, pos,currentArea, newArea, xNew, yNew);
+        this.entityEnterArea(client, pos, currentArea, newArea, xNew, yNew);
 
         this.sendMessageChangerMap(client, pos);
 

@@ -131,7 +131,7 @@ public class WorldMapInstance {
                 return true;
             }
 
-            log.warn("Removing entity {} from group '{}'", id, groupName);
+            log.debug("Removing entity {} from group '{}'", id, groupName);
 
             gm.remove(e, groupName);
 

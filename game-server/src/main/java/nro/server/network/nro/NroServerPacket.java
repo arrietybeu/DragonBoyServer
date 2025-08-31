@@ -5,6 +5,8 @@ import nro.commons.network.Crypt;
 import nro.commons.network.packet.BaseServerPacket;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
@@ -17,6 +19,8 @@ public abstract class NroServerPacket extends BaseServerPacket {
 
     // 8192 - 2 (body length) - 2 (opCode) - 1 (staticServerPacketCode) - 2 (opCode flipped bits)
     public static final int MAX_USABLE_PACKET_BODY_SIZE = NetworkConfig.WRITE_BUFFER_SIZE;
+
+    protected static final Logger log = LoggerFactory.getLogger(NroServerPacket.class);
 
     /**
      * Checks if the given command is a special command.

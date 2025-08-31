@@ -22,4 +22,19 @@ public class Waypoint {
     private short goX;
     private short goY;
 
+    @Override
+    public String toString() {
+        return "Waypoint{" +
+                "minX=" + minX +
+                ", minY=" + minY +
+                ", maxX=" + maxX +
+                ", maxY=" + maxY +
+                ", isEnter=" + isEnter +
+                ", isOffline=" + isOffline +
+                ", name='" + name + '\'' +
+                ", goMap=" + goMap +
+                ", goX=" + goX +
+                ", goY=" + goY +
+                '}';
+    }
 }

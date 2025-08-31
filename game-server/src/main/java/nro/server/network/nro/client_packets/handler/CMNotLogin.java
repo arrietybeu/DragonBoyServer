@@ -40,7 +40,6 @@ public class CMNotLogin extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-
         this.command = readByte();
         switch (command) {
             case 0 -> {
@@ -76,6 +75,7 @@ public class CMNotLogin extends NroClientPacket {
         switch (command) {
             case 0 -> {
                 NroConnection connection = getConnection();
+
                 if (connection == null) {
                     throw new RuntimeException("Connection is null in CMNotLogin command 1");
                 }
@@ -94,8 +94,9 @@ public class CMNotLogin extends NroClientPacket {
 //                        if (!connection.getSessionInfo().isUpdateData())
                     sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                 } else {
-                    connection.sendPacket(new SmDialogMessage(NroAuthResponse.ACCOUNT_NOT_FOUND.getCode()));
+                    connection.sendPacket(new SmDialogMessage(response.getCode()));
                 }
+                connection.getSessionInfo().setLogin(true);
             }
             case 2 -> {
                 final SessionInfo session = getConnection().getSessionInfo();

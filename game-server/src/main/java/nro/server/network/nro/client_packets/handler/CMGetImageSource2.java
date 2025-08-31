@@ -9,7 +9,7 @@ import nro.server.network.nro.server_packets.handler.SMNotLogin;
 
 import java.util.Set;
 
-@AClientPacketHandler(command = ConstsCmd.GET_IMAGE_SOURCE2, validStates = {NroConnection.State.CONNECTED, NroConnection.State.IN_GAME})
+@AClientPacketHandler(command = ConstsCmd.GET_IMAGE_SOURCE2, validStates = {NroConnection.State.CONNECTED, NroConnection.State.AUTHED, NroConnection.State.IN_GAME})
 public class CMGetImageSource2 extends NroClientPacket {
 
     public CMGetImageSource2(int command, Set<NroConnection.State> validStates) {
@@ -21,7 +21,7 @@ public class CMGetImageSource2 extends NroClientPacket {
         var size = readShort();
         for (int i = 0; i < size; i++) {
             var imageSource = readUTF();
-            System.out.println("image source: " + imageSource + " size: " + size + " connect: " + getConnection());
+            log.debug("image source: {} size: {} connect: {}", imageSource, size, getConnection());
         }
     }
 

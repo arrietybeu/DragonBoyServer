@@ -15,6 +15,7 @@ import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
 import nro.server.configs.main.ThreadConfig;
 import nro.server.configs.network.NetworkConfig;
+import nro.server.controllers.AccountController;
 import nro.server.model.account.Account;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
@@ -89,18 +90,13 @@ public class NroConnection extends AConnection<NroServerPacket> {
     public NroConnection(SocketChannel sc, Dispatcher d) throws IOException {
         super(sc, d, NetworkConfig.READ_BUFFER_SIZE, NetworkConfig.WRITE_BUFFER_SIZE);
         this.state = State.CONNECTED;
-        String ip = getIP();
         connectionAliveChecker = new ConnectionAliveChecker();
         lastClientMessageTime = System.currentTimeMillis();
         this.sessionInfo = new SessionInfo();
         this.crypt = new Crypt();
-        log.debug("Connection established: {}", ip);
     }
 
     public Account getAccount() {
-        if (account == null) {
-            throw new IllegalStateException("Account is not set for connection: " + this);
-        }
         return account;
     }
 
@@ -244,6 +240,12 @@ public class NroConnection extends AConnection<NroServerPacket> {
                 log.info("clear sendMsgQueue for onDisconnect size: {}", sendMsgQueue.size());
                 sendMsgQueue.clear();
             }
+        }
+
+        var account = getAccount();
+
+        if (account != null) {
+            AccountController.removeAccountOnLS(account);
         }
 
         var player = getEntity();

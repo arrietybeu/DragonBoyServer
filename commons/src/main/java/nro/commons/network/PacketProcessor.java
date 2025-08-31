@@ -69,7 +69,7 @@ public class PacketProcessor<T extends AConnection<?>> {
             return false;
 
         String name = "PacketProcessor:" + threads.size();
-        log.debug("===== Creating new PacketProcessor Thread: {} =====", name);
+        log.debug("===== Creating new PacketProcessor Thread: {} min thread {} max thread {} =====", name, minThreads, maxThreads);
 
         Thread t = Thread.ofVirtual().name(name).unstarted(new PacketProcessorTask());
         threads.add(t);

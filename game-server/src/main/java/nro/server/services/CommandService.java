@@ -6,6 +6,7 @@ import nro.commons.utils.ExitCode;
 import nro.commons.utils.SystemInfo;
 import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.GameServer;
+import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
 import nro.server.engine.entity.GameWorld;
@@ -36,7 +37,7 @@ public final class CommandService {
                         case "ecs_info" -> GameWorld.getInstance().logWorldSummary();
                         case "entity_info" -> GameWorld.getInstance().logEntitiesWithComponentsJson(100);
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
-
+                        case "reload_ban_ip" -> BannedIpController.reload();
                         case "thread" -> LOGGER.info(ThreadPoolManager.getInstance().getStats());
                         case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                         case "session" ->

@@ -1,5 +1,6 @@
 package nro.commons.database;
 
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,13 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class Database {
 
     private static final Logger log = LoggerFactory.getLogger(Database.class);
-
-    private Database() {
-        throw new UnsupportedOperationException("Utility class");
-    }
 
     /**
      * Thực hiện truy vấn SELECT (chỉ đọc dữ liệu).
@@ -62,15 +60,14 @@ public final class Database {
 
     public static boolean select(String query, ReadStatementHandler reader) {
         try (Connection con = DatabaseFactory.getConnection();
-
-             PreparedStatement stmt = con.prepareStatement(query);
-             ResultSet set = stmt.executeQuery()) {
+             PreparedStatement stmt = con.prepareStatement(query)) {
 
             if (reader instanceof ParamReadStatementHandler paramReader)
                 paramReader.setParams(stmt);
 
-            reader.handleRead(set);
-
+            try (ResultSet set = stmt.executeQuery()) {
+                reader.handleRead(set);
+            }
             return true;
 
         } catch (Exception e) {
@@ -88,6 +85,7 @@ public final class Database {
      *     // set tham số
      * });
      * </code></pre>
+     *
      * @param query
      * @param reader
      * @param paramSetter
@@ -111,6 +109,23 @@ public final class Database {
         }
     }
 
+    public static boolean select(Connection con, String query,
+                                 SQLConsumer<ResultSet> reader,
+                                 SQLConsumer<PreparedStatement> paramSetter) {
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+
+            if (paramSetter != null) paramSetter.accept(stmt);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                reader.accept(rs);
+            }
+
+            return true;
+        } catch (Exception e) {
+            log.error("Error executing select query {}", query, e);
+            return false;
+        }
+    }
 
     /**
      * Cập nhật dữ liệu không có tham số (INSERT hoặc UPDATE)
@@ -119,9 +134,10 @@ public final class Database {
      * <p>
      * Ví dụ trong game:
      * <p>
-     *   - Thêm người chơi mới vào database
+     * - Thêm người chơi mới vào database
      * <p>
-     *   - Cập nhật vị trí hiện tại của nhân vật
+     * - Cập nhật vị trí hiện tại của nhân vật
+     *
      * @param query Câu truy vấn UPDATE
      */
     public static boolean insertUpdate(String query) {
@@ -152,6 +168,15 @@ public final class Database {
         } catch (Exception e) {
             log.error("Execute update failed for SQL: {}", sql, e);
             return -1;
+        }
+    }
+
+    public static <T> T withConnection(SQLFunction<Connection, T> work) {
+        try (Connection con = DatabaseFactory.getConnection()) {
+            return work.apply(con);
+        } catch (Exception e) {
+            log.error("withConnection failed", e);
+            return null;
         }
     }
 

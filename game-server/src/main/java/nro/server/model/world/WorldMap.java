@@ -178,7 +178,7 @@ public class WorldMap {
         }
 
         byte nextId = generateNextInstanceId();
-        System.out.println("TAO ZONE: " + nextId + " CHO: " + ownerId);
+        log.debug("TAO ZONE: {} CHO: {}", nextId, ownerId);
         WorldMapInstance instance = new WorldMapInstance(this, nextId, ownerId);
         GameWorld.getInstance().getWorld().inject(instance);
         addArea(instance);
@@ -247,6 +247,7 @@ public class WorldMap {
     }
 
     public Waypoint getWayPointInMap(int x, int y, int playerID) {
+        log.debug("[WP] start id={}, player={}, q=({}, {})", id, playerID, x, y);
         try {
             if (id == 46) {
                 int delta = 1000;
@@ -263,14 +264,16 @@ public class WorldMap {
                 var entry = template.getWaypointMap().floorEntry(x);
                 if (entry != null) {
                     for (Waypoint wp : entry.getValue()) {
-                        if (x >= wp.getMinX() && x <= wp.getMaxX() && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                        log.debug("waypoint: {} ", wp);
+                        // FIXME tại client msg -7 t xử lý msg ngu quá nó cứ set y = 0 nên là lỗi không tìm thấy waypoint thôi thì tạm thời đóng chức năng check y nhé =)))
+                        if (x >= wp.getMinX() && x <= wp.getMaxX() /* && y >= wp.getMinY() && y <= wp.getMaxY()*/) {
                             return wp;
                         }
                     }
                 }
             }
         } catch (Exception ex) {
-            throw new RuntimeException("Error getting waypoint for player: " + playerID, ex);
+            throw new RuntimeException("Error getting waypoint for player: " + playerID + " x: " + x + "-y: " + y, ex);
         }
         return null;
     }

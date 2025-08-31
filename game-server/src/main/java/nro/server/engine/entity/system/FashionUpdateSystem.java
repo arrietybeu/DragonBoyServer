@@ -55,7 +55,7 @@ public class FashionUpdateSystem extends IteratingSystem {
 
         if (!inventory.isDirty) return;
 
-        log.info("load system fashion update for entity: {}", entityId);
+        log.debug("load system fashion update for entity: {}", entityId);
         // khi người người chơi thay đồ, dùng skill thay đổi hình thể thì sẽ reset lại và load lại fashion
         this.resetFashion(appearance);
 
@@ -97,9 +97,7 @@ public class FashionUpdateSystem extends IteratingSystem {
             appearance.flagBag = 28;
         }
 
-        System.out.println("head : " + appearance.head + ", body: " + appearance.body + ", leg: " + appearance.leg +
-                ", flagBag: " + appearance.flagBag + ", aura: " + appearance.aura + ", effSetItem: " + appearance.effSetItem +
-                ", idHat: " + appearance.idHat);
+        log.debug("head : {}, body: {}, leg: {}, flagBag: {}, aura: {}, effSetItem: {}, idHat: {}", appearance.head, appearance.body, appearance.leg, appearance.flagBag, appearance.aura, appearance.effSetItem, appearance.idHat);
         inventory.isDirty = false;
     }
 

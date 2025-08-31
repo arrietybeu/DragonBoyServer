@@ -36,6 +36,10 @@ public final class PlayerEnterWorldService {
         if (client == null)
             throw new NullPointerException("Client EnterWorldService cannot be null");
 
+        // FIXME thằng nào sửa client nó gửi login 2 lần đi trời
+        if (client.getAccount() == null)
+            return;
+
         int accountId = client.getAccount().getId();
 
         int playerId = PlayerDAO.findPlayerIdByAccountId(accountId);

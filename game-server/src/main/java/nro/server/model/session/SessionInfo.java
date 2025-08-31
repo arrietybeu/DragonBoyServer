@@ -16,6 +16,7 @@ public class SessionInfo {
     private boolean isUpdateItem;
 
     private boolean isLogin;
+    private boolean isEnterWorld;
 
     private boolean isClientOk;
     public SessionInfo() {
