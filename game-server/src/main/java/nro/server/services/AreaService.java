@@ -35,8 +35,6 @@ public final class AreaService {
      */
     public void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet) throws RuntimeException {
         try {
-
-            LOGGER.debug("Sending packet to all players in area (mapID: {}, areaID: {})", mapID, areaID);
             var area = World.getInstance().getAreaInMap(mapID, areaID);
 
             var entities = area.getEntities();
@@ -50,10 +48,6 @@ public final class AreaService {
                 if (playerComponent != null && playerComponent.isOnline()) {
                     var connect = playerComponent.connection;
                     if (connect.getState() != NroConnection.State.IN_GAME) continue;
-
-                    var info = e.getComponent(InfoComponent.class);
-
-                    LOGGER.debug("send chat cho thằng : {} entity id: {}", info.name, e.getId());
                     connect.sendPacket(packet);
                 }
             }
@@ -122,11 +116,6 @@ public final class AreaService {
                     var connect = playerComponent.connection;
                     if (connect.getState() != NroConnection.State.IN_GAME) continue;
                     // send thông tin của client đến playerInZone
-                    var info = playerInZone.getComponent(InfoComponent.class);
-                    var infoMe = entity.getComponent(InfoComponent.class);
-
-                    LOGGER.debug("Gửi thông tin của {} đến {} name: {}", entity.getId(), info.id, info.name);
-                    LOGGER.debug("Gửi thông tin của {} đến {} name: {}", infoMe.id, infoMe.name, info.name);
                     connect.sendPacket(new SmPlayerAdd(entity));
                 }
             }
@@ -166,8 +155,10 @@ public final class AreaService {
             if (playerInZone == null || playerInZone.equals(entity)) continue;
             var playerComponent = playerInZone.getComponent(PlayerComponent.class);
             if (playerComponent != null && playerComponent.isOnline()) {
+
                 var client = entity.getComponent(PlayerComponent.class);
-                client.connection.sendPacket(new SmTeleport());
+                var info = entity.getComponent(InfoComponent.class);
+                client.connection.sendPacket(new SmTeleport(meID));
                 client.connection.sendPacket(new SmPlayerRemove(meID));
             }
         }

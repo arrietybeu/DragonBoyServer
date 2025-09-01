@@ -25,14 +25,15 @@ public class SmPlayerAdd extends NroServerPacket {
         if (playerInZone == null)
             throw new RuntimeException("playerEntity is null!!!");
 
+        var info = playerInZone.getComponent(InfoComponent.class);
         var appearance = playerInZone.getComponent(AppearanceComponent.class);
         var position = playerInZone.getComponent(PositionComponent.class);
         var state = playerInZone.getComponent(StateComponent.class);
         var fusion = playerInZone.getComponent(FusionComponent.class);
-        writeInt(con.getPlayerID());
+        writeInt(info.id);
         writeInt(-1);// clan id
 
-        if (PacketHelper.writePlayerInfo(this, playerInZone, state, position, appearance)) {
+        if (PacketHelper.writePlayerInfo(this, playerInZone, info, state, position, appearance)) {
             writeByte(position.teleport);
             writeByte(appearance.isMonkey ? 1 : 0);
             writeShort(appearance.mount);

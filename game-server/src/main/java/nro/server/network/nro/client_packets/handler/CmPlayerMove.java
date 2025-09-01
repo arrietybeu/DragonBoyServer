@@ -40,8 +40,11 @@ public class CmPlayerMove extends NroClientPacket {
         if (pos == null) return;
         pos.isOnGroundNew = isGround;
         pos.newX = nx;
+
         if (ny != -1) {
             pos.newY = ny;
+        } else {
+            pos.newY = pos.y;
         }
 
         pos.isDirtyMove = true;

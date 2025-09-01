@@ -136,12 +136,13 @@ public class SmSubCommand extends NroServerPacket {
 
     private void sendLoadMapCharInMap(NroConnection connection) {
         var entity = connection.getEntity();
+        var info = entity.getComponent(InfoComponent.class);
         var appearance = entity.getComponent(AppearanceComponent.class);
         var state = entity.getComponent(StateComponent.class);
         var position = entity.getComponent(PositionComponent.class);
-        writeInt(connection.getPlayerID());
+        writeInt(info.id);
         writeInt(-1);
-        PacketHelper.writePlayerInfo(this, entity, state, position, appearance);
+        PacketHelper.writePlayerInfo(this, entity, info, state, position, appearance);
         writeShort(appearance.aura);
         writeByte(appearance.effSetItem);
         writeShort(appearance.idHat);

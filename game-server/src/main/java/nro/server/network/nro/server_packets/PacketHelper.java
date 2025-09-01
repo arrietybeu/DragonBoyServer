@@ -133,9 +133,8 @@ public final class PacketHelper {
         position.teleport = 0;
     }
 
-    public static boolean writePlayerInfo(NroServerPacket packet, Entity entity, StateComponent state, PositionComponent position, AppearanceComponent appearance) {
+    public static boolean writePlayerInfo(NroServerPacket packet, Entity entity, InfoComponent info, StateComponent state, PositionComponent position, AppearanceComponent appearance) {
         var buff = entity.getComponent(BuffComponent.class);
-        var info = entity.getComponent(InfoComponent.class);
         var heal = entity.getComponent(HealthComponent.class);
 
         packet.writeByte(1);// level

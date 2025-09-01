@@ -168,6 +168,7 @@ public class WorldMap {
         if (ownerId < 0) {
             throw new IllegalArgumentException("Invalid ownerId: " + ownerId);
         }
+        log.debug("init zone offline cho player: {}", ownerId);
 
         Byte existing = ownerToInstance.get(ownerId);
         if (existing != null) {
