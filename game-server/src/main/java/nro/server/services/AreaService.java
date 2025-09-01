@@ -156,10 +156,9 @@ public final class AreaService {
             var playerComponent = playerInZone.getComponent(PlayerComponent.class);
             if (playerComponent != null && playerComponent.isOnline()) {
 
-                var client = entity.getComponent(PlayerComponent.class);
-                var info = entity.getComponent(InfoComponent.class);
-                client.connection.sendPacket(new SmTeleport(meID));
-                client.connection.sendPacket(new SmPlayerRemove(meID));
+                playerComponent.connection.sendPacket(new SmTeleport(meID));
+                playerComponent.connection.sendPacket(new SmPlayerRemove(meID));
+
             }
         }
     }
