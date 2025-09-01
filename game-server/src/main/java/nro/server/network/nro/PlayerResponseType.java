@@ -17,9 +17,9 @@ public enum PlayerResponseType {
 
     CREATION_FAILED_ACCOUNT_HAS_CHAR(12, "Mỗi tài khoản chỉ được tạo một nhân vật duy nhất."),
 
-    CREATION_FAILED_GENDER_INVALID(13, "Chọn giới tính không hợp lệ. Vui lòng chọn lại."),
+    CREATION_FAILED_GENDER_INVALID(13, "Chọn hành tinh không hợp lệ. Vui lòng chọn lại."),
 
-    CREATION_FAILED_HAIR_INVALID(14, "Kiểu tóc không hợp lệ cho giới tính đã chọn. Vui lòng chọn lại."),
+    CREATION_FAILED_HAIR_INVALID(14, "Kiểu tóc không hợp lệ cho hành tinh đã chọn. Vui lòng chọn lại."),
 
     CREATION_FAILED_SERVER_ERROR(19, "Không thể tạo nhân vật do lỗi từ máy chủ. Vui lòng thử lại sau."),
 

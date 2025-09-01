@@ -26,6 +26,7 @@ public class AccountController {
     public static NroAuthResponse Login(String username, String password, NroConnection connection) {
 
         var ip = connection.getIP();
+        
         if (BannedIpController.isBanned(ip)) return NroAuthResponse.IP_BLOCKED;
 
         long remainMs = LoginThrottle.getRemainingMs(ip);
@@ -73,6 +74,7 @@ public class AccountController {
 
             accountsOnline.put(account.getId(), connection);
         }
+        LoginThrottle.onLoginSuccess(ip);
 
         return NroAuthResponse.SUCCESS;
     }

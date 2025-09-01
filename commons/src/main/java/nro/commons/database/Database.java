@@ -188,6 +188,18 @@ public final class Database {
         }
     }
 
+    public static boolean insertUpdate(Connection con, String sql, IUStH batch) {
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            if (batch != null) batch.handleInsertUpdate(stmt);
+            else stmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            log.error("Failed to execute IU query {}", sql, e);
+            return false;
+        }
+    }
+
+
     public static <T> T withConnection(SQLFunction<Connection, T> work) {
         try (Connection con = DatabaseFactory.getConnection()) {
             return work.apply(con);
@@ -294,7 +306,6 @@ public final class Database {
             return false;
         }
     }
-
 
     /**
      * Đóng PreparedStatemet, kết nối của nó và ResultSet cuối cùng

@@ -12,9 +12,10 @@ import nro.server.network.nro.NroConnection;
  * @author Arriety
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class NpcService {
+public final class NpcService {
 
     public void openMenuNpc(NroConnection client, int npcId) {
+
         var positions = client.getEntity().getComponent(PositionComponent.class);
         var currentMap = World.getInstance().getMap(positions.mapId);
 

@@ -39,7 +39,7 @@ public final class MapChangeSystem extends IteratingSystem {
             handler(entityId);
         } catch (Throwable t) {
             PositionComponent pos = posMapper.get(entityId);
-            PlayerComponent pc = clients.get(entityId);
+            var pc = clients.get(entityId);
             if (pos != null) pos.wantsToChangeMap = false;
             if (pc != null && pc.connection != null) {
                 NotifyService.SendNotifyPlayer(pc.connection, "Có lỗi khi đổi map, đã đưa bạn về khu an toàn.");

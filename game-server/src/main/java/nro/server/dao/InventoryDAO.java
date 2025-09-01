@@ -2,6 +2,7 @@ package nro.server.dao;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import lombok.NoArgsConstructor;
 import nro.server.configs.main.ConfigCharacter;
 import nro.server.data_holders.data.ItemInventoryData;
 import nro.server.engine.entity.GameWorld;
@@ -20,6 +21,7 @@ import java.util.*;
 /**
  * @author Arriety
  */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class InventoryDAO {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryDAO.class);

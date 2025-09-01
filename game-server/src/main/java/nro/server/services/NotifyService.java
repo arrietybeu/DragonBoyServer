@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * @author Arriety
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class NotifyService {
+public final class NotifyService {
 
     private static final Logger log = LoggerFactory.getLogger(NotifyService.class);
 

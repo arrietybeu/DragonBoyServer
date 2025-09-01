@@ -1,5 +1,7 @@
 package nro.server.services.player;
 
+import lombok.NoArgsConstructor;
+import nro.server.dao.PlayerDAO;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
@@ -12,7 +14,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class PlayerLeaveWorldService {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class PlayerLeaveWorldService {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerLeaveWorldService.class);
 
@@ -36,6 +39,8 @@ public class PlayerLeaveWorldService {
         if (!worldMapInstance.removeEntity(entity.getId())) {
             log.error("Failed to remove player entity with ID {} from world map instance (map ID: {}, area ID: {}).", entity.getId(), positionComponent.mapId, positionComponent.getAreaId());
         }
+
+        PlayerDAO.savePlayerEntity(entity);
 
         // Delete entity from the world ecs
         GameWorld.getInstance().deleteEntity(entity.getId());

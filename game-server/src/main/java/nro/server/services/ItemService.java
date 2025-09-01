@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class ItemService {
+public final class ItemService {
 
     private static final Logger log = LoggerFactory.getLogger(ItemService.class);
 

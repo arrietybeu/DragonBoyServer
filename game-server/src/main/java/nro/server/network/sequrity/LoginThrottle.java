@@ -13,7 +13,7 @@ import static nro.server.utils.Utils.humanize;
  * @author Arriety
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
-public class LoginThrottle {
+public final class LoginThrottle {
 
     private static final Logger log = LoggerFactory.getLogger(LoginThrottle.class);
 

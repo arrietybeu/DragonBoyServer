@@ -204,7 +204,6 @@ public class PlayerDAO {
     }
 
     private static int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head) throws SQLException {
-        // var ms = System.currentTimeMillis();
         int playerId;
         try (CallableStatement stmt = connection.prepareCall(QUERY_CALL_CREATE_PLAYER)) {
             stmt.setInt(1, accountId);
@@ -403,12 +402,30 @@ public class PlayerDAO {
 
     private static final int ________________SAVE_PLAYER_ENTITY________________ = -1;
 
-    public static boolean savePlayerEntity() {
+    public static boolean savePlayerEntity(Entity entity) {
+
+        Database.withConnection(connection -> {
+            savePlayerLocation(connection, entity, entity.getComponent(InfoComponent.class).id);
+            return null;
+        });
         return false;
     }
 
-    public static boolean savePlayerEntity(Entity entity) {
-        return false;
+    private static void savePlayerLocation(Connection conn, Entity entity, int playerId) throws SQLException {
+        PositionComponent pos = entity.getComponent(PositionComponent.class);
+        if (pos == null) return;
+
+        final String sql =
+                "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) " +
+                        "VALUES (?, ?, ?, ?) " +
+                        "ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), map_id = VALUES(map_id)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, playerId);
+            ps.setInt(2, pos.x);
+            ps.setInt(3, pos.y);
+            ps.setInt(4, pos.mapId);
+            ps.executeUpdate();
+        }
     }
 
     private static final int ________________SUPPORT________________ = -1;
