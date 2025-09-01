@@ -67,7 +67,7 @@ public final class PlayerEnterWorldService {
 
                     PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
 
-                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, playerId, positionComponent.getAreaId());
+                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, entity.getId(), positionComponent.getAreaId());
                     if (instance == null) {
                         log.error("No available instance for player: {}", playerId);
                         client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));

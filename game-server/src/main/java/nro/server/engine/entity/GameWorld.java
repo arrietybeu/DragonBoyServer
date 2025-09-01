@@ -5,6 +5,7 @@ import com.artemis.managers.GroupManager;
 import com.artemis.utils.Bag;
 import com.artemis.utils.BitVector;
 import com.artemis.utils.IntBag;
+import nro.server.services.EntityQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,7 @@ public class GameWorld {
     private ExecutorService executor;
     private final long tickInterval;
     private final ReentrantLock lock = new ReentrantLock();
+    public static EntityQueryService queryService;
 
     private GameWorld() {
         int ticksPerSecond = 60;
@@ -44,6 +46,7 @@ public class GameWorld {
             }
             WorldConfiguration config = builder.build();
             this.world = new World(config);
+            queryService = new EntityQueryService(world);
             log.info("Artemis-odb World initialized successfully.");
         } finally {
             lock.unlock();
@@ -297,6 +300,14 @@ public class GameWorld {
     public GroupManager getGroupManager() {
         return world.getSystem(GroupManager.class);
     }
+
+    public static EntityQueryService query() {
+        if (queryService == null) {
+            throw new IllegalStateException("EntityQueryService not initialized. Call GameWorld.initialize() first.");
+        }
+        return queryService;
+    }
+
 
     private static class SingletonHolder {
         private static final GameWorld instance = new GameWorld();

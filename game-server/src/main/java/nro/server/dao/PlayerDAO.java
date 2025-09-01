@@ -296,7 +296,7 @@ public class PlayerDAO {
                     var x = rs.getShort("pos_x");
                     var y = rs.getShort("pos_y");
 
-                    var position = nro.server.model.world.World.getInstance().createPosition(mapId, playerId, x, y);
+                    var position = nro.server.model.world.World.getInstance().createPosition(mapId, entity.getId(), x, y);
 
                     if (position == null)
                         throw new SQLException("Khong load duoc position cua World: " + mapId);

@@ -63,8 +63,8 @@ public class World {
         };
     }
 
-    public WorldPosition createPosition(int mapId, int playerId, short x, short y, int... zoneID) {
-        WorldMapInstance mr = this.getAvailableInstance(mapId, playerId, zoneID);
+    public WorldPosition createPosition(int mapId, int entityID, short x, short y, int... zoneID) {
+        WorldMapInstance mr = this.getAvailableInstance(mapId, entityID, zoneID);
         if (mr == null) {
             log.info("Failed to create position (invalid coords: x={}, y={} for mapId {} in instanceId {})"
                     , x, y, mapId, zoneID);

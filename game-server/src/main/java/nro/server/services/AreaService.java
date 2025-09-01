@@ -3,9 +3,7 @@ package nro.server.services;
 
 import com.artemis.Entity;
 import lombok.NoArgsConstructor;
-import nro.server.model.ecs.component.InfoComponent;
-import nro.server.model.ecs.component.PositionComponent;
-import nro.server.model.ecs.component.player.PlayerComponent;
+import nro.server.engine.entity.GameWorld;
 import nro.server.model.world.World;
 import nro.server.model.world.WorldMapInstance;
 import nro.server.network.nro.NroConnection;
@@ -21,6 +19,11 @@ import org.slf4j.LoggerFactory;
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class AreaService {
+
+    private static final EntityQueryService entityQueryService = GameWorld.query();
+
+
+    // FIXME class này rác lắm đừng đọc (chạy được là được rồi)
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AreaService.class);
 
@@ -43,7 +46,7 @@ public final class AreaService {
 
                 if (e == null) continue;
 
-                var playerComponent = e.getComponent(PlayerComponent.class);
+                var playerComponent = entityQueryService.getPlayer(e.getId());
 
                 if (playerComponent != null && playerComponent.isOnline()) {
                     var connect = playerComponent.connection;
@@ -76,14 +79,11 @@ public final class AreaService {
 
                 if (e == null) continue;
                 if (e.getId() == entityId) continue;
-                var playerComponent = e.getComponent(PlayerComponent.class);
+                var playerComponent = entityQueryService.getPlayer(e.getId());
 
                 if (playerComponent != null && playerComponent.isOnline()) {
                     var connect = playerComponent.connection;
                     if (connect.getState() != NroConnection.State.IN_GAME) continue;
-
-                    var info = e.getComponent(InfoComponent.class);
-                    LOGGER.info("player move :{} to {} in area {} map {}", entityId, info.name, areaID, mapID);
 
                     connect.sendPacket(packet);
                 }
@@ -103,14 +103,14 @@ public final class AreaService {
     public void sendMyInfoToPlayersInZone(NroConnection client) {
         try {
             var entity = client.getEntity();
-            var position = entity.getComponent(PositionComponent.class);
+            var position = entityQueryService.getPosition(entity.getId());
 
             var area = World.getInstance().getAreaInMap(position.mapId, position.getAreaId());
 
             for (var playerInZone : area.getPlayersInZone()) {
                 if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;
 
-                var playerComponent = playerInZone.getComponent(PlayerComponent.class);
+                var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
 
                 if (playerComponent != null && playerComponent.isOnline()) {
                     var connect = playerComponent.connection;
@@ -138,10 +138,10 @@ public final class AreaService {
         for (var playerInZone : area.getPlayersInZone()) {
 
             if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;
-            var playerComponent = playerInZone.getComponent(PlayerComponent.class);
+            var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
 
             if (playerComponent != null && playerComponent.isOnline()) {
-                var client = entity.getComponent(PlayerComponent.class);
+                var client = entityQueryService.getPlayer(entity.getId());
                 client.connection.sendPacket(new SmPlayerAdd(playerInZone));
             }
         }
@@ -150,13 +150,14 @@ public final class AreaService {
     public void sendPacketPlayerExitArea(NroConnection ss, WorldMapInstance area) {
         var entity = ss.getEntity();
         var meID = ss.getPlayerID();
+        byte teleport = entityQueryService.getPosition(ss.getEntity().getId()).teleport;
 
         for (var playerInZone : area.getPlayersInZone()) {
             if (playerInZone == null || playerInZone.equals(entity)) continue;
-            var playerComponent = playerInZone.getComponent(PlayerComponent.class);
+            var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
             if (playerComponent != null && playerComponent.isOnline()) {
 
-                playerComponent.connection.sendPacket(new SmTeleport(meID));
+                playerComponent.connection.sendPacket(new SmTeleport(meID, teleport));
                 playerComponent.connection.sendPacket(new SmPlayerRemove(meID));
 
             }

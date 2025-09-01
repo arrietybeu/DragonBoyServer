@@ -79,7 +79,7 @@ public final class MapChangeSystem extends IteratingSystem {
             throw new RuntimeException("Waypoint is null for entity " + info + " with mapId " + pos.mapId + " at position " + pos.x + ", " + pos.y + " in area " + pos.getAreaId());
         }
 
-        var newArea = World.getInstance().getAvailableInstance(waypoint.getGoMap(), info.id);
+        var newArea = World.getInstance().getAvailableInstance(waypoint.getGoMap(), entityId);
 
         if (newArea == null) {
             this.keepInSafeZone(waypoint, client, pos);

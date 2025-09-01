@@ -137,10 +137,7 @@ public class WorldMap {
         }
     }
 
-    /**
-     * Thread‑safe write
-     **/
-    public WorldMapInstance removeArea(byte instanceId) {
+    public WorldMapInstance removeEntityInArea(byte instanceId) {
         areasLock.writeLock().lock();
         try {
             if (instanceId < 0 || instanceId >= areas.size()) {
