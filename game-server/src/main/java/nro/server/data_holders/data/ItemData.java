@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,10 +42,13 @@ public final class ItemData implements GameEngine {
 
     @Override
     public void init() throws Throwable {
-        loadItemOptionTemplate();
-        loadItemTemplate();
-        loadItemArrHead2Frame();
-        loadItemHead();
+        Database.withConnection(connection -> {
+            loadItemOptionTemplate(connection);
+            loadItemTemplate(connection);
+            loadItemArrHead2Frame(connection);
+            loadItemHead(connection);
+            return null;
+        });
     }
 
     @Override
@@ -57,9 +61,9 @@ public final class ItemData implements GameEngine {
         this.dataItemOption = null;
     }
 
-    private void loadItemHead() {
+    private void loadItemHead(Connection connection) {
         String query = "SELECT * FROM item_head";
-        Database.select(query, rs -> {
+        Database.select(connection, query, rs -> {
             while (rs.next()) {
                 int headId = rs.getInt("head_id");
                 int avatarId = rs.getInt("avatar_id");
@@ -85,9 +89,9 @@ public final class ItemData implements GameEngine {
         buf.get(this.dataItemHead);
     }
 
-    private void loadItemOptionTemplate() {
+    private void loadItemOptionTemplate(Connection con) {
         String query = "SELECT * FROM item_option_template";
-        Database.select(query, rs -> {
+        Database.select(con, query, rs -> {
             while (rs.next()) {
                 var id = rs.getInt("id");
                 var name = rs.getString("name");
@@ -120,9 +124,9 @@ public final class ItemData implements GameEngine {
         buf.get(this.dataItemOption);
     }
 
-    private void loadItemTemplate() {
+    private void loadItemTemplate(Connection con) {
         String sql = "SELECT * FROM `item_template`";
-        Database.select(sql, resultSet -> {
+        Database.select(con, sql, resultSet -> {
             while (resultSet.next()) {
                 var id = resultSet.getShort("id");
                 var type = resultSet.getByte("type");
@@ -185,9 +189,9 @@ public final class ItemData implements GameEngine {
         buf.get(this.dataItemTemplate);
     }
 
-    private void loadItemArrHead2Frame() {
+    private void loadItemArrHead2Frame(Connection con) {
         String sql = "SELECT id, head_one, head_two FROM `item_arr_head_2frame`";
-        Database.select(sql, resultSet -> {
+        Database.select(con, sql, resultSet -> {
             while (resultSet.next()) {
                 var id = resultSet.getInt("id");
                 var head_one = resultSet.getInt("head_one");

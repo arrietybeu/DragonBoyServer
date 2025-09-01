@@ -13,15 +13,16 @@ import java.io.IOException;
 @ServerPacketCommand(ConstsCmd.CHAT_MAP)
 public class SmChatMap extends NroServerPacket {
 
+    private final int playerID;
     private final String message;
 
-    public SmChatMap(String message) {
+    public SmChatMap(int playerID, String message) {
+        this.playerID = playerID;
         this.message = message;
     }
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException, IOException {
-        var playerID = con.getPlayerID();
         this.writeInt(playerID);
         this.writeUTF(message);
     }

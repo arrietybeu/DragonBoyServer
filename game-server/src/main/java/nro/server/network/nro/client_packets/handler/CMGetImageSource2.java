@@ -27,8 +27,11 @@ public class CMGetImageSource2 extends NroClientPacket {
 
     @Override
     protected void runImpl() {
+        if (getConnection().getSessionInfo().isSendVersion())
+            return;
         sendPacket(new SMGetImageSource(0));
         sendPacket(new SMNotLogin());
+        getConnection().getSessionInfo().setSendVersion(true);
     }
 
 }

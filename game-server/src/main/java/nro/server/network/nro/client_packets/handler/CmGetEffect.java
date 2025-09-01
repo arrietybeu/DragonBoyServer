@@ -22,7 +22,6 @@ public class CmGetEffect extends NroClientPacket {
     @Override
     protected void readImpl() {
         this.idEffect = this.readShort();
-        System.out.println("Received CmGetEffect with id: " + idEffect);
     }
 
     @Override

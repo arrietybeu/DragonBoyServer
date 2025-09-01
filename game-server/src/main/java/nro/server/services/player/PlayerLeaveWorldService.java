@@ -33,8 +33,8 @@ public class PlayerLeaveWorldService {
             return;
         }
 
-        if (!worldMapInstance.removeEntity(con.getPlayerID())) {
-            log.error("Failed to remove player entity with ID {} from world map instance (map ID: {}, area ID: {}).", con.getPlayerID(), positionComponent.mapId, positionComponent.getAreaId());
+        if (!worldMapInstance.removeEntity(entity.getId())) {
+            log.error("Failed to remove player entity with ID {} from world map instance (map ID: {}, area ID: {}).", entity.getId(), positionComponent.mapId, positionComponent.getAreaId());
         }
 
         // Delete entity from the world ecs

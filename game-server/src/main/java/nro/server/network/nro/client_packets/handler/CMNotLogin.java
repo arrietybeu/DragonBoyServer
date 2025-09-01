@@ -87,15 +87,19 @@ public class CMNotLogin extends NroClientPacket {
                 connection.getSessionInfo().setVersion(version);
                 NroAuthResponse response = AccountController.Login(username, password, connection);
                 if (response == null) return;
-
-                if (response == NroAuthResponse.SUCCESS) {
-                    sendPacket(new SmSmallImageVersion());
-                    sendPacket(new SmBackgroundItemVersion());
+                switch (response) {
+                    case SUCCESS -> {
+                        sendPacket(new SmSmallImageVersion());
+                        sendPacket(new SmBackgroundItemVersion());
 //                        if (!connection.getSessionInfo().isUpdateData())
-                    sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
-                } else {
-                    connection.sendPacket(new SmDialogMessage(response.getCode()));
+                        sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
+                    }
+                    case ACCOUNT_ALREADY_LOGGED_IN -> connection.close(new SmDialogMessage(response.getCode()));
+                    case ERROR_LOGIN, RELOGIN -> {
+                    }
+                    default -> connection.sendPacket(new SmDialogMessage(response.getCode()));
                 }
+                log.debug("client login response:  {}", response.getCode());
                 connection.getSessionInfo().setLogin(true);
             }
             case 2 -> {

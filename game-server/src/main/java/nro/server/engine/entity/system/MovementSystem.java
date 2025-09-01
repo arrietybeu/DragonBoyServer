@@ -56,7 +56,8 @@ public class MovementSystem extends IteratingSystem {
 //         player.getPoints().reduceMPWhenFlying();
         }
 
-        AreaService.getInstance().sendPacketForALLPlayerInAreaNotMe(entityId, pos.mapId, pos.getAreaId(), new SmPlayerMove(playerInfo.id, pos.x, pos.y));
+        AreaService.getInstance().sendPacketForALLPlayerInAreaNotMe(entityId, pos.mapId, pos.getAreaId(),
+                new SmPlayerMove(playerInfo.id, pos.x, pos.y));
 
         pos.isDirtyMove = false;
     }

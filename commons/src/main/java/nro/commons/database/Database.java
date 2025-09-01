@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class Database {
@@ -75,6 +74,24 @@ public final class Database {
             return false;
         }
     }
+
+    public static boolean select(Connection con, String query, ReadStatementHandler reader) {
+        try (PreparedStatement stmt = con.prepareStatement(query)) {
+
+            if (reader instanceof ParamReadStatementHandler paramReader)
+                paramReader.setParams(stmt);
+
+            try (ResultSet set = stmt.executeQuery()) {
+                reader.handleRead(set);
+            }
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error executing select query {}", query, e);
+            return false;
+        }
+    }
+
 
     /**
      * Truy vấn SELECT với tham số, dùng để lấy dữ liệu cụ thể hơn

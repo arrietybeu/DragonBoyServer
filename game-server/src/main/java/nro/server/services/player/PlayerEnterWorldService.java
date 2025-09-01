@@ -3,12 +3,14 @@ package nro.server.services.player;
 import lombok.NoArgsConstructor;
 import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgSubCommand;
+import nro.server.controllers.AccountController;
 import nro.server.dao.PlayerDAO;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.StatsComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
+import nro.server.network.nro.NroAuthResponse;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
@@ -32,13 +34,12 @@ public final class PlayerEnterWorldService {
 
     private static final ConcurrentLinkedQueue<Integer> enteringWorld = new ConcurrentLinkedQueue<>();
 
+
     public static void enterWorld(final NroConnection client) {
-        if (client == null)
-            throw new NullPointerException("Client EnterWorldService cannot be null");
+        if (client == null) throw new NullPointerException("Client EnterWorldService cannot be null");
 
         // FIXME thằng nào sửa client nó gửi login 2 lần đi trời
-        if (client.getAccount() == null)
-            return;
+        if (client.getAccount() == null) return;
 
         int accountId = client.getAccount().getId();
 
@@ -53,8 +54,7 @@ public final class PlayerEnterWorldService {
                 entity = PlayerDAO.loadPlayerEntity(playerId, accountId);
                 if (entity == null) {
                     log.error("Failed to load player entity for player ID: {}. Cannot enter world.", playerId);
-                    client.close(
-                            new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_DATA_LOAD_ERROR.getDefaultMessage()));
+                    client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_DATA_LOAD_ERROR.getDefaultMessage()));
                     return;
                 }
                 client.attachPlayerEntity(entity);
@@ -70,17 +70,14 @@ public final class PlayerEnterWorldService {
                     WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, playerId, positionComponent.getAreaId());
                     if (instance == null) {
                         log.error("No available instance for player: {}", playerId);
-                        client.close(
-                                new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));
+                        client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));
                         return;
                     }
 
                     positionComponent.setAreaId(instance.getInstanceId());
 
-                    client.sendPacket(
-                            new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill"));
-                    client.sendPacket(
-                            new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill"));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill"));
+                    client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill"));
 
                     client.sendPacket(new SmSpecialSkill());// TODO chua xong
                     client.sendPacket(new SmMeLoadPoint());// DONE

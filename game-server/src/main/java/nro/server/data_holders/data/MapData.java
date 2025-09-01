@@ -14,6 +14,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -42,17 +43,19 @@ public final class MapData implements GameEngine {
 
     @Override
     public void init() throws Throwable {
-        loadMapTemplate();
+        Database.withConnection(connection -> {
+            loadMapTemplate(connection);
+            loadTileSetInfo(connection);
+            return null;
+        });
         setQueryLoadMapItemBackground();
-        loadTileSetInfo();
         setUpdateDataMap();
     }
 
     @Override
     public void reload() throws Throwable {
         clear();
-        loadMapTemplate();
-        setQueryLoadMapItemBackground();
+        this.init();
     }
 
     @Override
@@ -60,11 +63,11 @@ public final class MapData implements GameEngine {
         worldMaps.clear();
     }
 
-    private void loadMapTemplate() {
+    private void loadMapTemplate(Connection connection) {
 
-        Map<Short, TileMap> tileMaps = loadAllMapTiles();
+        Map<Short, TileMap> tileMaps = loadAllMapTiles(connection);
 
-        Database.select(QUERY_LOAD_MAP_TEMPLATE, rs -> {
+        Database.select(connection, QUERY_LOAD_MAP_TEMPLATE, rs -> {
             while (rs.next()) {
                 var id = rs.getShort("id");
                 var name = rs.getString("name");
@@ -77,23 +80,22 @@ public final class MapData implements GameEngine {
                 var bgType = rs.getByte("background_type");
                 var isMapDouble = rs.getByte("is_map_double");
 
-                List<BgItem> bgItems = loadItemBackgroundMap(id);
+                List<BgItem> bgItems = loadItemBackgroundMap(connection, id);
                 List<BackgroundEffect> effects = this.parseEffectMap(rs.getString("effect_map"));
-                List<Waypoint> waypoints = this.loadWaypoints(id);
+                List<Waypoint> waypoints = this.loadWaypoints(connection, id);
                 TileMap tileMap = tileMaps.get(id);
-                List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(id);
+                List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(connection, id);
 
-                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId,
-                        isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
+                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
                 worldMaps.put(id, worldMapTemplate);
             }
         });
     }
 
-    private List<NpcTemplate.NpcInfo> loadNpcs(int mapID) {
+    private List<NpcTemplate.NpcInfo> loadNpcs(Connection con, int mapID) {
         String query = "SELECT * FROM `map_npc` WHERE map_id = ?";
         List<NpcTemplate.NpcInfo> npcs = new ArrayList<>();
-        Database.select(query, rs -> {
+        Database.select(con, query, rs -> {
             while (rs.next()) {
                 var id = rs.getInt("npc_id");
                 var status = rs.getByte("status");
@@ -109,10 +111,10 @@ public final class MapData implements GameEngine {
         return npcs;
     }
 
-    private List<Waypoint> loadWaypoints(int mapId) {
+    private List<Waypoint> loadWaypoints(Connection connection, int mapId) {
         String query = "SELECT * FROM `map_waypoint` WHERE map_id = ?";
         List<Waypoint> waypoints = new ArrayList<>();
-        Database.select(query, rs -> {
+        Database.select(connection, query, rs -> {
             while (rs.next()) {
                 Waypoint waypoint = new Waypoint();
                 waypoint.setName(rs.getString("name"));
@@ -155,9 +157,9 @@ public final class MapData implements GameEngine {
         return effects;
     }
 
-    private List<BgItem> loadItemBackgroundMap(int id) {
+    private List<BgItem> loadItemBackgroundMap(Connection con, int id) {
         List<BgItem> bgItems = new ArrayList<>();
-        Database.select(QUERY_LOAD_MAP_ITEM_BACKGROUND, rs -> {
+        Database.select(con, QUERY_LOAD_MAP_ITEM_BACKGROUND, rs -> {
             while (rs.next()) {
                 BgItem bgItem = new BgItem();
                 bgItem.setId(rs.getInt("id"));
@@ -170,11 +172,11 @@ public final class MapData implements GameEngine {
         return bgItems;
     }
 
-    private Map<Short, TileMap> loadAllMapTiles() {
+    private Map<Short, TileMap> loadAllMapTiles(Connection connection) {
         String query = "SELECT * FROM `map_tiles`";
         Map<Short, TileMap> tileMaps = new HashMap<>();
 
-        Database.select(query, rs -> {
+        Database.select(connection, query, rs -> {
             while (rs.next()) {
                 short mapId = rs.getShort("map_id");
                 int tmw = rs.getInt("width");
@@ -229,17 +231,17 @@ public final class MapData implements GameEngine {
         backgroundMapTemplates = null; // Clear reference to free memory
     }
 
-    private void loadTileSetInfo() {
+    private void loadTileSetInfo(Connection connection) {
         List<Byte> tileSetIds = new ArrayList<>();
-        Database.select("SELECT DISTINCT tile_set_id FROM tile_types", rs -> {
+        Database.select(connection, "SELECT DISTINCT tile_set_id FROM tile_types", rs -> {
             while (rs.next()) {
                 tileSetIds.add(rs.getByte("tile_set_id"));
             }
         });
-        setTileSetInfoData(tileSetIds);
+        setTileSetInfoData(connection, tileSetIds);
     }
 
-    private void setTileSetInfoData(List<Byte> tileSetIds) {
+    private void setTileSetInfoData(Connection connectiono, List<Byte> tileSetIds) {
         ByteBuffer buf = ByteBuffer.allocate(100_000);
 
         byte count = (byte) tileSetIds.size();
@@ -253,10 +255,9 @@ public final class MapData implements GameEngine {
             List<Integer> typeList = new ArrayList<>();
             List<int[]> indexList = new ArrayList<>();
 
-            var query = "SELECT type_value, GROUP_CONCAT(index_value ORDER BY index_value) AS indices " +
-                    "FROM tile_types WHERE tile_set_id = ? GROUP BY type_value";
+            var query = "SELECT type_value, GROUP_CONCAT(index_value ORDER BY index_value) AS indices " + "FROM tile_types WHERE tile_set_id = ? GROUP BY type_value";
 
-            Database.select(query, rs -> {
+            Database.select(connectiono, query, rs -> {
                 while (rs.next()) {
                     int typeVal = rs.getInt("type_value");
                     String[] indicesStr = rs.getString("indices").split(",");

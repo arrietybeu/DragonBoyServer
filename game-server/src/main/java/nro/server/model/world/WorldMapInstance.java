@@ -156,8 +156,6 @@ public class WorldMapInstance {
             int playerCount = 0;
             int maxPlayer = parent.getTemplate().getMaxPlayer();
 
-            System.out.println("max player: " + maxPlayer + ", current player: " + entities.size());
-
             for (int i = 0; i < entities.size(); i++) {
                 Entity e = entities.get(i);
                 if (e.getComponent(PlayerComponent.class) != null) {

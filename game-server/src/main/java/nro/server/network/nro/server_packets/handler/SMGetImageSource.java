@@ -17,7 +17,6 @@ public class SMGetImageSource extends NroServerPacket {
     private File file;
 
     public SMGetImageSource(int type) {
-        super();
         this.type = (byte) type;
     }
 

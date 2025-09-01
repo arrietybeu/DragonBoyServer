@@ -10,6 +10,7 @@ import nro.server.model.templates.skill.SkillInfo;
 import nro.server.model.templates.skill.SkillTemplate;
 
 import java.nio.ByteBuffer;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,6 @@ public final class SkillData implements GameEngine {
     @Override
     public void init() throws Throwable {
         loadSkill();
-
         setSkillData();
     }
 
@@ -41,21 +41,25 @@ public final class SkillData implements GameEngine {
 
     private void loadSkill() {
         String query = "SELECT * FROM skill_class";
-        Database.select(query, resultSet -> {
-            while (resultSet.next()) {
-                var nClassId = resultSet.getInt("class_id");
-                var name = resultSet.getString("name");
-                NClassTemplate nClassTemplate = new NClassTemplate(nClassId, name, this.loadSkillTemplate(nClassId));
-                this.nClassTemplates.add(nClassTemplate);
-            }
+
+        Database.withConnection(connection -> {
+            Database.select(connection, query, resultSet -> {
+                while (resultSet.next()) {
+                    var nClassId = resultSet.getInt("class_id");
+                    var name = resultSet.getString("name");
+                    NClassTemplate nClassTemplate = new NClassTemplate(nClassId, name, this.loadSkillTemplate(connection, nClassId));
+                    this.nClassTemplates.add(nClassTemplate);
+                }
+            });
+            return null;
         });
     }
 
-    private List<SkillTemplate> loadSkillTemplate(int classId) throws SQLException {
+    private List<SkillTemplate> loadSkillTemplate(Connection con, int classId) {
         List<SkillTemplate> skillTemplates = new ArrayList<>();
 
         String query = "SELECT * FROM skill_template WHERE class_id = ?";
-        Database.select(query, resultSet -> {
+        Database.select(con, query, resultSet -> {
             while (resultSet.next()) {
                 SkillTemplate skillTemplate = new SkillTemplate();
                 skillTemplate.setClassId(classId);
@@ -67,19 +71,19 @@ public final class SkillData implements GameEngine {
                 skillTemplate.setIconId(resultSet.getShort("icon_id"));
                 skillTemplate.setDamInfo(resultSet.getString("dam_info"));
                 skillTemplate.setDescription(resultSet.getString("description"));
-                loadSKillInfo(skillTemplate);
+                loadSKillInfo(con, skillTemplate);
                 skillTemplates.add(skillTemplate);
             }
         }, preparedStatement -> preparedStatement.setInt(1, classId));
         return skillTemplates;
     }
 
-    private void loadSKillInfo(SkillTemplate skillTemplate) {
+    private void loadSKillInfo(Connection connection, SkillTemplate skillTemplate) {
         skillTemplate.getSkills().clear();
         int idSkill = skillTemplate.getId();
 
         String query = "SELECT * FROM skill_info WHERE skill_template_id = ? AND class_id = ?";
-        Database.select(query, rs -> {
+        Database.select(connection, query, rs -> {
             while (rs.next()) {
                 SkillInfo skill = new SkillInfo();
                 skill.setTemplate(skillTemplate);

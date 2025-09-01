@@ -31,15 +31,11 @@ public final class ChatService {
                 return;
             }
 
-            if (account.isAdmin()) {
-                chatVIP(client, message);
-                return;
-            }
+            if (account.isAdmin() && chatVIP(client, message)) return;
 
-            System.out.println("ChatService.sendChatMessage: " + message);
             // FIXME viet check message ki doan nafy
 
-            AreaService.getInstance().sendPacketForALLPlayerInArea(po.mapId, po.getAreaId(), new SmChatMap(message));
+            AreaService.getInstance().sendPacketForALLPlayerInArea(po.mapId, po.getAreaId(), new SmChatMap(client.getPlayerID(), message));
 
         } catch (RuntimeException e) {
             LOGGER.error("Error sending chat message: {}", e.getMessage(), e);
@@ -47,9 +43,8 @@ public final class ChatService {
         }
     }
 
-    private static void chatVIP(NroConnection client, String message) {
-
-        switch (message) {
+    private static boolean chatVIP(NroConnection client, String message) {
+        return switch (message) {
             case "inventory" -> {
 
                 ItemData itemData = ItemData.getInstance();
@@ -67,8 +62,10 @@ public final class ChatService {
 
                 client.sendPacket(new SmDialogMessage(sb.toString()));
 
+                yield true;
             }
-        }
+            default -> false;
+        };
     }
 
     private static long getNumber(String text) {

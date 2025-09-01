@@ -116,7 +116,8 @@ public final class MapChangeSystem extends IteratingSystem {
 
         if (newArea.isFullPlayer()) {
             this.keepInSafeZone(waypoint, client, pos);
-            NotifyService.SendNotifyPlayer(client, "Khu vực này đã đầy người chơi, bạn không thể đi đến đây!");
+            log.debug("Player {} try to enter full area {} in map {}", client.getPlayerID(), newArea.getInstanceId(), newArea.getParent().getName());
+            NotifyService.SendNotifyPlayer(client, "Khu vực này đã đầy người chơi, bạn không thể đi đến đây! ");
             return false;
         }
 
