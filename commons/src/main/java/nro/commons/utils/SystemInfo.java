@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+/**
+ * @author Arriety
+ */
 public class SystemInfo {
 
     private static final Logger log = LoggerFactory.getLogger(SystemInfo.class);

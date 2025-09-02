@@ -90,7 +90,6 @@ public class GameServer {
                 new WorldGarbageCollectionSystem(), new InventorySystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
-//        gameWorld.expandEntityCapacity(1_000_000);
         gameWorld.start();
 
         LOGGER.info("ECS Game World started successfully.");
