@@ -3,8 +3,7 @@ package nro.server;
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.managers.GroupManager;
 import lombok.Getter;
-import net.namekdev.entity_tracker.EntityTracker;
-import net.namekdev.entity_tracker.network.EntityTrackerServer;
+
 import nro.commons.database.DatabaseFactory;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;

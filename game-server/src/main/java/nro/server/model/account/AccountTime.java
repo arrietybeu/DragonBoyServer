@@ -12,7 +12,6 @@ import java.sql.Timestamp;
 @Setter
 public class AccountTime {
 
-
     private Timestamp lastTimeLogin;
     private Timestamp lastTimeLogout;
     private Timestamp banUntil;

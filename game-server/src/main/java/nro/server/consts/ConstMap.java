@@ -28,7 +28,6 @@ public class ConstMap {
     public static final int T_NT0 = 262144;
     public static final int T_NT1 = 524288;
 
-    // --- Grouped logic (gợi ý)
     public static final int T_GROUND_MASK = T_TOP | T_SOLIDGROUND;
     public static final int T_DEADLY_MASK = T_DIE;
     public static final int T_WATER_MASK = T_WATERFALL | T_WATERFLOW | T_UNDERWATER;

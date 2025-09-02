@@ -71,7 +71,7 @@ public class World {
             // đưa về nhà map base của các gender
             return null;
         }
-        return new WorldPosition(mr.getParent().getTemplate().getId(), x, y, mr.getInstanceId(), mr);
+        return new WorldPosition(mr.getParent().getTemplate().getId(), x, y, mr.getInstanceId());
     }
 
     public String logInfo() {
@@ -93,4 +93,5 @@ public class World {
     private static class SingletonHolder {
         protected static final World instance = new World();
     }
+
 }

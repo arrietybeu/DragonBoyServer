@@ -113,13 +113,6 @@ public class WorldMapInstance {
         lock.writeLock().lock();
         try {
             var world = GameWorld.getInstance().getWorld();
-//            EntityManager em = world.getEntityManager();
-//
-//            if (!em.isActive(id)) {
-//                log.debug("removeEntity({}): entity not active -> no-op", id);
-//                return false;
-//            }
-
             Entity e = world.getEntity(id);
             GroupManager gm = GameWorld.getInstance().getGroupManager();
 
