@@ -42,7 +42,6 @@ public class ConstMap {
     public static final long TIMEOUT_MILLIS = 60_000; // 60 giây
 
     // Map id
-
     public static final short LANG_ARU = 0;
     public static final short DOI_HOA_CUC = 1;
     public static final short THUNG_LUNG_TRE = 2;

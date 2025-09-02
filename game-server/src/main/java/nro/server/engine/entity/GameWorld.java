@@ -47,7 +47,6 @@ public class GameWorld {
             WorldConfiguration config = builder.build();
             this.world = new World(config);
             queryService = new EntityQueryService(world);
-            log.info("Artemis-odb World initialized successfully.");
         } finally {
             lock.unlock();
         }

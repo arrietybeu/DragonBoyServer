@@ -25,8 +25,6 @@ public class QuestEngine implements GameEngine {
 
     @Override
     public void init() throws Throwable {
-        log.info("Loading quest templates from folder: resources/data_holder/task");
-
         File folder = new File("resources/data_holder/task");
         if (!folder.exists() || !folder.isDirectory()) {
             throw new RuntimeException("Quest folder does not exist: " + folder.getAbsolutePath());
@@ -40,7 +38,6 @@ public class QuestEngine implements GameEngine {
                 int taskId = Integer.parseInt(matcher.group(1));
                 QuestTemplate template = YamlDataLoader.loadObject(file.getPath(), QuestTemplate.class);
                 QUESTS.put(taskId, template);
-                log.info("Loaded task ID {} from file {}", taskId, file.getName());
             }
         }
 
