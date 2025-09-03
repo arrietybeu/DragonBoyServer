@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 /**
  * @author Arriety
  */
-public class CaptchaSwingViewer {
+public final class CaptchaSwingViewer {
 
     public static void main() throws Exception {
         CaptchaUtil.generateDynamicRules();

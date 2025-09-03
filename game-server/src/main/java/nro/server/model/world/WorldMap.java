@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import nro.server.consts.ConstMap;
 import nro.server.data_holders.data.MapData;
 import nro.server.engine.entity.GameWorld;
-import nro.server.model.ecs.component.boss.BossComponent;
-import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.npc.Npc;
 import nro.server.model.npc.NpcFactory;
 import nro.server.model.templates.entity.NpcTemplate;

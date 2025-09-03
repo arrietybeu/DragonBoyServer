@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
-public class CaptchaUtil {
+public final class CaptchaUtil {
 
     public static final int DIGITS_LENGTH = 5;
 

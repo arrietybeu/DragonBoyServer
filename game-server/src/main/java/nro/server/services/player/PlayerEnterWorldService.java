@@ -3,14 +3,12 @@ package nro.server.services.player;
 import lombok.NoArgsConstructor;
 import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgSubCommand;
-import nro.server.controllers.AccountController;
 import nro.server.dao.PlayerDAO;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.StatsComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
-import nro.server.network.nro.NroAuthResponse;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
@@ -28,8 +26,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class PlayerEnterWorldService {
 
-    // FIXME đoạn player vào world phải được bọc trong system của ecs thì sẽ an toàn hơn chứ không thể cho nó add như này được sau này sẽ sửa lại sau
-
     private static final Logger log = LoggerFactory.getLogger(PlayerEnterWorldService.class);
 
     private static final ConcurrentLinkedQueue<Integer> enteringWorld = new ConcurrentLinkedQueue<>();
@@ -38,7 +34,6 @@ public final class PlayerEnterWorldService {
     public static void enterWorld(final NroConnection client) {
         if (client == null) throw new NullPointerException("Client EnterWorldService cannot be null");
 
-        // FIXME thằng nào sửa client nó gửi login 2 lần đi trời
         if (client.getAccount() == null) return;
 
         int accountId = client.getAccount().getId();

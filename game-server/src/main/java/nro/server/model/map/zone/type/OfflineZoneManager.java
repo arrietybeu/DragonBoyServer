@@ -60,6 +60,7 @@ public final class OfflineZoneManager implements ZoneManager, GC {
     @Override
     public void gc() {
         long now = System.currentTimeMillis();
+
         byOwner.replaceAll((id, e) -> {
             if (e.zone.playerCount() == 0) {
                 long t = (e.lastEmptyAt == -1) ? now : e.lastEmptyAt;

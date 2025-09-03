@@ -15,7 +15,6 @@ public class MoveQuestSystem extends IteratingSystem {
 
     private ComponentMapper<PositionComponent> posMapper;
     private ComponentMapper<QuestInstanceComponent> questMapper;
-    private ComponentMapper<PlayerComponent> playerMapper;
 
     public MoveQuestSystem() {
         super(Aspect.all(PositionComponent.class, QuestInstanceComponent.class, PlayerComponent.class));

@@ -26,7 +26,6 @@ public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler
         }
     }
 
-
     private boolean isMainThread(Thread t) {
         return t.threadId() == 1; // main thread luôn có ID = 1
     }

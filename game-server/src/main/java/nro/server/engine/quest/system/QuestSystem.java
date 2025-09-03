@@ -1,8 +1,8 @@
 package nro.server.engine.quest.system;
 
+import com.artemis.Aspect;
 import com.artemis.BaseEntitySystem;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.All;
 import nro.server.engine.quest.QuestEngine;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
@@ -14,13 +14,16 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-@All({QuestInstanceComponent.class})
 public class QuestSystem extends BaseEntitySystem {
 
     private static final Logger log = LoggerFactory.getLogger(QuestSystem.class);
 
     protected ComponentMapper<QuestInstanceComponent> mQuestInstance;
     protected ComponentMapper<InfoComponent> mInfo;
+
+    public QuestSystem() {
+        super(Aspect.all(QuestInstanceComponent.class, InfoComponent.class));
+    }
 
     @Override
     protected void processSystem() {
@@ -32,10 +35,12 @@ public class QuestSystem extends BaseEntitySystem {
             int entityId = entities[i];
 
             QuestInstanceComponent q = mQuestInstance.get(entityId);
-            if (q.completed) continue;
+            if (q.completed)
+                continue;
 
             QuestTemplate quest = QuestEngine.getInstance().getTask(q.questId);
-            if (quest == null) continue;
+            if (quest == null)
+                continue;
 
             if (q.currentStep >= quest.steps.size()) {
                 q.completed = true;

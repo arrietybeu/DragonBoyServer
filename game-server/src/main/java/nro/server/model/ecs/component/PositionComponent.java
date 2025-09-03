@@ -2,7 +2,6 @@ package nro.server.model.ecs.component;
 
 
 import com.artemis.Component;
-import lombok.Getter;
 
 /**
  * @author Arriety

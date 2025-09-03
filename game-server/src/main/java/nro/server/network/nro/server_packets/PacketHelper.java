@@ -8,8 +8,6 @@ import nro.server.model.ecs.component.item.ItemStatsComponent;
 import nro.server.model.world.WorldMapInstance;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -18,9 +16,6 @@ import java.util.List;
  * @author Arriety
  */
 public final class PacketHelper {
-
-    private static final Logger log = LoggerFactory.getLogger(PacketHelper.class);
-
 
     public static NroServerPacket empty(int opcode) {
         return new NroServerPacket(opcode) {

@@ -57,10 +57,10 @@ public class AccountController {
             return NroAuthResponse.ACCOUNT_BANNED;
         }
 
-        if (account.getIpForce() != null && !NetworkUtils.checkIPMatching(account.getIpForce(), ip)) {
-            LoginThrottle.onLoginFail(ip);
-            return NroAuthResponse.IP_NOT_ALLOWED;
-        }
+//        if (account.getIpForce() != null && !NetworkUtils.checkIPMatching(account.getIpForce(), ip)) {
+//            LoginThrottle.onLoginFail(ip);
+//            return NroAuthResponse.IP_NOT_ALLOWED;
+//        }
 
         synchronized (AccountController.class) {
             log.debug("Account {} logged in from IP {}", account.getUsername(), ip);
