@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ZoneGarbageSystem extends BaseSystem {
 
+
+    // FIXME chưa hoàn thiện
     private static final Logger log = LoggerFactory.getLogger(ZoneGarbageSystem.class);
 
     private static final long GC_INTERVAL_MS = 10_000;
@@ -23,11 +25,16 @@ public class ZoneGarbageSystem extends BaseSystem {
         if (now - lastRunTime < GC_INTERVAL_MS) return;
         lastRunTime = now;
 
-        for (GameMap map : GameMapFactory.getInstance().getAllMaps()) {
+        var masp = GameMapFactory.getInstance().getAllMaps();
+
+        if (masp.isEmpty()) return;
+
+        for (GameMap map : masp) {
             var manager = map.zoneManager();
             if (manager instanceof GC gcManager) {
                 try {
                     gcManager.gc();
+//                    log.info("Garbage detected {}", manager);
                 } catch (Throwable t) {
                     log.warn("GC error on map {}: {}", map.id(), t.getMessage(), t);
                 }

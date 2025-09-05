@@ -1,5 +1,7 @@
 package nro.server.services.player;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import nro.commons.database.DatabaseFactory;
 import nro.server.dao.PlayerDAO;
 import nro.server.model.account.Account;
@@ -13,7 +15,8 @@ import java.sql.Connection;
 /**
  * @author Arriety
  */
-public class PlayerService {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PlayerService {
 
     private static final Logger log = LoggerFactory.getLogger(PlayerService.class);
 

@@ -117,6 +117,7 @@ public abstract class NroServerPacket extends BaseServerPacket {
 
             buffer.put(local);
         } else {
+
             buffer.put(crypt.encryptByte((byte) getCommand()));
 
             int size = bodySize;

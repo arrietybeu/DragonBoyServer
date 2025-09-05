@@ -87,7 +87,6 @@ public final class PacketHelper {
             packet.writeUTF(wayPoint.getName());
         }
 
-        // Write monster data (currently empty)
         packet.writeByte(0); // Monster count
         packet.writeByte(0); // Monster extra data
 

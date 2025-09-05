@@ -27,7 +27,7 @@ public final class GameMapFactory {
         for (WorldMapTemplate tpl : MapData.getInstance().getWorldMaps().values()) {
             GameMap gm = this.fromTemplate(tpl);
             addMap(gm);
-            log.info("Loaded map: {}", gm);
+//            log.info("Loaded map: {}", gm);
         }
         log.info("MapFactory: tổng cộng {} map đã được load", maps.size());
     }

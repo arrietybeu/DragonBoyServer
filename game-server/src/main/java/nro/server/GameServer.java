@@ -20,6 +20,7 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.engine.entity.system.InventorySystem;
 import nro.server.engine.quest.system.MoveQuestSystem;
 import nro.server.engine.quest.system.QuestSystem;
+import nro.server.engine.world.ZoneGarbageSystem;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
 import nro.server.model.npc.NpcFactory;
@@ -86,7 +87,9 @@ public class GameServer {
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
                 new QuestSystem(), new MoveQuestSystem(),
-                new InventorySystem()); // add systems here if needed
+                new InventorySystem(),
+                new ZoneGarbageSystem()
+        ); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();

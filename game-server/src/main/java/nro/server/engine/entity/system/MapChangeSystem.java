@@ -2,7 +2,9 @@ package nro.server.engine.entity.system;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
+import com.artemis.Entity;
 import com.artemis.systems.IteratingSystem;
+import com.artemis.utils.ImmutableBag;
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.PlayerComponent;
@@ -14,6 +16,7 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.SmMapInfo;
 import nro.server.network.nro.server_packets.handler.SmResetPoint;
+import nro.server.services.AreaService;
 import nro.server.services.NotifyService;
 import nro.server.utils.MapUtils;
 import org.slf4j.Logger;
@@ -86,6 +89,7 @@ public final class MapChangeSystem extends IteratingSystem {
 
         Zone from = MapUtils.findZone(pos.mapId, pos.getAreaId());
         Zone to = MapUtils.enterZone(toMapId, e.getId());
+        var entities = MapUtils.getEntities(from);
 
         if (to == null) {
             keepInSafeZone(null, client, pos);
@@ -96,12 +100,15 @@ public final class MapChangeSystem extends IteratingSystem {
         // detach -> attach
         MapUtils.move(e, from, to);
 
+        AreaService.getInstance().sendPacketPlayerExitArea(client, entities);
+
         // update vị trí
         pos.mapId = toMapId;
         pos.setAreaId(to.zoneId());
 
         pos.x = toX;
         pos.y = toY;
+        AreaService.getInstance().sendMyInfoToPlayersInZone(client);
         sendMapChangePackets(client, pos);
     }
 

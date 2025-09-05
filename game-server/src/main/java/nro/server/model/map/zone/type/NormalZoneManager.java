@@ -39,7 +39,7 @@ public final class NormalZoneManager implements ZoneManager {
 
     @Override
     public Zone joinZone(int playerId) {
-        int pick = pickLeastLoaded();
+        int pick = pickFirstAvailable();
         if (pick == -1) {
             // FIXME nếu đã đầy đảy về map offline (nhà,...)
             throw new IllegalStateException("Tất cả zone của map " + mapId + " đều đầy");
@@ -66,16 +66,25 @@ public final class NormalZoneManager implements ZoneManager {
         return zoneId >= 0 && zoneId < zones.size();
     }
 
-    private int pickLeastLoaded() {
-        int best = -1, load = Integer.MAX_VALUE;
+//    private int pickLeastLoaded() {
+//        int best = -1, load = Integer.MAX_VALUE;
+//        for (int i = 0; i < zones.size(); i++) {
+//            int c = counts.get(i);
+//            if (c < maxPlayers && c < load) {
+//                load = c;
+//                best = i;
+//            }
+//        }
+//        return best;
+//    }
+
+    private int pickFirstAvailable() {
         for (int i = 0; i < zones.size(); i++) {
-            int c = counts.get(i);
-            if (c < maxPlayers && c < load) {
-                load = c;
-                best = i;
+            if (counts.get(i) < maxPlayers) {
+                return i;
             }
         }
-        return best;
+        return -1;
     }
 
     /**
