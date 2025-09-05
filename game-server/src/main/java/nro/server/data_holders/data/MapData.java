@@ -337,6 +337,14 @@ public final class MapData implements GameEngine {
         worldMaps.values().parallelStream().forEach(consumer);
     }
 
+    public WorldMapTemplate getWorldMapTemplate(int id) {
+        var template = worldMaps.get((short) id);
+        if (template == null) {
+            throw new NullPointerException("WorldMapTemplate with id " + id + " not found");
+        }
+        return template;
+    }
+
     private static final class SingletonHolder {
         private static final MapData INSTANCE = new MapData();
     }

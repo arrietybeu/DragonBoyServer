@@ -1,13 +1,13 @@
 package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
+import nro.server.data_holders.data.MapData;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
-import nro.server.model.world.World;
-import nro.server.model.world.WorldMap;
+import nro.server.utils.MapUtils;
 
 import java.io.IOException;
 
@@ -25,14 +25,9 @@ public class SmMapInfo extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException, IOException {
-        WorldMap map = World.getInstance().getMap(positionComponent.mapId);
-        if (map == null) {
-            throw new NullPointerException("Map not found for mapId: " + positionComponent.mapId);
-        }
-        var worldMapInstance = map.getWorldMapInstance(positionComponent.getAreaId());
+        var mapTemplate = MapData.getInstance().getWorldMapTemplate(positionComponent.mapId);
 
-        var mapTemplate = map.getTemplate();
-        writeByte(map.getId());
+        writeByte(positionComponent.mapId);
         writeByte(mapTemplate.getPlanetId());
         writeByte(mapTemplate.getTileId());
         writeByte(mapTemplate.getBgId());
@@ -40,60 +35,9 @@ public class SmMapInfo extends NroServerPacket {
         writeUTF(mapTemplate.getName());
         writeByte(positionComponent.getAreaId());
 
-        PacketHelper.writeMapInfo(this, worldMapInstance, positionComponent);
+        PacketHelper.writeMapInfo(this, mapTemplate, positionComponent);
 
         writeByte(mapTemplate.getIsMapDouble());
     }
 
-    /**
-     * {@code
-     *  case -24:
-     *      Res.outz("***************MAP_INFO**************");
-     *      GameScr.isPickNgocRong = false;
-     *      Char.isLoadingMap = true;
-     *      Cout.println("GET MAP INFO");
-     *      GameScr.gI().magicTree = null;
-     *      GameCanvas.isLoading = true;
-     *      GameCanvas.debug("SA75", 2);
-     *      GameScr.resetAllvector();
-     *      GameCanvas.endDlg();
-     *      TileMap.vGo.removeAllElements();
-     *      PopUp.vPopups.removeAllElements();
-     *      mSystem.gcc();
-     *      TileMap.mapID = msg.reader().readUnsignedByte();
-     *      TileMap.planetID = msg.reader().readByte();
-     *      TileMap.tileID = msg.reader().readByte();
-     *      TileMap.bgID = msg.reader().readByte();
-     *      GameScr.isPaint_CT = TileMap.mapID != 170;
-     *      Cout.println("load planet from server: " + TileMap.planetID + "bgType= " + TileMap.bgType + ".............................");
-     *      TileMap.typeMap = msg.reader().readByte();
-     *      TileMap.mapName = msg.reader().readUTF();
-     *      TileMap.zoneID = msg.reader().readByte();
-     *      GameCanvas.debug("SA75x1", 2);
-     *      try
-     *      {
-     *          TileMap.loadMapFromResource(TileMap.mapID);
-     *      }
-     *      catch (Exception)
-     *      {
-     *          Service.gI().requestMaptemplate(TileMap.mapID);
-     *          messWait = msg;
-     *          break;
-     *      }
-     *      loadInfoMap(msg);
-     *      try
-     *      {
-     *          sbyte b32 = msg.reader().readByte();
-     *          TileMap.isMapDouble = ((b32 != 0) ? true : false);
-     *      }
-     *      catch (Exception)
-     *      {
-     *      }
-     *      GameScr.cmx = GameScr.cmtoX;
-     *      GameScr.cmy = GameScr.cmtoY;
-     *      GameCanvas.isRequestMapID = 2;
-     *      GameCanvas.waitingTimeChangeMap = mSystem.currentTimeMillis() + 1000;
-     *      break;
-     * }
-     */
 }

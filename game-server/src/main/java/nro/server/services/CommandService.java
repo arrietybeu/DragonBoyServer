@@ -12,7 +12,6 @@ import nro.server.data_holders.data.PartData;
 import nro.server.engine.entity.GameWorld;
 import nro.server.engine.quest.QuestEngine;
 import nro.server.model.templates.data.PartTemplate;
-import nro.server.model.world.World;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.factory.IDFactory;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public final class CommandService {
                 try {
                     String _line = sc.nextLine();
                     switch (_line) {
-                        case "map_info" -> LOGGER.info(World.getInstance().logInfo());
+//                        case "map_info" -> LOGGER.info(World.getInstance().logInfo());
                         case "ecs_info" -> GameWorld.getInstance().logWorldSummary();
                         case "entity_info" -> GameWorld.getInstance().logEntitiesWithComponentsJson(100);
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));

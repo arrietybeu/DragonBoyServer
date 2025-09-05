@@ -9,6 +9,7 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
+import nro.server.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -291,16 +292,16 @@ public class PlayerDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
 
-                    var mapId = rs.getInt("map_id");
+                    var mapId = rs.getShort("map_id");
                     var x = rs.getShort("pos_x");
                     var y = rs.getShort("pos_y");
 
-                    var position = nro.server.model.world.World.getInstance().createPosition(mapId, entity.getId(), x, y);
+                    var position = MapUtils.createPosition(mapId, entity.getId(), x, y);
 
                     if (position == null)
                         throw new SQLException("Khong load duoc position cua World: " + mapId);
 
-                    entity.edit().add(new PositionComponent(position.mapId(), position.x(), position.y(), position.zoneId()));
+                    entity.edit().add(new PositionComponent(position.mapId(), position.x(), position.y(), position.zoneID()));
                 }
             }
         }

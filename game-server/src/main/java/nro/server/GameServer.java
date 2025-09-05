@@ -20,7 +20,8 @@ import nro.server.engine.entity.GameWorld;
 import nro.server.engine.entity.system.InventorySystem;
 import nro.server.engine.quest.system.MoveQuestSystem;
 import nro.server.engine.quest.system.QuestSystem;
-import nro.server.engine.world.WorldGarbageCollectionSystem;
+import nro.server.model.map.GameMap;
+import nro.server.model.map.GameMapFactory;
 import nro.server.model.npc.NpcFactory;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
@@ -32,7 +33,6 @@ import nro.server.engine.entity.system.MovementSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;
-import nro.server.model.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,12 +60,12 @@ public class GameServer {
             IDFactory.getInstance();
             //noinspection ResultOfMethodCallIgnored
             initEntityComponentSystem();
-            World.getInstance();
+//            World.getInstance();
+            GameMapFactory.getInstance().initMaps();
             BannedIpController.start();
             System.gc();
             nioServer = initNioServer();
             Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
-//            LOGGER.info("Game server started successfully. Listening on: {}", NetworkConfig.CLIENT_SOCKET_ADDRESS);
         } catch (Throwable e) {
             LOGGER.error("Error : {}", e.getMessage(), e);
             System.exit(1);
@@ -86,7 +86,7 @@ public class GameServer {
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
                 new QuestSystem(), new MoveQuestSystem(),
-                new WorldGarbageCollectionSystem(), new InventorySystem()); // add systems here if needed
+                new InventorySystem()); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();

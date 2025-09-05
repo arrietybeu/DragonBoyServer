@@ -1,6 +1,7 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.map.change.MapChangeType;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 
@@ -27,6 +28,7 @@ public abstract class CmMapChangeBase extends NroClientPacket {
 
         PositionComponent pos = con.getEntity().getComponent(PositionComponent.class);
         if (pos != null) {
+            pos.changeType = MapChangeType.WAYPOINT;
             pos.wantsToChangeMap = true; // Trigger MapChangeSystem
         }
     }

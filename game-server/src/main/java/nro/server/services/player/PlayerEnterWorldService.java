@@ -13,8 +13,7 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.*;
-import nro.server.model.world.World;
-import nro.server.model.world.WorldMapInstance;
+import nro.server.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,14 +61,16 @@ public final class PlayerEnterWorldService {
 
                     PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
 
-                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, entity.getId(), positionComponent.getAreaId());
-                    if (instance == null) {
+//                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, entity.getId(), positionComponent.getAreaId());
+                    var zone = MapUtils.findZone(positionComponent.mapId, positionComponent.getAreaId());
+
+                    if (zone == null) {
                         log.error("No available instance for player: {}", playerId);
                         client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));
                         return;
                     }
 
-                    positionComponent.setAreaId(instance.getInstanceId());
+                    positionComponent.setAreaId(zone.zoneId());
 
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "KSkill"));
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill"));
@@ -99,7 +100,9 @@ public final class PlayerEnterWorldService {
 
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
-                    instance.addEntity(entity.getId());
+
+                    MapUtils.attachToZone(entity, zone);
+
                 } catch (Throwable e) {
                     log.error("Error during enter world of {}", entity, e);
                 } finally {

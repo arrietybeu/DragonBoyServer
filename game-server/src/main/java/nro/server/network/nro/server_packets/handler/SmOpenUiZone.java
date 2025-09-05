@@ -5,14 +5,12 @@ import com.artemis.utils.ImmutableBag;
 import lombok.extern.slf4j.Slf4j;
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.PositionComponent;
-import nro.server.model.world.World;
-import nro.server.model.world.WorldMapInstance;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
+import nro.server.utils.MapUtils;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @author Arriety
@@ -33,16 +31,9 @@ public class SmOpenUiZone extends NroServerPacket {
             throw new RuntimeException("Position is null for client: " + con);
         }
 
-        final var currentMap = World.getInstance().getMap(pos.mapId);
-
-        if (currentMap == null) {
-            writeByte(0);
-            throw new RuntimeException("Map is null for client: " + con + " pos: " + pos);
-        }
+        final var zones = MapUtils.getAllZoneForMapID(pos.mapId);
 
         // dùng để đọc số lượng zone trong map
-        final List<WorldMapInstance> zones = currentMap.getAllAreasSafe();
-
         if (zones.isEmpty()) {
             writeByte(0);
             throw new RuntimeException("Zones is empty for client: " + con + " PositionComponent: " + pos);
@@ -53,18 +44,17 @@ public class SmOpenUiZone extends NroServerPacket {
         for (final var zone : zones) {
             if (zone == null) {
                 writeByte(0);
-
-                log.info(" Zone is null for client: {} PositionComponent: {} currentMap: {}", con, pos, currentMap);
+                log.warn(" Zone is null for client: {} PositionComponent: {}", con, pos);
                 continue;
             }
-            final ImmutableBag<Entity> playersInZone = zone.getPlayersInZone();
+            final ImmutableBag<Entity> playersInZone = MapUtils.getEntities(zone);
 
             final int numPlayers = playersInZone.size();
 
-            writeByte(zone.getInstanceId()); // id zone
+            writeByte(zone.zoneId()); // id zone
             writeByte(numPlayers < 5 ? 0 : numPlayers < 8 ? 1 : 2); // 0 blue || 1 yellow || 2 red
             writeByte(numPlayers); // số người chơi trong zone
-            writeByte(currentMap.getTemplate().getMaxPlayer()); // max người chơi trong zone
+            writeByte(zone.maxPlayers()); // max người chơi trong zone
             writeByte(1); // hardcode 1
             writeUTF("cho huy"); // tên zone
             writeInt(1); // hardcode 1

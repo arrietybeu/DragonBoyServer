@@ -3,9 +3,9 @@ package nro.server.services;
 import lombok.NoArgsConstructor;
 import nro.server.consts.ConstNpc;
 import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.map.GameMapFactory;
 import nro.server.model.npc.Npc;
 import nro.server.model.npc.NpcFactory;
-import nro.server.model.world.World;
 import nro.server.network.nro.NroConnection;
 
 /**
@@ -17,9 +17,9 @@ public final class NpcService {
     public void openMenuNpc(NroConnection client, int npcId) {
 
         var positions = client.getEntity().getComponent(PositionComponent.class);
-        var currentMap = World.getInstance().getMap(positions.mapId);
+        var currentMap = GameMapFactory.getInstance().getMap(positions.mapId);
 
-        Npc npc = currentMap.getNpcById(npcId);
+        Npc npc = currentMap.npcs().get(npcId);
 
         if (npc == null) {
             if (npcId == ConstNpc.LY_TIEU_NUONG) {

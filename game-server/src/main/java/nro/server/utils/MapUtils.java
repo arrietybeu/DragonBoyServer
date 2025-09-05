@@ -4,46 +4,51 @@ import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
 import com.artemis.utils.ImmutableBag;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import nro.server.data_holders.data.MapData;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
+import nro.server.model.map.MapPosition;
 import nro.server.model.map.zone.Zone;
-import nro.server.model.map.zone.ZoneManager;
-import nro.server.model.map.zone.ZoneType;
 import nro.server.model.map.zone.type.NormalZoneManager;
-import nro.server.model.map.zone.type.OfflineZoneManager;
-import nro.server.model.world.WorldPosition;
+import nro.server.model.templates.world.Waypoint;
 
+import java.util.Collection;
 
 /**
  * @author Arriety
  */
+@Slf4j
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MapUtils {
+
+
+    public static Zone findZone(short mapId, int zoneId) {
+        GameMap gm = GameMapFactory.getInstance().getMap(mapId);
+        if (gm == null) throw new IllegalArgumentException("Map không tồn tại: " + mapId);
+        return gm.zoneManager().findZone(zoneId).orElse(null);
+    }
+
+    public static Collection<Zone> getAllZoneForMapID(short mapId) {
+        GameMap gm = GameMapFactory.getInstance().getMap(mapId);
+        if (gm == null) throw new IllegalArgumentException("Map không tồn tại: " + mapId);
+        return gm.zoneManager().getZonesReadOnly();
+    }
+
+    public static void enterAndAttachToZone(short mapId, int entityID, Entity entity) {
+        Zone zone = enterZone(mapId, entityID);
+        attachToZone(entity, zone);
+    }
 
     /**
      * Tìm/Join 1 zone trong map theo loại
      */
-    public static Zone enterZone(short mapId, int playerId, Integer targetZoneId, boolean autoSwitchIfFull) {
+    public static Zone enterZone(short mapId, int entityID) {
         GameMap gm = GameMapFactory.getInstance().getMap(mapId);
         if (gm == null) throw new IllegalArgumentException("Map không tồn tại: " + mapId);
-
-        ZoneManager zm = gm.zoneManager();
-        ZoneType t = gm.type();
-
-        return switch (t) {
-            case NORMAL -> {
-                var normal = (NormalZoneManager) zm;
-                yield normal.joinNormalZone(playerId, targetZoneId, autoSwitchIfFull);
-            }
-            case OFFLINE -> {
-                var offline = (OfflineZoneManager) zm;
-                yield offline.joinOfflineZone(playerId);
-            }
-            case DUNGEON -> throw new UnsupportedOperationException("Phó bản chưa hỗ trợ");
-            case EVENT -> throw new UnsupportedOperationException("Sự kiện chưa hỗ trợ");
-        };
+        return gm.zoneManager().joinZone(entityID);
     }
 
     /**
@@ -69,7 +74,12 @@ public class MapUtils {
         zone.onPlayerLeave();
 
         var map = GameMapFactory.getInstance().getMap(zone.mapId());
-        if (map != null && map.zoneManager() instanceof NormalZoneManager n) {
+
+        if (map == null) {
+            throw new NullPointerException("detachFromZone map not found for map ID: " + zone.mapId() + " zone ID: " + zone.zoneId());
+        }
+
+        if (map.zoneManager() instanceof NormalZoneManager n) {
             n.onPlayerLeave(zone);
         }
     }
@@ -110,9 +120,44 @@ public class MapUtils {
     /**
      * Tạo WorldPosition mới (chỉ đơn giản gắn zoneId vào)
      */
-    public static WorldPosition createPosition(short mapId, int playerId, short x, short y,
-                                               Integer targetZoneId, boolean autoSwitchIfFull) {
-        Zone z = enterZone(mapId, playerId, targetZoneId, autoSwitchIfFull);
-        return new WorldPosition(mapId, x, y, z.zoneId());
+    public static MapPosition createPosition(short mapId, int entityID, short x, short y) {
+        Zone z = enterZone(mapId, entityID);
+        return new MapPosition(mapId, x, y, z.zoneId());
     }
+
+
+    public static Waypoint getWayPointInMap(int mapID, int x, int y, int playerID) {
+
+        var template = MapData.getInstance().getWorldMapTemplate(mapID);
+        log.debug("[WP] start mapID={}, player={}, q=({}, {})", mapID, playerID, x, y);
+        try {
+            if (mapID == 46) {
+                int delta = 1000;
+                var sub = template.getWaypointMap().subMap(x - delta, true, x + delta, true);
+
+                for (var list : sub.values()) {
+                    for (Waypoint wp : list) {
+                        if (x >= wp.getMinX() - delta && x <= wp.getMaxX() + delta && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                            return wp;
+                        }
+                    }
+                }
+            } else {
+                var entry = template.getWaypointMap().floorEntry(x);
+                if (entry != null) {
+                    for (Waypoint wp : entry.getValue()) {
+                        log.debug("waypoint: {} ", wp);
+                        // FIXME tại client msg -7 t xử lý msg ngu quá nó cứ set y = 0 nên là lỗi không tìm thấy waypoint thôi thì tạm thời đóng chức năng check y nhé =)))
+                        if (x >= wp.getMinX() && x <= wp.getMaxX() /* && y >= wp.getMinY() && y <= wp.getMaxY()*/) {
+                            return wp;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Error getting waypoint for player: " + playerID + " x: " + x + "-y: " + y, ex);
+        }
+        return null;
+    }
+
 }

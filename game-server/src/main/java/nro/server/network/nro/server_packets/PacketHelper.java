@@ -1,20 +1,24 @@
 package nro.server.network.nro.server_packets;
 
 import com.artemis.Entity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import nro.server.engine.entity.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.item.ItemStatsComponent;
-import nro.server.model.world.WorldMapInstance;
+import nro.server.model.map.GameMap;
+import nro.server.model.map.GameMapFactory;
+import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 
 import java.util.List;
 
-
 /**
  * @author Arriety
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PacketHelper {
 
     public static NroServerPacket empty(int opcode) {
@@ -62,13 +66,15 @@ public final class PacketHelper {
         }
     }
 
-    public static void writeMapInfo(NroServerPacket packet, WorldMapInstance zone, PositionComponent position) {
+    public static void writeMapInfo(NroServerPacket packet, WorldMapTemplate mapTemplate, PositionComponent position) {
+
+        GameMap map = GameMapFactory.getInstance().getMap(position.mapId);
+
         // Write player position
         packet.writeShort(position.x);
         packet.writeShort(position.y);
 
         // Write waypoints
-        var mapTemplate = zone.getParent().getTemplate();
         var wayPoints = mapTemplate.getWaypoints();
         packet.writeByte(wayPoints.size());
         for (var wayPoint : wayPoints) {
@@ -86,18 +92,18 @@ public final class PacketHelper {
         packet.writeByte(0); // Monster extra data
 
         // Write NPC data (currently empty)
-        var npcs = zone.getParent().getNpcs();
+        var npcs = map.npcs();
         packet.writeByte(npcs.size());
         for (var npc : npcs) {
-            if (npc != null) {
-                packet.writeByte(npc.status());
-                packet.writeShort(npc.x());
-                packet.writeShort(npc.y());
-                packet.writeByte(npc.id());
-                packet.writeShort(npc.avatarId());
-            } else {
-                throw new RuntimeException("NPC is null in Map: " + mapTemplate);
-            }
+            if (npc == null)
+                continue;
+
+            packet.writeByte(npc.status());
+            packet.writeShort(npc.x());
+            packet.writeShort(npc.y());
+            packet.writeByte(npc.id());
+            packet.writeShort(npc.avatarId());
+
         }
 
         // Write item map data (currently empty)

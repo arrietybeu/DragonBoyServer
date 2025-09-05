@@ -4,13 +4,12 @@ package nro.server.services;
 import com.artemis.Entity;
 import lombok.NoArgsConstructor;
 import nro.server.engine.entity.GameWorld;
-import nro.server.model.world.World;
-import nro.server.model.world.WorldMapInstance;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.handler.SmPlayerAdd;
 import nro.server.network.nro.server_packets.handler.SmPlayerRemove;
 import nro.server.network.nro.server_packets.handler.SmTeleport;
+import nro.server.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +37,10 @@ public final class AreaService {
      */
     public void sendPacketForALLPlayerInArea(int mapID, int areaID, NroServerPacket packet) throws RuntimeException {
         try {
-            var area = World.getInstance().getAreaInMap(mapID, areaID);
+            var zone = MapUtils.findZone((short) mapID, areaID);
 
-            var entities = area.getEntities();
+            var entities = MapUtils.getEntities(zone);
+
             for (int i = 0; i < entities.size(); i++) {
                 Entity e = entities.get(i);
 
@@ -55,7 +55,8 @@ public final class AreaService {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Error sending packet to all players in area (mapID: {}, areaID: {}): {}", mapID, areaID, e.getMessage(), e);
+            LOGGER.error("Error sending packet to all players in area (mapID: {}, areaID: {}): {}",
+                    mapID, areaID, e.getMessage(), e);
         }
     }
 
@@ -71,9 +72,10 @@ public final class AreaService {
     public void sendPacketForALLPlayerInAreaNotMe(int entityId, int mapID, int areaID, NroServerPacket packet) {
         try {
 
-            var area = World.getInstance().getAreaInMap(mapID, areaID);
+            var zone = MapUtils.findZone((short) mapID, areaID);
 
-            var entities = area.getEntities();
+            var entities = MapUtils.getEntities(zone);
+
             for (int i = 0; i < entities.size(); i++) {
                 Entity e = entities.get(i);
 
@@ -105,9 +107,12 @@ public final class AreaService {
             var entity = client.getEntity();
             var position = entityQueryService.getPosition(entity.getId());
 
-            var area = World.getInstance().getAreaInMap(position.mapId, position.getAreaId());
 
-            for (var playerInZone : area.getPlayersInZone()) {
+            var zone = MapUtils.findZone(position.mapId, position.getAreaId());
+
+            var entities = MapUtils.getEntities(zone);
+
+            for (var playerInZone : entities) {
                 if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;
 
                 var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
@@ -120,7 +125,7 @@ public final class AreaService {
                 }
             }
 
-            this.sendPlayersInfoInZoneToMe(entity, area);
+            this.sendPlayersInfoInZoneToMe(entity, entities);
 
         } catch (Throwable e) {
             LOGGER.error("Error sending player info to others in clinet: {}", client, e);
@@ -131,11 +136,11 @@ public final class AreaService {
      * Đây là phương thức phụ trợ của {@link  #sendMyInfoToPlayersInZone(NroConnection)} dùng để gửi toàn bộ thông tin của người trong khu vực đến Entity (client)
      *
      * @param entity
-     * @param area
+     * @param entities
      */
-    private void sendPlayersInfoInZoneToMe(Entity entity, WorldMapInstance area) {
+    private void sendPlayersInfoInZoneToMe(Entity entity, Iterable<Entity> entities) {
 
-        for (var playerInZone : area.getPlayersInZone()) {
+        for (var playerInZone : entities) {
 
             if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;
             var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
@@ -147,19 +152,18 @@ public final class AreaService {
         }
     }
 
-    public void sendPacketPlayerExitArea(NroConnection ss, WorldMapInstance area) {
+    public void sendPacketPlayerExitArea(NroConnection ss, Iterable<Entity> entities) {
         var entity = ss.getEntity();
         var meID = ss.getPlayerID();
         byte teleport = entityQueryService.getPosition(ss.getEntity().getId()).teleport;
 
-        for (var playerInZone : area.getPlayersInZone()) {
+        for (var playerInZone : entities) {
             if (playerInZone == null || playerInZone.equals(entity)) continue;
             var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
             if (playerComponent != null && playerComponent.isOnline()) {
 
                 playerComponent.connection.sendPacket(new SmTeleport(meID, teleport));
                 playerComponent.connection.sendPacket(new SmPlayerRemove(meID));
-
             }
         }
     }

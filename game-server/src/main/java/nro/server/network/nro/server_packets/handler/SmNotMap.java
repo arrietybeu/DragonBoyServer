@@ -9,7 +9,7 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
-import nro.server.model.world.World;
+import nro.server.utils.MapUtils;
 
 import java.io.IOException;
 
@@ -71,34 +71,28 @@ public class SmNotMap extends NroServerPacket {
 
         var captionTemplates = CaptionData.getInstance().getCaptionTemplates();
         this.writeByte(captionTemplates.size());
-        for (var caption : captionTemplates) {
+        for (var caption : captionTemplates)
             this.writeLong(caption.exp());
-        }
     }
 
-    public void requestMapTemplate(NroConnection client) throws IOException {
+    public void requestMapTemplate(NroConnection client) {
         PositionComponent position = client.getEntity().getComponent(PositionComponent.class);
 
         if (position == null) {
             throw new IllegalArgumentException("PositionComponent cannot be null for SmNotMap requestMapTemplate");
         }
 
-        var map = World.getInstance().getMap(position.mapId);
-        if (map == null) {
-            throw new IllegalArgumentException("Map not found for mapId: " + position.mapId);
-        }
+        var map = MapData.getInstance().getWorldMapTemplate(position.mapId);
 
-        var worldMapInstance = map.getWorldMapInstance(position.getAreaId());
-
-        this.writeByte(map.getTemplate().getTileMap().width());
-        this.writeByte(map.getTemplate().getTileMap().height());
+        this.writeByte(map.getTileMap().width());
+        this.writeByte(map.getTileMap().height());
         for (int i = 0; i < map.getTileMap().tiles().length; i++) {
             this.writeByte(map.getTileMap().tiles()[i]);
         }
 
-        PacketHelper.writeMapInfo(this, worldMapInstance, position);
+        PacketHelper.writeMapInfo(this, map, position);
 
-        writeByte(map.getTemplate().getIsMapDouble());
+        writeByte(map.getIsMapDouble());
 
     }
 

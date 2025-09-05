@@ -2,6 +2,7 @@ package nro.server.model.ecs.component;
 
 
 import com.artemis.Component;
+import nro.server.model.map.change.MapChangeType;
 
 /**
  * @author Arriety
@@ -18,6 +19,8 @@ public class PositionComponent extends Component {
     public boolean isDirtyMove;
     public byte isOnGround, isOnGroundNew;
     public boolean wantsToChangeMap;
+
+    public MapChangeType changeType;
 
     public PositionComponent() {
     }
@@ -39,8 +42,7 @@ public class PositionComponent extends Component {
     }
 
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return "PositionComponent{" +
                 "mapId=" + mapId +
                 ", areaId=" + areaId +
@@ -53,6 +55,7 @@ public class PositionComponent extends Component {
                 ", isOnGround=" + isOnGround +
                 ", isOnGroundNew=" + isOnGroundNew +
                 ", wantsToChangeMap=" + wantsToChangeMap +
+                ", changeType=" + changeType +
                 '}';
     }
 }

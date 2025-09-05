@@ -2,7 +2,12 @@ package nro.server.model.map.zone.type;
 
 import nro.server.model.map.zone.*;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 
 /**
  * @author Arriety
@@ -11,10 +16,11 @@ public final class OfflineZoneManager implements ZoneManager, GC {
 
     private final short mapId;
     private final int maxPlayers = 1;
-
     private static final long TTL_MS = 10_000;
 
     private final ConcurrentHashMap<Integer, Entry> byOwner = new ConcurrentHashMap<>();
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
 
     public OfflineZoneManager(short mapId) {
         this.mapId = mapId;
@@ -31,15 +37,10 @@ public final class OfflineZoneManager implements ZoneManager, GC {
     }
 
     @Override
-    public Zone joinNormalZone(int playerId, Integer targetZoneId, boolean autoSwitchIfFull) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Zone joinOfflineZone(int playerId) {
-        return byOwner.compute(playerId, (k, v) -> {
+    public Zone joinZone(int entityID) {
+        return byOwner.compute(entityID, (k, v) -> {
             if (v == null) {
-                BaseZone z = new BaseZone(mapId, playerId, ZoneType.OFFLINE, maxPlayers);
+                BaseZone z = new BaseZone(mapId, entityID, ZoneType.OFFLINE, maxPlayers);
                 return new Entry(z, -1);
             }
             return v;
@@ -47,14 +48,29 @@ public final class OfflineZoneManager implements ZoneManager, GC {
     }
 
     @Override
-    public Zone joinDungeonZone(int guildId) {
-        throw new UnsupportedOperationException();
+    public Optional<Zone> findZone(int zoneId) {
+        for (Entry e : byOwner.values()) if (e.zone.zoneId() == zoneId) return Optional.of(e.zone);
+        return Optional.empty();
     }
 
     @Override
-    public java.util.Optional<Zone> findZone(int zoneId) {
-        for (Entry e : byOwner.values()) if (e.zone.zoneId() == zoneId) return java.util.Optional.of(e.zone);
-        return java.util.Optional.empty();
+    public Collection<Zone> getZonesReadOnly() {
+        lock.readLock().lock();
+        try {
+            return List.copyOf(byOwner.values().stream().map(Entry::zone).toList());
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public void forEachZoneWrite(Consumer<Zone> consumer) {
+        lock.writeLock().lock();
+        try {
+            byOwner.forEach((id, e) -> consumer.accept(e.zone));
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override

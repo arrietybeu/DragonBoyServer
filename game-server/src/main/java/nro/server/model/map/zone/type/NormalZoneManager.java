@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Consumer;
 
 /**
  * @author Arriety
@@ -19,6 +21,8 @@ public final class NormalZoneManager implements ZoneManager {
     private final List<BaseZone> zones;
     private final AtomicIntegerArray counts;
     private final int maxPlayers;
+
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public NormalZoneManager(short mapId, int maxArea, int maxPlayers) {
         if (maxArea <= 0) throw new IllegalArgumentException("maxArea phải > 0");
@@ -34,32 +38,13 @@ public final class NormalZoneManager implements ZoneManager {
     }
 
     @Override
-    public Zone joinNormalZone(int playerId, Integer targetZoneId, boolean autoSwitchIfFull) {
-        if (targetZoneId != null) {
-            int z = targetZoneId;
-            if (valid(z) && counts.get(z) < maxPlayers) {
-                return zones.get(z);
-            }
-            if (!autoSwitchIfFull) {
-                throw new IllegalStateException("Zone " + z + " đã đầy hoặc không tồn tại");
-            }
-        }
+    public Zone joinZone(int playerId) {
         int pick = pickLeastLoaded();
         if (pick == -1) {
             // FIXME nếu đã đầy đảy về map offline (nhà,...)
             throw new IllegalStateException("Tất cả zone của map " + mapId + " đều đầy");
         }
         return zones.get(pick);
-    }
-
-    @Override
-    public Zone joinOfflineZone(int playerId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Zone joinDungeonZone(int guildId) {
-        throw new UnsupportedOperationException();
     }
 
     public void onPlayerJoin(Zone z) {
@@ -91,6 +76,40 @@ public final class NormalZoneManager implements ZoneManager {
             }
         }
         return best;
+    }
+
+    /**
+     * <p>Phù hợp cho tác vụ Lấy Dữ liệu trong Zone / GM tool / debug log
+     *
+     * @return {@code getZonesReadOnly}
+     */
+    public List<Zone> getZonesReadOnly() {
+        lock.readLock().lock();
+        try {
+            return List.copyOf(zones);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * <pre><code>
+     *      zoneManager.forEachZoneWrite(z -> {
+     *           for (Player p : z.getPlayers()) {
+     *              p.sendPacket(new Notify("Anh béo đẹp trai"));
+     *           }
+     *      });
+     * </code></pre>
+     *
+     * @param consumer
+     */
+    public void forEachZoneWrite(Consumer<Zone> consumer) {
+        lock.writeLock().lock();
+        try {
+            for (Zone z : zones) consumer.accept(z);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
