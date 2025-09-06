@@ -5,7 +5,7 @@ import com.artemis.World;
 import nro.commons.database.Database;
 import nro.commons.database.DatabaseFactory;
 import nro.server.configs.main.ConfigCharacter;
-import nro.server.engine.entity.GameWorld;
+import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;

@@ -2,8 +2,7 @@ package nro.server.services;
 
 import com.artemis.ComponentMapper;
 import com.artemis.World;
-import lombok.NoArgsConstructor;
-import nro.server.engine.entity.GameWorld;
+import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.item.*;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import org.slf4j.Logger;

@@ -5,7 +5,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import nro.server.engine.entity.GameWorld;
+import nro.server.engine.GameWorld;
 
 /**
  * @author Arriety

@@ -1,4 +1,4 @@
-package nro.server.engine.entity.system;
+package nro.server.engine.base;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class HealthSystem extends IteratingSystem {
+public final class HealthSystem extends IteratingSystem {
 
     // TODO system này dùng để xử lý các thay đổi về máu, mp, trạng thái chết sống, hồi sinh, v.v.
     private static final Logger log = LoggerFactory.getLogger(HealthSystem.class);

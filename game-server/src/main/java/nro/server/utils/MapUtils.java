@@ -6,7 +6,10 @@ import com.artemis.utils.ImmutableBag;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nro.server.data_holders.data.MapData;
-import nro.server.engine.entity.GameWorld;
+import nro.server.engine.GameWorld;
+import nro.server.model.ecs.component.PositionComponent;
+import nro.server.model.ecs.component.monster.InfoMonsterComponent;
+import nro.server.model.ecs.component.monster.StastMonsterComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
@@ -158,6 +161,60 @@ public class MapUtils {
             throw new RuntimeException("Error getting waypoint for player: " + playerID + " x: " + x + "-y: " + y, ex);
         }
         return null;
+    }
+
+    public static void attachMonsterToZone(Entity entity, Zone zone) {
+        GroupManager gm = GameWorld.getInstance().getGroupManager();
+        gm.add(entity, zone.groupName());      // group chung của zone
+        gm.add(entity, monsterGroupName(zone));// group phụ riêng cho monster
+    }
+
+    public static void detachMonsterFromZone(Entity entity, Zone zone) {
+        GroupManager gm = GameWorld.getInstance().getGroupManager();
+        gm.remove(entity, zone.groupName());
+        gm.remove(entity, monsterGroupName(zone));
+    }
+
+    public static ImmutableBag<Entity> getMonsters(Zone zone) {
+        GroupManager gm = GameWorld.getInstance().getGroupManager();
+        ImmutableBag<Entity> bag = gm.getEntities(monsterGroupName(zone));
+        return bag != null ? bag : new com.artemis.utils.Bag<>();
+    }
+
+    public static Entity spawnMonster(short mapId,
+                                      int zoneId,
+                                      int id,
+                                      int templateId,
+                                      String name,
+                                      short x, short y,
+                                      byte level,
+                                      long hpMax) {
+        Zone z = findZone(mapId, zoneId);
+        if (z == null) throw new IllegalArgumentException("Zone không tồn tại: map=" + mapId + ", zone=" + zoneId);
+
+        var world = GameWorld.getInstance().getWorld();
+        Entity e = world.createEntity();
+
+        var info = e.edit().create(InfoMonsterComponent.class);
+
+        info.id = id;
+        info.templateID = templateId;
+        info.name = name;
+
+        var stats = e.edit().create(StastMonsterComponent.class);
+        stats.hpMax = hpMax;
+        stats.level = level;
+
+        var position = new PositionComponent(mapId, x, y, z.zoneId());
+        e.edit().add(position);
+
+        attachMonsterToZone(e, z);
+
+        return e;
+    }
+
+    private static String monsterGroupName(Zone zone) {
+        return zone.groupName() + ":monster";
     }
 
 }

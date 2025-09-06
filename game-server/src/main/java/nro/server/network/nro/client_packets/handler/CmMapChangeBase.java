@@ -1,7 +1,7 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.server.model.ecs.component.PositionComponent;
-import nro.server.model.map.change.MapChangeType;
+import nro.server.model.map.MapChangeType;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 

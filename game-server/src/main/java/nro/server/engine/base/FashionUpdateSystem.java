@@ -1,8 +1,7 @@
-package nro.server.engine.entity.system;
+package nro.server.engine.base;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
 import nro.server.consts.ConstItem;
 import nro.server.data_holders.data.ItemData;
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class FashionUpdateSystem extends IteratingSystem {
+public final class FashionUpdateSystem extends IteratingSystem {
 
     private static final Logger log = LoggerFactory.getLogger(FashionUpdateSystem.class);
 

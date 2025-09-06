@@ -9,7 +9,7 @@ import nro.server.GameServer;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.data.DartData;
 import nro.server.data_holders.data.PartData;
-import nro.server.engine.entity.GameWorld;
+import nro.server.engine.GameWorld;
 import nro.server.engine.quest.QuestEngine;
 import nro.server.model.templates.data.PartTemplate;
 import nro.server.utils.ThreadPoolManager;

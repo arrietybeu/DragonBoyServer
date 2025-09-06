@@ -29,7 +29,6 @@ public final class PlayerEnterWorldService {
 
     private static final ConcurrentLinkedQueue<Integer> enteringWorld = new ConcurrentLinkedQueue<>();
 
-
     public static void enterWorld(final NroConnection client) {
         if (client == null) throw new NullPointerException("Client EnterWorldService cannot be null");
 
@@ -61,7 +60,6 @@ public final class PlayerEnterWorldService {
 
                     PositionComponent positionComponent = entity.getComponent(PositionComponent.class);
 
-//                    WorldMapInstance instance = World.getInstance().getAvailableInstance(positionComponent.mapId, entity.getId(), positionComponent.getAreaId());
                     var zone = MapUtils.findZone(positionComponent.mapId, positionComponent.getAreaId());
 
                     if (zone == null) {

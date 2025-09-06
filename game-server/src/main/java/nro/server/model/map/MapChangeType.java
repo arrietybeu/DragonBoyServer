@@ -1,4 +1,4 @@
-package nro.server.model.map.change;
+package nro.server.model.map;
 
 /**
  * @author Arriety

@@ -1,4 +1,4 @@
-package nro.server.engine.entity.system;
+package nro.server.engine.base;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Arriety
  */
-public class MovementSystem extends IteratingSystem {
+public final class MovementSystem extends IteratingSystem {
 
     private static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
     private ComponentMapper<PositionComponent> posMapper;

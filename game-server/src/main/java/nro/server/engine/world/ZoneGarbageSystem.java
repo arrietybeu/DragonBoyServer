@@ -21,24 +21,28 @@ public class ZoneGarbageSystem extends BaseSystem {
 
     @Override
     protected void processSystem() {
-        long now = System.currentTimeMillis();
-        if (now - lastRunTime < GC_INTERVAL_MS) return;
-        lastRunTime = now;
+        try {
+            long now = System.currentTimeMillis();
+            if (now - lastRunTime < GC_INTERVAL_MS) return;
+            lastRunTime = now;
 
-        var masp = GameMapFactory.getInstance().getAllMaps();
+            var masp = GameMapFactory.getInstance().getAllMaps();
 
-        if (masp.isEmpty()) return;
+            if (masp.isEmpty()) return;
 
-        for (GameMap map : masp) {
-            var manager = map.zoneManager();
-            if (manager instanceof GC gcManager) {
-                try {
-                    gcManager.gc();
+            for (GameMap map : masp) {
+                var manager = map.zoneManager();
+                if (manager instanceof GC gcManager) {
+                    try {
+                        gcManager.gc();
 //                    log.info("Garbage detected {}", manager);
-                } catch (Throwable t) {
-                    log.warn("GC error on map {}: {}", map.id(), t.getMessage(), t);
+                    } catch (Throwable t) {
+                        log.warn("GC error on map {}: {}", map.id(), t.getMessage(), t);
+                    }
                 }
             }
+        } catch (Exception e) {
+            log.error("Error processing System System", e);
         }
     }
 }

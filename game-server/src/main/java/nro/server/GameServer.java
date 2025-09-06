@@ -16,21 +16,19 @@ import nro.server.configs.main.PathPropeties;
 import nro.server.configs.network.NetworkConfig;
 import nro.server.controllers.BannedIpController;
 import nro.server.data_holders.DataManager;
-import nro.server.engine.entity.GameWorld;
-import nro.server.engine.entity.system.InventorySystem;
-import nro.server.engine.quest.system.MoveQuestSystem;
+import nro.server.engine.GameWorld;
+import nro.server.engine.base.InventorySystem;
 import nro.server.engine.quest.system.QuestSystem;
 import nro.server.engine.world.ZoneGarbageSystem;
-import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
 import nro.server.model.npc.NpcFactory;
 import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
-import nro.server.engine.entity.system.FashionUpdateSystem;
-import nro.server.engine.entity.system.MapChangeSystem;
-import nro.server.engine.entity.system.MovementSystem;
+import nro.server.engine.base.FashionUpdateSystem;
+import nro.server.engine.base.MapChangeSystem;
+import nro.server.engine.base.MovementSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;
@@ -86,7 +84,7 @@ public class GameServer {
         builder.with(
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
-                new QuestSystem(), new MoveQuestSystem(),
+                new QuestSystem(),
                 new InventorySystem(),
                 new ZoneGarbageSystem()
         ); // add systems here if needed

@@ -2,7 +2,7 @@ package nro.server.model.ecs.component;
 
 
 import com.artemis.Component;
-import nro.server.model.map.change.MapChangeType;
+import nro.server.model.map.MapChangeType;
 
 /**
  * @author Arriety
@@ -42,7 +42,8 @@ public class PositionComponent extends Component {
     }
 
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "PositionComponent{" +
                 "mapId=" + mapId +
                 ", areaId=" + areaId +

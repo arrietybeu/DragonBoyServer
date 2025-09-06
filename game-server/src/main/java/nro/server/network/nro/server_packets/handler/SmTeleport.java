@@ -1,7 +1,6 @@
 package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
-import nro.server.engine.entity.GameWorld;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;

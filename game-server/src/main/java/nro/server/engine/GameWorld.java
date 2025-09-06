@@ -1,10 +1,9 @@
-package nro.server.engine.entity;
+package nro.server.engine;
 
 import com.artemis.*;
 import com.artemis.managers.GroupManager;
 import com.artemis.utils.Bag;
 import com.artemis.utils.BitVector;
-import com.artemis.utils.IntBag;
 import nro.server.services.EntityQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Arriety
  */
-public class GameWorld {
+public final class GameWorld {
 
     private static final Logger log = LoggerFactory.getLogger(GameWorld.class);
 

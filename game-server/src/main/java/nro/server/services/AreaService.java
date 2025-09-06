@@ -3,7 +3,7 @@ package nro.server.services;
 
 import com.artemis.Entity;
 import lombok.NoArgsConstructor;
-import nro.server.engine.entity.GameWorld;
+import nro.server.engine.GameWorld;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.handler.SmPlayerAdd;

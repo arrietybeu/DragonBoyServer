@@ -66,18 +66,6 @@ public final class NormalZoneManager implements ZoneManager {
         return zoneId >= 0 && zoneId < zones.size();
     }
 
-//    private int pickLeastLoaded() {
-//        int best = -1, load = Integer.MAX_VALUE;
-//        for (int i = 0; i < zones.size(); i++) {
-//            int c = counts.get(i);
-//            if (c < maxPlayers && c < load) {
-//                load = c;
-//                best = i;
-//            }
-//        }
-//        return best;
-//    }
-
     private int pickFirstAvailable() {
         for (int i = 0; i < zones.size(); i++) {
             if (counts.get(i) < maxPlayers) {

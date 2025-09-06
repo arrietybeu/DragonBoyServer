@@ -1,10 +1,8 @@
-package nro.server.engine.entity.system;
+package nro.server.engine.base;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
-import com.artemis.Entity;
 import com.artemis.systems.IteratingSystem;
-import com.artemis.utils.ImmutableBag;
 import nro.commons.consts.ConstsCmd;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.PlayerComponent;
