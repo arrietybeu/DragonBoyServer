@@ -4,6 +4,8 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
+import nro.server.network.nro.server_packets.handler.SmRequestEffect;
+import nro.server.network.nro.server_packets.handler.SmRequestMobTemplate;
 
 import java.util.Set;
 
@@ -13,7 +15,7 @@ import java.util.Set;
 @AClientPacketHandler(command = ConstsCmd.GET_EFFDATA, validStates = {NroConnection.State.IN_GAME})
 public class CmGetEffect extends NroClientPacket {
 
-    private int idEffect;
+    private short idEffect;
 
     public CmGetEffect(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
@@ -26,5 +28,6 @@ public class CmGetEffect extends NroClientPacket {
 
     @Override
     protected void runImpl() {
+        getClient().sendPacket(new SmRequestEffect(idEffect));
     }
 }

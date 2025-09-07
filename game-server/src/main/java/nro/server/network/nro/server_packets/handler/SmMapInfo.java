@@ -7,7 +7,6 @@ import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
-import nro.server.utils.MapUtils;
 
 import java.io.IOException;
 

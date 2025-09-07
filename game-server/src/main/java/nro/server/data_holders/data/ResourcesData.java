@@ -275,6 +275,14 @@ public final class ResourcesData implements GameEngine {
         }
     }
 
+    public EffectDataTemplate getEffectData(short id, byte zoomLevel) {
+        try {
+            return effectData.get(id).get(zoomLevel);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private static final class SingletonHolder {
         private static final ResourcesData INSTANCE = new ResourcesData();
     }
