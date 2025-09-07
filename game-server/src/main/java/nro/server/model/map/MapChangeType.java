@@ -8,5 +8,5 @@ public enum MapChangeType {
     WAYPOINT,
     SHIP,
     ZONE,
-    TELEPORT
+    TELEPORT;
 }

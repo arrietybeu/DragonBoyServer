@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Arriety
  */
 public record MonsterTemplate(
-        int id,
+        short id,
         byte type,
         @JsonProperty("NAME") String NAME,
         long damage,

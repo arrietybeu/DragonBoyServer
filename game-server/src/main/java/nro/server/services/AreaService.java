@@ -39,7 +39,7 @@ public final class AreaService {
         try {
             var zone = MapUtils.findZone((short) mapID, areaID);
 
-            var entities = MapUtils.getEntities(zone);
+            var entities = MapUtils.getPlayers(zone);
 
             for (int i = 0; i < entities.size(); i++) {
                 Entity e = entities.get(i);
@@ -74,7 +74,7 @@ public final class AreaService {
 
             var zone = MapUtils.findZone((short) mapID, areaID);
 
-            var entities = MapUtils.getEntities(zone);
+            var entities = MapUtils.getPlayers(zone);
 
             for (int i = 0; i < entities.size(); i++) {
                 Entity e = entities.get(i);
@@ -110,7 +110,7 @@ public final class AreaService {
 
             var zone = MapUtils.findZone(position.mapId, position.getAreaId());
 
-            var entities = MapUtils.getEntities(zone);
+            var entities = MapUtils.getPlayers(zone);
 
             for (var playerInZone : entities) {
                 if (playerInZone == null || playerInZone.getId() == entity.getId()) continue;

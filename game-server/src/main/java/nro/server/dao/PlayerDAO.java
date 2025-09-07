@@ -291,16 +291,10 @@ public class PlayerDAO {
             ps.setInt(1, playerId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-
                     var mapId = rs.getShort("map_id");
                     var x = rs.getShort("pos_x");
                     var y = rs.getShort("pos_y");
-
                     var position = MapUtils.createPosition(mapId, entity.getId(), x, y);
-
-                    if (position == null)
-                        throw new SQLException("Khong load duoc position cua World: " + mapId);
-
                     entity.edit().add(new PositionComponent(position.mapId(), position.x(), position.y(), position.zoneID()));
                 }
             }

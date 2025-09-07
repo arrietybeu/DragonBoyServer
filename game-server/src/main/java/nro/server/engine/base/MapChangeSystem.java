@@ -87,7 +87,7 @@ public final class MapChangeSystem extends IteratingSystem {
 
         Zone from = MapUtils.findZone(pos.mapId, pos.getAreaId());
         Zone to = MapUtils.enterZone(toMapId, e.getId());
-        var entities = MapUtils.getEntities(from);
+        var entities = MapUtils.getPlayers(from);
 
         if (to == null) {
             keepInSafeZone(null, client, pos);

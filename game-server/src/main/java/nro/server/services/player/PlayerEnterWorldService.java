@@ -63,7 +63,7 @@ public final class PlayerEnterWorldService {
                     var zone = MapUtils.findZone(positionComponent.mapId, positionComponent.getAreaId());
 
                     if (zone == null) {
-                        log.error("No available instance for player: {}", playerId);
+                        log.error("No available Zone for player: {} mapID: {}, zoneID: {}", playerId, positionComponent.mapId, positionComponent.getAreaId());
                         client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_SERVER_FULL.getDefaultMessage()));
                         return;
                     }

@@ -1,5 +1,6 @@
 package nro.server.model.map.zone.type;
 
+import lombok.extern.slf4j.Slf4j;
 import nro.server.model.map.zone.*;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.function.Consumer;
 /**
  * @author Arriety
  */
+@Slf4j
 public final class OfflineZoneManager implements ZoneManager, GC {
 
     private final short mapId;
@@ -20,7 +22,6 @@ public final class OfflineZoneManager implements ZoneManager, GC {
 
     private final ConcurrentHashMap<Integer, Entry> byOwner = new ConcurrentHashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
 
     public OfflineZoneManager(short mapId) {
         this.mapId = mapId;
@@ -52,6 +53,7 @@ public final class OfflineZoneManager implements ZoneManager, GC {
         for (Entry e : byOwner.values()) if (e.zone.zoneId() == zoneId) return Optional.of(e.zone);
         return Optional.empty();
     }
+
 
     @Override
     public Collection<Zone> getZonesReadOnly() {

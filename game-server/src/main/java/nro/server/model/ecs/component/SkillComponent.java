@@ -15,8 +15,6 @@ public class SkillComponent extends Component {
     public SkillInfo skillSelect;
 
     public SkillComponent() {
-        // Default constructor for Artemis
     }
-
 
 }

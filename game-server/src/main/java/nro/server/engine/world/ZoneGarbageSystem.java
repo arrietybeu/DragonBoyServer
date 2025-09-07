@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ZoneGarbageSystem extends BaseSystem {
 
-
     // FIXME chưa hoàn thiện
     private static final Logger log = LoggerFactory.getLogger(ZoneGarbageSystem.class);
 
@@ -31,6 +30,7 @@ public class ZoneGarbageSystem extends BaseSystem {
             if (masp.isEmpty()) return;
 
             for (GameMap map : masp) {
+                if (map == null) continue;
                 var manager = map.zoneManager();
                 if (manager instanceof GC gcManager) {
                     try {

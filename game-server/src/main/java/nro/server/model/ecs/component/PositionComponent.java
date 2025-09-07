@@ -34,13 +34,11 @@ public class PositionComponent extends Component {
 
     public void setAreaId(int areaId) {
         if (this.areaId != areaId) this.areaId = areaId;
-//        Utils.logCall();
     }
 
-    public byte getAreaId() {
-        return (byte) areaId;
+    public int getAreaId() {
+        return areaId;
     }
-
 
     @Override
     public String toString() {

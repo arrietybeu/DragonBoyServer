@@ -6,6 +6,7 @@ import nro.commons.utils.NetworkUtils;
 import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
+import nro.server.model.templates.entity.MonsterInfo;
 import nro.server.model.templates.entity.NpcTemplate;
 import nro.server.model.templates.world.*;
 import org.json.simple.JSONArray;
@@ -15,6 +16,9 @@ import org.json.simple.parser.ParseException;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -85,11 +89,34 @@ public final class MapData implements GameEngine {
                 List<Waypoint> waypoints = this.loadWaypoints(connection, id);
                 TileMap tileMap = tileMaps.get(id);
                 List<NpcTemplate.NpcInfo> npcs = this.loadNpcs(connection, id);
+                List<MonsterInfo> monsterInfos = this.loadMonsterInfos(connection, id);
 
-                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId, isMapDouble, bgId, bgType, type, bgItems, effects, waypoints, tileMap, npcs);
+                var worldMapTemplate = new WorldMapTemplate(id, name, zone, maxPlayer, planetId, tileId, isMapDouble, bgId,
+                        bgType, type, bgItems, effects, waypoints, tileMap, npcs, monsterInfos);
                 worldMaps.put(id, worldMapTemplate);
             }
         });
+    }
+
+    private List<MonsterInfo> loadMonsterInfos(Connection connection, int mapID) {
+        List<MonsterInfo> monsters = new ArrayList<>();
+        String query = "SELECT * FROM `map_monsters` WHERE map_id = ?";
+
+        Database.select(connection, query, rs -> {
+
+            while (rs.next()) {
+                var idTemplate = (rs.getInt("mob_id"));
+                var level = (rs.getByte("level"));
+                var hpMax = (rs.getLong("max_hp"));
+                var x = (rs.getShort("x"));
+                var y = (rs.getShort("y"));
+
+                MonsterInfo monster = new MonsterInfo(idTemplate, level, hpMax, x, y);
+                monsters.add(monster);
+            }
+
+        }, preparedStatement -> preparedStatement.setInt(1, mapID));
+        return monsters;
     }
 
     private List<NpcTemplate.NpcInfo> loadNpcs(Connection con, int mapID) {
@@ -318,7 +345,10 @@ public final class MapData implements GameEngine {
 
         var monsterTemplates = MonsterData.getInstance().getMonsters();
         buf.putShort((short) monsterTemplates.size());// client version thap send byte
-        for (var monster : monsterTemplates) {
+        for (var monster : monsterTemplates.values()) {
+            // FIXME sửa client đoạn này để lấy id template (ngày trước là lấy theo index khi write,
+            //  nhưng bây giờ dùng hashMap không theo index được nên phải lấy đúng id template)
+            buf.putShort(monster.id());
             buf.put(monster.type());
             NetworkUtils.writeString(buf, monster.NAME());
             buf.putLong(monster.hp());

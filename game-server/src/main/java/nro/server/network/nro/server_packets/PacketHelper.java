@@ -7,11 +7,16 @@ import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.item.ItemStatsComponent;
+import nro.server.model.ecs.component.monster.InfoMonsterComponent;
+import nro.server.model.ecs.component.monster.StastMonsterComponent;
+import nro.server.model.ecs.component.monster.StateMonsterComponent;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
+import nro.server.model.map.zone.Zone;
 import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
+import nro.server.utils.MapUtils;
 
 import java.util.List;
 
@@ -69,6 +74,13 @@ public final class PacketHelper {
     public static void writeMapInfo(NroServerPacket packet, WorldMapTemplate mapTemplate, PositionComponent position) {
 
         GameMap map = GameMapFactory.getInstance().getMap(position.mapId);
+        Zone zone = MapUtils.findZone(map.id(), position.getAreaId());
+
+        var w = GameWorld.getInstance().getWorld();
+        var mI = w.getMapper(InfoMonsterComponent.class);
+        var mS = w.getMapper(StastMonsterComponent.class);
+        var st = w.getMapper(StateMonsterComponent.class);
+        var mP = w.getMapper(PositionComponent.class);
 
         // Write player position
         packet.writeShort(position.x);
@@ -87,7 +99,34 @@ public final class PacketHelper {
             packet.writeUTF(wayPoint.getName());
         }
 
-        packet.writeByte(0); // Monster count
+        var monsterInZone = MapUtils.getMonsters(zone);
+        packet.writeByte(monsterInZone.size());
+        for (int i = 0, n = monsterInZone.size(); i < n; i++) {
+            var monster = monsterInZone.get(i);
+            var info = mI.get(monster);
+            var stats = mS.get(monster);
+            var state = st.get(monster);
+
+            var pos = mP.get(monster);
+
+            packet.writeInt(monster.getId());
+            packet.writeBoolean(false);          // isDisable
+            packet.writeBoolean(false);          // dontMove
+            packet.writeBoolean(false);          // fire
+            packet.writeBoolean(false);          // ice
+            packet.writeBoolean(false);          // wind
+            packet.writeShort((short) info.templateID);
+            packet.writeByte(0);                 // sys
+            packet.writeLong(stats.hp > 0 ? stats.hp : stats.hpMax);
+            packet.writeByte(stats.level);
+            packet.writeLong(stats.hpMax);
+            packet.writeShort(pos.x);
+            packet.writeShort(pos.y);
+            packet.writeByte(state.status);
+            packet.writeByte(stats.levelBoss);
+            packet.writeBoolean(stats.isBoss);
+        }
+
         packet.writeByte(0); // Monster extra data
 
         // Write NPC data (currently empty)

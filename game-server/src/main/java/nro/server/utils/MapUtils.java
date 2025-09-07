@@ -2,6 +2,7 @@ package nro.server.utils;
 
 import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
+import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +11,14 @@ import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.monster.InfoMonsterComponent;
 import nro.server.model.ecs.component.monster.StastMonsterComponent;
+import nro.server.model.ecs.component.monster.StateMonsterComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
 import nro.server.model.map.MapPosition;
 import nro.server.model.map.zone.Zone;
 import nro.server.model.map.zone.type.NormalZoneManager;
+import nro.server.model.npc.Npc;
 import nro.server.model.templates.world.Waypoint;
 
 import java.util.Collection;
@@ -26,7 +29,6 @@ import java.util.Collection;
 @Slf4j
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MapUtils {
-
 
     public static Zone findZone(short mapId, int zoneId) {
         GameMap gm = GameMapFactory.getInstance().getMap(mapId);
@@ -101,8 +103,25 @@ public class MapUtils {
     public static ImmutableBag<Entity> getEntities(Zone zone) {
         GroupManager gm = GameWorld.getInstance().getGroupManager();
         ImmutableBag<Entity> bag = gm.getEntities(zone.groupName());
-        return bag != null ? bag : new com.artemis.utils.Bag<>();
+        return bag != null ? bag : new Bag<>();
     }
+
+    public static ImmutableBag<Entity> getPlayers(Zone zone) {
+        GroupManager gm = GameWorld.getInstance().getGroupManager();
+        ImmutableBag<Entity> bag = gm.getEntities(zone.groupName());
+        if (bag == null || bag.isEmpty()) return new Bag<>();
+
+        var world = GameWorld.getInstance().getWorld();
+        var mPlayer = world.getMapper(PlayerComponent.class);
+
+        var out = new Bag<Entity>(bag.size());
+        for (int i = 0; i < bag.size(); i++) {
+            Entity e = bag.get(i);
+            if (e != null && mPlayer.has(e)) out.add(e);
+        }
+        return out;
+    }
+
 
     /**
      * Đếm số player trong zone
@@ -110,7 +129,7 @@ public class MapUtils {
     public static int countPlayers(Zone zone) {
         var world = GameWorld.getInstance().getWorld();
         var mPlayer = world.getMapper(PlayerComponent.class);
-        var bag = getEntities(zone);
+        var bag = getPlayers(zone);
 
         int c = 0;
         for (int i = 0; i < bag.size(); i++) {
@@ -127,7 +146,6 @@ public class MapUtils {
         Zone z = enterZone(mapId, entityID);
         return new MapPosition(mapId, x, y, z.zoneId());
     }
-
 
     public static Waypoint getWayPointInMap(int mapID, int x, int y, int playerID) {
 
@@ -163,6 +181,13 @@ public class MapUtils {
         return null;
     }
 
+    public static Npc getNpcByIdForMap(GameMap map, int id) {
+        for (var npc : map.npcs()) {
+            if (npc.id() == id) return npc;
+        }
+        return null;
+    }
+
     public static void attachMonsterToZone(Entity entity, Zone zone) {
         GroupManager gm = GameWorld.getInstance().getGroupManager();
         gm.add(entity, zone.groupName());      // group chung của zone
@@ -181,36 +206,31 @@ public class MapUtils {
         return bag != null ? bag : new com.artemis.utils.Bag<>();
     }
 
-    public static Entity spawnMonster(short mapId,
-                                      int zoneId,
-                                      int id,
-                                      int templateId,
-                                      String name,
-                                      short x, short y,
-                                      byte level,
-                                      long hpMax) {
+    public static void spawnMonster(short mapId,
+                                    int zoneId,
+                                    int templateId,
+                                    String name,
+                                    short x, short y,
+                                    byte level,
+                                    long hpMax) {
         Zone z = findZone(mapId, zoneId);
         if (z == null) throw new IllegalArgumentException("Zone không tồn tại: map=" + mapId + ", zone=" + zoneId);
 
         var world = GameWorld.getInstance().getWorld();
         Entity e = world.createEntity();
 
-        var info = e.edit().create(InfoMonsterComponent.class);
-
-        info.id = id;
-        info.templateID = templateId;
-        info.name = name;
-
-        var stats = e.edit().create(StastMonsterComponent.class);
-        stats.hpMax = hpMax;
-        stats.level = level;
-
+        var info = new InfoMonsterComponent(templateId, name);
         var position = new PositionComponent(mapId, x, y, z.zoneId());
+        var stats = new StastMonsterComponent(hpMax, level);
+        var state = new StateMonsterComponent();
+
+        e.edit().add(info);
+        e.edit().add(stats);
         e.edit().add(position);
+        e.edit().add(state);
 
         attachMonsterToZone(e, z);
 
-        return e;
     }
 
     private static String monsterGroupName(Zone zone) {

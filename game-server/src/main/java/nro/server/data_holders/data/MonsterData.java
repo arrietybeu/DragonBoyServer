@@ -6,6 +6,7 @@ import nro.server.data_holders.YamlDataLoader;
 import nro.server.model.templates.entity.MonsterTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Arriety
@@ -13,11 +14,11 @@ import java.util.List;
 public final class MonsterData implements GameEngine {
 
     @Getter
-    private List<MonsterTemplate> monsters;
+    private Map<Integer, MonsterTemplate> monsters;
 
     @Override
     public void init() throws Throwable {
-        this.monsters = YamlDataLoader.loadList("resources/data/update_data/NR_monster.yml", MonsterTemplate.class);
+        this.monsters = YamlDataLoader.loadMap("resources/data/update_data/NR_monster.yml", Integer.class, MonsterTemplate.class);
     }
 
     @Override
@@ -26,6 +27,10 @@ public final class MonsterData implements GameEngine {
 
     @Override
     public void clear() throws Throwable {
+    }
+
+    public MonsterTemplate getMonster(int monsterId) {
+        return monsters.get(monsterId);
     }
 
     private static final class SingletonHolder {

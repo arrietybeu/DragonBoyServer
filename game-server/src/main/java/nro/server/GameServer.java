@@ -85,8 +85,8 @@ public class GameServer {
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
                 new QuestSystem(),
-                new InventorySystem(),
-                new ZoneGarbageSystem()
+//                new ZoneGarbageSystem(),
+                new InventorySystem()
         ); // add systems here if needed
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);

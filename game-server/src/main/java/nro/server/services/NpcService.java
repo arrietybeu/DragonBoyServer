@@ -7,6 +7,7 @@ import nro.server.model.map.GameMapFactory;
 import nro.server.model.npc.Npc;
 import nro.server.model.npc.NpcFactory;
 import nro.server.network.nro.NroConnection;
+import nro.server.utils.MapUtils;
 
 /**
  * @author Arriety
@@ -19,7 +20,7 @@ public final class NpcService {
         var positions = client.getEntity().getComponent(PositionComponent.class);
         var currentMap = GameMapFactory.getInstance().getMap(positions.mapId);
 
-        Npc npc = currentMap.npcs().get(npcId);
+        Npc npc = MapUtils.getNpcByIdForMap(currentMap, npcId);
 
         if (npc == null) {
             if (npcId == ConstNpc.LY_TIEU_NUONG) {
