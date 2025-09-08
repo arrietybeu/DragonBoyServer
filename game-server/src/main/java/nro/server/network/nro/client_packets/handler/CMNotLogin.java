@@ -99,7 +99,6 @@ public class CMNotLogin extends NroClientPacket {
                     }
                     default -> connection.sendPacket(new SmDialogMessage(response.getCode()));
                 }
-                log.debug("client login response:  {}", response.getCode());
                 connection.getSessionInfo().setLogin(true);
             }
             case 2 -> {

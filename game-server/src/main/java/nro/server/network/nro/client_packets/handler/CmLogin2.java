@@ -15,7 +15,7 @@ import java.util.Set;
 @AClientPacketHandler(command = ConstsCmd.LOGIN2, validStates = {NroConnection.State.CONNECTED})
 public class CmLogin2 extends NroClientPacket {
 
-    // TODO chưa làm chức này
+    // TODO chưa làm chức này ( Đăng ký tài khoản)
     public CmLogin2(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
@@ -28,4 +28,5 @@ public class CmLogin2 extends NroClientPacket {
     @Override
     protected void runImpl() {
     }
+
 }

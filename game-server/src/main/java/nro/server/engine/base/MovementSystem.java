@@ -5,7 +5,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.PositionComponent;
-import nro.server.model.ecs.component.player.QuestInstanceComponent;
 import nro.server.network.nro.server_packets.handler.SmPlayerMove;
 import nro.server.services.AreaService;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ public final class MovementSystem extends IteratingSystem {
     private static final Logger log = LoggerFactory.getLogger(MovementSystem.class);
     private ComponentMapper<PositionComponent> posMapper;
     private ComponentMapper<InfoComponent> playerInfoMapper;
-    private ComponentMapper<QuestInstanceComponent> taskMapper;
 
     public MovementSystem() {
         super(Aspect.all(PositionComponent.class, InfoComponent.class));

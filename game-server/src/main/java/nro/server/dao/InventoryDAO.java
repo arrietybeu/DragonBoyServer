@@ -115,10 +115,7 @@ public class InventoryDAO {
         loadItemsForLocation(conn, entity.getId(), playerId, ItemLocation.BAG);
         loadItemsForLocation(conn, entity.getId(), playerId, ItemLocation.BOX);
 
-        log.debug("Loaded inventory for player ID: " + playerId +
-                ", Body items: " + playerInventory.itemsBody.size() +
-                ", Bag items: " + playerInventory.itemsBag.size() +
-                ", Box items: " + playerInventory.itemsBox.size());
+//        log.debug("Loaded inventory for player ID: {}, Body items: {}, Bag items: {}, Box items: {}", playerId, playerInventory.itemsBody.size(), playerInventory.itemsBag.size(), playerInventory.itemsBox.size());
 
         playerInventory.isDirty = true; // Mark inventory as dirty after loading
 

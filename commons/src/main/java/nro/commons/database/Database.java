@@ -19,12 +19,14 @@ public final class Database {
      * <p>
      * Dùng để lấy danh sách hoặc chi tiết dữ liệu từ DB. Ví dụ trong game:
      * <ul>
-     *     <li>Truy vấn danh sách item trong kho đồ của player</li>
-     *     <li>Truy vấn thông tin nhân vật khi đăng nhập</li>
-     *     <li>Truy vấn bảng xếp hạng người chơi</li>
+     * <li>Truy vấn danh sách item trong kho đồ của player</li>
+     * <li>Truy vấn thông tin nhân vật khi đăng nhập</li>
+     * <li>Truy vấn bảng xếp hạng người chơi</li>
      * </ul>
      *
-     * <p><b>Ví dụ sử dụng bằng Anonymous Class:</b></p>
+     * <p>
+     * <b>Ví dụ sử dụng bằng Anonymous Class:</b>
+     * </p>
      *
      * <pre><code>
      * Database.select(query, new ParamReadStatementHandler() {
@@ -40,17 +42,23 @@ public final class Database {
      * });
      * </code></pre>
      *
-     * <p><b>Ví dụ sử dụng bằng Lambda Expression:</b></p>
-     * <p><i>(Yêu cầu bạn đã viết overload Database.select(...) với SQLConsumer)</i></p>
+     * <p>
+     * <b>Ví dụ sử dụng bằng Lambda Expression:</b>
+     * </p>
+     * <p>
+     * <i>(Yêu cầu bạn đã viết overload Database.select(...) với SQLConsumer)</i>
+     * </p>
      *
-     * <pre><code>
+     * <pre>
+     * <code>
      * String query = "SELECT * FROM item WHERE player_id = ?";
      * Database.select(query,
      *     rs -> {
      *         if (rs.next()) {....
      *     }
      * );
-     * </code></pre>
+     * </code>
+     * </pre>
      *
      * @param query  Câu truy vấn SELECT
      * @param reader Hàm xử lý kết quả trả về (ResultSet)
@@ -59,7 +67,7 @@ public final class Database {
 
     public static boolean select(String query, ReadStatementHandler reader) {
         try (Connection con = DatabaseFactory.getConnection();
-             PreparedStatement stmt = con.prepareStatement(query)) {
+                PreparedStatement stmt = con.prepareStatement(query)) {
 
             if (reader instanceof ParamReadStatementHandler paramReader)
                 paramReader.setParams(stmt);
@@ -92,25 +100,28 @@ public final class Database {
         }
     }
 
-
     /**
      * Truy vấn SELECT với tham số, dùng để lấy dữ liệu cụ thể hơn
-     * <pre><code>
+     * 
+     * <pre>
+     * <code>
      * Database.select(query, resultSet -> {
      *     // xử lý ResultSet
      * }, preparedStatement -> {
      *     // set tham số
      * });
-     * </code></pre>
+     * </code>
+     * </pre>
      *
      * @param query
      * @param reader
      * @param paramSetter
      * @return
      */
-    public static boolean select(String query, SQLConsumer<ResultSet> reader, SQLConsumer<PreparedStatement> paramSetter) {
+    public static boolean select(String query, SQLConsumer<ResultSet> reader,
+            SQLConsumer<PreparedStatement> paramSetter) {
         try (Connection con = DatabaseFactory.getConnection();
-             PreparedStatement stmt = con.prepareStatement(query)) {
+                PreparedStatement stmt = con.prepareStatement(query)) {
 
             if (paramSetter != null)
                 paramSetter.accept(stmt);
@@ -127,11 +138,12 @@ public final class Database {
     }
 
     public static boolean select(Connection con, String query,
-                                 SQLConsumer<ResultSet> reader,
-                                 SQLConsumer<PreparedStatement> paramSetter) {
+            SQLConsumer<ResultSet> reader,
+            SQLConsumer<PreparedStatement> paramSetter) {
         try (PreparedStatement stmt = con.prepareStatement(query)) {
 
-            if (paramSetter != null) paramSetter.accept(stmt);
+            if (paramSetter != null)
+                paramSetter.accept(stmt);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 reader.accept(rs);
@@ -139,8 +151,7 @@ public final class Database {
 
             return true;
         } catch (Exception e) {
-            log.error("Error executing select query {}", query, e);
-            return false;
+            throw new RuntimeException("Error executing select query " + query, e);
         }
     }
 
@@ -163,7 +174,7 @@ public final class Database {
 
     public static boolean insertUpdate(String query, IUStH batch) {
         try (Connection con = DatabaseFactory.getConnection();
-             PreparedStatement stmt = con.prepareStatement(query)) {
+                PreparedStatement stmt = con.prepareStatement(query)) {
             if (batch != null)
                 batch.handleInsertUpdate(stmt);
             else
@@ -178,7 +189,7 @@ public final class Database {
 
     public static int executeUpdate(String sql) {
         try (Connection con = DatabaseFactory.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+                PreparedStatement stmt = con.prepareStatement(sql)) {
 
             return stmt.executeUpdate();
 
@@ -190,15 +201,16 @@ public final class Database {
 
     public static boolean insertUpdate(Connection con, String sql, IUStH batch) {
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            if (batch != null) batch.handleInsertUpdate(stmt);
-            else stmt.executeUpdate();
+            if (batch != null)
+                batch.handleInsertUpdate(stmt);
+            else
+                stmt.executeUpdate();
             return true;
         } catch (Exception e) {
             log.error("Failed to execute IU query {}", sql, e);
             return false;
         }
     }
-
 
     public static <T> T withConnection(SQLFunction<Connection, T> work) {
         try (Connection con = DatabaseFactory.getConnection()) {
@@ -225,15 +237,20 @@ public final class Database {
     /**
      * Thực hiện chuỗi thao tác SQL trong 1 transaction.
      * <p>
-     * Dùng khi muốn đảm bảo toàn bộ thao tác SQL thành công thì mới commit, nếu có lỗi thì rollback toàn bộ.
+     * Dùng khi muốn đảm bảo toàn bộ thao tác SQL thành công thì mới commit, nếu có
+     * lỗi thì rollback toàn bộ.
      * <p>
      * Ví dụ áp dụng trong game:
      * <ul>
-     *     <li>Lưu toàn bộ thông tin player khi logout (inventory, stats, nhiệm vụ...)</li>
-     *     <li>Trao thưởng nhiều phần quà sau event (thêm item + ghi log + update điểm)</li>
+     * <li>Lưu toàn bộ thông tin player khi logout (inventory, stats, nhiệm
+     * vụ...)</li>
+     * <li>Trao thưởng nhiều phần quà sau event (thêm item + ghi log + update
+     * điểm)</li>
      * </ul>
      *
-     * <p><b>Ví dụ sử dụng với Anonymous Class:</b></p>
+     * <p>
+     * <b>Ví dụ sử dụng với Anonymous Class:</b>
+     * </p>
      *
      * <pre><code>
      * Database.executeTransaction(new TransactionHandler() {
@@ -261,9 +278,13 @@ public final class Database {
      * });
      * </code></pre>
      *
-     * <p><b>Ví dụ sử dụng với Lambda (nếu TransactionHandler là Functional Interface):</b></p>
+     * <p>
+     * <b>Ví dụ sử dụng với Lambda (nếu TransactionHandler là Functional
+     * Interface):</b>
+     * </p>
      *
-     * <pre><code>
+     * <pre>
+     * <code>
      * Database.executeTransaction(con -> {
      *     try (PreparedStatement stmt = con.prepareStatement(
      *             "UPDATE player SET gold = gold + ? WHERE id = ?")) {
@@ -274,7 +295,8 @@ public final class Database {
      *         return true; // commit
      *     }
      * });
-     * </code></pre>
+     * </code>
+     * </pre>
      *
      * @param handler Hàm xử lý transaction, thao tác trên cùng một Connection
      * @return true nếu commit thành công, false nếu rollback (hoặc có lỗi)

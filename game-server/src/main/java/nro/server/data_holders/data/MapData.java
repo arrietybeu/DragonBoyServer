@@ -346,7 +346,7 @@ public final class MapData implements GameEngine {
         var monsterTemplates = MonsterData.getInstance().getMonsters();
         buf.putShort((short) monsterTemplates.size());// client version thap send byte
         for (var monster : monsterTemplates.values()) {
-            // FIXME sửa client đoạn này để lấy id template (ngày trước là lấy theo index khi write,
+            // TODO sửa client đoạn này để lấy id template (ngày trước là lấy theo index khi write,
             //  nhưng bây giờ dùng hashMap không theo index được nên phải lấy đúng id template)
             buf.putShort(monster.id());
             buf.put(monster.type());

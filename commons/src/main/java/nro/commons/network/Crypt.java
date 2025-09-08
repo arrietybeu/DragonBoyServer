@@ -51,7 +51,6 @@ public class Crypt {
             isSendKey = true;
         }
         this.resetKeyIndex();
-        // TODO packet encrypt
     }
 
     /**

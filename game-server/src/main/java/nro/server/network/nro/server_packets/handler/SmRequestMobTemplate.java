@@ -37,7 +37,6 @@ public class SmRequestMobTemplate extends NroServerPacket {
         writeShort(id);
         writeByte(effect.getType());
 
-        log.debug("write monster id: {} type: {} ", id, effect.getType());
         if (effect.getType() != 0) {
             //write data monster new
         } else {

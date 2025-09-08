@@ -19,7 +19,6 @@ import nro.server.data_holders.DataManager;
 import nro.server.engine.GameWorld;
 import nro.server.engine.base.InventorySystem;
 import nro.server.engine.quest.system.QuestSystem;
-import nro.server.engine.world.ZoneGarbageSystem;
 import nro.server.model.map.GameMapFactory;
 import nro.server.model.npc.NpcFactory;
 import nro.server.network.nro.GameConnectionFactory;

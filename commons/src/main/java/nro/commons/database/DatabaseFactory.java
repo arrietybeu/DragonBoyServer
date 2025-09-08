@@ -8,19 +8,18 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * @Author Arriety
  */
-public class DatabaseFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final  class DatabaseFactory {
 
     private static HikariDataSource dataSource;
 
     private static final Logger log = LoggerFactory.getLogger(DatabaseFactory.class);
-
-    private DatabaseFactory() {
-        throw new AssertionError();
-    }
 
     public synchronized static void init() {
         if (dataSource != null) return;

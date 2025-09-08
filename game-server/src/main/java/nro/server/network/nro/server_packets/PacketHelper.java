@@ -100,14 +100,16 @@ public final class PacketHelper {
         }
 
         var monsterInZone = MapUtils.getMonsters(zone);
+
         packet.writeByte(monsterInZone.size());
+        
         for (int i = 0, n = monsterInZone.size(); i < n; i++) {
             var monster = monsterInZone.get(i);
             var info = mI.get(monster);
             var stats = mS.get(monster);
             var state = st.get(monster);
 
-            var pos = mP.get(monster);
+            var pos = mP.get(monster); /// jake dz
 
             packet.writeInt(monster.getId());
             packet.writeBoolean(false);          // isDisable

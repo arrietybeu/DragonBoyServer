@@ -43,6 +43,7 @@ public final class PlayerEnterWorldService {
             client.sendPacket(PacketHelper.empty(ConstsCmd.CLIENT_INFO));
         } else {
             var entity = client.getEntity();
+            
             if (entity == null) {
                 entity = PlayerDAO.loadPlayerEntity(playerId, accountId);
                 if (entity == null) {
@@ -74,7 +75,7 @@ public final class PlayerEnterWorldService {
                     client.sendPacket(new SmSubCommand(ConstMsgSubCommand.UPDATE_SKILL_SHORTCUT, "OSkill"));
 
                     client.sendPacket(new SmSpecialSkill());// TODO chua xong
-                    client.sendPacket(new SmMeLoadPoint());// DONE
+                    client.sendPacket(new SmMeLoadPoint());// DONE 
                     client.sendPacket(new SmTaskInfo()); // FIXME 1 số cái hơi sai
                     client.sendPacket(PacketHelper.empty(ConstsCmd.MAP_CLEAR));// DONE
 
@@ -95,7 +96,7 @@ public final class PlayerEnterWorldService {
                     client.sendPacket(new SmChangeOnSkill());// FIXME chua xong
                     client.sendPacket(new SmGameInfo());// DONE
                     client.sendPacket(new SmUpdateCaption(entity.getComponent(InfoComponent.class).gender));// DONE
-
+                    
                     // player.getPlayerTask().sendInfoTaskForNpcTalkByUI(player);
                     // SkillService.getInstance().sendSkillCooldown(player);
 

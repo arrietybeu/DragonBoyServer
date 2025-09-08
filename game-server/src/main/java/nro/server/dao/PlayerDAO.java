@@ -9,6 +9,7 @@ import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
+import nro.server.model.templates.skill.SkillInfo;
 import nro.server.utils.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,16 +34,23 @@ public class PlayerDAO {
                 log.error("Failed to create player base for account ID: {} with name: {}", accountId, name);
                 return false;
             }
-            if (!createDefaultCurrencies(conn, playerId)) return false;
-            if (!createDefaultLocation(conn, playerId, gender)) return false;
-            if (!createDefaultPoints(conn, playerId, gender)) return false;
-            if (!createDefaultMagicTree(conn, playerId)) return false;
-            if (!createDefaultSkills(conn, playerId, gender)) return false;
-            if (!createDefaultTask(conn, playerId)) return false;
+            if (!createDefaultCurrencies(conn, playerId))
+                return false;
+            if (!createDefaultLocation(conn, playerId, gender))
+                return false;
+            if (!createDefaultPoints(conn, playerId, gender))
+                return false;
+            if (!createDefaultMagicTree(conn, playerId))
+                return false;
+            if (!createDefaultSkills(conn, playerId, gender))
+                return false;
+            if (!createDefaultTask(conn, playerId))
+                return false;
             InventoryDAO.createPlayerInventory(conn, playerId, gender);
             return createDefaultSkillShortcuts(conn, playerId, gender);
         } catch (SQLException e) {
-            log.error("Failed to create player base for account ID: {} with name: {}. Error: {}", accountId, name, e.getMessage(), e);
+            log.error("Failed to create player base for account ID: {} with name: {}. Error: {}", accountId, name,
+                    e.getMessage(), e);
             return false;
         }
     }
@@ -52,8 +60,8 @@ public class PlayerDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
             ps.setInt(2, ConfigCharacter.CREATION_GOLD); // gold
-            ps.setInt(3, ConfigCharacter.CREATION_GEM);    // gem
-            ps.setInt(4, ConfigCharacter.CREATION_RUBY);   // ruby
+            ps.setInt(3, ConfigCharacter.CREATION_GEM); // gem
+            ps.setInt(4, ConfigCharacter.CREATION_RUBY); // ruby
             if (ps.executeUpdate() <= 0) {
                 log.error("No rows were inserted into player_currencies for playerId: {}", playerId);
                 return false;
@@ -95,48 +103,51 @@ public class PlayerDAO {
     }
 
     private static boolean createDefaultPoints(Connection connection, int playerId, byte gender) throws SQLException {
-        String query = "INSERT INTO player_point (player_id, " + "hp, hp_default, hp_max, hp_current, " + "mp, mp_default, mp_max, mp_current, " + "dame, dame_max, dame_default, " + "stamina, max_stamina, " + "crit, crit_default, " + "defense, def_default, " + "power, limit_power, " + "tiem_nang, nang_dong) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO player_point (player_id, " + "hp, hp_default, hp_max, hp_current, "
+                + "mp, mp_default, mp_max, mp_current, " + "dame, dame_max, dame_default, " + "stamina, max_stamina, "
+                + "crit, crit_default, " + "defense, def_default, " + "power, limit_power, " + "tiem_nang, nang_dong) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             int index = 1;
             statement.setInt(index++, playerId);
 
             // HP: cHPGoc, hp_default, hp_max (cHPFull), hp_current (cHP)
-            statement.setLong(index++, 100L);  // hp: cHPGoc = 100
-            statement.setLong(index++, 100L);  // hp_default = 100
-            statement.setLong(index++, 120L);  // hp_max = cHPFull = 120
-            statement.setLong(index++, 120L);  // hp_current = cHP = 120
+            statement.setLong(index++, 100L); // hp: cHPGoc = 100
+            statement.setLong(index++, 100L); // hp_default = 100
+            statement.setLong(index++, 120L); // hp_max = cHPFull = 120
+            statement.setLong(index++, 120L); // hp_current = cHP = 120
 
             // MP: cMPGoc, mp_default, mp_max (cMPFull), mp_current (cMP)
-            statement.setLong(index++, 100L);  // mp: cMPGoc = 100
-            statement.setLong(index++, 100L);  // mp_default = 100
-            statement.setLong(index++, 100L);  // mp_max = cMPFull = 100
-            statement.setLong(index++, 100L);  // mp_current = cMP = 100
+            statement.setLong(index++, 100L); // mp: cMPGoc = 100
+            statement.setLong(index++, 100L); // mp_default = 100
+            statement.setLong(index++, 100L); // mp_max = cMPFull = 100
+            statement.setLong(index++, 100L); // mp_current = cMP = 100
 
             // Damage: cDamGoc, dame_max (cDamFull), dame_default
-            statement.setLong(index++, 15L);   // dame: cDamGoc = 15
-            statement.setLong(index++, 15L);   // dame_max: cDamFull = 15
-            statement.setLong(index++, 15L);   // dame_default = 15
+            statement.setLong(index++, 15L); // dame: cDamGoc = 15
+            statement.setLong(index++, 15L); // dame_max: cDamFull = 15
+            statement.setLong(index++, 15L); // dame_default = 15
 
             // Stamina
-            statement.setInt(index++, 1000);   // stamina
-            statement.setInt(index++, 1000);   // max_stamina
+            statement.setInt(index++, 1000); // stamina
+            statement.setInt(index++, 1000); // max_stamina
 
             // Critical: cCriticalGoc và cCriticalFull
             statement.setByte(index++, (byte) 0); // crit: cCriticalGoc = 0
-            statement.setInt(index++, 0);         // crit_default: cCriticalFull = 0
+            statement.setInt(index++, 0); // crit_default: cCriticalFull = 0
 
             // Defense: cDefGoc và cDefull
-            statement.setInt(index++, 0);    // defense: cDefGoc = 0
-            statement.setLong(index++, 0);  // def_default: cDefull = 3
+            statement.setInt(index++, 0); // defense: cDefGoc = 0
+            statement.setLong(index++, 0); // def_default: cDefull = 3
 
             // Power và Limit Power (expForOneAdd)
             statement.setLong(index++, 2000L); // power = 2000 (giữ nguyên theo cũ)
-            statement.setInt(index++, 100);    // limit_power = expForOneAdd = 100
+            statement.setInt(index++, 100); // limit_power = expForOneAdd = 100
 
             // Tiem nang và Nang dong
             statement.setLong(index++, 1200L); // tiem_nang: cTiemNang = 1200
-            statement.setInt(index++, 0);      // nang_dong
+            statement.setInt(index++, 0); // nang_dong
 
             if (statement.executeUpdate() <= 0) {
                 log.error("No rows were inserted into player_point for playerId: {}", playerId);
@@ -146,7 +157,8 @@ public class PlayerDAO {
         return true;
     }
 
-    private static boolean createDefaultSkillShortcuts(Connection connection, int playerId, int gender) throws SQLException {
+    private static boolean createDefaultSkillShortcuts(Connection connection, int playerId, int gender)
+            throws SQLException {
         String query = "INSERT INTO player_skills_shortcut (player_id, slot_1) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             int idSkill = (gender == 0) ? 0 : (gender == 1) ? 2 : 4;
@@ -204,7 +216,8 @@ public class PlayerDAO {
         return true;
     }
 
-    private static int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head) throws SQLException {
+    private static int createPlayerBase(Connection connection, int accountId, String name, byte gender, int head)
+            throws SQLException {
         int playerId;
         try (CallableStatement stmt = connection.prepareCall(QUERY_CALL_CREATE_PLAYER)) {
             stmt.setInt(1, accountId);
@@ -246,145 +259,132 @@ public class PlayerDAO {
         edit.add(new FusionComponent());
 
         try (Connection conn = DatabaseFactory.getConnection()) {
+
             loadPlayerInfo(conn, playerEntity, playerId);
             loadPlayerLocation(conn, playerEntity, playerId);
             loadPlayerStatsAndHealth(conn, playerEntity, playerId);
             loadPlayerCurrencies(conn, playerEntity, playerId);
-            loadPlayerSkills(conn, playerEntity, playerId);
             loadPlayerTask(conn, playerEntity, playerId);
-
+            loadPlayerSkillsShortCut(conn, playerEntity, playerId);
             // inventory nên load cuối cùng chắc vậy
             InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
 
             log.info("Successfully loaded entity for player ID: {}", playerId);
             return playerEntity;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Failed to load entity for player ID: {}. Rolling back.", playerId, e);
             world.delete(playerEntityID);
             return null;
         }
     }
 
-    private static void loadPlayerInfo(Connection conn, Entity entity, int playerId) throws SQLException {
+    private static void loadPlayerInfo(Connection conn, Entity entity, int playerId) throws RuntimeException {
         String sql = "SELECT name, gender, is_online, created_at, max_bag_size, max_box_size, head FROM player WHERE id = ?";
         InfoComponent info = entity.getComponent(InfoComponent.class);
         var appearance = entity.getComponent(AppearanceComponent.class);
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, playerId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    info.name = rs.getString("name");
-                    info.gender = rs.getByte("gender");
-                    info.isOnline = rs.getBoolean("is_online");
-                    info.createdAt = rs.getTimestamp("created_at").toInstant();
-                    info.maxBagSize = rs.getByte("max_bag_size");
-                    info.maxBoxSize = rs.getByte("max_box_size");
-                    appearance.headDefault = rs.getByte("head");
-                }
+
+        Database.select(conn, sql, rs -> {
+            if (rs.next()) {
+                info.name = rs.getString("name");
+                info.gender = rs.getByte("gender");
+                info.isOnline = rs.getBoolean("is_online");
+                info.createdAt = rs.getTimestamp("created_at").toInstant();
+                info.maxBagSize = rs.getByte("max_bag_size");
+                info.maxBoxSize = rs.getByte("max_box_size");
+                appearance.headDefault = rs.getByte("head");
             }
-        }
+        }, ps -> ps.setInt(1, playerId));
+
     }
 
-    private static void loadPlayerLocation(Connection conn, Entity entity, int playerId) throws SQLException {
+    private static void loadPlayerSkillsShortCut(Connection conn, Entity entity, int playerId) throws RuntimeException {
+        String query = "SELECT * FROM player_skills_shortcut WHERE player_id = ?";
+
+        Database.select(conn, query, resultSet -> {
+            if (!resultSet.next()) {
+                throw new SQLException("Không tìm thấy skill short cut cho player id: " + playerId);
+            }
+
+            byte[] skillShortCut = new byte[10];
+            for (int i = 0; i < 10; i++) {
+                skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
+            }
+            var skillShortCutComponent = new SkillComponent();
+            skillShortCutComponent.skillShortCut = skillShortCut;
+            entity.edit().add(skillShortCutComponent);
+
+        }, stmt -> stmt.setInt(1, playerId));
+    }
+
+    private static void loadPlayerLocation(Connection conn, Entity entity, int playerId) throws RuntimeException {
         String sql = "SELECT map_id, pos_x, pos_y FROM player_location WHERE player_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, playerId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    var mapId = rs.getShort("map_id");
-                    var x = rs.getShort("pos_x");
-                    var y = rs.getShort("pos_y");
-                    var position = MapUtils.createPosition(mapId, entity.getId(), x, y);
-                    entity.edit().add(new PositionComponent(position.mapId(), position.x(), position.y(), position.zoneID()));
-                }
+
+        Database.select(conn, sql, rs -> {
+            if (rs.next()) {
+                var mapId = rs.getShort("map_id");
+                var x = rs.getShort("pos_x");
+                var y = rs.getShort("pos_y");
+                var position = MapUtils.createPosition(mapId, entity.getId(), x, y);
+                entity.edit().add(
+                        new PositionComponent(position.mapId(), position.x(), position.y(), position.zoneID()));
             }
-        }
+        }, ps -> ps.setInt(1, playerId));
     }
 
-    private static void loadPlayerStatsAndHealth(Connection conn, Entity entity, int playerId) throws SQLException {
+    private static void loadPlayerStatsAndHealth(Connection conn, Entity entity, int playerId) throws RuntimeException {
         String sql = "SELECT * FROM player_point WHERE player_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, playerId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
+        Database.select(conn, sql, rs -> {
+            if (rs.next()) {
 
-                    long hp = rs.getLong("hp");
-                    int hp_default = rs.getInt("hp_default");
-                    long hp_max = rs.getLong("hp_max");
-                    long hp_current = rs.getLong("hp_current");
+                long hp = rs.getLong("hp");
+                int hp_default = rs.getInt("hp_default");
+                long hp_max = rs.getLong("hp_max");
+                long hp_current = rs.getLong("hp_current");
 
-                    long mp = rs.getLong("mp");
-                    int mp_default = rs.getInt("mp_default");
-                    long mp_max = rs.getLong("mp_max");
-                    long mp_current = rs.getLong("mp_current");
+                long mp = rs.getLong("mp");
+                int mp_default = rs.getInt("mp_default");
+                long mp_max = rs.getLong("mp_max");
+                long mp_current = rs.getLong("mp_current");
 
-                    long dame = rs.getLong("dame");
-                    long dame_max = rs.getLong("dame_max");
-                    int dame_default = rs.getInt("dame_default");
+                long dame = rs.getLong("dame");
+                long dame_max = rs.getLong("dame_max");
+                int dame_default = rs.getInt("dame_default");
 
-                    int stamina = rs.getInt("stamina");
-                    int max_stamina = rs.getInt("max_stamina");
+                int stamina = rs.getInt("stamina");
+                int max_stamina = rs.getInt("max_stamina");
 
-                    byte crit = rs.getByte("crit");
-                    byte crit_default = rs.getByte("crit_default");
+                byte crit = rs.getByte("crit");
+                byte crit_default = rs.getByte("crit_default");
 
-                    int defense = rs.getInt("defense");
-                    int def_default = rs.getInt("def_default");
+                int defense = rs.getInt("defense");
+                int def_default = rs.getInt("def_default");
 
-                    long power = rs.getLong("power");
-                    long limit_power = rs.getLong("limit_power");
-                    long tiem_nang = rs.getLong("tiem_nang");
+                long power = rs.getLong("power");
+                long limit_power = rs.getLong("limit_power");
+                long tiem_nang = rs.getLong("tiem_nang");
 
-                    int nang_dong = rs.getInt("nang_dong");
+                int nang_dong = rs.getInt("nang_dong");
 
-                    var stats = new StatsComponent(power, tiem_nang, hp_default, mp_default,
-                            dame_default, def_default, crit_default, nang_dong);
-                    var health = new HealthComponent(hp_current, hp_max, mp_current, mp_max);
-                    entity.edit().add(stats).add(health);
-                }
+                var stats = new StatsComponent(power, tiem_nang, hp_default, mp_default,
+                        dame_default, def_default, crit_default, nang_dong);
+                var health = new HealthComponent(hp_current, hp_max, mp_current, mp_max);
+                entity.edit().add(stats).add(health);
             }
-        }
+        }, preparedStatement -> preparedStatement.setInt(1, playerId));
     }
 
-    private static void loadPlayerCurrencies(Connection conn, Entity entity, int playerId) throws SQLException {
+    private static void loadPlayerCurrencies(Connection conn, Entity entity, int playerId) throws RuntimeException {
         String sql = "SELECT gold, gem, ruby FROM player_currencies WHERE player_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, playerId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    entity.edit().add(new CurrencyComponent(rs.getLong("gold"), rs.getInt("gem"), rs.getInt("ruby")));
-                }
+        Database.select(conn, sql, rs -> {
+            if (rs.next()) {
+                entity.edit().add(new CurrencyComponent(rs.getLong("gold"), rs.getInt("gem"), rs.getInt("ruby")));
             }
-        }
-    }
-
-    private static void loadPlayerSkills(Connection conn, Entity entity, int playerId) throws SQLException {
-        String sql = "SELECT * FROM player_skills_shortcut WHERE player_id = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, playerId);
-            try (var resultSet = ps.executeQuery()) {
-                if (!resultSet.next()) {
-                    throw new SQLException("Không tìm thấy skill short cut cho player id: " + playerId);
-                }
-
-                byte[] skillShortCut = new byte[10];
-
-                for (int i = 0; i < 10; i++) {
-                    skillShortCut[i] = resultSet.getByte("slot_" + (i + 1));
-                }
-
-                var skillShortCutComponent = new SkillComponent();
-                skillShortCutComponent.skillShortCut = skillShortCut;
-                entity.edit().add(skillShortCutComponent);
-            }
-        }
+        }, ps -> ps.setInt(1, playerId));
     }
 
     private static void loadPlayerTask(Connection conn, Entity entity, int playerId) throws SQLException {
         String sql = "SELECT task_id, task_index, task_count FROM player_task WHERE player_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, playerId);
-            ResultSet rs = stmt.executeQuery();
+        Database.select(conn, sql, rs -> {
             if (rs.next()) {
                 QuestInstanceComponent quest = entity.edit().create(QuestInstanceComponent.class);
                 quest.questId = rs.getInt("task_id");
@@ -392,13 +392,12 @@ public class PlayerDAO {
                 quest.currentCount = rs.getInt("task_count");
                 quest.completed = false;
             }
-        }
+        }, stmt -> stmt.setInt(1, playerId));
     }
 
     private static final int ________________SAVE_PLAYER_ENTITY________________ = -1;
 
     public static boolean savePlayerEntity(Entity entity) {
-
         Database.withConnection(connection -> {
             savePlayerLocation(connection, entity, entity.getComponent(InfoComponent.class).id);
             return null;
@@ -408,12 +407,12 @@ public class PlayerDAO {
 
     private static void savePlayerLocation(Connection conn, Entity entity, int playerId) throws SQLException {
         PositionComponent pos = entity.getComponent(PositionComponent.class);
-        if (pos == null) return;
+        if (pos == null)
+            return;
 
-        final String sql =
-                "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) " +
-                        "VALUES (?, ?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), map_id = VALUES(map_id)";
+        final String sql = "INSERT INTO player_location (player_id, pos_x, pos_y, map_id) " +
+                "VALUES (?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE pos_x = VALUES(pos_x), pos_y = VALUES(pos_y), map_id = VALUES(map_id)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, playerId);
             ps.setInt(2, pos.x);
@@ -426,8 +425,10 @@ public class PlayerDAO {
     private static final int ________________SUPPORT________________ = -1;
 
     public static int[] getUsedIDs() {
-        try (Connection con = DatabaseFactory.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT id FROM player",
-                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet rs = stmt.executeQuery()) {
+        try (Connection con = DatabaseFactory.getConnection();
+             PreparedStatement stmt = con.prepareStatement("SELECT id FROM player",
+                     ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+             ResultSet rs = stmt.executeQuery()) {
             rs.last();
             int count = rs.getRow();
             rs.beforeFirst();
