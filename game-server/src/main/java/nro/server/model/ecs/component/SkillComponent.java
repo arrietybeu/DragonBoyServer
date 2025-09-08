@@ -3,6 +3,7 @@ package nro.server.model.ecs.component;
 import com.artemis.Component;
 import nro.server.model.templates.skill.SkillInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class SkillComponent extends Component {
 
-    public List<SkillInfo> skills;
+    public List<SkillInfo> skills = new ArrayList<>();
     public byte[] skillShortCut;
     public SkillInfo skillSelect;
 

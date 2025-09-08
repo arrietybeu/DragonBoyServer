@@ -19,7 +19,6 @@ public final class SmChangeOnSkill extends NroServerPacket {
         if (skillComponent == null) {
             throw new RuntimeException("SkillComponent not found for player ID: " + con.getPlayerID());
         }
-        System.out.println(" djtme jake: " + skillComponent.skillShortCut.length);
         for (int i = 0; i < skillComponent.skillShortCut.length; i++) {
 
             writeByte(skillComponent.skillShortCut[i]);

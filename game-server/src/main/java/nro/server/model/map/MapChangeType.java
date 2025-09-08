@@ -5,8 +5,9 @@ package nro.server.model.map;
  */
 public enum MapChangeType {
 
-    WAYPOINT,
-    SHIP,
-    ZONE,
-    TELEPORT;
+    DEFAULT(),
+    ZONE(),
+    TELEPORT(),
+    SHIP();
+
 }

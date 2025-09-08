@@ -3,8 +3,10 @@ package nro.server.services;
 import lombok.NoArgsConstructor;
 import nro.commons.utils.Rnd;
 import nro.server.data_holders.data.ItemData;
+import nro.server.data_holders.data.MapData;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
+import nro.server.model.map.MapChangeType;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.handler.SmChatMap;
 import nro.server.network.nro.server_packets.handler.SmDialogMessage;
@@ -44,7 +46,20 @@ public final class ChatService {
     }
 
     private static boolean chatVIP(NroConnection client, String message) {
+        if (message.startsWith("m ")) {
+            short mapId = (short) getNumber(message);
+            short x = (short) Rnd.nextInt(400, 444);
+            ChangeMapService.requestChangeMap(client.getEntity(), MapChangeType.SHIP, mapId, -1, x, (short) -1);
+            NotifyService.SendNotifyPlayer(client, NotifyType.FLYING_CAT, "Đã dịch chuyển đến map " + mapId);
+            return true;
+        }
         return switch (message) {
+            case "toado" -> {
+                PositionComponent pos = client.getEntity().getComponent(PositionComponent.class);
+                String info = "Tọa độ map: " + pos.mapId + "\nx: " + pos.x + " y: " + pos.y;
+                NotifyService.SendNotifyPlayer(client, NotifyType.UI_FORM, info);
+                yield true;
+            }
             case "inventory" -> {
 
                 ItemData itemData = ItemData.getInstance();

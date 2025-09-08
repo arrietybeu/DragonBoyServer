@@ -34,6 +34,16 @@ public final class PacketHelper {
         };
     }
 
+    public static NroServerPacket hideDia() {
+        return new NroServerPacket(-99) {
+            @Override
+            protected void writeImpl(NroConnection con) {
+                writeByte(0);
+            }
+        };
+    }
+
+
     public static void sendInventoryForPlayer(NroServerPacket data, List<Integer> items) {
         data.writeByte(items.size());
         for (var item : items) {
@@ -102,7 +112,7 @@ public final class PacketHelper {
         var monsterInZone = MapUtils.getMonsters(zone);
 
         packet.writeByte(monsterInZone.size());
-        
+
         for (int i = 0, n = monsterInZone.size(); i < n; i++) {
             var monster = monsterInZone.get(i);
             var info = mI.get(monster);
@@ -169,9 +179,6 @@ public final class PacketHelper {
         // Write background type and teleport flag
         packet.writeByte(mapTemplate.getBgType());
         packet.writeByte(position.teleport);
-
-        // Reset teleport flag
-        position.teleport = 0;
     }
 
     public static boolean writePlayerInfo(NroServerPacket packet, Entity entity, InfoComponent info, StateComponent state, PositionComponent position, AppearanceComponent appearance) {

@@ -3,6 +3,7 @@ package nro.server.network.nro;
 import nro.commons.network.packet.BaseClientPacket;
 import nro.server.network.nro.NroConnection.State;
 
+import nro.server.network.nro.server_packets.PacketHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public abstract class NroClientPacket extends BaseClientPacket<NroConnection> {
         return validStates.contains(getConnection().getState());
     }
 
-    public final boolean isValideInGame () {
+    public final boolean isValideInGame() {
         return getConnection().getState() == State.IN_GAME;
     }
 
@@ -37,6 +38,7 @@ public abstract class NroClientPacket extends BaseClientPacket<NroConnection> {
             if (isValid())
                 runImpl();
         } catch (Throwable e) {
+            getConnection().sendPacket(PacketHelper.hideDia());
             log.error("Error handling client packet from {}: {}", getConnection(), this, e);
         }
     }

@@ -1,6 +1,7 @@
 package nro.server.data_holders.data;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import nro.commons.database.Database;
 import nro.commons.utils.NetworkUtils;
 import nro.server.configs.main.ConfigServer;
@@ -18,6 +19,7 @@ import java.util.List;
 /**
  * @author Arriety
  */
+@Slf4j
 public final class SkillData implements GameEngine {
 
     @Getter
@@ -144,6 +146,27 @@ public final class SkillData implements GameEngine {
         buffer.flip();
         this.skillData = new byte[buffer.limit()];
         buffer.get(this.skillData);
+    }
+
+    public SkillInfo getSkillInfoByTemplateId(short skillId, int gender, int currentLevel) {
+        try {
+            for (NClassTemplate nClassTemplate : this.nClassTemplates) {
+                if (nClassTemplate.classId() == gender) {
+                    for (SkillTemplate skillTemplate : nClassTemplate.skillTemplates()) {
+                        if (skillTemplate.getId() == skillId) {
+                            SkillInfo skillInfo = skillTemplate.getSkillByTemplateId(skillId, currentLevel);
+                            if (skillInfo.getPoint() == currentLevel) {
+                                return skillInfo.copy();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error("skillId: {} gender: {} currentLevel: {}\nmessage: {}", skillId, gender, currentLevel, ex.getMessage());
+            return null;
+        }
+        return null;
     }
 
     public static SkillData getInstance() {

@@ -13,18 +13,20 @@ import java.util.Set;
  */
 @AClientPacketHandler(command = ConstsCmd.REQUEST_ICON, validStates = {NroConnection.State.IN_GAME})
 public class CmRequestIcon extends NroClientPacket {
+
+    private int idIcon;
+
     public CmRequestIcon(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
     }
 
     @Override
     protected void readImpl() {
-        var id = readInt();
-        getConnection().sendPacket(new SmRequestIcon(id));
+        this.idIcon = readInt();
     }
 
     @Override
     protected void runImpl() {
-
+        getConnection().sendPacket(new SmRequestIcon(idIcon));
     }
 }

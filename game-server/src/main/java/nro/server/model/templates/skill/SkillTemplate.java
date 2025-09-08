@@ -26,6 +26,16 @@ public class SkillTemplate {
 
     private List<SkillInfo> skills = new ArrayList<>();
 
+    public SkillInfo getSkillByTemplateId(short skillId, int level) {
+        for (SkillInfo skillInfo : this.skills) {
+            if (skillInfo.getTemplate().getId() == skillId && skillInfo.getPoint() == level) {
+                return skillInfo;
+            }
+        }
+        return null;
+    }
+
+
     public void addSkill(SkillInfo skill) {
         this.skills.add(skill);
     }

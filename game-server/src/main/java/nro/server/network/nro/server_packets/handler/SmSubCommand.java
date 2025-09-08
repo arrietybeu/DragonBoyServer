@@ -10,11 +10,14 @@ import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.ecs.component.player.QuestInstanceComponent;
+import nro.server.model.templates.skill.SkillInfo;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
 import nro.server.utils.Utils;
+
+import java.util.List;
 
 /**
  * @author Arriety
@@ -105,8 +108,11 @@ public class SmSubCommand extends NroServerPacket {
 
         // ============ Send Skills ============
 
-//        writeBytes(skillComponent.skills.size());
-        writeByte(0);
+        List<SkillInfo> skills = skillComponent.skills;
+        this.writeByte(skills.size());
+        for (SkillInfo skill : skills) {
+            this.writeShort(skill.getSkillId());
+        }
 
         // ============ Send Curren ============
 

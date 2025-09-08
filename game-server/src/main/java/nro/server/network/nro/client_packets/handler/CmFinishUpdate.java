@@ -21,16 +21,16 @@ public class CmFinishUpdate extends NroClientPacket {
 
     @Override
     protected void readImpl() {
+    }
+
+    @Override
+    protected void runImpl() {
         if (getConnection().getSessionInfo().isEnterWorld()) {
 //            this.getConnection().close(new SmDialogMessage("Vui lòng đăng nhập lại!"));
             return;
         }
         PlayerEnterWorldService.enterWorld(getConnection());
         getConnection().getSessionInfo().setEnterWorld(true);
-    }
-
-    @Override
-    protected void runImpl() {
     }
 
 }

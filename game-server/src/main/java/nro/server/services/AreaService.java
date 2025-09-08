@@ -161,7 +161,6 @@ public final class AreaService {
             if (playerInZone == null || playerInZone.equals(entity)) continue;
             var playerComponent = entityQueryService.getPlayer(playerInZone.getId());
             if (playerComponent != null && playerComponent.isOnline()) {
-
                 playerComponent.connection.sendPacket(new SmTeleport(meID, teleport));
                 playerComponent.connection.sendPacket(new SmPlayerRemove(meID));
             }

@@ -28,7 +28,7 @@ public abstract class CmMapChangeBase extends NroClientPacket {
 
         PositionComponent pos = con.getEntity().getComponent(PositionComponent.class);
         if (pos != null) {
-            pos.changeType = MapChangeType.WAYPOINT;
+            pos.changeType = MapChangeType.DEFAULT;
             pos.wantsToChangeMap = true; // Trigger MapChangeSystem
         }
     }

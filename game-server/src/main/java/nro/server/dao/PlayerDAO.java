@@ -5,6 +5,7 @@ import com.artemis.World;
 import nro.commons.database.Database;
 import nro.commons.database.DatabaseFactory;
 import nro.server.configs.main.ConfigCharacter;
+import nro.server.data_holders.data.SkillData;
 import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
@@ -44,6 +45,8 @@ public class PlayerDAO {
                 return false;
             if (!createDefaultSkills(conn, playerId, gender))
                 return false;
+
+
             if (!createDefaultTask(conn, playerId))
                 return false;
             InventoryDAO.createPlayerInventory(conn, playerId, gender);
@@ -266,6 +269,7 @@ public class PlayerDAO {
             loadPlayerCurrencies(conn, playerEntity, playerId);
             loadPlayerTask(conn, playerEntity, playerId);
             loadPlayerSkillsShortCut(conn, playerEntity, playerId);
+            loadPlayerSkills(conn, info.gender, playerEntity, playerId);
             // inventory nên load cuối cùng chắc vậy
             InventoryDAO.loadInventoryForPlayer(conn, playerEntity, playerId);
 
@@ -313,6 +317,24 @@ public class PlayerDAO {
             skillShortCutComponent.skillShortCut = skillShortCut;
             entity.edit().add(skillShortCutComponent);
 
+        }, stmt -> stmt.setInt(1, playerId));
+    }
+
+    private static void loadPlayerSkills(Connection conn, int gender, Entity entity, int playerId) throws RuntimeException {
+        String query = "SELECT skill_id, current_level, last_time_use_skill FROM player_skills WHERE player_id = ?";
+
+        var skills = entity.getComponent(SkillComponent.class);
+        Database.select(conn, query, resultSet -> {
+            while (resultSet.next()) {
+                short skillId = resultSet.getShort("skill_id");
+                short currentLevel = resultSet.getShort("current_level");
+                long lastTimeUseSkill = resultSet.getLong("last_time_use_skill");
+                if (currentLevel == 0) continue;
+                SkillInfo skillInfo = SkillData.getInstance().getSkillInfoByTemplateId(skillId, gender, currentLevel);
+                if (skillInfo == null) continue;
+                skillInfo.setLastTimeUseThisSkill(lastTimeUseSkill);
+                skills.skills.add(skillInfo);
+            }
         }, stmt -> stmt.setInt(1, playerId));
     }
 

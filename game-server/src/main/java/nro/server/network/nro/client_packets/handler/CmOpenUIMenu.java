@@ -11,8 +11,10 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.OPEN_UI_MENU, validStates = {NroConnection.State.IN_GAME})
+@AClientPacketHandler(command = ConstsCmd.OPEN_UI_MENU, validStates = { NroConnection.State.IN_GAME })
 public class CmOpenUIMenu extends NroClientPacket {
+
+    private short npcId;
 
     public CmOpenUIMenu(int command, Set<NroConnection.State> validStates) {
         super(command, validStates);
@@ -20,12 +22,12 @@ public class CmOpenUIMenu extends NroClientPacket {
 
     @Override
     protected void readImpl() {
-        var npcId = this.readShort();
-        NpcService.getInstance().openMenuNpc(getConnection(), npcId);
+        npcId = this.readShort();
     }
 
     @Override
     protected void runImpl() {
+        NpcService.getInstance().openMenuNpc(getConnection(), npcId);
     }
 
 }

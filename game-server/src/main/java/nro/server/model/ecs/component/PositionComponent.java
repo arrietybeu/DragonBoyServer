@@ -1,6 +1,5 @@
 package nro.server.model.ecs.component;
 
-
 import com.artemis.Component;
 import nro.server.model.map.MapChangeType;
 
@@ -11,7 +10,8 @@ public class PositionComponent extends Component {
 
     public short mapId;
 
-    private int areaId;
+    private int zoneID;
+    private int zoneTarget, mapTarget = -1;
 
     public short x, y, newX, newY;
 
@@ -29,22 +29,39 @@ public class PositionComponent extends Component {
         this.mapId = (short) mapId;
         this.x = x;
         this.y = y;
-        this.areaId = areaId;
+        this.zoneID = areaId;
     }
 
     public void setAreaId(int areaId) {
-        if (this.areaId != areaId) this.areaId = areaId;
+        if (this.zoneID != areaId)
+            this.zoneID = areaId;
     }
 
     public int getAreaId() {
-        return areaId;
+        return zoneID;
+    }
+
+    public int getZoneTarget() {
+        return zoneTarget;
+    }
+
+    public void setZoneTarget(int zoneTarget) {
+        this.zoneTarget = zoneTarget;
+    }
+
+    public int getMapTarget() {
+        return mapTarget;
+    }
+
+    public void setMapTarget(int mapTarget) {
+        this.mapTarget = mapTarget;
     }
 
     @Override
     public String toString() {
         return "PositionComponent{" +
                 "mapId=" + mapId +
-                ", areaId=" + areaId +
+                ", areaId=" + zoneID +
                 ", x=" + x +
                 ", y=" + y +
                 ", newX=" + newX +
@@ -55,6 +72,8 @@ public class PositionComponent extends Component {
                 ", isOnGroundNew=" + isOnGroundNew +
                 ", wantsToChangeMap=" + wantsToChangeMap +
                 ", changeType=" + changeType +
+                ", mapTarget=" + mapTarget +
+                ", zoneTarget=" + zoneTarget +
                 '}';
     }
 }

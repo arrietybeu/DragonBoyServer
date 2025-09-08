@@ -45,12 +45,17 @@ public final class PlayerEnterWorldService {
             var entity = client.getEntity();
             
             if (entity == null) {
+                long startTime = System.currentTimeMillis();
+                log.info("[EnterWorld] Bắt đầu load player entity cho playerId={} (accountId={})", playerId, accountId);
                 entity = PlayerDAO.loadPlayerEntity(playerId, accountId);
+                long endTime = System.currentTimeMillis();
+                long duration = endTime - startTime;
                 if (entity == null) {
                     log.error("Failed to load player entity for player ID: {}. Cannot enter world.", playerId);
                     client.close(new SmDialogMessage(PlayerResponseType.LOGIN_FAILED_DATA_LOAD_ERROR.getDefaultMessage()));
                     return;
                 }
+                log.info("[EnterWorld] Load player entity thành công cho playerId={} mất {} ms", playerId, duration);
                 client.attachPlayerEntity(entity);
                 client.setPlayerID(playerId);
             }
