@@ -2,8 +2,7 @@ package nro.server.services;
 
 import lombok.NoArgsConstructor;
 import nro.commons.utils.Rnd;
-import nro.server.data_holders.data.ItemData;
-import nro.server.data_holders.data.MapData;
+import nro.server.data_holders.repo.ItemData;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.map.MapChangeType;
@@ -34,8 +33,6 @@ public final class ChatService {
             }
 
             if (account.isAdmin() && chatVIP(client, message)) return;
-
-            // FIXME viet check message ki doan nafy
 
             AreaService.getInstance().sendPacketForALLPlayerInArea(po.mapId, po.getAreaId(), new SmChatMap(client.getPlayerID(), message));
 

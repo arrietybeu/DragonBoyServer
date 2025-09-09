@@ -28,7 +28,7 @@ dependencies {
     implementation project(':commons')
     implementation project(':ecs')
 
-    implementation "net.namekdev.entity_tracker:artemis-entity-tracker:0.3.0"
+    // implementation "net.namekdev.entity_tracker:artemis-entity-tracker:0.3.0"
 
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2'

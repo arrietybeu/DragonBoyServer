@@ -2,7 +2,7 @@ package nro.server.model.map;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import nro.server.data_holders.data.MapData;
+import nro.server.data_holders.repo.MapData;
 import nro.server.data_holders.data.MonsterData;
 import nro.server.model.map.zone.*;
 import nro.server.model.map.zone.type.*;

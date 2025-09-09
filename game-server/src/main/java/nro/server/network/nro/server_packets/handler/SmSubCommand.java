@@ -5,7 +5,7 @@ import com.artemis.Entity;
 import nro.commons.consts.ConstsCmd;
 import nro.server.GameServer;
 import nro.server.consts.ConstMsgSubCommand;
-import nro.server.data_holders.data.ItemData;
+import nro.server.data_holders.repo.ItemData;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.CurrencyComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;

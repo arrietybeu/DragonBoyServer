@@ -1,7 +1,7 @@
 package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
-import nro.server.data_holders.data.MapData;
+import nro.server.data_holders.repo.MapData;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.map.zone.ZoneType;
 import nro.server.network.nro.NroClientPacket;

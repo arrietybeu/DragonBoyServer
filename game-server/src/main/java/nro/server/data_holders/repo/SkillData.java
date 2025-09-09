@@ -1,4 +1,4 @@
-package nro.server.data_holders.data;
+package nro.server.data_holders.repo;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import nro.server.model.templates.skill.SkillTemplate;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 

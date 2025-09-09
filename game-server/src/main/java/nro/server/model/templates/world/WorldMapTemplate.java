@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import nro.server.consts.ConstMap;
-import nro.server.data_holders.data.MapData;
+import nro.server.data_holders.repo.MapData;
 import nro.server.model.templates.entity.MonsterInfo;
 import nro.server.model.templates.entity.NpcTemplate;
 
@@ -140,7 +140,7 @@ public class WorldMapTemplate {
             return false;
 
         for (int j = ty; j < height; j++) {
-            int index = j * width + tx;
+        int index = j * width + tx;
             if ((types[index] & ConstMap.T_TOP) != 0) {
                 return true;
             }

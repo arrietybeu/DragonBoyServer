@@ -1,12 +1,19 @@
 package nro.server.data_holders;
 
 import nro.server.data_holders.data.*;
+import nro.server.data_holders.repo.ItemData;
+import nro.server.data_holders.repo.MapData;
+import nro.server.data_holders.repo.ResourcesData;
+import nro.server.data_holders.repo.SkillData;
 import nro.server.engine.quest.QuestEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * @author Arriety
+ */
 public final class DataManager {
 
     private static final Logger log = LoggerFactory.getLogger(DataManager.class);

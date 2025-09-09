@@ -1,4 +1,4 @@
-package nro.server.data_holders.data;
+package nro.server.data_holders.repo;
 
 import lombok.Getter;
 import nro.commons.database.Database;
@@ -6,6 +6,8 @@ import nro.commons.utils.NetworkUtils;
 import nro.server.configs.main.ConfigServer;
 import nro.server.data_holders.GameEngine;
 import nro.server.data_holders.YamlDataLoader;
+import nro.server.data_holders.data.MonsterData;
+import nro.server.data_holders.data.NpcData;
 import nro.server.model.templates.entity.MonsterInfo;
 import nro.server.model.templates.entity.NpcTemplate;
 import nro.server.model.templates.world.*;
@@ -16,9 +18,6 @@ import org.json.simple.parser.ParseException;
 
 import java.nio.ByteBuffer;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.function.Consumer;
 

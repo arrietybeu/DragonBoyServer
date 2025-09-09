@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * @author Arriety
  */
-public class ItemInventoryData implements GameEngine {
+public final class ItemInventoryData implements GameEngine {
     private List<Map<String, Object>> templates = new ArrayList<>();
 
     @Override

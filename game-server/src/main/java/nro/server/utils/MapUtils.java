@@ -6,7 +6,7 @@ import com.artemis.utils.Bag;
 import com.artemis.utils.ImmutableBag;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nro.server.data_holders.data.MapData;
+import nro.server.data_holders.repo.MapData;
 import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.monster.InfoMonsterComponent;

@@ -1,4 +1,4 @@
-package nro.server.data_holders.data;
+package nro.server.data_holders.repo;
 
 import lombok.Getter;
 import nro.commons.database.Database;

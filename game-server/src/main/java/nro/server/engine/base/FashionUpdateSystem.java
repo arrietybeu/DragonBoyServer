@@ -4,7 +4,7 @@ import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import nro.server.consts.ConstItem;
-import nro.server.data_holders.data.ItemData;
+import nro.server.data_holders.repo.ItemData;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;

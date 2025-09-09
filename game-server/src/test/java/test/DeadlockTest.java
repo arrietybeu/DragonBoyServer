@@ -11,7 +11,7 @@ public class DeadlockTest {
     private static final Object LOCK_A = new Object();
     private static final Object LOCK_B = new Object();
 
-    public static void main(String... args) {
+    public static void main() {
         DeadLockDetector.start(Duration.ofSeconds(2), () -> System.exit(ExitCode.ERROR));
         createDeadlock();
     }
