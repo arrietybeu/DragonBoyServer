@@ -28,7 +28,7 @@ public class LogTest {
         System.out.println("Log submitted.");
 
         try {
-            Thread.sleep(5000);
+            // Thread.sleep(5000);
         } catch (InterruptedException ignored) {}
 
     }

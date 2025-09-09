@@ -6,11 +6,15 @@ import nro.server.model.account.AccountTime;
 
 import java.sql.Connection;
 import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Arriety
  */
 public class AccountDAO {
+
+    private static final Logger log = LoggerFactory.getLogger(AccountDAO.class);
 
     private static final String QUERY_GET_ACCOUNT = "SELECT * FROM `account_data` WHERE `username` = ? AND `password` = ? LIMIT 1;";
 
@@ -20,7 +24,8 @@ public class AccountDAO {
 
             Database.select(con, QUERY_GET_ACCOUNT, rs -> {
                 if (rs.next()) {
-                    Account account = new Account(rs.getInt("id"), rs.getString("username"), rs.getString("password"), rs.getBoolean("is_admin"), rs.getBoolean("ban"), rs.getString("ip_address"));
+                    Account account = new Account(rs.getInt("id"), rs.getString("username"), rs.getString("password"),
+                            rs.getBoolean("is_admin"), rs.getBoolean("ban"), rs.getString("ip_address"));
                     accountRef.set(account);
                 }
             }, stmt -> {
@@ -30,6 +35,8 @@ public class AccountDAO {
 
             if (accountRef.get() != null) {
                 AccountTime accountTime = getAccountTime(accountRef.get().getId(), con);
+                if (accountTime == null)
+                    log.error("Account time not found for account id: {}", accountRef.get().getId());
                 accountRef.get().setAccountTime(accountTime);
             }
 
@@ -50,6 +57,18 @@ public class AccountDAO {
         }, st -> st.setLong(1, accountId));
 
         return accountTime;
+    }
+
+    public static boolean updateAccountTime(int accountId, AccountTime accountTime) {
+        return Database.insertUpdate(
+                "REPLACE INTO account_time (account_id, last_time_login, last_time_logout, offline_training_seconds, ban_until) VALUES (?, ?, ?, ?, ?)",
+                ps -> {
+                    ps.setLong(1, accountId);
+                    ps.setTimestamp(2, accountTime.getLastTimeLogin());
+                    ps.setTimestamp(3, accountTime.getLastTimeLogout());
+                    ps.setLong(4, accountTime.getOfflineTrainingSeconds());
+                    ps.setTimestamp(5, accountTime.getBanUntil());
+                });
     }
 
 }

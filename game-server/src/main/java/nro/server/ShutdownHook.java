@@ -6,6 +6,9 @@ import nro.commons.services.cron.CurrentThreadRunnableRunner;
 import nro.commons.utils.ExitCode;
 import nro.commons.utils.concurrent.RunnableStatsManager;
 import nro.server.configs.main.ShutdownConfig;
+import nro.server.engine.GameWorld;
+import nro.server.services.CommandService;
+import nro.server.services.PeriodicSaveService;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +81,17 @@ public class ShutdownHook extends Thread {
                                         // them
 
         RunnableStatsManager.dumpClassStats(RunnableStatsManager.SortBy.AVG);// print system
-        // PeriodicSaveService.getInstance().onShutdown(); // save data player, status
+        PeriodicSaveService.getInstance().onShutdown(); 
         // server
-        //
         // GameTimeService.getInstance().saveGameTime();
         CronService.getInstance().shutdown();
         ThreadPoolManager.getInstance().shutdown();
+        CommandService.closeCommandLine();
 
         // shut down logger factory to flush all pending log messages
+
+        GameWorld.getInstance().shutdown();
+
         ((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
     }
 

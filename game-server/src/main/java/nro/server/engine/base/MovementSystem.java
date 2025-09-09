@@ -29,7 +29,8 @@ public final class MovementSystem extends IteratingSystem {
             handler(entityId);
         } catch (Throwable e) {
             PositionComponent pos = posMapper.get(entityId);
-            if (pos != null) pos.isDirtyMove = false;
+            if (pos != null)
+                pos.isDirtyMove = false;
             log.error("MovementSystem error for entityId={}", entityId, e);
         }
     }
@@ -40,17 +41,17 @@ public final class MovementSystem extends IteratingSystem {
         if (pos == null)
             throw new RuntimeException("No position found for entityId=" + entityId);
 
-        if (!pos.isDirtyMove) return;
+        if (!pos.isDirtyMove)
+            return;
 
         pos.x = pos.newX;
         pos.y = pos.newY;
         pos.isOnGround = pos.isOnGroundNew;
 
-//        System.out.println("entity di chuyen : " + entityId + " to " + pos.x + ", " + pos.y);
         if (pos.isOnGround == 1) {
-//         player.getPoints().reduceMPWhenFlying();
+            // player.getPoints().reduceMPWhenFlying();
         }
-
+        
         AreaService.getInstance().sendPacketForALLPlayerInAreaNotMe(entityId, pos.mapId, pos.getAreaId(),
                 new SmPlayerMove(playerInfo.id, pos.x, pos.y));
 

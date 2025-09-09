@@ -37,4 +37,5 @@ public class Waypoint {
                 ", goY=" + goY +
                 '}';
     }
+    
 }

@@ -16,6 +16,7 @@ import nro.server.model.map.zone.Zone;
 import nro.server.model.templates.world.WorldMapTemplate;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
+import nro.server.services.TypeTeleport;
 import nro.server.utils.MapUtils;
 
 import java.util.List;
@@ -42,7 +43,6 @@ public final class PacketHelper {
             }
         };
     }
-
 
     public static void sendInventoryForPlayer(NroServerPacket data, List<Integer> items) {
         data.writeByte(items.size());
@@ -122,13 +122,13 @@ public final class PacketHelper {
             var pos = mP.get(monster); /// jake dz
 
             packet.writeInt(monster.getId());
-            packet.writeBoolean(false);          // isDisable
-            packet.writeBoolean(false);          // dontMove
-            packet.writeBoolean(false);          // fire
-            packet.writeBoolean(false);          // ice
-            packet.writeBoolean(false);          // wind
+            packet.writeBoolean(false); // isDisable
+            packet.writeBoolean(false); // dontMove
+            packet.writeBoolean(false); // fire
+            packet.writeBoolean(false); // ice
+            packet.writeBoolean(false); // wind
             packet.writeShort((short) info.templateID);
-            packet.writeByte(0);                 // sys
+            packet.writeByte(0); // sys
             packet.writeLong(stats.hp > 0 ? stats.hp : stats.hpMax);
             packet.writeByte(stats.level);
             packet.writeLong(stats.hpMax);
@@ -179,9 +179,12 @@ public final class PacketHelper {
         // Write background type and teleport flag
         packet.writeByte(mapTemplate.getBgType());
         packet.writeByte(position.teleport);
+
+        position.teleport = TypeTeleport.DEFAULT.getValue();
     }
 
-    public static boolean writePlayerInfo(NroServerPacket packet, Entity entity, InfoComponent info, StateComponent state, PositionComponent position, AppearanceComponent appearance) {
+    public static boolean writePlayerInfo(NroServerPacket packet, Entity entity, InfoComponent info,
+            StateComponent state, PositionComponent position, AppearanceComponent appearance) {
         var buff = entity.getComponent(BuffComponent.class);
         var heal = entity.getComponent(HealthComponent.class);
 

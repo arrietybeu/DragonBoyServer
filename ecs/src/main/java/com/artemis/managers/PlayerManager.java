@@ -32,7 +32,6 @@ public class PlayerManager extends Manager {
 		entitiesByPlayer = new HashMap<String, Bag<Entity>>();
 	}
 
-
 	/**
 	 * Associate the entity with the specified player.
 	 * <p>

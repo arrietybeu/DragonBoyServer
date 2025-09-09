@@ -12,6 +12,7 @@ public enum NroAuthResponse {
     ACCOUNT_ALREADY_LOGGED_IN("Tài khoản này đang được đăng nhập ở 1 nơi khác"),
     IP_NOT_ALLOWED("Bạn không thể truy cập game thông qua ip này"),
     ERROR_LOGIN(""),
+    LOGIN_DELAY(""),
     RELOGIN("RELOAD LOGIN");
 
     private final String code;

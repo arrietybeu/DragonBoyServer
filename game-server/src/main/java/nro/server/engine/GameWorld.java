@@ -4,20 +4,23 @@ import com.artemis.*;
 import com.artemis.managers.GroupManager;
 import com.artemis.utils.Bag;
 import com.artemis.utils.BitVector;
+
+import nro.server.engine.profiling.ProfilingInvocationStrategy;
 import nro.server.services.EntityQueryService;
+import nro.server.utils.ThreadPoolManager;
+import nro.commons.utils.concurrent.NamedRunnable;
+import nro.server.configs.main.ThreadConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Singleton quản lý ECS World, hỗ trợ virtual threads (JDK 21) và ReentrantLock.
- *
  * @author Arriety
  */
 public final class GameWorld {
@@ -26,9 +29,11 @@ public final class GameWorld {
 
     private World world;
     private volatile boolean running = false;
-    private ExecutorService executor;
+    private ScheduledFuture<?> executor;
     private final long tickInterval;
     private final ReentrantLock lock = new ReentrantLock();
+    private final ConcurrentLinkedQueue<Runnable> mainQueue = new ConcurrentLinkedQueue<>();
+    private volatile long lastTickMs = System.currentTimeMillis();
     public static EntityQueryService queryService;
 
     private GameWorld() {
@@ -44,6 +49,9 @@ public final class GameWorld {
                 return;
             }
             WorldConfiguration config = builder.build();
+
+            config.setInvocationStrategy(new ProfilingInvocationStrategy(ThreadConfig.MAXIMUM_RUNTIME_IN_MILLISEC_WITHOUT_WARNING));
+
             this.world = new World(config);
             queryService = new EntityQueryService(world);
         } finally {
@@ -64,8 +72,9 @@ public final class GameWorld {
             }
 
             running = true;
-            executor = Executors.newVirtualThreadPerTaskExecutor();
-            executor.submit(this::runGameLoop);
+            lastTickMs = System.currentTimeMillis();
+            executor = ThreadPoolManager.getInstance().scheduleAtFixedRate(
+                    new NamedRunnable("GameWorld.runGameLoop", this::runGameLoop), 0, tickInterval);
             log.info("GameLoop started with {} systems.", world.getSystems().size());
         } finally {
             lock.unlock();
@@ -73,26 +82,28 @@ public final class GameWorld {
     }
 
     private void runGameLoop() {
-        long lastTick = System.currentTimeMillis();
-        while (running) {
-            try {
-                long now = System.currentTimeMillis();
-                long elapsed = now - lastTick;
+        if (!running)
+            return;
+        long now = System.currentTimeMillis();
+        long elapsed = Math.max(0, now - lastTickMs);
 
-                if (elapsed >= tickInterval) {
-                    world.setDelta(elapsed / 1000.0f);
-                    world.process();
-                    lastTick = now;
-                } else {
-                    Thread.sleep(tickInterval - elapsed); // Sleep vẫn OK, virtual thread không block real thread
+        lock.lock();
+        try {
+            for (Runnable r; (r = mainQueue.poll()) != null;) {
+                try {
+                    r.run();
+                } catch (Throwable t) {
+                    log.error("Error executing task on main thread", t);
                 }
-            } catch (InterruptedException e) {
-                running = false;
-                Thread.currentThread().interrupt();
-                log.warn("GameWorld thread interrupted.");
-            } catch (Exception e) {
-                log.error("Exception in GameWorld loop", e);
             }
+
+            world.setDelta(elapsed / 1000.0f);
+            world.process();
+        } catch (Exception e) {
+            log.error("Exception in GameWorld tick", e);
+        } finally {
+            lastTickMs = now;
+            lock.unlock();
         }
     }
 
@@ -101,18 +112,14 @@ public final class GameWorld {
         lock.lock();
         try {
             if (executor != null) {
-                executor.shutdown();
-                if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
-                    executor.shutdownNow();
-                }
+                executor.cancel(false);
             }
             if (world != null) {
                 world.dispose();
             }
             log.info("GameWorld has been shut down.");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Interrupted while shutting down.", e);
+        } catch (Exception e) {
+            log.error("Error while shutting down.", e);
         } finally {
             lock.unlock();
         }
@@ -164,8 +171,10 @@ public final class GameWorld {
     }
 
     public void logWorldSummary() {
+        lock.lock();
         if (world == null) {
             log.warn("World is null, cannot log summary.");
+            lock.unlock();
             return;
         }
 
@@ -176,7 +185,7 @@ public final class GameWorld {
 
         // Log tổng số entity đang hoạt động (theo cách hợp lệ)
         int activeEntities = world.getAspectSubscriptionManager()
-                .get(Aspect.all())  // Aspect.all() sẽ match mọi entity
+                .get(Aspect.all()) // Aspect.all() sẽ match mọi entity
                 .getActiveEntityIds()
                 .cardinality();
         log.info("Total entities (active): {}", activeEntities);
@@ -188,8 +197,7 @@ public final class GameWorld {
         for (var type : componentTypes) {
             log.info(" - Component: {} [id={}]",
                     type.getType().getSimpleName(),
-                    type.getIndex()
-            );
+                    type.getIndex());
         }
 
         // Log các hệ thống đang được active
@@ -222,11 +230,14 @@ public final class GameWorld {
         }
 
         log.info("==================================");
+        lock.unlock();
     }
 
     public void logEntitiesWithComponentsJson(int maxEntitiesToShow) {
+        lock.lock();
         if (world == null) {
             log.warn("World is null, cannot dump entities.");
+            lock.unlock();
             return;
         }
 
@@ -243,9 +254,8 @@ public final class GameWorld {
         Bag<Component> bag = new Bag<>(16);
 
         int count = 0;
-        for (int entityId = activeIds.nextSetBit(0);
-             entityId >= 0 && count < shown;
-             entityId = activeIds.nextSetBit(entityId + 1), count++) {
+        for (int entityId = activeIds.nextSetBit(0); entityId >= 0
+                && count < shown; entityId = activeIds.nextSetBit(entityId + 1), count++) {
 
             bag.clear();
             cm.getComponentsFor(entityId, bag);
@@ -258,20 +268,21 @@ public final class GameWorld {
             log.info("... ({} more not shown)", (total - shown));
         }
         log.info("===============================================");
+        lock.unlock();
     }
 
     private static String componentsToJsonArray(Bag<Component> bag) {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         for (int j = 0, n = bag.size(); j < n; j++) {
-            if (j > 0) sb.append(',');
+            if (j > 0)
+                sb.append(',');
             String name = bag.get(j).getClass().getSimpleName();
             sb.append('"').append(name).append('"');
         }
         sb.append(']');
         return sb.toString();
     }
-
 
     private Field getPrivateField(Class<?> clazz, String name) {
         try {
@@ -306,12 +317,20 @@ public final class GameWorld {
         return queryService;
     }
 
-
     private static class SingletonHolder {
         private static final GameWorld instance = new GameWorld();
     }
 
     public static GameWorld getInstance() {
         return SingletonHolder.instance;
+    }
+
+    public void submitToMain(Runnable task) {
+        if (task != null)
+            mainQueue.add(task);
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }

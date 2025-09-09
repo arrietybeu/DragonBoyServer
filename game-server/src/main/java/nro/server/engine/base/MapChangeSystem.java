@@ -8,7 +8,6 @@ import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
-import nro.server.model.map.MapChangeType;
 import nro.server.model.map.zone.Zone;
 import nro.server.model.templates.world.Waypoint;
 import nro.server.network.nro.NroConnection;
@@ -51,12 +50,12 @@ public final class MapChangeSystem extends IteratingSystem {
         var client = (player != null) ? player.connection : null;
 
         try {
-            System.out.println(" bay di 1 lan??????????????");
             switch (pos.changeType) {
                 case DEFAULT -> viaWaypoint(pos, info, client);
                 case ZONE -> viaZone(pos, info, client);
                 case SHIP -> viaShip(pos, info, client);
                 // case TELEPORT -> viaTeleport(entityId, pos, client);
+                default -> throw new IllegalArgumentException("Unexpected value: " + pos.changeType);
             }
         } catch (Throwable t) {
             if (client != null) {

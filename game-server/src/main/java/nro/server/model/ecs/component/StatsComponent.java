@@ -11,7 +11,7 @@ public class StatsComponent extends Component {
     public long power;
     public long potential;
 
-    // Chỉ số gốc
+    // Chỉ số gốclong
     public int baseHp;
     public int baseMp;
     public int baseDamage;

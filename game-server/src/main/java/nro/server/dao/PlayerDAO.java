@@ -240,8 +240,6 @@ public class PlayerDAO {
         return playerId;
     }
 
-    private static final int ________________LOAD_PLAYER_ENTITY________________ = -1;
-
     public static Entity loadPlayerEntity(int playerId, int accountId) {
         World world = GameWorld.getInstance().getWorld();
         int playerEntityID = GameWorld.getInstance().createEntity();
@@ -417,8 +415,6 @@ public class PlayerDAO {
         }, stmt -> stmt.setInt(1, playerId));
     }
 
-    private static final int ________________SAVE_PLAYER_ENTITY________________ = -1;
-
     public static boolean savePlayerEntity(Entity entity) {
         Database.withConnection(connection -> {
             savePlayerLocation(connection, entity, entity.getComponent(InfoComponent.class).id);
@@ -443,8 +439,6 @@ public class PlayerDAO {
             ps.executeUpdate();
         }
     }
-
-    private static final int ________________SUPPORT________________ = -1;
 
     public static int[] getUsedIDs() {
         try (Connection con = DatabaseFactory.getConnection();

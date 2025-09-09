@@ -14,7 +14,7 @@ public class Main {
 
             area.submitEvent(new RemovePlayerEvent(player1));
 
-            Thread.sleep(1000);
+            // Thread.sleep(1000);
 
             // stop the area and wait for the thread to finish
             area.stop();

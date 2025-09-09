@@ -31,7 +31,6 @@ public class CMGetImageSource extends NroClientPacket {
             var resourceIndexSize = this.readShort();
             for (int i = 0; i < resourceIndexSize; i++) {
                 var concacj = readShort();
-                System.out.println("Concacj: " + concacj);
             }
         }
     }

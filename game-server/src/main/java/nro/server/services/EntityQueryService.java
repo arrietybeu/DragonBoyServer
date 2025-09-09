@@ -4,6 +4,8 @@ package nro.server.services;
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.utils.ImmutableBag;
+
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 
@@ -26,6 +28,10 @@ public final class EntityQueryService {
         if (!world.getEntityManager().isActive(entityId)) return null;
         if (!pcMapper.has(entityId)) return null;
         return world.getEntity(entityId);
+    }
+
+    public ImmutableBag<Entity> getAllPlayerEntity() {
+        return null;
     }
 
     /**

@@ -24,15 +24,27 @@ import java.util.Scanner;
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class CommandService {
 
+    private static volatile boolean isActive = false;
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandService.class);
 
+    public static void initCommandLine() {
+        isActive = true;
+        Thread.startVirtualThread(CommandService::ActiveCommandLine);
+    }
+
     public static void ActiveCommandLine() {
+        isActive = true;
         try (Scanner sc = new Scanner(System.in)) {
-            while (true) {
+            while (isActive) {
                 try {
-                    String _line = sc.nextLine();
+                    if (!sc.hasNextLine()) {
+                        LOGGER.warn("Command line input closed. Stopping CommandService.");
+                        isActive = false;
+                        break;
+                    }
+                    String _line = sc.nextLine().trim();
                     switch (_line) {
-//                        case "map_info" -> LOGGER.info(World.getInstance().logInfo());
+                        // case "map_info" -> LOGGER.info(World.getInstance().logInfo());
                         case "ecs_info" -> GameWorld.getInstance().logWorldSummary();
                         case "entity_info" -> GameWorld.getInstance().logEntitiesWithComponentsJson(100);
                         case "id" -> LOGGER.info(IDFactory.getInstance().getDebugInfo(100));
@@ -40,13 +52,13 @@ public final class CommandService {
                         case "thread" -> LOGGER.info(ThreadPoolManager.getInstance().getStats());
                         case "database_pool" -> LOGGER.info(DatabaseFactory.getStatsPool());
                         case "session" ->
-                                LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
+                            LOGGER.info("session size {}", GameServer.getNioServer().listAllConnections().size());
                         case "system_info" -> SystemInfo.logAll();
                         case "gc" -> System.gc();
                         case "dump_packet" -> RunnableStatsManager.dumpClassStats();
                         case "exit" -> GameServer.initShutdown(ExitCode.NORMAL, 5);
                         case "dart" ->
-                                DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
+                            DartData.getInstance().darts.forEach(dartTemplate -> LOGGER.info(dartTemplate.toString()));
                         case "part" -> System.out.println("PartData size: " + buildNrPartData().length);
                         case "task" -> QuestEngine.getInstance().logTask0Info();
                     }
@@ -56,6 +68,11 @@ public final class CommandService {
                 }
             }
         }
+    }
+
+    public static void closeCommandLine() {
+        isActive = false;
+        LOGGER.info("CommandLine closed");
     }
 
     private static byte[] buildNrPartData() {

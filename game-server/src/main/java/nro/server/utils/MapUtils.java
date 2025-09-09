@@ -32,13 +32,15 @@ public class MapUtils {
 
     public static Zone findZone(short mapId, int zoneId) {
         GameMap gm = GameMapFactory.getInstance().getMap(mapId);
-        if (gm == null) throw new IllegalArgumentException("Map không tồn tại: " + mapId);
+        if (gm == null)
+            throw new IllegalArgumentException("Map không tồn tại: " + mapId);
         return gm.zoneManager().findZone(zoneId).orElse(null);
     }
 
     public static Collection<Zone> getAllZoneForMapID(short mapId) {
         GameMap gm = GameMapFactory.getInstance().getMap(mapId);
-        if (gm == null) throw new IllegalArgumentException("Map không tồn tại: " + mapId);
+        if (gm == null)
+            throw new IllegalArgumentException("Map không tồn tại: " + mapId);
         return gm.zoneManager().getZonesReadOnly();
     }
 
@@ -52,7 +54,8 @@ public class MapUtils {
      */
     public static Zone enterZone(short mapId, int entityID) {
         GameMap gm = GameMapFactory.getInstance().getMap(mapId);
-        if (gm == null) throw new IllegalArgumentException("Map không tồn tại: " + mapId);
+        if (gm == null)
+            throw new IllegalArgumentException("Map không tồn tại: " + mapId);
         return gm.zoneManager().joinZone(entityID);
     }
 
@@ -81,7 +84,8 @@ public class MapUtils {
         var map = GameMapFactory.getInstance().getMap(zone.mapId());
 
         if (map == null) {
-            throw new NullPointerException("detachFromZone map not found for map ID: " + zone.mapId() + " zone ID: " + zone.zoneId());
+            throw new NullPointerException(
+                    "detachFromZone map not found for map ID: " + zone.mapId() + " zone ID: " + zone.zoneId());
         }
 
         if (map.zoneManager() instanceof NormalZoneManager n) {
@@ -93,7 +97,8 @@ public class MapUtils {
      * Move entity giữa 2 zone
      */
     public static void move(Entity entity, Zone from, Zone to) {
-        if (from != null) detachFromZone(entity, from);
+        if (from != null)
+            detachFromZone(entity, from);
         attachToZone(entity, to);
     }
 
@@ -109,7 +114,8 @@ public class MapUtils {
     public static ImmutableBag<Entity> getPlayers(Zone zone) {
         GroupManager gm = GameWorld.getInstance().getGroupManager();
         ImmutableBag<Entity> bag = gm.getEntities(zone.groupName());
-        if (bag == null || bag.isEmpty()) return new Bag<>();
+        if (bag == null || bag.isEmpty())
+            return new Bag<>();
 
         var world = GameWorld.getInstance().getWorld();
         var mPlayer = world.getMapper(PlayerComponent.class);
@@ -117,11 +123,11 @@ public class MapUtils {
         var out = new Bag<Entity>(bag.size());
         for (int i = 0; i < bag.size(); i++) {
             Entity e = bag.get(i);
-            if (e != null && mPlayer.has(e)) out.add(e);
+            if (e != null && mPlayer.has(e))
+                out.add(e);
         }
         return out;
     }
-
 
     /**
      * Đếm số player trong zone
@@ -134,7 +140,8 @@ public class MapUtils {
         int c = 0;
         for (int i = 0; i < bag.size(); i++) {
             Entity e = bag.get(i);
-            if (e != null && mPlayer.has(e)) c++;
+            if (e != null && mPlayer.has(e))
+                c++;
         }
         return c;
     }
@@ -150,7 +157,6 @@ public class MapUtils {
     public static Waypoint getWayPointInMap(int mapID, int x, int y, int playerID) {
 
         var template = MapData.getInstance().getWorldMapTemplate(mapID);
-        log.debug("[WP] start mapID={}, player={}, q=({}, {})", mapID, playerID, x, y);
         try {
             if (mapID == 46) {
                 int delta = 1000;
@@ -158,7 +164,8 @@ public class MapUtils {
 
                 for (var list : sub.values()) {
                     for (Waypoint wp : list) {
-                        if (x >= wp.getMinX() - delta && x <= wp.getMaxX() + delta && y >= wp.getMinY() && y <= wp.getMaxY()) {
+                        if (x >= wp.getMinX() - delta && x <= wp.getMaxX() + delta && y >= wp.getMinY()
+                                && y <= wp.getMaxY()) {
                             return wp;
                         }
                     }
@@ -167,9 +174,9 @@ public class MapUtils {
                 var entry = template.getWaypointMap().floorEntry(x);
                 if (entry != null) {
                     for (Waypoint wp : entry.getValue()) {
-                        log.debug("waypoint: {} ", wp);
-                        // FIXME tại client msg -7 t xử lý msg ngu quá nó cứ set y = 0 nên là lỗi không tìm thấy waypoint thôi thì tạm thời đóng chức năng check y nhé =)))
-                        if (x >= wp.getMinX() && x <= wp.getMaxX() /* && y >= wp.getMinY() && y <= wp.getMaxY()*/) {
+                        // FIXME tại client msg -7 t xử lý msg ngu quá nó cứ set y = 0 nên là lỗi không
+                        // tìm thấy waypoint thôi thì tạm thời đóng chức năng check y nhé =)))
+                        if (x >= wp.getMinX() && x <= wp.getMaxX() /* && y >= wp.getMinY() && y <= wp.getMaxY() */) {
                             return wp;
                         }
                     }
@@ -183,14 +190,15 @@ public class MapUtils {
 
     public static Npc getNpcByIdForMap(GameMap map, int id) {
         for (var npc : map.npcs()) {
-            if (npc.id() == id) return npc;
+            if (npc.id() == id)
+                return npc;
         }
         return null;
     }
 
     public static void attachMonsterToZone(Entity entity, Zone zone) {
         GroupManager gm = GameWorld.getInstance().getGroupManager();
-        gm.add(entity, zone.groupName());      // group chung của zone
+        gm.add(entity, zone.groupName()); // group chung của zone
         gm.add(entity, monsterGroupName(zone));// group phụ riêng cho monster
     }
 
@@ -207,14 +215,16 @@ public class MapUtils {
     }
 
     public static void spawnMonster(short mapId,
-                                    int zoneId,
-                                    int templateId,
-                                    String name,
-                                    short x, short y,
-                                    byte level,
-                                    long hpMax) {
+            int zoneId,
+            int templateId,
+            String name,
+            short x, short y,
+            byte level,
+            long hpMax) {
+
         Zone z = findZone(mapId, zoneId);
-        if (z == null) throw new IllegalArgumentException("Zone không tồn tại: map=" + mapId + ", zone=" + zoneId);
+        if (z == null)
+            throw new IllegalArgumentException("Zone không tồn tại: map=" + mapId + ", zone=" + zoneId);
 
         var world = GameWorld.getInstance().getWorld();
         Entity e = world.createEntity();
@@ -230,7 +240,6 @@ public class MapUtils {
         e.edit().add(state);
 
         attachMonsterToZone(e, z);
-
     }
 
     private static String monsterGroupName(Zone zone) {

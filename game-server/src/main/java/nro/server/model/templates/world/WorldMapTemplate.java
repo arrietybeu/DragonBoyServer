@@ -73,6 +73,8 @@ public class WorldMapTemplate {
         pixelWidth = tileMap.width() * SIZE;
         int num = tileId - 1;
 
+        if (num == -1)
+            return;
         try {
             int[] tiles = tileMap.tiles();
             MapData mapManager = MapData.getInstance();
@@ -91,7 +93,7 @@ public class WorldMapTemplate {
                 }
             }
         } catch (Exception ex) {
-            log.warn("Error loading tile map for tileId {} in map {}", tileId, id, ex);
+            // log.warn("Error loading tile map for tileId {} in map {}", tileId, id, ex);
         }
     }
 
@@ -108,7 +110,7 @@ public class WorldMapTemplate {
         int y = py;
 
         int width = tileMap.width();
-        int height = tileMap.height();
+        // int height = tileMap.height();
 
         if (tx < 0 || tx >= width)
             return (short) this.pixelHeight;
@@ -140,14 +142,13 @@ public class WorldMapTemplate {
             return false;
 
         for (int j = ty; j < height; j++) {
-        int index = j * width + tx;
+            int index = j * width + tx;
             if ((types[index] & ConstMap.T_TOP) != 0) {
                 return true;
             }
         }
         return false;
     }
-
 
     @Override
     public String toString() {

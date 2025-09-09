@@ -39,8 +39,7 @@ public final class ChangeMapService {
                 pos.setZoneTarget(zoneId);
                 pos.newX = x;
                 pos.newY = y;
-                pos.teleport = TypeTeleport.TELEPORT.getValue();
-                System.out.println("set teleport " + pos.teleport);
+                pos.teleport = TypeTeleport.SPACE_SHIP_FOR_GENDER.getValue();
                 pos.wantsToChangeMap = true;
             }
             default -> throw new IllegalArgumentException("Unexpected value: " + changeType);

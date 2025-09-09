@@ -17,7 +17,7 @@ import java.util.Set;
 @AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {
         NroConnection.State.CONNECTED,
         NroConnection.State.AUTHED,
-        NroConnection.State.IN_GAME})
+        NroConnection.State.IN_GAME })
 public class CMNotLogin extends NroClientPacket {
 
     private String username;
@@ -86,16 +86,20 @@ public class CMNotLogin extends NroClientPacket {
                 }
                 connection.getSessionInfo().setVersion(version);
                 NroAuthResponse response = AccountController.Login(username, password, connection);
-                if (response == null) return;
+                if (response == null)
+                    return;
                 switch (response) {
                     case SUCCESS -> {
                         sendPacket(new SmSmallImageVersion());
                         sendPacket(new SmBackgroundItemVersion());
-//                        if (!connection.getSessionInfo().isUpdateData())
+                        // if (!connection.getSessionInfo().isUpdateData())
                         sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                     }
                     case ACCOUNT_ALREADY_LOGGED_IN -> connection.close(new SmDialogMessage(response.getCode()));
                     case ERROR_LOGIN, RELOGIN -> {
+                    }
+                    case LOGIN_DELAY -> {
+                        
                     }
                     default -> connection.sendPacket(new SmDialogMessage(response.getCode()));
                 }

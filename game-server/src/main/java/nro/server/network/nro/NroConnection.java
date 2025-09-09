@@ -19,8 +19,6 @@ import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.handler.SMSendKey;
 import nro.server.network.nro.server_packets.handler.SmDialogMessage;
-import nro.server.services.NotifyService;
-import nro.server.services.NotifyType;
 import nro.server.services.player.PlayerLeaveWorldService;
 import nro.server.utils.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -46,8 +44,7 @@ public class NroConnection extends AConnection<NroServerPacket> {
             NetworkConfig.PACKET_PROCESSOR_MAX_THREADS,
             NetworkConfig.PACKET_PROCESSOR_THREAD_SPAWN_THRESHOLD,
             NetworkConfig.PACKET_PROCESSOR_THREAD_KILL_THRESHOLD,
-            new ExecuteWrapper(ThreadConfig.MAXIMUM_RUNTIME_IN_MILLISEC_WITHOUT_WARNING)
-    );
+            new ExecuteWrapper(ThreadConfig.MAXIMUM_RUNTIME_IN_MILLISEC_WITHOUT_WARNING));
 
     @Setter
     @Getter
@@ -102,7 +99,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
     /**
      * Gán một Entity Player vào Connection này sau khi đăng nhập thành công.
-     * <p>Cập nhật trạng thái của connection thành IN_GAME.</p>
+     * <p>
+     * Cập nhật trạng thái của connection thành IN_GAME.
+     * </p>
      *
      * @param entityId ID của entity người chơi
      */
@@ -137,9 +136,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
         int startPos = rb.position();
 
         byte cmd = rb.get();
-//        if (!ConstsCmd.IGNORE_CMD.contains(cmd)) {
-//            System.out.println("Received command: " + cmd);
-//        }
+        // if (!ConstsCmd.IGNORE_CMD.contains(cmd)) {
+        // System.out.println("Received command: " + cmd);
+        // }
         byte b1 = rb.get();
         byte b2 = rb.get();
 
@@ -150,7 +149,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
         int bodySize = ((b1 & 0xFF) << 8) | (b2 & 0xFF);
 
         if (rb.remaining() < bodySize) {
-            log.warn("Not enough bytes for full payload. cmd={}, expect bodySize={}, available={}", cmd, bodySize, rb.remaining());
+            log.warn("Not enough bytes for full payload. cmd={}, expect bodySize={}, available={}", cmd, bodySize,
+                    rb.remaining());
             rb.position(startPos);
             return true;
         }
@@ -193,14 +193,16 @@ public class NroConnection extends AConnection<NroServerPacket> {
         synchronized (guard) {
             packet = sendMsgQueue.poll();
 
-            if (packet == null) return false; // het packet de gui
+            if (packet == null)
+                return false; // het packet de gui
 
             long begin = System.nanoTime();
 
             try {
                 packet.write(this, buffer);
             } catch (Throwable e) {
-                var msg = "Error processing packet write: " + packet.getClass().getSimpleName() + " for ID: " + playerID;
+                var msg = "Error processing packet write: " + packet.getClass().getSimpleName() + " for ID: "
+                        + playerID;
                 log.error("Error processing packet write: [{}] for ID:", packet.getClass().getSimpleName(), e);
                 close(new SmDialogMessage(msg));
                 return false;
@@ -210,7 +212,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
                     RunnableStatsManager.handleStats(packet.getClass(), "runImpl()", duration);
                 }
                 if (buffer.limit() > NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE)
-                    log.warn("{} contains {} more bytes than the game client of {} can read", packet, buffer.limit() - NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE, null);
+                    log.warn("{} contains {} more bytes than the game client of {} can read", packet,
+                            buffer.limit() - NroServerPacket.MAX_USABLE_PACKET_BODY_SIZE, null);
             }
             return true;
         }
@@ -242,18 +245,20 @@ public class NroConnection extends AConnection<NroServerPacket> {
             }
         }
 
-        var account = getAccount();
-
-        if (account != null) {
-            AccountController.removeAccountOnLS(account);
-        }
-
         var player = getEntity();
         if (player != null) {
             PlayerLeaveWorldService.leaveWorld(this);
         }
 
-        log.info("Client disconnected successfully: IP={}, state={}", getIP(), state + " time delay" + pendingCloseUntilMillis);
+        var account = getAccount();
+
+        if (account != null) {
+            AccountController.updateOnLogout(account);
+            AccountController.removeAccountOnLS(account);
+        }
+
+        log.info("Client disconnected successfully: IP={}, state={}", getIP(),
+                state + " time delay" + pendingCloseUntilMillis);
     }
 
     /**
@@ -287,7 +292,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
 
         private ConnectionAliveChecker() {
             if (connectionAliveChecker != null)
-                throw new IllegalStateException("ConnectionAliveChecker for " + NroConnection.this + " is already assigned.");
+                throw new IllegalStateException(
+                        "ConnectionAliveChecker for " + NroConnection.this + " is already assigned.");
             task = ThreadPoolManager.getInstance().scheduleAtFixedRate(this, 180 * 1000, 180 * 1000);
         }
 
@@ -299,7 +305,8 @@ public class NroConnection extends AConnection<NroServerPacket> {
         public void run() {
             long millisSinceLastClientPacket = System.currentTimeMillis() - lastClientMessageTime;
             if (millisSinceLastClientPacket - 5000 > 180 * 1000) {
-                log.info("Closing hanged up connection of {} (last sign of life was {}ms ago)", NroConnection.this, millisSinceLastClientPacket);
+                log.info("Closing hanged up connection of {} (last sign of life was {}ms ago)", NroConnection.this,
+                        millisSinceLastClientPacket);
                 close();
             }
         }

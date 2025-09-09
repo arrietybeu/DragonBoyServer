@@ -3,6 +3,7 @@ package nro.server.model.map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nro.server.data_holders.repo.MapData;
+import nro.server.engine.GameWorld;
 import nro.server.data_holders.data.MonsterData;
 import nro.server.model.map.zone.*;
 import nro.server.model.map.zone.type.*;
@@ -31,10 +32,16 @@ public final class GameMapFactory {
         for (WorldMapTemplate tpl : MapData.getInstance().getWorldMaps().values()) {
             GameMap gm = this.fromTemplate(tpl);
             addMap(gm);
-            spawnMonstersFromTemplate(gm, tpl.getMonster());
-//            log.info("Loaded map: {}", gm);
+            initMonster(gm, tpl);
+            // log.info("Loaded map: {}", gm);
         }
         log.info("MapFactory: tổng cộng {} map đã được load", maps.size());
+    }
+
+    private void initMonster(GameMap gm, WorldMapTemplate tpl) {
+        GameWorld.getInstance().submitToMain(() -> {
+            spawnMonstersFromTemplate(gm, tpl.getMonster());
+        });
     }
 
     public void addMap(GameMap map) {
@@ -64,7 +71,6 @@ public final class GameMapFactory {
         return new GameMap(mapID, t.getName(), type, manager, getListNpcInGame(mapID, t.getNpcInfos()));
     }
 
-
     private static ZoneType getZoneType(WorldMapTemplate t) {
         ZoneType type = switch (t.getTypeMap()) {
             case 0 -> ZoneType.NORMAL;
@@ -88,15 +94,18 @@ public final class GameMapFactory {
     private List<Npc> getListNpcInGame(int mapID, List<NpcTemplate.NpcInfo> npcInfos) {
         List<Npc> npcs = new ArrayList<>();
         for (var npcInfo : npcInfos) {
-            var npc = NpcFactory.createNpc(npcInfo.template().id(), npcInfo.status(), mapID, npcInfo.x(), npcInfo.y(), npcInfo.avatar());
-            if (npc == null) continue;
+            var npc = NpcFactory.createNpc(npcInfo.template().id(), npcInfo.status(), mapID, npcInfo.x(), npcInfo.y(),
+                    npcInfo.avatar());
+            if (npc == null)
+                continue;
             npcs.add(npc);
         }
         return npcs;
     }
 
     private void spawnMonstersFromTemplate(GameMap gm, List<MonsterInfo> infos) {
-        if (infos == null || infos.isEmpty()) return;
+        if (infos == null || infos.isEmpty())
+            return;
 
         short mapId = gm.id();
 

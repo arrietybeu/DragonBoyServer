@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * @author Arriety
  */
-@AClientPacketHandler(command = ConstsCmd.GET_BAG, validStates = {NroConnection.State.IN_GAME})
+@AClientPacketHandler(command = ConstsCmd.GET_BAG, validStates = { NroConnection.State.IN_GAME })
 public class CmGetBag extends NroClientPacket {
 
     public CmGetBag(int command, Set<NroConnection.State> validStates) {
@@ -20,7 +20,7 @@ public class CmGetBag extends NroClientPacket {
     @Override
     protected void readImpl() {
         var idFlagBag = this.readShort();
-        System.out.println("client get id flag bag: " + idFlagBag);
+        log.debug("client get id flag bag: " + idFlagBag);
     }
 
     @Override

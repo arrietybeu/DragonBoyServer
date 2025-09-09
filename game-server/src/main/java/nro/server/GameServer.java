@@ -2,6 +2,8 @@ package nro.server;
 
 import com.artemis.WorldConfigurationBuilder;
 import com.artemis.managers.GroupManager;
+import com.artemis.managers.PlayerManager;
+
 import lombok.Getter;
 
 import nro.commons.database.DatabaseFactory;
@@ -25,6 +27,7 @@ import nro.server.network.nro.GameConnectionFactory;
 import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
+import nro.server.services.PeriodicSaveService;
 import nro.server.engine.base.FashionUpdateSystem;
 import nro.server.engine.base.MapChangeSystem;
 import nro.server.engine.base.MovementSystem;
@@ -56,14 +59,17 @@ public class GameServer {
             DatabaseFactory.init();
             DataManager.getInstance();
             IDFactory.getInstance();
-            //noinspection ResultOfMethodCallIgnored
+            // noinspection ResultOfMethodCallIgnored
             initEntityComponentSystem();
-//            World.getInstance();
+            // World.getInstance();
+            PeriodicSaveService.getInstance();
             GameMapFactory.getInstance().initMaps();
             BannedIpController.start();
             System.gc();
+
             nioServer = initNioServer();
             Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
+
         } catch (Throwable e) {
             LOGGER.error("Error : {}", e.getMessage(), e);
             System.exit(1);
@@ -71,7 +77,8 @@ public class GameServer {
     }
 
     private static NioServer initNioServer() {
-        ServerCfg serverCfg = new ServerCfg(NetworkConfig.CLIENT_SOCKET_ADDRESS, "Nro game clients", new GameConnectionFactory());
+        ServerCfg serverCfg = new ServerCfg(NetworkConfig.CLIENT_SOCKET_ADDRESS, "Nro game clients",
+                new GameConnectionFactory());
         NioServer nioServer = new NioServer(NetworkConfig.NIO_READ_WRITE_THREADS, serverCfg);
         nioServer.connect(ThreadPoolManager.getInstance());
         return nioServer;
@@ -83,10 +90,10 @@ public class GameServer {
         builder.with(
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
-                new QuestSystem(),
-//                new ZoneGarbageSystem(),
-                new InventorySystem()
-        ); // add systems here if needed
+                new QuestSystem(), new PlayerManager(),
+                // new ZoneGarbageSystem(),
+                new InventorySystem()); // add systems here if needed
+
         GameWorld gameWorld = GameWorld.getInstance();
         gameWorld.initialize(builder);
         gameWorld.start();
@@ -102,13 +109,14 @@ public class GameServer {
         NroClientPacketFactory.init(PacketConfig.CLIENT_PACKET_COMMAND);
         NpcFactory.init(PathPropeties.PATH_NPCS);
 
-        //noinspection ResultOfMethodCallIgnored
+        // noinspection ResultOfMethodCallIgnored
         ThreadPoolManager.getInstance();
 
         // Initialize scanner
-        Thread.startVirtualThread(CommandService::ActiveCommandLine);
+        CommandService.initCommandLine();
 
-        CronService.initSingleton(ThreadPoolManagerRunnableRunner.class, TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
+        CronService.initSingleton(ThreadPoolManagerRunnableRunner.class,
+                TimeZone.getTimeZone(ConfigServer.TIME_ZONE_ID));
 
         LOGGER.info("Game server started in {} seconds.", System.currentTimeMillis() / 1000 - START_TIME_SECONDS);
     }

@@ -74,8 +74,6 @@ public abstract class NroServerPacket extends BaseServerPacket {
             throw new IllegalArgumentException("Packet body too large: " + bodySize);
         }
 
-//        System.out.println("write server packet for opcode: " + getCommand() + " | bodySize: " + bodySize);
-
         if (buffer.remaining() < bodySize + 3) {
             throw new BufferOverflowException();
         }

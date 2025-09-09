@@ -5,7 +5,9 @@ import lombok.NoArgsConstructor;
 import nro.commons.database.DatabaseFactory;
 import nro.server.dao.PlayerDAO;
 import nro.server.model.account.Account;
+import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.PlayerResponseType;
+import nro.server.network.nro.server_packets.handler.SmPlayerSpeed;
 import nro.server.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,10 @@ public final class PlayerService {
             log.error("Failed to store new player: {}, account{}. Error: {}", name, e.getMessage(), account, e);
         }
         return PlayerResponseType.CREATION_FAILED_SERVER_ERROR;
+    }
+
+    public static void sendPlayerSpeed(NroConnection client, byte speed) {
+        client.sendPacket(new SmPlayerSpeed(client.getPlayerID(), speed));
     }
 
 }
