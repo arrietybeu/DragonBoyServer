@@ -45,30 +45,41 @@ public class AccountDAO {
     }
 
     public static AccountTime getAccountTime(int accountId, Connection connection) {
-        AccountTime accountTime = new AccountTime();
+
+        AtomicReference<AccountTime> accountTimeRef = new AtomicReference<>(null);
 
         Database.select(connection, "SELECT * FROM account_time WHERE account_id = ?", rs -> {
             if (rs.next()) {
+                AccountTime accountTime = new AccountTime();
                 accountTime.setLastTimeLogin(rs.getTimestamp("last_time_login"));
                 accountTime.setLastTimeLogout(rs.getTimestamp("last_time_logout"));
                 accountTime.setOfflineTrainingSeconds(rs.getLong("offline_training_seconds"));
                 accountTime.setBanUntil(rs.getTimestamp("ban_until"));
+                accountTimeRef.set(accountTime);
             }
         }, st -> st.setLong(1, accountId));
 
-        return accountTime;
+        return accountTimeRef.get();
     }
 
     public static boolean updateAccountTime(int accountId, AccountTime accountTime) {
         return Database.insertUpdate(
-                "REPLACE INTO account_time (account_id, last_time_login, last_time_logout, offline_training_seconds, ban_until) VALUES (?, ?, ?, ?, ?)",
+                "UPDATE account_time SET last_time_login = ?, last_time_logout = ?, offline_training_seconds = ?, ban_until = ? WHERE account_id = ?",
                 ps -> {
-                    ps.setLong(1, accountId);
-                    ps.setTimestamp(2, accountTime.getLastTimeLogin());
-                    ps.setTimestamp(3, accountTime.getLastTimeLogout());
-                    ps.setLong(4, accountTime.getOfflineTrainingSeconds());
-                    ps.setTimestamp(5, accountTime.getBanUntil());
+                    ps.setTimestamp(1, accountTime.getLastTimeLogin());
+                    ps.setTimestamp(2, accountTime.getLastTimeLogout());
+                    ps.setLong(3, accountTime.getOfflineTrainingSeconds());
+                    ps.setTimestamp(4, accountTime.getBanUntil());
+                    ps.setLong(5, accountId);
                 });
+    }
+
+    public static boolean updateLastIp(int accountId, String ip) {
+        return Database.insertUpdate("UPDATE account_data SET ip_address = ? WHERE id = ?", st -> {
+            st.setString(1, ip);
+            st.setInt(2, accountId);
+            st.execute();
+        });
     }
 
 }

@@ -3,6 +3,7 @@ package nro.server.network.nro;
 public enum NroAuthResponse {
 
     SUCCESS("Thành công"),
+    ERROR_LOADTIME(" Đã xảy ra lỗi cực kỳ lớn, vui lòng liên hệ với admin để được hỗ trợ [308]"),
     INVALID_CREDENTIALS("Vui lòng nhập thông tin đăng nhập hợp lệ"),
     ACCOUNT_BANNED("Tài Khoản của bạn đã bị khóa!"),
     ACCOUNT_NOT_FOUND("Thông tin đăng nhập không chính xác"),

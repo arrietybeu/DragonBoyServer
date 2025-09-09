@@ -31,9 +31,6 @@ public class AccountController {
 
         var ip = connection.getIP();
 
-        if (BannedIpController.isBanned(ip))
-            return NroAuthResponse.IP_BLOCKED;
-
         long remainMs = LoginThrottle.getRemainingMs(ip);
         if (remainMs > 0) {
             String msg = "Bạn đã nhập sai quá nhiều lần. "
@@ -41,6 +38,9 @@ public class AccountController {
             connection.sendPacket(new SmDialogMessage(msg));
             return NroAuthResponse.RELOGIN;
         }
+
+        if (BannedIpController.isBanned(ip))
+            return NroAuthResponse.IP_BLOCKED;
 
         // check độ hợp lệ của username và password chuyền từ client
         if (username.isEmpty() || password.isEmpty() || username.equals("1") || password.equals("1"))
@@ -68,13 +68,20 @@ public class AccountController {
 
         AccountTime accountTime = account.getAccountTime();
 
+        if (accountTime == null) {
+            LoginThrottle.onLoginFail(ip);
+            return NroAuthResponse.ERROR_LOADTIME;
+        }
+
         long lastTimeLogin = accountTime.getLastTimeLogin().getTime();
         long lastTimeLogout = accountTime.getLastTimeLogout().getTime();
         long currentTime = System.currentTimeMillis();
 
-        if ((lastTimeLogin - lastTimeLogout) <= 5000 && (currentTime - lastTimeLogout) < 10000) {
+        if ((lastTimeLogin - lastTimeLogout) <= 5000 && (currentTime -
+                lastTimeLogout) < 10000) {
             long waitTime = 10000 - (currentTime - lastTimeLogout);
             short time = (short) (waitTime / 1000);
+
             connection.sendPacket(new SmLoginDelay(time));
 
             ThreadPoolManager.getInstance().schedule("resume-login-" + username, () -> {
@@ -86,12 +93,6 @@ public class AccountController {
 
             return NroAuthResponse.LOGIN_DELAY;
         }
-
-        // if (account.getIpForce() != null &&
-        // !NetworkUtils.checkIPMatching(account.getIpForce(), ip)) {
-        // LoginThrottle.onLoginFail(ip);
-        // return NroAuthResponse.IP_NOT_ALLOWED;
-        // }
 
         synchronized (AccountController.class) {
             log.debug("Account {} logged in from IP {}", account.getUsername(), ip);
@@ -140,11 +141,15 @@ public class AccountController {
     }
 
     public static void updateOnLogout(Account account) {
+        log.debug("updateOnLogout: {}", account.getUsername());
         AccountTime accountTime = account.getAccountTime();
 
+        System.out.println("current updateOnLogout: " + accountTime.getLastTimeLogout());
         accountTime.setLastTimeLogout(new Timestamp(System.currentTimeMillis()));
+        System.out.println("new updateOnLogout: " + accountTime.getLastTimeLogout());
 
         AccountDAO.updateAccountTime(account.getId(), accountTime);
+
         account.setAccountTime(accountTime);
     }
 

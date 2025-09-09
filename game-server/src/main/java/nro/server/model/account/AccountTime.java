@@ -16,8 +16,4 @@ public class AccountTime {
     private Timestamp lastTimeLogout;
     private Timestamp banUntil;
     private long offlineTrainingSeconds;
-
-    public AccountTime() {
-        this.lastTimeLogin = new Timestamp(System.currentTimeMillis());
-    }
 }

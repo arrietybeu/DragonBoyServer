@@ -9,6 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+
 public class Account {
 
     private final int id;

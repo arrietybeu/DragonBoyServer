@@ -96,10 +96,7 @@ public class CMNotLogin extends NroClientPacket {
                         sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                     }
                     case ACCOUNT_ALREADY_LOGGED_IN -> connection.close(new SmDialogMessage(response.getCode()));
-                    case ERROR_LOGIN, RELOGIN -> {
-                    }
-                    case LOGIN_DELAY -> {
-                        
+                    case ERROR_LOGIN, RELOGIN ,LOGIN_DELAY-> {
                     }
                     default -> connection.sendPacket(new SmDialogMessage(response.getCode()));
                 }
