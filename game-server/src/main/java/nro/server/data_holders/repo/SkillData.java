@@ -48,7 +48,8 @@ public final class SkillData implements GameEngine {
                 while (resultSet.next()) {
                     var nClassId = resultSet.getInt("class_id");
                     var name = resultSet.getString("name");
-                    NClassTemplate nClassTemplate = new NClassTemplate(nClassId, name, this.loadSkillTemplate(connection, nClassId));
+                    NClassTemplate nClassTemplate = new NClassTemplate(nClassId, name,
+                            this.loadSkillTemplate(connection, nClassId));
                     this.nClassTemplates.add(nClassTemplate);
                 }
             });
@@ -162,7 +163,8 @@ public final class SkillData implements GameEngine {
                 }
             }
         } catch (Exception ex) {
-            log.error("skillId: {} gender: {} currentLevel: {}\nmessage: {}", skillId, gender, currentLevel, ex.getMessage());
+            log.error("skillId: {} gender: {} currentLevel: {}\nmessage: {}", skillId, gender, currentLevel,
+                    ex.getMessage());
             return null;
         }
         return null;

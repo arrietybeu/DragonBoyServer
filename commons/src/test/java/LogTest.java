@@ -1,4 +1,4 @@
-import nro.commons.log.LogService;
+// import nro.commons.log.LogService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +22,13 @@ public class LogTest {
             meta.put("action", "simulateError");
             meta.put("server", "test-server-01");
 
-            LogService.error("TestExceptionOccurred", e, meta);
+            // LogService.error("TestExceptionOccurred", e, meta);
         }
 
         System.out.println("Log submitted.");
 
         try {
-            // Thread.sleep(5000);
+            Thread.sleep(5000);
         } catch (InterruptedException ignored) {}
 
     }

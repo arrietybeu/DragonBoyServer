@@ -5,7 +5,6 @@ import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.handler.SmRequestEffect;
-import nro.server.network.nro.server_packets.handler.SmRequestMobTemplate;
 
 import java.util.Set;
 

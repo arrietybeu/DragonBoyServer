@@ -10,6 +10,7 @@ import nro.commons.database.DatabaseFactory;
 import nro.commons.network.NioServer;
 import nro.commons.network.ServerCfg;
 import nro.commons.services.CronService;
+import nro.commons.utils.ExitCode;
 import nro.commons.utils.concurrent.UncaughtExceptionHandler;
 import nro.server.configs.Config;
 import nro.server.configs.main.ConfigServer;
@@ -69,10 +70,9 @@ public class GameServer {
 
             nioServer = initNioServer();
             Runtime.getRuntime().addShutdownHook(ShutdownHook.getInstance());
-
         } catch (Throwable e) {
-            LOGGER.error("Error : {}", e.getMessage(), e);
-            System.exit(1);
+            LOGGER.error("Error starting game server: {}", e.getMessage(), e);
+            System.exit(ExitCode.ERROR);
         }
     }
 

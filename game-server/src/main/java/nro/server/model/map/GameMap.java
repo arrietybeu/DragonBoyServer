@@ -3,8 +3,6 @@ package nro.server.model.map;
 import nro.server.model.map.zone.ZoneManager;
 import nro.server.model.map.zone.ZoneType;
 import nro.server.model.npc.Npc;
-import nro.server.model.templates.entity.MonsterInfo;
-import nro.server.model.templates.world.Waypoint;
 
 import java.util.List;
 

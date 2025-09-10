@@ -6,14 +6,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Arriety
- */
-
 @Getter
 @Setter
 public class SkillTemplate {
-
     private byte id;
     private int classId;
     private String name;
@@ -34,7 +29,6 @@ public class SkillTemplate {
         }
         return null;
     }
-
 
     public void addSkill(SkillInfo skill) {
         this.skills.add(skill);

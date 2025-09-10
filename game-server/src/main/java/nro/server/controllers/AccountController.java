@@ -29,6 +29,9 @@ public class AccountController {
 
     public static NroAuthResponse Login(String username, String password, NroConnection connection) {
 
+        if (connection == null)
+            return NroAuthResponse.ERROR_LOGIN;
+            
         var ip = connection.getIP();
 
         long remainMs = LoginThrottle.getRemainingMs(ip);
@@ -43,7 +46,7 @@ public class AccountController {
             return NroAuthResponse.IP_BLOCKED;
 
         // check độ hợp lệ của username và password chuyền từ client
-        if (username.isEmpty() || password.isEmpty() || username.equals("1") || password.equals("1"))
+        if (username.isEmpty() || password.isEmpty() /* || username.equals("1") || password.equals("1") */)
             return NroAuthResponse.INVALID_CREDENTIALS;
 
         Account account = AccountDAO.getAccount(username, password);
@@ -85,9 +88,6 @@ public class AccountController {
             connection.sendPacket(new SmLoginDelay(time));
 
             ThreadPoolManager.getInstance().schedule("resume-login-" + username, () -> {
-                if (connection == null)
-                    return;
-
                 Login(username, password, connection);
             }, time, TimeUnit.SECONDS);
 

@@ -2,14 +2,9 @@ package nro.server.model.templates.skill;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
-/**
- * @author Arriety
- */
-@Getter
+@Getter 
 @Setter
-@ToString
 public class SkillInfo {
 
     // current skill id
