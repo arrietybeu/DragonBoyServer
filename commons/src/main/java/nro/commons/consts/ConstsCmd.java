@@ -227,7 +227,7 @@ public final class ConstsCmd {
         msgMap.put(BOSS_SKILL, "BOSS_SKILL");
         msgMap.put(MABU_HOLD, "MABU_HOLD");
         msgMap.put(FRIEND_INVITE, "FRIEND_INVITE");
-        msgMap.put(PLAYER_ATTACK_NPC, "PLAYER_ATTACK_NPC");
+        msgMap.put(PLAYER_ATTACK_MOB, "PLAYER_ATTACK_NPC");
         msgMap.put(HAVE_ATTACK_PLAYER, "HAVE_ATTACK_PLAYER");
         msgMap.put(OPEN_UI_NEWMENU, "OPEN_UI_NEWMENU");
         msgMap.put(MOVE_FAST, "MOVE_FAST");
@@ -591,7 +591,7 @@ public final class ConstsCmd {
 
     public static final byte NOT_LOGIN = -29;
 
-    public static final byte NOT_MAP = -28;
+    public static final byte NOT_MAP = -28;// type 6 cần sửa loại đoạn read monster
 
     public static final byte GET_SESSION_ID = -27;
 
@@ -599,7 +599,7 @@ public final class ConstsCmd {
 
     public static final byte SERVER_MESSAGE = -25;
 
-    public static final byte MAP_INFO = -24;
+    public static final byte MAP_INFO = -24;// sửa lại đoạn read monster
 
     public static final byte MAP_CHANGE = -23;
 
@@ -629,7 +629,7 @@ public final class ConstsCmd {
 
     public static final byte NPC_ATTACK_PLAYER = -10;
 
-    public static final byte MOB_HP = -9;
+    public static final byte MOB_HP = -9; // cần sửa lại msg
 
     public static final byte PLAYER_DIE = -8;
 
@@ -729,7 +729,7 @@ public final class ConstsCmd {
 
     public static final byte FRIEND_INVITE = 53;
 
-    public static final byte PLAYER_ATTACK_NPC = 54;
+    public static final byte PLAYER_ATTACK_MOB = 54; // sửa lại ở client đoạn này
 
     public static final byte HAVE_ATTACK_PLAYER = 56;
 

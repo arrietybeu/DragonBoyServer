@@ -23,9 +23,15 @@ public class HealthComponent extends Component {
         // Default constructor for Artemis
     }
 
+    // constructor for monster
+    public HealthComponent(long maxHP) {
+        this.maxHP = maxHP;
+        this.currentHP = maxHP;
+    }
+
     public HealthComponent(long currentHP, long maxHP, long currentMP, long maxMP) {
         this.currentHP = currentHP;
-        this.maxHP = maxHP;
+        this.maxHP = maxHP; 
         this.currentMP = currentMP;
         this.maxMP = maxMP;
     }

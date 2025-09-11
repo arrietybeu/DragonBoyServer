@@ -1,6 +1,5 @@
 package nro.server.utils;
 
-import com.artemis.Entity;
 import lombok.NoArgsConstructor;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroServerPacket;
@@ -17,13 +16,5 @@ public final class PacketSendUtility {
 
     public static void sendPacket(PlayerComponent player, NroServerPacket packet) {
         if (player.isOnline()) player.connection.sendPacket(packet);
-    }
-
-    public static void sendPacketForPlayersInZoneNotMe(Entity entity, NroServerPacket packet) {
-        try {
-
-        } catch (Exception e) {
-
-        }
     }
 }

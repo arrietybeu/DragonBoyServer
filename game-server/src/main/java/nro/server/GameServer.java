@@ -32,6 +32,7 @@ import nro.server.services.PeriodicSaveService;
 import nro.server.engine.base.FashionUpdateSystem;
 import nro.server.engine.base.MapChangeSystem;
 import nro.server.engine.base.MovementSystem;
+import nro.server.engine.CombatSystem;
 import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.ThreadPoolManagerRunnableRunner;
 import nro.server.utils.factory.IDFactory;
@@ -91,6 +92,7 @@ public class GameServer {
                 new GroupManager(), new FashionUpdateSystem(),
                 new MovementSystem(), new MapChangeSystem(),
                 new QuestSystem(), new PlayerManager(),
+                new CombatSystem(),
                 // new ZoneGarbageSystem(),
                 new InventorySystem()); // add systems here if needed
 

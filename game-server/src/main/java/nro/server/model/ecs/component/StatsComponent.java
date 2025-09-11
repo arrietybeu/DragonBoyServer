@@ -35,6 +35,10 @@ public class StatsComponent extends Component {
         // Default constructor for Artemis
     }
 
+    public StatsComponent(long hpMax) {
+        this.baseHp = (int) hpMax;
+    }
+
     public StatsComponent(long power, long potential,
                           int baseHp, int baseMp, int baseDamage,
                           int baseDefense, byte baseCrit, int activePoint) {
@@ -43,6 +47,9 @@ public class StatsComponent extends Component {
         this.baseHp = baseHp;
         this.baseMp = baseMp;
         this.baseDamage = baseDamage;
+        // FIXME fix lại cách tính damage
+        this.currentDamage = baseDamage;
+        
         this.baseDefense = baseDefense;
         this.baseCrit = baseCrit;
         this.activePoint = activePoint;

@@ -12,7 +12,9 @@ import java.util.List;
 public class SkillComponent extends Component {
 
     public List<SkillInfo> skills = new ArrayList<>();
+
     public byte[] skillShortCut;
+    
     public SkillInfo skillSelect;
 
     public SkillComponent() {

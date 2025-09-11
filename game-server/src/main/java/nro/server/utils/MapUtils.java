@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nro.server.data_holders.repo.MapData;
 import nro.server.engine.GameWorld;
+import nro.server.model.ecs.component.HealthComponent;
 import nro.server.model.ecs.component.PositionComponent;
-import nro.server.model.ecs.component.monster.InfoMonsterComponent;
-import nro.server.model.ecs.component.monster.StastMonsterComponent;
+import nro.server.model.ecs.component.monster.MonsterComponent;
 import nro.server.model.ecs.component.monster.StateMonsterComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.model.map.GameMap;
@@ -229,13 +229,13 @@ public class MapUtils {
         var world = GameWorld.getInstance().getWorld();
         Entity e = world.createEntity();
 
-        var info = new InfoMonsterComponent(templateId, name);
+        var info = new MonsterComponent(templateId, name);
         var position = new PositionComponent(mapId, x, y, z.zoneId());
-        var stats = new StastMonsterComponent(hpMax, level);
-        var state = new StateMonsterComponent();
+        var health = new HealthComponent(hpMax);
+        var state = new StateMonsterComponent(level);
 
         e.edit().add(info);
-        e.edit().add(stats);
+        e.edit().add(health);
         e.edit().add(position);
         e.edit().add(state);
 

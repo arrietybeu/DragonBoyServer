@@ -15,7 +15,7 @@ import nro.server.utils.ThreadPoolManager;
  * @author Arriety
  * @see <a href="https://github.com/arrietybeu">github.com/arrietybeu</a>
  */
-public class PeriodicSaveService {
+public final class PeriodicSaveService {
 
     private static final Logger log = LoggerFactory.getLogger(PeriodicSaveService.class);
 

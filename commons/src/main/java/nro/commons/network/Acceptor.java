@@ -25,7 +25,7 @@ public class Acceptor {
         socketChannel.socket().setSoLinger(true, 10);
         socketChannel.socket().setTcpNoDelay(true);
 
-        String ip = socketChannel.socket().getInetAddress().getHostAddress();
+        // String ip = socketChannel.socket().getInetAddress().getHostAddress();
         Dispatcher dispatcher = nioServer.getReadWriteDispatcher();
         AConnection<?> con = factory.create(socketChannel, dispatcher);
 

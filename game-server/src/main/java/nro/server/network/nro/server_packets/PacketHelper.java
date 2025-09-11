@@ -7,8 +7,7 @@ import nro.server.engine.GameWorld;
 import nro.server.model.ecs.component.*;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.item.ItemStatsComponent;
-import nro.server.model.ecs.component.monster.InfoMonsterComponent;
-import nro.server.model.ecs.component.monster.StastMonsterComponent;
+import nro.server.model.ecs.component.monster.MonsterComponent;
 import nro.server.model.ecs.component.monster.StateMonsterComponent;
 import nro.server.model.map.GameMap;
 import nro.server.model.map.GameMapFactory;
@@ -19,6 +18,10 @@ import nro.server.network.nro.NroServerPacket;
 import nro.server.services.TypeTeleport;
 import nro.server.utils.MapUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import java.util.List;
 
 /**
@@ -26,6 +29,8 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PacketHelper {
+
+    private static final Logger log = LoggerFactory.getLogger(PacketHelper.class);
 
     public static NroServerPacket empty(int opcode) {
         return new NroServerPacket(opcode) {
@@ -87,8 +92,8 @@ public final class PacketHelper {
         Zone zone = MapUtils.findZone(map.id(), position.getAreaId());
 
         var w = GameWorld.getInstance().getWorld();
-        var mI = w.getMapper(InfoMonsterComponent.class);
-        var mS = w.getMapper(StastMonsterComponent.class);
+        var mI = w.getMapper(MonsterComponent.class);
+        var mS = w.getMapper(HealthComponent.class);
         var st = w.getMapper(StateMonsterComponent.class);
         var mP = w.getMapper(PositionComponent.class);
 
@@ -119,9 +124,9 @@ public final class PacketHelper {
             var stats = mS.get(monster);
             var state = st.get(monster);
 
-            var pos = mP.get(monster); /// jake dz
+            var pos = mP.get(monster);
 
-            packet.writeInt(monster.getId());
+            packet.writeInt(monster.getId());// sửa lại client đoạn này
             packet.writeBoolean(false); // isDisable
             packet.writeBoolean(false); // dontMove
             packet.writeBoolean(false); // fire
@@ -129,17 +134,17 @@ public final class PacketHelper {
             packet.writeBoolean(false); // wind
             packet.writeShort((short) info.templateID);
             packet.writeByte(0); // sys
-            packet.writeLong(stats.hp > 0 ? stats.hp : stats.hpMax);
-            packet.writeByte(stats.level);
-            packet.writeLong(stats.hpMax);
+            packet.writeLong(stats.currentHP > 0 ? stats.currentHP : stats.maxHP);
+            packet.writeByte(state.level);
+            packet.writeLong(stats.maxHP);
             packet.writeShort(pos.x);
             packet.writeShort(pos.y);
             packet.writeByte(state.status);
-            packet.writeByte(stats.levelBoss);
-            packet.writeBoolean(stats.isBoss);
+            packet.writeByte(state.levelBoss);
+            packet.writeBoolean(state.isBoss);
         }
 
-        packet.writeByte(0); // Monster extra data
+        packet.writeByte(0); 
 
         // Write NPC data (currently empty)
         var npcs = map.npcs();
