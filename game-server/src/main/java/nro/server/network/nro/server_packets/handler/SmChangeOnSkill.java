@@ -11,7 +11,7 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
  */
 
 @ServerPacketCommand(ConstsCmd.CHANGE_ONSKILL)
-public final class SmChangeOnSkill extends NroServerPacket {
+public class SmChangeOnSkill extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {

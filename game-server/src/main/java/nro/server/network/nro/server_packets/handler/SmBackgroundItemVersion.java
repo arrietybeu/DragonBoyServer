@@ -10,7 +10,7 @@ import nro.server.network.nro.server_packets.ServerPacketCommand;
  * @author Arriety
  */
 @ServerPacketCommand(ConstsCmd.BGITEM_VERSION)
-public class SmBackgroundItemVersion extends NroServerPacket {
+public  class SmBackgroundItemVersion extends NroServerPacket {
 
     @Override
     protected void writeImpl(NroConnection con) throws RuntimeException {

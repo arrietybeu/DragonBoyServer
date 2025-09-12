@@ -8,11 +8,13 @@ import com.artemis.systems.IteratingSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nro.server.consts.ConstMonster;
 import nro.server.model.ecs.component.HealthComponent;
 import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.StateComponent;
 import nro.server.model.ecs.component.StatsComponent;
 import nro.server.model.ecs.component.monster.MonsterComponent;
+import nro.server.model.ecs.component.monster.StateMonsterComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.services.MonsterService;
 import nro.server.utils.MapUtils;
@@ -22,12 +24,16 @@ public class CombatSystem extends IteratingSystem {
     private static final Logger log = LoggerFactory.getLogger(CombatSystem.class);
 
     private ComponentMapper<HealthComponent> healthMapper;
-    private ComponentMapper<MonsterComponent> monsterMapper;
     private ComponentMapper<PlayerComponent> playerMapper;
     private ComponentMapper<PositionComponent> positionMapper;
+    private ComponentMapper<StatsComponent> statsMapper;
 
     public CombatSystem() {
-        super(Aspect.all(HealthComponent.class, PlayerComponent.class, PositionComponent.class));
+        super(Aspect.all(
+                HealthComponent.class,
+                PlayerComponent.class,
+                PositionComponent.class,
+                StatsComponent.class));
     }
 
     @Override
@@ -37,7 +43,7 @@ public class CombatSystem extends IteratingSystem {
         var player = playercComponent.connection.getEntity();
         var state = player.getComponent(StateComponent.class);
         try {
-            handler(entityId, state, positionComponent, player);
+            handler(player, state, positionComponent);
         } catch (Throwable e) {
             log.error("CombatSystem error for entityId={}", entityId, e);
         } finally {
@@ -45,12 +51,13 @@ public class CombatSystem extends IteratingSystem {
         }
     }
 
-    private void handler(int entityId, StateComponent state, PositionComponent positionComponent, Entity player) {
+    private void handler(Entity player, StateComponent state, PositionComponent positionComponent) {
         if (state.state == EntityState.ATTACKING) {
             log.debug("CombatSystem attack monster: {}", state.targetId);
             // var entityTarget = world.getEntity(state.targetId);
             Entity entityTarget = null;
-            for (var monster : MapUtils.getMonsters(MapUtils.findZone(positionComponent.mapId, positionComponent.getAreaId()))) {
+            for (var monster : MapUtils
+                    .getMonsters(MapUtils.findZone(positionComponent.mapId, positionComponent.getAreaId()))) {
                 if (monster.getId() == state.targetId) {
                     entityTarget = monster;
                     break;
@@ -62,20 +69,28 @@ public class CombatSystem extends IteratingSystem {
                 return;
             }
 
-            var healthTarget = entityTarget.getComponent(HealthComponent.class);
+            HealthComponent healthTarget = healthMapper.get(entityTarget.getId());
+            StatsComponent statsPlayer = statsMapper.get(player.getId());
+            PositionComponent positionTarget = positionMapper.get(entityTarget.getId());
+            StateMonsterComponent stateMonsterTarget = entityTarget.getComponent(StateMonsterComponent.class);
 
-            healthTarget.currentHP -= player.getComponent(StatsComponent.class).currentDamage;
+            var damage = statsPlayer.currentDamage;
+            var currentHpEntityTarget = healthTarget.currentHP;
 
-            if (healthTarget.currentHP <= 0) {
-                // entityTarget.getComponent(StateComponent.class).state = EntityState.DEAD;
+            currentHpEntityTarget = (currentHpEntityTarget - damage) > 0 ? (currentHpEntityTarget - damage) : 0;
+
+            if (currentHpEntityTarget <= 0) {
+                healthTarget.currentHP = 0;
+                currentHpEntityTarget = 0;
+                stateMonsterTarget.status = ConstMonster.STATUS_DEAD;
             }
 
-            log.debug("CombatSystem attack monster: {} {} {}", entityTarget.getId(), healthTarget.currentHP,
-                    player.getComponent(StatsComponent.class).currentDamage);
+            log.debug("CombatSystem attack monster: {} {} {}", entityTarget.getId(), currentHpEntityTarget, damage);
+
             MonsterService.sendHpMonster(
-                    positionComponent.mapId, positionComponent.getAreaId(),
-                    entityTarget.getId(), healthTarget.currentHP,
-                    player.getComponent(StatsComponent.class).currentDamage, false, true);
+                    positionTarget.mapId, positionTarget.getAreaId(),
+                    entityTarget.getId(), currentHpEntityTarget,
+                    damage, false, true);
         }
     }
 
