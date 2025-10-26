@@ -1,25 +1,31 @@
 package nro.server.dao;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import nro.commons.database.Database;
 import nro.server.model.account.Account;
 import nro.server.model.account.AccountTime;
 
 import java.sql.Connection;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Arriety
  */
+@NoArgsConstructor(access =  AccessLevel.PRIVATE)
 public class AccountDAO {
 
     private static final Logger log = LoggerFactory.getLogger(AccountDAO.class);
 
     private static final String QUERY_GET_ACCOUNT = "SELECT * FROM `account_data` WHERE `username` = ? AND `password` = ? LIMIT 1;";
+    private static int rows;
 
     public static Account getAccount(String username, String password) {
         return Database.withConnection(con -> {
+
             AtomicReference<Account> accountRef = new AtomicReference<>();
 
             Database.select(con, QUERY_GET_ACCOUNT, rs -> {
@@ -63,7 +69,7 @@ public class AccountDAO {
     }
 
     public static boolean updateAccountTime(int accountId, AccountTime accountTime) {
-        return Database.insertUpdate(
+        var rows = Database.insertUpdate(
                 "UPDATE account_time SET last_time_login = ?, last_time_logout = ?, offline_training_seconds = ?, ban_until = ? WHERE account_id = ?",
                 ps -> {
                     ps.setTimestamp(1, accountTime.getLastTimeLogin());
@@ -71,7 +77,19 @@ public class AccountDAO {
                     ps.setLong(3, accountTime.getOfflineTrainingSeconds());
                     ps.setTimestamp(4, accountTime.getBanUntil());
                     ps.setLong(5, accountId);
-                });
+                }
+        );
+        System.out.printf(
+                "AccountTime update => id: %d, lastLogin: %s, lastLogout: %s, offlineTraining: %d, banUntil: %s%n",
+                accountId,
+                accountTime.getLastTimeLogin(),
+                accountTime.getLastTimeLogout(),
+                accountTime.getOfflineTrainingSeconds(),
+                accountTime.getBanUntil()
+        );
+
+        System.out.println("UPDATE SUCCES : " + rows);
+        return rows ;
     }
 
     public static boolean updateLastIp(int accountId, String ip) {

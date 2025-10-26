@@ -10,7 +10,7 @@ import nro.server.model.ecs.component.PositionComponent;
 import nro.server.model.ecs.component.StatsComponent;
 import nro.server.model.ecs.component.player.PlayerComponent;
 import nro.server.network.nro.NroConnection;
-import nro.server.network.nro.PlayerResponseType;
+import nro.server.services.PlayerResponseType;
 import nro.server.network.nro.server_packets.PacketHelper;
 import nro.server.network.nro.server_packets.handler.*;
 import nro.server.utils.MapUtils;

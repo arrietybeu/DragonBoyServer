@@ -1,4 +1,4 @@
-package nro.server.network.nro;
+package nro.server.services;
 
 public enum NroAuthResponse {
 

@@ -3,7 +3,7 @@ package nro.server.consts;
 /**
  * @author Arriety
  */
-public class ConstMsgSubCommand {
+public final class ConstMsgSubCommand {
 
     public static final byte INIT_MY_CHARACTER = 0;
 

@@ -63,6 +63,9 @@ public class NroConnection extends AConnection<NroServerPacket> {
     @Getter
     @Setter
     private volatile int playerID = -1;
+    @Getter
+    @Setter
+    private volatile int secondsDelay;
 
     private volatile long lastClientMessageTime;
 

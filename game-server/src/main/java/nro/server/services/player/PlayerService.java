@@ -6,7 +6,7 @@ import nro.commons.database.DatabaseFactory;
 import nro.server.dao.PlayerDAO;
 import nro.server.model.account.Account;
 import nro.server.network.nro.NroConnection;
-import nro.server.network.nro.PlayerResponseType;
+import nro.server.services.PlayerResponseType;
 import nro.server.network.nro.server_packets.handler.SmPlayerSpeed;
 import nro.server.utils.Utils;
 import org.slf4j.Logger;

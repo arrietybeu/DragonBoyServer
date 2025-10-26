@@ -67,7 +67,7 @@ public final class Database {
 
     public static boolean select(String query, ReadStatementHandler reader) {
         try (Connection con = DatabaseFactory.getConnection();
-                PreparedStatement stmt = con.prepareStatement(query)) {
+             PreparedStatement stmt = con.prepareStatement(query)) {
 
             if (reader instanceof ParamReadStatementHandler paramReader)
                 paramReader.setParams(stmt);
@@ -102,7 +102,7 @@ public final class Database {
 
     /**
      * Truy vấn SELECT với tham số, dùng để lấy dữ liệu cụ thể hơn
-     * 
+     *
      * <pre>
      * <code>
      * Database.select(query, resultSet -> {
@@ -119,9 +119,9 @@ public final class Database {
      * @return
      */
     public static boolean select(String query, SQLConsumer<ResultSet> reader,
-            SQLConsumer<PreparedStatement> paramSetter) {
+                                 SQLConsumer<PreparedStatement> paramSetter) {
         try (Connection con = DatabaseFactory.getConnection();
-                PreparedStatement stmt = con.prepareStatement(query)) {
+             PreparedStatement stmt = con.prepareStatement(query)) {
 
             if (paramSetter != null)
                 paramSetter.accept(stmt);
@@ -138,8 +138,8 @@ public final class Database {
     }
 
     public static boolean select(Connection con, String query,
-            SQLConsumer<ResultSet> reader,
-            SQLConsumer<PreparedStatement> paramSetter) {
+                                 SQLConsumer<ResultSet> reader,
+                                 SQLConsumer<PreparedStatement> paramSetter) {
         try (PreparedStatement stmt = con.prepareStatement(query)) {
 
             if (paramSetter != null)
@@ -174,13 +174,11 @@ public final class Database {
 
     public static boolean insertUpdate(String query, IUStH batch) {
         try (Connection con = DatabaseFactory.getConnection();
-                PreparedStatement stmt = con.prepareStatement(query)) {
+             PreparedStatement stmt = con.prepareStatement(query)) {
             if (batch != null)
                 batch.handleInsertUpdate(stmt);
-            else
-                stmt.executeUpdate();
-            return true;
 
+            return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             log.error("Failed to execute IU query {}", query, e);
             return false;
@@ -189,7 +187,7 @@ public final class Database {
 
     public static int executeUpdate(String sql) {
         try (Connection con = DatabaseFactory.getConnection();
-                PreparedStatement stmt = con.prepareStatement(sql)) {
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
             return stmt.executeUpdate();
 

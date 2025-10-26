@@ -3,12 +3,11 @@ package nro.server.controllers;
 import nro.server.model.account.Account;
 import nro.server.model.account.AccountTime;
 import nro.server.dao.AccountDAO;
-import nro.server.network.nro.NroAuthResponse;
+import nro.server.services.NroAuthResponse;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.server_packets.handler.SmDialogMessage;
 import nro.server.network.nro.server_packets.handler.SmLoginDelay;
 import nro.server.network.sequrity.LoginThrottle;
-import nro.server.utils.ThreadPoolManager;
 import nro.server.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Arriety
@@ -31,7 +29,7 @@ public class AccountController {
 
         if (connection == null)
             return NroAuthResponse.ERROR_LOGIN;
-            
+
         var ip = connection.getIP();
 
         long remainMs = LoginThrottle.getRemainingMs(ip);
@@ -50,6 +48,7 @@ public class AccountController {
             return NroAuthResponse.INVALID_CREDENTIALS;
 
         Account account = AccountDAO.getAccount(username, password);
+
         if (account == null) {
             LoginThrottle.onLoginFail(ip);
             return NroAuthResponse.ACCOUNT_NOT_FOUND;
@@ -80,17 +79,11 @@ public class AccountController {
         long lastTimeLogout = accountTime.getLastTimeLogout().getTime();
         long currentTime = System.currentTimeMillis();
 
-        if ((lastTimeLogin - lastTimeLogout) <= 5000 && (currentTime -
-                lastTimeLogout) < 10000) {
+        if ((currentTime - lastTimeLogout) < 10000) {
             long waitTime = 10000 - (currentTime - lastTimeLogout);
             short time = (short) (waitTime / 1000);
-
+            connection.setSecondsDelay(time);
             connection.sendPacket(new SmLoginDelay(time));
-
-            ThreadPoolManager.getInstance().schedule("resume-login-" + username, () -> {
-                Login(username, password, connection);
-            }, time, TimeUnit.SECONDS);
-
             return NroAuthResponse.LOGIN_DELAY;
         }
 
@@ -104,13 +97,13 @@ public class AccountController {
             }
 
             connection.setAccount(account);
-
             accountsOnline.put(account.getId(), connection);
         }
 
         LoginThrottle.onLoginSuccess(ip);
         updateOnLogin(account);
 
+        log.debug("Account loigin thanh cong {} logged in from IP {}", account.getUsername(), ip);
         return NroAuthResponse.SUCCESS;
     }
 
@@ -141,12 +134,12 @@ public class AccountController {
     }
 
     public static void updateOnLogout(Account account) {
-        log.debug("updateOnLogout: {}", account.getUsername());
+
         AccountTime accountTime = account.getAccountTime();
 
-        System.out.println("current updateOnLogout: " + accountTime.getLastTimeLogout());
-        accountTime.setLastTimeLogout(new Timestamp(System.currentTimeMillis()));
-        System.out.println("new updateOnLogout: " + accountTime.getLastTimeLogout());
+        long last = System.currentTimeMillis();
+
+        accountTime.setLastTimeLogout(new Timestamp(last));
 
         AccountDAO.updateAccountTime(account.getId(), accountTime);
 
@@ -165,9 +158,8 @@ public class AccountController {
 
     /**
      * Get days from time presented in milliseconds
-     * 
-     * @param millis
-     *               time in ms
+     *
+     * @param millis time in ms
      * @return days
      */
     public static int getDays(long millis) {

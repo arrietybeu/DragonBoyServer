@@ -2,6 +2,7 @@ package nro.server.model.ecs.component.player;
 
 
 import com.artemis.Component;
+import nro.server.engine.InventoryState;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class InventoryComponent extends Component {
     public List<Integer> itemsBody;
     public List<Integer> itemsBag;
     public List<Integer> itemsBox;
-    public boolean isDirty = false;
+
+    public InventoryState state = InventoryState.IDLE;
 
 }

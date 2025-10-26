@@ -2,14 +2,16 @@ package nro.server.network.nro.client_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
 import nro.server.controllers.AccountController;
-import nro.server.network.nro.NroAuthResponse;
+import nro.server.services.NroAuthResponse;
 import nro.server.model.session.SessionInfo;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.handler.*;
+import nro.server.utils.ThreadPoolManager;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Arriety
@@ -17,7 +19,7 @@ import java.util.Set;
 @AClientPacketHandler(command = ConstsCmd.NOT_LOGIN, validStates = {
         NroConnection.State.CONNECTED,
         NroConnection.State.AUTHED,
-        NroConnection.State.IN_GAME })
+        NroConnection.State.IN_GAME})
 public class CMNotLogin extends NroClientPacket {
 
     private String username;
@@ -74,8 +76,8 @@ public class CMNotLogin extends NroClientPacket {
     protected void runImpl() {
         switch (command) {
             case 0 -> {
+                System.out.println("loginnnnn");
                 NroConnection connection = getConnection();
-
                 if (connection == null) {
                     throw new RuntimeException("Connection is null in CMNotLogin command 1");
                 }
@@ -96,10 +98,23 @@ public class CMNotLogin extends NroClientPacket {
                         sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
                     }
                     case ACCOUNT_ALREADY_LOGGED_IN -> connection.close(new SmDialogMessage(response.getCode()));
-                    case ERROR_LOGIN, RELOGIN ,LOGIN_DELAY-> {
+                    case ERROR_LOGIN, RELOGIN -> {
                     }
+                    case LOGIN_DELAY -> {
+                        System.out.println("thoi gian doi la : " + connection.getSecondsDelay());
+                        ThreadPoolManager.getInstance().schedule("login-delay", () -> {
+                            if(connection.getSecondsDelay() > 0){
+                                System.out.println("writewww");
+                                sendPacket(new SmSmallImageVersion());
+                                sendPacket(new SmBackgroundItemVersion());
+                                // if (!connection.getSessionInfo().isUpdateData())
+                                sendPacket(new SmNotMap(SmNotMap.ALL_DATA_GAME));
+                            }
+                        }, connection.getSecondsDelay(), TimeUnit.SECONDS);
+                    }
+
                     default -> connection.sendPacket(new SmDialogMessage(response.getCode()));
-                } 
+                }
                 connection.getSessionInfo().setLogin(true);
             }
             case 2 -> {

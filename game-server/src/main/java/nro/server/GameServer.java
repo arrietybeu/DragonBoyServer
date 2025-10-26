@@ -29,7 +29,7 @@ import nro.server.network.nro.client_packets.NroClientPacketFactory;
 import nro.server.network.nro.server_packets.ServerPacketsCommand;
 import nro.server.services.CommandService;
 import nro.server.services.PeriodicSaveService;
-import nro.server.engine.base.FashionUpdateSystem;
+import nro.server.engine.entity.FashionUpdateSystem;
 import nro.server.engine.base.MapChangeSystem;
 import nro.server.engine.base.MovementSystem;
 import nro.server.engine.CombatSystem;
@@ -44,7 +44,7 @@ import java.util.TimeZone;
 
 /**
  * @Author Arriety
- * @see <a href="https://github.com/arrietybeu">github.com/arrietybeu</a>
+ *
  */
 public class GameServer {
 

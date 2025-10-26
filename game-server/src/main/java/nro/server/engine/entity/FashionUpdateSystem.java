@@ -1,10 +1,11 @@
-package nro.server.engine.base;
+package nro.server.engine.entity;
 
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import nro.server.consts.ConstItem;
 import nro.server.data_holders.repo.ItemData;
+import nro.server.engine.InventoryState;
 import nro.server.model.ecs.component.AppearanceComponent;
 import nro.server.model.ecs.component.item.ItemInfoComponent;
 import nro.server.model.ecs.component.player.InventoryComponent;
@@ -36,11 +37,13 @@ public final class FashionUpdateSystem extends IteratingSystem {
 
     @Override
     protected void process(int entityId) {
+        InventoryComponent inv = inventoryMapper.get(entityId);
+        if (inv.state != InventoryState.LOAD_FASHION) return;
+
         try {
             handler(entityId);
         } catch (Throwable thirow) {
-            InventoryComponent inv = inventoryMapper.get(entityId);
-            if (inv != null) inv.isDirty = false;
+            inv.state = InventoryState.IDLE;
             log.error("FashionUpdateSystem error for entityId={}", entityId, thirow);
         }
     }
@@ -52,7 +55,7 @@ public final class FashionUpdateSystem extends IteratingSystem {
 
         if (inventory == null || appearance == null || task == null) return;
 
-        if (!inventory.isDirty) return;
+        if (inventory.state != InventoryState.LOAD_FASHION) return;
 
         // khi người người chơi thay đồ, dùng skill thay đổi hình thể thì sẽ reset lại và load lại fashion
         this.resetFashion(appearance);
@@ -95,8 +98,8 @@ public final class FashionUpdateSystem extends IteratingSystem {
             appearance.flagBag = 28;
         }
 
+        inventory.state = InventoryState.IDLE;
 //        log.debug("head : {}, body: {}, leg: {}, flagBag: {}, aura: {}, effSetItem: {}, idHat: {}", appearance.head, appearance.body, appearance.leg, appearance.flagBag, appearance.aura, appearance.effSetItem, appearance.idHat);
-        inventory.isDirty = false;
     }
 
     private void resetFashion(AppearanceComponent appearance) {

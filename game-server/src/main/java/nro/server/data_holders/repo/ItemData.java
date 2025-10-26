@@ -222,6 +222,11 @@ public final class ItemData implements GameEngine {
         buf.get(this.dataArrHead2Fr);
     }
 
+    public byte findTypeItemOption(int id) {
+        ItemOptionTemplate itemOptionTemplate = itemOptionTemplates.get((short) id);
+        if (itemOptionTemplate == null) return -1;
+        return itemOptionTemplate.type();
+    }
 
     public static ItemData getInstance() {
         return ItemDataHolder.INSTANCE;

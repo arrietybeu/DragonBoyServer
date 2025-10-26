@@ -1,15 +1,18 @@
 package nro.server.dao;
 
 import com.artemis.Entity;
+import com.artemis.EntityEdit;
 import com.artemis.World;
 import lombok.NoArgsConstructor;
 import nro.server.configs.main.ConfigCharacter;
 import nro.server.data_holders.data.ItemInventoryData;
 import nro.server.engine.GameWorld;
+import nro.server.engine.InventoryState;
 import nro.server.model.ecs.component.InfoComponent;
 import nro.server.model.ecs.component.item.*;
 import nro.server.model.ecs.component.player.InventoryComponent;
 import nro.server.model.item.ItemOptionData;
+import nro.server.utils.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -17,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
+
 
 /**
  * @author Arriety
@@ -67,37 +71,22 @@ public class InventoryDAO {
         insertItemsToDatabase(connection, playerId, allItems);
     }
 
-    private static void validateRows(List<Map<String, Object>> items, int maxSlots, String location, byte gender)
-            throws SQLException {
+    private static void validateRows(List<Map<String, Object>> items, int maxSlots, String location, byte gender) throws SQLException {
         for (Map<String, Object> item : items) {
             int rowIndex = (int) item.get("row_index");
             if (rowIndex >= maxSlots) {
-                throw new SQLException("Row " + rowIndex + " exceeds max slots " + maxSlots + " in " + location
-                        + " for gender: " + gender);
+                throw new SQLException("Row " + rowIndex + " exceeds max slots " + maxSlots + " in " + location + " for gender: " + gender);
             }
         }
     }
 
-    private static void insertItemsToDatabase(Connection connection, int playerId, List<Map<String, Object>> items)
-            throws SQLException {
+    private static void insertItemsToDatabase(Connection connection, int playerId, List<Map<String, Object>> items) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY)) {
             for (Map<String, Object> item : items) {
-                List<String> missingFields = new ArrayList<>();
-                if (!item.containsKey("template_id"))
-                    missingFields.add("template_id");
-                if (!item.containsKey("quantity"))
-                    missingFields.add("quantity");
-                if (!item.containsKey("options"))
-                    missingFields.add("options");
-                if (!item.containsKey("location"))
-                    missingFields.add("location");
-                if (!item.containsKey("row_index"))
-                    missingFields.add("row_index");
-                if (!item.containsKey("create_time"))
-                    missingFields.add("create_time");
+
+                List<String> missingFields = getStrings(item);
                 if (!missingFields.isEmpty()) {
-                    throw new SQLException("Missing fields " + missingFields
-                            + " for item in player inventory for player ID: " + playerId);
+                    throw new SQLException("Missing fields " + missingFields + " for item in player inventory for player ID: " + playerId);
                 }
 
                 statement.setInt(1, playerId);
@@ -117,8 +106,18 @@ public class InventoryDAO {
         }
     }
 
-    public static void loadInventoryForPlayer(Connection conn, Entity entity, int playerId)
-            throws SQLException, InterruptedException {
+    private static List<String> getStrings(Map<String, Object> item) {
+        List<String> missingFields = new ArrayList<>();
+        if (!item.containsKey("template_id")) missingFields.add("template_id");
+        if (!item.containsKey("quantity")) missingFields.add("quantity");
+        if (!item.containsKey("options")) missingFields.add("options");
+        if (!item.containsKey("location")) missingFields.add("location");
+        if (!item.containsKey("row_index")) missingFields.add("row_index");
+        if (!item.containsKey("create_time")) missingFields.add("create_time");
+        return missingFields;
+    }
+
+    public static void loadInventoryForPlayer(Connection conn, Entity entity, int playerId) throws SQLException, InterruptedException {
         InventoryComponent playerInventory = new InventoryComponent();
         entity.edit().add(playerInventory);
 
@@ -130,12 +129,11 @@ public class InventoryDAO {
         // Box items: {}", playerId, playerInventory.itemsBody.size(),
         // playerInventory.itemsBag.size(), playerInventory.itemsBox.size());
 
-        playerInventory.isDirty = true; // Mark inventory as dirty after loading
+        playerInventory.state = InventoryState.LOAD_FASHION; // Mark inventory as dirty after loading
         GameWorld.getInstance().getWorld().process();
     }
 
-    private static void loadItemsForLocation(Connection conn, int playerEntityId, int playerID, ItemLocation location)
-            throws SQLException {
+    private static void loadItemsForLocation(Connection conn, int playerEntityId, int playerID, ItemLocation location) throws SQLException {
         World world = GameWorld.getInstance().getWorld();
         InventoryComponent playerInventory = world.getMapper(InventoryComponent.class).get(playerEntityId);
         var info = world.getEntity(playerEntityId).getComponent(InfoComponent.class);
@@ -152,21 +150,18 @@ public class InventoryDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int templateId = rs.getInt("template_id");
-                    if (templateId == -1)
-                        continue;
+                    if (templateId == -1) continue;
                     int rowIndex = rs.getInt("row_index");
                     if (rowIndex < 0 || rowIndex >= maxSlots) {
-                        log.error("Invalid row_index {} for item in location {} for player ID {}", rowIndex, location,
-                                playerID);
+                        log.error("Invalid row_index {} for item in location {} for player ID {}", rowIndex, location, playerID);
                         continue;
                     }
                     if (inventorySlots.get(rowIndex) != -1) {
-                        log.error("Duplicate row_index {} in location {} for player ID {}", rowIndex, location,
-                                playerID);
+                        log.error("Duplicate row_index {} in location {} for player ID {}", rowIndex, location, playerID);
                         continue;
                     }
                     int itemEntityId = GameWorld.getInstance().createEntity();
-                    var editor = world.edit(itemEntityId);
+                    EntityEdit editor = world.edit(itemEntityId);
 
                     editor.add(new ItemInfoComponent(templateId, rs.getInt("quantity"), rs.getInt("creator_id")));
                     editor.add(new OwnershipComponent(playerEntityId, location));
@@ -178,14 +173,16 @@ public class InventoryDAO {
                             ItemStatsComponent stats = new ItemStatsComponent();
                             for (Object obj : jsonArray) {
                                 JSONArray optionArray = (JSONArray) obj;
-                                stats.options.add(new ItemOptionData(((Number) optionArray.get(0)).shortValue(),
-                                        ((Number) optionArray.get(1)).intValue(), (short) 0));
+
+                                var id = ((Number) optionArray.get(0)).shortValue();
+                                var param = ((Number) optionArray.get(1)).intValue();
+
+                                stats.options.add(new ItemOptionData(id, param, (short) 0));
                             }
                             editor.add(stats);
                         } catch (Exception e) {
-                            log.error(
-                                    "Failed to parse item options for player entity ID: {} and template ID: {}. Options JSON: {}",
-                                    playerID, templateId, optionsJson, e);
+                            String error = Utils.format("Failed to parse item options for player entity ID: {} and template ID: {}. Options JSON: {}", playerID, templateId, optionsJson);
+                            throw new SQLException(error);
                         }
                     }
                     inventorySlots.set(rowIndex, itemEntityId);

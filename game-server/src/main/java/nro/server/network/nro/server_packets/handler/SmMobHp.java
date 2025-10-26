@@ -1,10 +1,14 @@
 package nro.server.network.nro.server_packets.handler;
 
 import nro.commons.consts.ConstsCmd;
+import nro.server.consts.ConstEffect;
 import nro.server.network.nro.NroConnection;
 import nro.server.network.nro.NroServerPacket;
 import nro.server.network.nro.server_packets.ServerPacketCommand;
 
+/**
+ * @author Arriety
+ */
 @ServerPacketCommand(ConstsCmd.MOB_HP)
 public class SmMobHp extends NroServerPacket {
 
@@ -12,14 +16,14 @@ public class SmMobHp extends NroServerPacket {
     private final long hp;
     private final long dame;
     private final boolean isCrit;
-    private final boolean isHut;
+    private final boolean isHutHp;
 
     public SmMobHp(int monsterId, long hp, long dame, boolean isCrit, boolean isHut) {
         this.monsterId = monsterId;
         this.hp = hp;
         this.dame = dame;
         this.isCrit = isCrit;
-        this.isHut = isHut;
+        this.isHutHp = isHut;
     }
 
     @Override
@@ -28,6 +32,6 @@ public class SmMobHp extends NroServerPacket {
         writeLong(hp);
         writeLong(dame);
         writeBoolean(isCrit);
-        writeByte(isHut ? 37 : -1);
+        writeByte(isHutHp ? ConstEffect.EFFECT_HUT_MAU : ConstEffect.DEFAULT);
     }
 }

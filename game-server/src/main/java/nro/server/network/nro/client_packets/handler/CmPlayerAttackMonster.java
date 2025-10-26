@@ -41,5 +41,4 @@ public class CmPlayerAttackMonster extends NroClientPacket {
         stateComponent.isDirty = true;
         log.debug("CmPlayerAttackMonster: {}", monsterId);
     }
-
 }

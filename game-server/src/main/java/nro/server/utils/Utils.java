@@ -62,4 +62,30 @@ public final class Utils {
         return h == 0 ? (days + " ngày") : (days + " ngày " + h + " giờ");
     }
 
+    public static String format(String template, Object... args) {
+        if (template == null || args == null || args.length == 0) {
+            return template;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int argIndex = 0;
+        int cursor = 0;
+
+        while (cursor < template.length()) {
+            int braceIndex = template.indexOf("{}", cursor);
+
+            if (braceIndex == -1 || argIndex >= args.length) {
+                sb.append(template.substring(cursor));
+                break;
+            }
+
+            sb.append(template, cursor, braceIndex);
+            sb.append(args[argIndex] != null ? args[argIndex].toString() : "null");
+
+            cursor = braceIndex + 2;
+            argIndex++;
+        }
+
+        return sb.toString();
+    }
 }

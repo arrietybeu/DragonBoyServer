@@ -39,7 +39,7 @@ public final class PeriodicSaveService {
 
         @Override
         public void run() {
-            log.info("Saving shop ky gui data.");
+//            log.info("Saving shop ky gui data.");
         }
     }
 

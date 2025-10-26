@@ -4,7 +4,7 @@ import nro.commons.consts.ConstsCmd;
 import nro.server.consts.ConstMsgNotMap;
 import nro.server.network.nro.NroClientPacket;
 import nro.server.network.nro.NroConnection;
-import nro.server.network.nro.PlayerResponseType;
+import nro.server.services.PlayerResponseType;
 import nro.server.network.nro.client_packets.AClientPacketHandler;
 import nro.server.network.nro.server_packets.handler.*;
 import nro.server.services.player.PlayerEnterWorldService;
