@@ -9,7 +9,7 @@
 *.log
 logs/
 log/
-
+/dragon_boy_server_rust
 # Build outputs
 build/
 bin/

@@ -1,6 +1,6 @@
 import os
 
-folder_path = r"C:\Users\Win Val\Desktop\ProjectClient\ChuBeoRong\Assets\NROL"  
+folder_path = r"E:\Project\Client\KnightAge\Assets"  
 extension = ".asset"  # Phần mở rộng file muốn xóa
 
 for root, dirs, files in os.walk(folder_path):
